@@ -14,46 +14,15 @@ import { host } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
 import { StoresCard } from 'src/sections/wholesale/stores-table';
-import { useTheme } from '@emotion/react';
-import { store } from 'src/redux/store';
-
-
-
-
-
 
 
 const now = new Date();
 
-
-const useCustomers = (content,page,rowsPerPage) => {
-  return useMemo(
-    () => {
-      return applyPagination(content, page, rowsPerPage);
-    },
-    [page, rowsPerPage]
-  )
-};
-
-const useCustomerIds = (customers) => {
-  return useMemo(
-    () => {
-      return customers.map((customer) => customer.id);
-    },
-    [customers]
-  );
-};
-
-
 const Page = () => {
-
-
-  /** snackbar varibatles */
 
   const [open,setOpen] = useState()
   const [message, setMessage] = useState("")
   const [flag, setFlag] = useState("warning")
-
 
   const auth = useAuth()
   const [error,setErrors] = useState("")
@@ -61,9 +30,7 @@ const Page = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [stores,setStores] = useState([{}])
   const[deleted , setDeleted] = useState(false)
-
-  //const storesIds = useCustomerIds(stores);
- // const customersSelection = useSelection(customersIds);
+  
   const [data,setData] = useState({
     pageNumber : page,
     size : rowsPerPage
@@ -203,8 +170,8 @@ const Page = () => {
       >
         <Container maxWidth="xl">
           <Stack spacing={3}>
-            <CustomerHeaders  headerTitle={"All users"}/>
-            <CustomersSearch  onSearch={onSearch} userType="A" />
+            <CustomerHeaders  headerTitle={"All Store"}/>
+            <CustomersSearch  onSearch={onSearch} userType="" />
 
           {stores.map((store,i) =>{
              return(<StoresCard key={i} 

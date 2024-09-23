@@ -46,28 +46,13 @@ export const StoresCard = (props) => {
     return "____"
   }
 
-
-
-  /**actions */
-
   const updateStatus = (slug,status) =>{
     props.updateStatus(slug,status)
   }
 
-
-
-
-   
-  const editStore = (status) =>{
-    props.editStore(status)
-  }
-
-
-
   const confirmBox = () =>{
     setConfirm(true)
   }
-
 
   const takeAction = () =>{
       props.deleteStore(slug)
@@ -163,7 +148,7 @@ export const StoresCard = (props) => {
               query: { slug: store.slug },
             }}
           >
-          <Button type='primary'  style= {{marginTop : '5px',width:'110px'}}    icon={<EditFilled />} primary>
+          <Button type='primary'  style= {{marginTop : '5px',width:'110px'}}  icon={<EditFilled />} primary>
               Edit
           </Button>
         </Link>

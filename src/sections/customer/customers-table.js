@@ -33,6 +33,7 @@ import { getInitials } from 'src/utils/get-initials';
 import React, {useEffect, useState } from 'react';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
+import { host } from 'src/utils/util';
 
 
 export const CustomersTable = (props) => {
@@ -182,7 +183,7 @@ export const CustomersTable = (props) => {
                         query: { slug: customer.slug },
                       }}
                     >
-                        <Avatar src={customer.avatar} >
+                        <Avatar src={host+"/admin/auth/profile/"+customer.avatar} >
                           {getInitials(customer.username)}
                         </Avatar>
                         </Link>

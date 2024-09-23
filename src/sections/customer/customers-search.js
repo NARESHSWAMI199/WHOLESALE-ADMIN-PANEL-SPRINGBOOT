@@ -3,6 +3,7 @@ import { SearchOutlined } from '@mui/icons-material';
 import { Button, Card, InputAdornment, MenuItem, OutlinedInput, Select, SvgIcon, TextField } from '@mui/material';
 import { format } from 'date-fns';
 import { useCallback } from 'react';
+import KeyIcon from '@mui/icons-material/Key';
 export const CustomersSearch = (props) => {
 
   const previousDate = format(new Date().getTime()-(10 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd')
@@ -18,6 +19,8 @@ export const CustomersSearch = (props) => {
       searchKey : formData.get("searchKey"),
       fromDate : new Date(formData.get("fromDate")).getTime(),
       toDate : new Date(formData.get("toDate")).getTime(),
+      slug : formData.get("slug"),
+      status :  formData.get("status"),
       userType : formData.get("userType") !== "A" ? formData.get("userType") : null
     }
     props.onSearch(data);
@@ -29,7 +32,7 @@ export const CustomersSearch = (props) => {
     <OutlinedInput
       defaultValue=""
       fullWidth
-      placeholder="Search customer"
+      placeholder="Search"
       name='searchKey'
       startAdornment={(
         <InputAdornment position="start" >
@@ -45,6 +48,26 @@ export const CustomersSearch = (props) => {
       sx={{ maxWidth: 240 }}
     />
 
+  <OutlinedInput
+      defaultValue=""
+      fullWidth
+      placeholder="Token Id"
+      name='slug'
+      startAdornment={(
+        <InputAdornment position="start" >
+          
+          <KeyIcon
+            color="action"
+            fontSize="small"
+          >
+            <MagnifyingGlassIcon />
+          </KeyIcon>
+        </InputAdornment>
+      )}
+      sx={{ maxWidth: 240 }}
+    />
+
+
 
           { props.userType === "A" && <Select
                 sx={{minWidth:200}}
@@ -59,6 +82,18 @@ export const CustomersSearch = (props) => {
                 <MenuItem value={"W"}>Wholesaler</MenuItem>
                 <MenuItem value={'R'}>Retailer</MenuItem>
               </Select>}
+
+             <Select
+                sx={{minWidth:200}}
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                name='status'
+                defaultValue="A"
+                label="Status"
+              >
+                <MenuItem value={"A"}>Active</MenuItem>
+                <MenuItem value={"D"}>Deactive</MenuItem>
+              </Select>
 
       <TextField
         sx={{minWidth:200}}
