@@ -15,11 +15,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { getInitials } from 'src/utils/get-initials';
 import { Image } from 'antd';
-
-
-
-
-
+import DialogFormForExcelImport from 'src/layouts/excel/import-excel';
 
 const now = new Date();
 
@@ -33,10 +29,10 @@ const useitems = (content,page,rowsPerPage) => {
   )
 };
 
-const useitemIds = (items) => {
+const useitemSlugs = (items) => {
   return useMemo(
     () => {
-      return items.map((item) => item.id);
+      return items.map((item) => item.slug);
     },
     [items]
   );
@@ -57,12 +53,11 @@ const Page = () => {
 
 
   const auth = useAuth()
-  const [error,setErrors] = useState("")
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [items,setItems] = useState([])
-  const itemIds = useitemIds(items);
-  const itemsSelection = useSelection(itemIds);
+  const itemSlugs = useitemSlugs(items);
+  const itemsSelection = useSelection(itemSlugs);
   const [totalElements , setTotalElements] = useState(0)
   const [wholesale , setWholesale] = useState({})
 
@@ -113,6 +108,31 @@ const Page = () => {
 
    },[data,page,rowsPerPage])
 
+
+
+   const  importItemExcelSheet = async (e) =>{
+    let success = false
+    let form = e.target;
+    var formData = new FormData(form);
+    axios.defaults.headers = {
+      Authorization :  auth.token  
+    }
+    await axios.post(host+'/admin/item/importExcel/'+ wholesale.slug , formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+    }).then(res => {
+      setMessage(res.data.message)
+      setFlag("success")
+    })
+    .catch(err => {
+      setFlag("error")
+      console.log(err)
+      setMessage(err.response.data.message)
+    })
+    setOpen(true)
+    return success;
+   }
 
 
   const onStatusChange = (slug,status) => {
@@ -262,16 +282,7 @@ const Page = () => {
                   direction="row"
                   spacing={1}
                 >
-                  <Button
-                    color="inherit"
-                    startIcon={(
-                      <SvgIcon fontSize="small">
-                        <ArrowUpOnSquareIcon />
-                      </SvgIcon>
-                    )}
-                  >
-                    Import
-                  </Button>
+                  <DialogFormForExcelImport importExcelSheet={importItemExcelSheet}  />
                   <Button
                     color="inherit"
                     startIcon={(

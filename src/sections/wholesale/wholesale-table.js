@@ -176,7 +176,7 @@ export const ItemsTable = (props) => {
             </TableHead>
             <TableBody>
               {items.map((item,index) => {
-                const isSelected = selected.includes(item.id);
+                const isSelected = selected.includes(item.slug);
                 const createdAt = format(item.createdAt, 'dd/MM/yyyy');
 
                 return (

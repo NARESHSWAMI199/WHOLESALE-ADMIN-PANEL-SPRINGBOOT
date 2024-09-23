@@ -70,7 +70,16 @@ const handlers = {
       isAuthenticated: false,
       user: null
     };
+  },
+  [HANDLERS.UPDATE_USER]: (state,action) => {
+    const user = action.payload;
+    return {
+      ...state,
+      isAuthenticated: false,
+      user
+    };
   }
+
 };
 
 const reducer = (state, action) => (
@@ -83,6 +92,8 @@ export const AuthContext = createContext({ undefined });
 
 export const AuthProvider = (props) => {
   const { children } = props;
+
+  /** when you call dispatch then the dispatched data passed in reducer as action */
   const [state, dispatch] = useReducer(reducer, initialState);
   const initialized = useRef(false);
 
@@ -150,6 +161,29 @@ export const AuthProvider = (props) => {
       })
   };
 
+    const updateUserDetail = async (slug) => {
+      axios.defaults.headers = {
+        Authorization : initialState.token
+      }
+      await axios.get(host+"/admin/auth/detail/"+slug)
+      .then (res => {
+        const user = res.data.res
+        window.sessionStorage.setItem("user",JSON.stringify(user))
+
+        dispatch({
+          type: HANDLERS.UPDATE_USER,
+          payload : user
+        });
+      })
+      .catch (err =>{ 
+          const errorMessage = (!!err.response) ? err.response.data.message : err.message;
+          console.log(errorMessage)
+          throw new Error(errorMessage)
+      })
+  };
+
+
+
   const signUp = async (email, name, password) => {
     throw new Error('Sign up is not implemented');
   };
@@ -162,13 +196,23 @@ export const AuthProvider = (props) => {
     });
   };
 
+
+  const updateUser = (updatedUser) => {
+    window.sessionStorage.setItem('user', updateUser);
+    dispatch({
+      type: HANDLERS.SIGN_OUT
+    });
+  };
+
+
   return (
     <AuthContext.Provider
       value={{
         ...state,
         signIn,
         signUp,
-        signOut
+        signOut,
+        updateUserDetail
       }}
     >
       {children}

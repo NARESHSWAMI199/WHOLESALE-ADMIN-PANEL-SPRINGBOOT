@@ -17,6 +17,7 @@ import { alpha } from '@mui/material/styles';
 import { usePopover } from 'src/hooks/use-popover';
 import { AccountPopover } from './account-popover';
 import { useAuth } from 'src/hooks/use-auth';
+import { host } from 'src/utils/util';
 
 const SIDE_NAV_WIDTH = 280;
 const TOP_NAV_HEIGHT = 64;
@@ -67,13 +68,14 @@ export const TopNav = (props) => {
                 </SvgIcon>
               </IconButton>
             )}
-            <Tooltip title="Search">
+            {/* <Tooltip title="ADMIN">
               <IconButton>
                 <SvgIcon fontSize="small">
                   <MagnifyingGlassIcon />
                 </SvgIcon>
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
+            ADMIN PANNEL
           </Stack>
           <Stack
             alignItems="center"
@@ -108,7 +110,7 @@ export const TopNav = (props) => {
                 height: 40,
                 width: 40
               }}
-              src={!!user ? user.avatar : ""}
+              src={!!user ? host+"/admin/auth/profile/"+user.avatar : ""}
             />
           </Stack>
         </Stack>
