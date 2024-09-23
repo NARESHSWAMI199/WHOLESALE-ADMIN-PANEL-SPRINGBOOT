@@ -3,7 +3,7 @@ import Head from 'next/head';
 import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
 import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import {  Alert, Box, Button, Container, Grid, Snackbar, Stack, SvgIcon, Typography } from '@mui/material';
+import {  Alert, Box, Button, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Snackbar, Stack, SvgIcon, Typography, useMediaQuery } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { CustomersTable } from 'src/sections/customer/customers-table';
@@ -14,6 +14,8 @@ import { host } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
 import { StoresCard } from 'src/sections/wholesale/stores-table';
+import { useTheme } from '@emotion/react';
+import { store } from 'src/redux/store';
 
 
 
@@ -58,6 +60,8 @@ const Page = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [stores,setStores] = useState([{}])
+  const[deleted , setDeleted] = useState(false)
+
   //const storesIds = useCustomerIds(stores);
  // const customersSelection = useSelection(customersIds);
   const [data,setData] = useState({
@@ -107,9 +111,17 @@ const Page = () => {
       setOpen(true)
     }).catch(err => {
       console.log(err)
+      setFlag("error")
+      setMessage(!!err.response ? err.response.data.message : err.message)
+      setOpen(true)
     } )
   }
   
+
+  const udpateDeltedStore = (slug)=>{
+    setStores((stores)=> stores.filter((storeItem) => storeItem.slug !==slug ) )
+  }
+
 
   
   const onDelete = (slug) => {
@@ -122,6 +134,7 @@ const Page = () => {
         setMessage(res.data.message)
         setDeleted(true)
         setOpen(true)
+        udpateDeltedStore(slug)
     }).catch(err => {
       console.log(err)
       setMessage(err.message)
@@ -152,6 +165,7 @@ const Page = () => {
     []
   );
 
+
   const onSearch = useCallback (
     (searchData) => {
     setData({
@@ -160,6 +174,8 @@ const Page = () => {
     })
   },[] 
   )
+
+
 
   return (
     <>

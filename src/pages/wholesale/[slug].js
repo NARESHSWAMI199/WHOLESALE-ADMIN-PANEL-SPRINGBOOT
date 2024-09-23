@@ -51,7 +51,6 @@ const Page = () => {
   const [message, setMessage] = useState("")
   const [flag, setFlag] = useState("warning")
 
-
   const auth = useAuth()
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);

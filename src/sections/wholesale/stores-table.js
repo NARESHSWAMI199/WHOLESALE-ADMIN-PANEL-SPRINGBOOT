@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
-import { Rating } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Rating, useMediaQuery } from '@mui/material';
 import { Button } from 'antd';
 import { bgcolor, color } from '@mui/system';
 import { bg } from 'date-fns/locale';
@@ -19,16 +19,18 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 
 import { format } from 'date-fns';
+import Link from 'next/link';
 
 export const StoresCard = (props) => {
-  const theme = useTheme();
   const [store , setStore] = useState(props.store)
   const createdAt =   format(!!store.createdAt ? store.createdAt : 0, 'dd/MM/yyyy')
   const [message , setMessage] = useState("")
-  const [slug , setSlug] = useState("")
+  const [slug , setSlug] = useState(store.slug)
   const [status , setStatus] = useState(store.status)
-  
-      
+  const [confrim , setConfirm] = useState(false)
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
 
   useEffect(()=>{
     setStore(props.store)
@@ -53,10 +55,6 @@ export const StoresCard = (props) => {
   }
 
 
-  
-  const deleteStore = (status) =>{
-    props.deleteStore(status)
-  }
 
 
    
@@ -66,10 +64,24 @@ export const StoresCard = (props) => {
 
 
 
+  const confirmBox = () =>{
+    setConfirm(true)
+  }
+
+
+  const takeAction = () =>{
+      props.deleteStore(slug)
+      setConfirm(false)
+  }
+
+  const handleClose = () =>{
+      setConfirm(false)
+  }
 
 
 
-  return (
+
+  return (<>
     <Card sx={{ display: 'flex', paddingRight : 5 }}>
         {/* Wholesale image */}
         <CardMedia
@@ -100,13 +112,26 @@ export const StoresCard = (props) => {
           </Typography>
 
 
+
           <Typography
             variant="subtitle"
             component="div"
             sx={{ color: 'text.primary',fontSize : 15, my:1 }}
           >
-            Contact Number : {store.phone} ||  Email Id : {store.email}
+            Owner : {!!store.user ? toTitleCase(store.user.username) : "Unkown"}
           </Typography>
+
+
+          <Typography
+            variant="subtitle"
+            component="div"
+            sx={{ color: 'text.primary',fontSize : 15, my:1 }}
+          >
+            Contact Number : {store.phone} ||  Email Id : <span style={{color: 'rgb(99, 102, 241)'}}>{store.email}</span>
+          </Typography>
+
+
+
 
           <Rating value={store.rating} sx={{my:1}}/>
         </CardContent>
@@ -117,27 +142,72 @@ export const StoresCard = (props) => {
         { status !== 'A' ?
         <Button  type='primary' variant="outlined" icon={<CheckCircleOutlined />} style={{background:'#5cb85c'}} onClick={(e)=> {
                           setMessage("We are going to activate this store.")
-                          updateStatus(store.slug,"A")
                           setStatus("A")
+                          updateStatus(store.slug,"A")
+
                         }} >
             Active
         </Button>
         :
         <Button  type='primary' variant="outlined" icon={<CheckCircleOutlined />} onClick={(e)=> {
                           setMessage("We are going to deactivate this store.")
-                          updateStatus(store.slug , "D")
                           setStatus("D")
+                          updateStatus(store.slug,"D")
                         }} style={{background:'#ffc107', color : "black"}}>
             Deactive
         </Button>
       } 
-        <Button type='primary'  style= {{marginTop : '5px'}}    icon={<EditFilled />} primary>
-            Edit
-        </Button>
-        <Button type="primary" variant="outlined" style= {{marginTop : '5px'}} icon={<DeleteFilled />} danger >
+       <Link
+            href={{
+              pathname: '/store/update/[slug]',
+              query: { slug: store.slug },
+            }}
+          >
+          <Button type='primary'  style= {{marginTop : '5px',width:'110px'}}    icon={<EditFilled />} primary>
+              Edit
+          </Button>
+        </Link>
+        <Button type="primary" variant="outlined" style= {{marginTop : '5px'}} icon={<DeleteFilled />} danger 
+          onClick={(e) =>{
+            setSlug(store.slug)
+            setMessage(`Are you sure you want delete store ${store.name}`)
+            confirmBox()
+          }}
+
+        >
             Delete
         </Button>
       </Box>
     </Card>
+
+
+
+      
+    <Dialog
+      fullScreen={fullScreen}
+      open={confrim}
+      onClose={handleClose}
+      aria-labelledby="responsive-dialog-title"
+      >
+      <DialogTitle id="responsive-dialog-title">
+        {"Are you sure ?"}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+        {message}
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button autoFocus onClick={handleClose}>
+          Disagree
+        </Button>
+        <Button onClick={()=>takeAction()} autoFocus>
+          Agree
+        </Button>
+      </DialogActions>
+    </Dialog>
+
+</>
+
   );
 }

@@ -91,6 +91,7 @@ export const AccountProfileDetails = (props) => {
                 name='userType'
                 value={values.userType ||''}
                 label="User type"
+                InputLabelProps={{ shrink: true }}
                 onChange={handleChange}
               >
                 <MenuItem value={"S"}>Staff</MenuItem>
