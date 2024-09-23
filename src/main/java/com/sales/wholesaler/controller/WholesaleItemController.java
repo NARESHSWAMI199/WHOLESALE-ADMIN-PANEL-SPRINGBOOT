@@ -41,14 +41,15 @@ public class WholesaleItemController extends WholesaleServiceContainer {
 
     @PostMapping(value = {"/add","/update"})
     public ResponseEntity<Map<String,Object>> addOrUpdateItems(HttpServletRequest request, @RequestBody ItemDto itemDto) {
-        Map responseObj = new HashMap();
+        Map<String,Object>responseObj = new HashMap<>();
         try {
             User logggedUser = (User) request.getAttribute("user");
             responseObj = wholesaleItemService.createOrUpdateItem(itemDto,logggedUser);
         }catch (Exception e){
+            logger.info("Exception in addOrUpdateItems : "+e.getMessage());
             responseObj.put("message",e.getMessage());
             responseObj.put("status",500);
-            e.printStackTrace();
+
         }
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
@@ -56,7 +57,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
 
     @GetMapping("/delete/{slug}")
     public ResponseEntity<Map<String,Object>> deleteItemBySlug(@PathVariable String slug) {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         int isUpdated = wholesaleItemService.deleteItem(slug);
         if (isUpdated > 0) {
             responseObj.put("message", "Item has been successfully deleted.");
@@ -71,7 +72,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
 
     @PostMapping("/stock")
     public ResponseEntity<Map<String,Object>> updateItemStock (@RequestBody Map<String,String> params) {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         int isUpdated = wholesaleItemService.updateStock(params.get("stock"),params.get("slug"));
         if (isUpdated > 0) {
             responseObj.put("message", "Item's stock has been successfully updated.");

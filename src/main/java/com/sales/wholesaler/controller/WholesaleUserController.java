@@ -48,7 +48,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
     @Transactional
     @PostMapping(value = {"/register"})
     public ResponseEntity<Map<String, Object>> register(HttpServletRequest request, @RequestBody UserDto userDto) {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         try {
             responseObj = wholesaleUserService.registerUser(userDto);
         } catch (Exception e) {
@@ -64,7 +64,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
     @Transactional
     @PostMapping(value = {"/update"})
     public ResponseEntity<Map<String, Object>> updateAuth(HttpServletRequest request, @RequestBody UserDto userDto) {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         try {
             User logggedUser = (User) request.getAttribute("user");
             responseObj = wholesaleUserService.updateUserProfile(userDto, logggedUser);
@@ -80,7 +80,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
 
     @GetMapping("/detail/{slug}")
     public ResponseEntity<Map<String, Object>> getDetailUser(@PathVariable String slug) {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         User user = wholesaleUserService.getUserDetail(slug);
         if (user != null) {
             responseObj.put("res", user);

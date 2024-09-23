@@ -87,7 +87,7 @@ public class UserController extends ServiceContainer {
     @Transactional
     @GetMapping("/delete/{slug}")
     public ResponseEntity<Map<String, Object>> deleteUserBySlug(@PathVariable String slug) {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         int isUpdated = userService.deleteUserBySlug(slug);
         if (isUpdated > 0) {
             responseObj.put("message", "User has been successfully deleted.");
