@@ -54,7 +54,7 @@ public class StoreSpecifications {
 
     public static Specification<Store> hasSlug(String slug) {
         return (root, query, criteriaBuilder) -> {
-            if (slug == null) return null;
+            if (slug == null || slug.isEmpty()) return null;
             return criteriaBuilder.equal(root.get(Store_.SLUG), slug);
         };
     }

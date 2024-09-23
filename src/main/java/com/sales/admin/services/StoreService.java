@@ -35,6 +35,7 @@ public class StoreService extends RepoContainer{
                         .and(greaterThanOrEqualFromDate(filters.getFromDate()))
                         .and(lessThanOrEqualToToDate(filters.getToDate()))
                         .and(isStatus(filters.getStatus()))
+                        .and(hasSlug(filters.getSlug().trim()))
         );
         Pageable pageable = getPageable(filters);
         return storeRepository.findAll(specification,pageable);
