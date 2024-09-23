@@ -11,12 +11,16 @@ import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import static com.sales.specifications.StoreSpecifications.*;
+
 
 @Service
 public class StoreService extends RepoContainer{
@@ -25,9 +29,16 @@ public class StoreService extends RepoContainer{
     @Autowired
     AddressService addressService;
 
-    public Page<Store> getAllStore(SearchFilters searchFilters) {
-        Pageable pageable = getPageable(searchFilters);
-        return storeRepository.findAll(pageable);
+    public Page<Store> getAllStore(SearchFilters filters) {
+        Specification<Store> specification = Specification.where(
+                (containsName(filters.getSearchKey()).or(containsEmail(filters.getSearchKey())))
+                        .and(greaterThanOrEqualFromDate(filters.getFromDate()))
+                        .and(lessThanOrEqualToToDate(filters.getToDate()))
+                        .and(isStatus(filters.getStatus()))
+                        .and(hasSlug(filters.getSlug().trim()))
+        );
+        Pageable pageable = getPageable(filters);
+        return storeRepository.findAll(specification,pageable);
     }
 
 
@@ -53,7 +64,11 @@ public class StoreService extends RepoContainer{
     @Transactional
     public Map<String, Object> createOrUpdateStore(StoreDto storeDto,User loggedUser) throws Exception {
         Map<String, Object> responseObj = new HashMap<>();
-        if (!Utils.isEmpty(storeDto.getStoreSlug())) {
+            if(storeDto.getStoreSlug().equals("only-profile")) {
+                responseObj.put("message", "successfully updated.");
+                responseObj.put("status", 200);
+            }
+            else if (!Utils.isEmpty(storeDto.getStoreSlug())) {
             int isUpdated = updateStore(storeDto, loggedUser);
             if (isUpdated > 0) {
                 responseObj.put("message", "successfully updated.");
@@ -106,6 +121,12 @@ public class StoreService extends RepoContainer{
 
     @Transactional
     public int updateStore(StoreDto storeDto, User loggedUser){
+        AddressDto address = new AddressDto();
+        address.setAddressSlug(storeDto.getAddressSlug());
+        address.setCity(storeDto.getCity());
+        address.setState(storeDto.getState());
+        int isUpdatedAddress = addressHbRepository.updateAddress(address,loggedUser);
+        if(isUpdatedAddress < 1) return isUpdatedAddress;
         return storeHbRepository.updateStore(storeDto,loggedUser);
     }
 

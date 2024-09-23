@@ -31,6 +31,7 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                 "/swagger-resources/**",
                 "/swagger-ui/**",
                 "/webjars/**",
+                "/admin/auth/profile/**"
 
         };
         registry.addInterceptor(new SalesInterceptor(jwtToken,userRepository))

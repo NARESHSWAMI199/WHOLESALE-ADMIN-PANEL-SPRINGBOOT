@@ -8,15 +8,21 @@ import com.sales.dto.UserSearchFilters;
 import com.sales.entities.User;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.sales.specifications.UserSpecifications.*;
 
@@ -25,6 +31,17 @@ public class UserService extends RepoContainer {
 
     @Autowired
     StoreService storeService;
+
+    @Value("${profile.absolute}")
+    String profilePath;
+
+    @Value("${profile.relative}")
+    String profileRelativePath;
+
+
+
+    private static final String IMAGE_PATTERN =
+            "([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)";
 
     public User findByEmailAndPassword(UserDto userDto) {
         return userRepository.findByEmailAndPassword(userDto.getEmail(), userDto.getPassword());
@@ -71,7 +88,7 @@ public class UserService extends RepoContainer {
             .and(greaterThanOrEqualFromDate(filters.getFromDate()))
             .and(lessThanOrEqualToToDate(filters.getToDate()))
             .and(isStatus(filters.getStatus()))
-            .and(hasUserType(filters.getUserType()))
+            .and(hasUserType(filters.getUserType())).and(hasSlug(filters.getSlug().trim()))
         );
         Pageable pageable = getPageable(filters);
         return userRepository.findAll(specification,pageable);
@@ -88,6 +105,7 @@ public class UserService extends RepoContainer {
         storeDto.setCity(userDto.getCity());
         storeDto.setState(userDto.getState());
         storeDto.setStorePhone(userDto.getStorePhone());
+        storeDto.setStoreSlug(userDto.getStoreSlug());
         return storeDto;
     }
 
@@ -162,5 +180,21 @@ public class UserService extends RepoContainer {
     public int updateStatusBySlug(StatusDto statusDto){
         return userHbRepository.updateStatus(statusDto.getSlug(),statusDto.getStatus());
     }
+
+
+
+    public int updateProfileImage(MultipartFile profileImage,String slug,User loggerdUser) throws IOException {
+        if (!isValidImage(profileImage.getOriginalFilename())) return 0;
+        profileImage.transferTo(new File(profilePath+slug+profileImage.getOriginalFilename()));
+        return  userHbRepository.updateProfileImage(slug,profileRelativePath+slug+profileImage.getOriginalFilename());
+    }
+
+
+    public boolean isValidImage(String image){
+        Pattern pattern =  Pattern.compile(IMAGE_PATTERN);
+        Matcher matcher = pattern.matcher(image);
+        return matcher.matches();
+    }
+
 
 }

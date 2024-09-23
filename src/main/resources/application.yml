@@ -16,3 +16,9 @@ spring:
 
 jwt:
   secret : saleispower
+
+
+profile :
+  absolute : C:/Users/DATA/Documents/sales/sales-backend/src/main/resources/public/
+  relative :
+  get : src/main/resources/public/
