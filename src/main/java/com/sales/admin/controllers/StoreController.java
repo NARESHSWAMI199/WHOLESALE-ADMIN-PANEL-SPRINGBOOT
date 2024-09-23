@@ -96,10 +96,10 @@ public class StoreController extends ServiceContainer{
         Map responseObj = new HashMap();
         int isUpdated = storeService.updateStatusBySlug(statusDto);
         if (isUpdated > 0) {
-            responseObj.put("message", "Item's status has been successfully updated.");
+            responseObj.put("message", "Store's status has been successfully updated.");
             responseObj.put("status", 200);
         }else{
-            responseObj.put("message", "There is nothing to delete.recheck you parameters");
+            responseObj.put("message", "There is nothing to update recheck you parameters");
             responseObj.put("status", 400);
         }
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));

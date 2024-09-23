@@ -53,7 +53,11 @@ public class StoreService extends RepoContainer{
     @Transactional
     public Map<String, Object> createOrUpdateStore(StoreDto storeDto,User loggedUser) throws Exception {
         Map<String, Object> responseObj = new HashMap<>();
-        if (!Utils.isEmpty(storeDto.getStoreSlug())) {
+            if(storeDto.getStoreSlug().equals("only-profile")) {
+                responseObj.put("message", "successfully updated.");
+                responseObj.put("status", 200);
+            }
+            else if (!Utils.isEmpty(storeDto.getStoreSlug())) {
             int isUpdated = updateStore(storeDto, loggedUser);
             if (isUpdated > 0) {
                 responseObj.put("message", "successfully updated.");
