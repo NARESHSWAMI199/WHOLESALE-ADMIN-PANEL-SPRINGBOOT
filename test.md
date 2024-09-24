@@ -5,7 +5,7 @@
 
 
 -- test.address definition
-
+```sql
 CREATE TABLE `address` (
   `id` int NOT NULL AUTO_INCREMENT,
   `slug` varchar(50) DEFAULT NULL,
@@ -21,11 +21,11 @@ CREATE TABLE `address` (
   UNIQUE KEY `slug` (`slug`)
 ) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+```
 # City 
 
 -- test.city definition
-
+```sql
 CREATE TABLE `city` (
   `id` int NOT NULL AUTO_INCREMENT,
   `city_name` varchar(50) DEFAULT NULL,
@@ -33,13 +33,13 @@ CREATE TABLE `city` (
   `status` enum('A','D') DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
+```
 
 # Item
 
 
 -- test.item definition
-
+```sql
 CREATE TABLE `item` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -62,13 +62,13 @@ CREATE TABLE `item` (
   KEY `wholesale_id` (`wholesale_id`),
   CONSTRAINT `item_ibfk_1` FOREIGN KEY (`wholesale_id`) REFERENCES `store` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
+```
 
 
 # Slips
 
 -- test.slips definition
-
+```sql
 CREATE TABLE `slips` (
   `id` int NOT NULL AUTO_INCREMENT,
   `slug` varchar(50) NOT NULL,
@@ -85,12 +85,12 @@ CREATE TABLE `slips` (
   UNIQUE KEY `slug` (`slug`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+```
 
 # State
 
 -- test.state definition
-
+```sql
 CREATE TABLE `state` (
   `id` int NOT NULL AUTO_INCREMENT,
   `state_name` varchar(50) DEFAULT NULL,
@@ -98,11 +98,11 @@ CREATE TABLE `state` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+```
 # Store
 
 -- test.store definition
-
+```sql
 CREATE TABLE `store` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int DEFAULT NULL,
@@ -125,13 +125,13 @@ CREATE TABLE `store` (
   CONSTRAINT `store_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+```
 
 # User
 
 
 -- test.`user` definition
-
+```sql
 CREATE TABLE `user` (
   `user_id` int NOT NULL AUTO_INCREMENT,
   `slug` varchar(50) DEFAULT NULL,
@@ -150,7 +150,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
+```
 # Groups permissions
 
 ```sql 
