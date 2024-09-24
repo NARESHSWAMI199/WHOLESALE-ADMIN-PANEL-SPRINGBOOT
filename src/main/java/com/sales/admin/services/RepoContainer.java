@@ -39,6 +39,13 @@ public class RepoContainer {
     protected WriteExcel writeExcel;
 
 
+    @Autowired
+    protected  PermissionRepository permissionRepository;
+
+    @Autowired
+    protected  PermissionHbRepository permissionHbRepository;
+
+
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?
