@@ -50,7 +50,9 @@ const Page = () => {
           setStores(response);
        })
        .catch(err => {
-         setErrors(err.message)
+         setFlag("error")
+         setMessage(!!err.response ? err.response.data.message : err.message)
+         setOpen(true)
        } )
      }
     getData();
@@ -173,12 +175,12 @@ const Page = () => {
             <CustomerHeaders  headerTitle={"All Store"}/>
             <CustomersSearch  onSearch={onSearch} userType="" />
 
-          {stores.map((store,i) =>{
+          {stores.size > 0 ? stores.map((store,i) =>{
              return(<StoresCard key={i} 
               updateStatus={onStatusChange}
               deleteStore={onDelete}
               store={store}  />)
-          } )}
+          } ) : <></>}
 
 
           </Stack>

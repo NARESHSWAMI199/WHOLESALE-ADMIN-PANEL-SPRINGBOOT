@@ -82,6 +82,9 @@ const Page = () => {
        })
        .catch(err => {
          setErrors(err.message)
+         setFlag("error")
+         setMessage(!!err.response ? err.response.data.message : err.message)
+         setOpen(true)
        } )
      }
     getData();
@@ -110,6 +113,9 @@ const Page = () => {
       setStatus(status)
     }).catch(err => {
       console.log(err)
+      setFlag("error")
+      setMessage(!!err.response ? err.response.data.message : err.message)
+      setOpen(true)
     } )
   }
   
