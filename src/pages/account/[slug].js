@@ -8,6 +8,7 @@ import { useAuth } from 'src/hooks/use-auth';
 import { host } from 'src/utils/util';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { tr } from 'date-fns/locale';
 
 const Page = () => { 
 
@@ -35,6 +36,9 @@ const Page = () => {
             setContent(data)
         }).catch(err=>{
             console.log(err)
+            setFlag("error")
+            setMessage(!!err.response ? err.response.data.message : err.message)
+            setOpen(true)
         })
     },[slug])
 
@@ -53,11 +57,14 @@ const Page = () => {
           setMessage(res.data.message)
           setFlag("success")
           setContent(data)
+          setOpen(true)
         }).catch(err=>{
           setFlag('error')
-          console.log(err)
+          setMessage(!!err.response ? err.response.data.message : err.message)
+          console.log(err.message)
+          setOpen(true)
         })
-        setOpen(true)
+
     }
 
       /** for snackbar close */

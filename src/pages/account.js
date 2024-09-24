@@ -40,7 +40,8 @@ const Page = () => {
 
         }).catch(err=>{
           setFlag('error')
-          console.log(err)
+          setMessage(!!err.response ? err.response.data.message : err.message)
+          console.log(err.message)
         })
         setOpen(true)
     }

@@ -113,7 +113,7 @@ const createUser = () =>{
           form.reset();
           reset()
         }).catch(err=>{
-            setMessage(err)
+            setMessage(!!err.response ? err.response.data.message : err.message)
             setFlag("error")
         })
         setOpen(true)
