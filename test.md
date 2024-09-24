@@ -151,3 +151,39 @@ CREATE TABLE `user` (
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+# Groups permissions
+
+```sql 
+
+create table `groups` (
+	id int primary key auto_increment,
+	slug varchar(50) unique not null,
+	name varchar(50),
+	is_deleted enum('Y','N'),
+	created_at bigint,
+	created_by int,
+	updated_at bigint,
+	updated_by int
+);
+
+
+
+create table permissions (
+	id int primary key auto_increment,
+	access_url text 
+);
+
+
+
+create table group_permissions (
+	group_id int,
+	permission_id int
+);
+
+
+create table user_groups(
+	user_id int,
+	group_id int
+);
+
+```
