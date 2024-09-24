@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
-import {  Alert, Box, Container, Snackbar, Stack, SvgIcon, Typography } from '@mui/material';
+import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
+import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
+import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
+import {  Alert, Box, Button, Container, Grid, Snackbar, Stack, SvgIcon, Typography } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { CustomersTable } from 'src/sections/customer/customers-table';
@@ -10,6 +13,7 @@ import axios from 'axios';
 import { host } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
+
 
 
 
@@ -49,16 +53,13 @@ const Page = () => {
 
 
   const auth = useAuth()
-  let [status,setStatus] = useState(null)
   const [error,setErrors] = useState("")
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [customers,setCustomers] = useState([])
   const customersIds = useCustomerIds(customers);
   const customersSelection = useSelection(customersIds);
-  const [deleted,setDeleted] = useState(false);
   const [data,setData] = useState({
-    userType : "W",
     pageNumber : page,
     size : rowsPerPage
   })
@@ -72,11 +73,12 @@ const Page = () => {
        }
        await axios.post(host+"/admin/auth/all",data)
        .then(res => {
-          const data = res.data.content;
+          const response = res.data.content;
            setTotalElements(res.data.totalElements)
-           setCustomers(data);
+           setCustomers(response);
        })
        .catch(err => {
+         setErrors(err.message)
          setFlag("error")
          setMessage(!!err.response ? err.response.data.message : err.message)
          setOpen(true)
@@ -105,12 +107,8 @@ const Page = () => {
         setMessage("Successfully deactivated.")
       }
       setOpen(true)
-      setStatus(status)
     }).catch(err => {
       console.log(err)
-      setFlag("error")
-      setMessage(!!err.response ? err.response.data.message : err.message)
-      setOpen(true)
     } )
   }
   
@@ -128,8 +126,8 @@ const Page = () => {
         setOpen(true)
     }).catch(err => {
       console.log(err)
+      setMessage(err.message)
       setFlag("error")
-      setMessage(!!err.response ? err.response.data.message : err.message)
       setOpen(true)
     } )
   }
@@ -156,14 +154,14 @@ const Page = () => {
     []
   );
 
-
-  const onSearch = (searchData) => {
+  const onSearch = useCallback (
+    (searchData) => {
     setData({
       ...data,
-      ...searchData,
-      userType : "W"
+      ...searchData
     })
-  } 
+  },[] 
+  )
 
   return (
     <>
@@ -191,11 +189,10 @@ const Page = () => {
       >
         <Container maxWidth="xl">
           <Stack spacing={3}>
-        
-          <CustomerHeaders  headerTitle={"Wholesalers"}/>
-            <CustomersSearch  onSearch={onSearch} />
+            <CustomerHeaders  headerTitle={"All users"}/>
+            <CustomersSearch  onSearch={onSearch} userType="A" />
 
-             <CustomersTable
+          <CustomersTable
               count={totalElements}
               items={customers}
               onDeselectAll={customersSelection.handleDeselectAll}

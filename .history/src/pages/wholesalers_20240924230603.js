@@ -77,9 +77,7 @@ const Page = () => {
            setCustomers(data);
        })
        .catch(err => {
-         setFlag("error")
-         setMessage(!!err.response ? err.response.data.message : err.message)
-         setOpen(true)
+         setErrors(err.message)
        } )
      }
     getData();
@@ -108,9 +106,6 @@ const Page = () => {
       setStatus(status)
     }).catch(err => {
       console.log(err)
-      setFlag("error")
-      setMessage(!!err.response ? err.response.data.message : err.message)
-      setOpen(true)
     } )
   }
   
@@ -128,8 +123,8 @@ const Page = () => {
         setOpen(true)
     }).catch(err => {
       console.log(err)
+      setMessage(err.message)
       setFlag("error")
-      setMessage(!!err.response ? err.response.data.message : err.message)
       setOpen(true)
     } )
   }
