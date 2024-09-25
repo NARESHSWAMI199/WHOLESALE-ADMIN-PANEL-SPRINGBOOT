@@ -76,9 +76,8 @@ const Page = () => {
        }
        await axios.post(host+"/admin/auth/all",data)
        .then(res => {
-          const data = res.data.content;
            setTotalElements(res.data.totalElements)
-           setCustomers(data);
+           setCustomers(res.data.content);
        })
        .catch(err => {
          setErrors(err.message)
@@ -89,7 +88,7 @@ const Page = () => {
      }
     getData();
 
-   },[data,page,rowsPerPage])
+   },[data])
 
 
 
@@ -149,7 +148,7 @@ const Page = () => {
   const handlePageChange = useCallback(
     (event, value) => {
       setPage(value);
-      setData({...data, pageNumber : value})
+      setData((perviouse) => ({...perviouse, pageNumber : value}))
     },
     []
   );
@@ -157,6 +156,7 @@ const Page = () => {
   const handleRowsPerPageChange = useCallback(
     (event) => {
       setRowsPerPage(event.target.value);
+      setData((perviouse) => ({...perviouse, size : event.target.value}))
     },
     []
   );

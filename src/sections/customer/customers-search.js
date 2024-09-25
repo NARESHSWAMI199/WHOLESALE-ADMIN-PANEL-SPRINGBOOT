@@ -48,24 +48,25 @@ export const CustomersSearch = (props) => {
       sx={{ maxWidth: 240 }}
     />
 
-  <OutlinedInput
-      defaultValue=""
-      fullWidth
-      placeholder="Token Id"
-      name='slug'
-      startAdornment={(
-        <InputAdornment position="start" >
-          
-          <KeyIcon
-            color="action"
-            fontSize="small"
-          >
-            <MagnifyingGlassIcon />
-          </KeyIcon>
-        </InputAdornment>
-      )}
-      sx={{ maxWidth: 240 }}
-    />
+  { props.userType !== "A" && <OutlinedInput
+        defaultValue=""
+        fullWidth
+        placeholder="Token Id"
+        name='slug'
+        startAdornment={(
+          <InputAdornment position="start" >
+            
+            <KeyIcon
+              color="action"
+              fontSize="small"
+            >
+              <MagnifyingGlassIcon />
+            </KeyIcon>
+          </InputAdornment>
+        )}
+        sx={{ maxWidth: 240 }}
+      />
+  }
 
 
 
@@ -83,7 +84,7 @@ export const CustomersSearch = (props) => {
                 <MenuItem value={'R'}>Retailer</MenuItem>
               </Select>}
 
-             <Select
+             {props.userType !== "G" && <Select
                 sx={{minWidth:200}}
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
@@ -93,7 +94,7 @@ export const CustomersSearch = (props) => {
               >
                 <MenuItem value={"A"}>Active</MenuItem>
                 <MenuItem value={"D"}>Deactive</MenuItem>
-              </Select>
+              </Select>}
 
       <TextField
         sx={{minWidth:200}}

@@ -36,7 +36,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { host } from 'src/utils/util';
 
 
-export const CustomersTable = (props) => {
+export const GroupTable = (props) => {
   const {
     count = 0,
     onDeselectAll,
@@ -123,40 +123,25 @@ export const CustomersTable = (props) => {
                 <TableCell>
                   TOKEN ID
                 </TableCell>
-                <TableCell>
-                  USER TYPE
-                </TableCell>
-                <TableCell>
-                  Email
-                </TableCell>
-                {/* <TableCell>
-                  Location
-                </TableCell> */}
-                <TableCell>
-                  Phone
-                </TableCell>
 
                 <TableCell>
-                  Status
+                    Created At
                 </TableCell>
 
-                <TableCell>
-                  Signed Up
-                </TableCell>
                 <TableCell>
                   ACTIONS
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.map((customer,index) => {
-                const isSelected = selected.includes(customer.id);
-                const createdAt = format(customer.createdAt, 'dd/MM/yyyy');
+              {items.map((group,index) => {
+                const isSelected = selected.includes(group.id);
+                const createdAt = format(group.createdAt, 'dd/MM/yyyy');
 
                 return (
                   <TableRow
                     hover
-                    key={customer.id}
+                    key={group.id}
                     selected={isSelected}
                   >
                     <TableCell padding="checkbox">
@@ -164,9 +149,9 @@ export const CustomersTable = (props) => {
                         checked={isSelected}
                         onChange={(event) => {
                           if (event.target.checked) {
-                            onSelectOne?.(customer.slug);
+                            onSelectOne?.(group.slug);
                           } else {
-                            onDeselectOne?.(customer.slug);
+                            onDeselectOne?.(group.slug);
                           }
                         }}
                       />
@@ -179,78 +164,23 @@ export const CustomersTable = (props) => {
                       >      
                   <Link
                       href={{
-                        pathname: '/account/[slug]',
-                        query: { slug: customer.slug },
+                        pathname: '/group/[slug]',
+                        query: { slug: group.slug },
                       }}
                     >
-                        <Avatar src={host+"/admin/auth/profile/"+customer.avatar} >
-                          {getInitials(customer.username)}
-                        </Avatar>
+                        {/* <Avatar src={host+"/admin/auth/profile/"+group.avatar} >
+                          {getInitials(group.username)}
+                        </Avatar> */}
                         </Link>
                         <Typography variant="subtitle2">
-                          {customer.username}
+                          {group.name}
                         </Typography>
                       </Stack>
                     </TableCell>
                     <TableCell sx={{color:'green'}}>
-                      {customer.slug}
+                      {group.slug}
                     </TableCell>
-                    <TableCell align='center'>
-                        {customer.userType === "R" && <Badge color="error" badgeContent={'Retailer'} />}
-
-                        {customer.userType === "W" && 
-                          <Link
-                                href={{
-                                  pathname: '/wholesale/[slug]',
-                                  query: { slug: customer.slug },
-                                }}
-                              >
-                        <Badge color="success" badgeContent={'Wholesaler'} />
-                        </Link>
-                        }
-                        
-                        {customer.userType === "S" && <Badge color="primary" badgeContent={'Staff'} />}
-                    </TableCell>
-                    <TableCell>
-                      {customer.email}
-                    </TableCell>
-                    {/* <TableCell>
-                      {customer.address.city}, {customer.address.state}, {customer.address.country}
-                    </TableCell> */}
-                    <TableCell>
-                      {customer.contact}
-                    </TableCell>
-
-
-                    <TableCell>
-                      {/* {setStatus(customer.status)} */}
-                     {customer.status !== 'A' ? <CancelIcon sx={ {
-                        marginX : '2px',
-                        color : 'Red'
-                        
-                        } }  titleAccess='activate' onClick={(e)=> {
-                          setMessage("We are going to activate this user.")
-                          setSlug(customer.slug)
-                          setStatus('A')
-                          setAction('status')
-                          confirmBox()
-                        }} />
-
-                      : 
-                      <CheckCircleIcon sx={ {
-                        marginX : '2px',
-                        color : 'Green'
-                        
-                        } } titleAccess='deactivate' onClick={(e)=> {
-                          setMessage("We are going to deactivate this user.")
-                          setSlug(customer.slug)
-                          setStatus('D')
-                          setAction('status')
-                          confirmBox()
-                        }} />
-                      }
-                    </TableCell>
-
+        
                     <TableCell>
                       {createdAt}
                     </TableCell>
@@ -259,8 +189,8 @@ export const CustomersTable = (props) => {
                                         
                       <Link
                             href={{
-                              pathname: '/account/[slug]',
-                              query: { slug: customer.slug },
+                              pathname: '/group/[slug]',
+                              query: { slug: group.slug },
                             }}
                           >
                               <EditIcon sx = {{
@@ -275,9 +205,9 @@ export const CustomersTable = (props) => {
                         color : 'Red'
                         
                         } }  titleAccess='delete' onClick={(e)=>{
-                          setSlug(customer.slug)
+                          setSlug(group.slug)
                           setRowIndex(index)
-                          setMessage("We are going to delete this user if user type is wholesaler then user's store will also delete. if you agree press agree otherwise press disagree.")
+                          setMessage("We are going to delete this group if group type is wholesaler then user's store will also delete. if you agree press agree otherwise press disagree.")
                           setAction("delete")
                           confirmBox()
                           }} />
@@ -332,7 +262,7 @@ export const CustomersTable = (props) => {
   );
 };
 
-CustomersTable.propTypes = {
+GroupTable.propTypes = {
   count: PropTypes.number,
   items: PropTypes.array,
   onDeselectAll: PropTypes.func,

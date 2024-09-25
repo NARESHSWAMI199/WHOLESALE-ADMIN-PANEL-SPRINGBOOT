@@ -85,7 +85,7 @@ const Page = () => {
      }
     getData();
 
-   },[data,page,rowsPerPage,status])
+   },[data])
 
 
 
@@ -139,7 +139,7 @@ const Page = () => {
   const handlePageChange = useCallback(
     (event, value) => {
       setPage(value);
-      setData({...data, pageNumber : value})
+      setData((perviouse) => ({...perviouse, pageNumber : value}))
     },
     []
   );
@@ -147,6 +147,7 @@ const Page = () => {
   const handleRowsPerPageChange = useCallback(
     (event) => {
       setRowsPerPage(event.target.value);
+      setData((perviouse) => ({...perviouse,size :event.target.value}))
     },
     []
   );
