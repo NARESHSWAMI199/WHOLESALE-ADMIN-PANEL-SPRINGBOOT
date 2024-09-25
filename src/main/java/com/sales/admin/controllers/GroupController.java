@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,6 +24,13 @@ public class GroupController extends ServiceContainer {
     public ResponseEntity<Page<Group>> getAllGroup(@RequestBody SearchFilters searchFilters){
         Page<Group> storePage =  groupService.getALlGroups(searchFilters);
         return new ResponseEntity<>(storePage, HttpStatus.OK);
+    }
+
+
+    @RequestMapping("/permission/all")
+    public ResponseEntity<Map<String,List<Object>>> getAllPermissions(){
+        Map<String,List<Object>> permissions =  groupService.getAllPermissions();
+        return new ResponseEntity<>(permissions, HttpStatus.OK);
     }
 
 

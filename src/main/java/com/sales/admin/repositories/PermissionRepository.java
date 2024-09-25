@@ -29,6 +29,9 @@ public interface PermissionRepository extends JpaRepository<GroupPermission,Long
 
 
 
+    @Query(value = "select * from permissions",nativeQuery = true)
+    List<Map<String,Object>> getAllPermissions();
+
 //    @Query
 //    List<Map<Integer, String>> getAllPermissionByGroupId(@Param("groupId") Integer groupId);
 

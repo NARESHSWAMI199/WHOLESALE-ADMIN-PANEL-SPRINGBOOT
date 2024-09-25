@@ -83,5 +83,23 @@ public class GroupService extends RepoContainer {
     }
 
 
+    public Map<String,List<Object>> getAllPermissions(){
+      List<Map<String,Object>> permissionList = permissionRepository.getAllPermissions();
+      Map<String,List<Object>> formattedPermissions = new HashMap<>();
+      for(Map<String,Object> permission : permissionList){
+          String key = (String) permission.get("permission_for");
+          if(formattedPermissions.containsKey(key)){
+              List<Object> addedPermissions = formattedPermissions.get(key);
+              addedPermissions.add(permission);
+              formattedPermissions.put(key ,addedPermissions);
+          }else {
+              List<Object> newPermissions = new ArrayList<>();
+              newPermissions.add(permission);
+              formattedPermissions.put(key ,newPermissions);
+          }
+      }
+      return formattedPermissions;
+    }
+
 
 }
