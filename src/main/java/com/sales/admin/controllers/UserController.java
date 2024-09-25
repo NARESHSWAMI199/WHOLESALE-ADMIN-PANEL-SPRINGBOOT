@@ -154,7 +154,7 @@ public class UserController extends ServiceContainer {
     String filePath;
 
     @GetMapping("/profile/{filename}")
-    public ResponseEntity<Resource> getFile(@PathVariable String filename) throws Exception {
+    public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename) throws Exception {
         Path path = Paths.get(filePath + filename);
         Resource resource = new UrlResource(path.toUri());
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
