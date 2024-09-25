@@ -55,10 +55,10 @@ public class SalesInterceptor implements HandlerInterceptor {
                     break;
                 }
             }
-            if (!isPermitted) {
+          /*  if (!isPermitted) {
                 sendError(response, "You don't permissions to access this page.Please contact your administrator.", 400);
                 return false;
-            }
+            }*/
             request.setAttribute("user",user);
             return true;
         }

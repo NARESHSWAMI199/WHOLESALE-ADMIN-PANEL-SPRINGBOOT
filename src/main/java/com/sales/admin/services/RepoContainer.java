@@ -46,6 +46,10 @@ public class RepoContainer {
     protected  PermissionHbRepository permissionHbRepository;
 
 
+    @Autowired
+    protected  GroupRepository groupRepository;
+
+
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?
