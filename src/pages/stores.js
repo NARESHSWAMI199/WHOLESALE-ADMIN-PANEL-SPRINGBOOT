@@ -7,13 +7,14 @@ import {  Alert, Box, Button, Container, Dialog, DialogActions, DialogContent, D
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { CustomersTable } from 'src/sections/customer/customers-table';
-import { CustomersSearch } from 'src/sections/customer/customers-search';
+import { BasicSearch, CustomersSearch } from 'src/sections/basic-search';
 import { applyPagination } from 'src/utils/apply-pagination';
 import axios from 'axios';
 import { host } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
 import { StoresCard } from 'src/sections/wholesale/stores-table';
+
 
 
 const now = new Date();
@@ -173,7 +174,7 @@ const Page = () => {
         <Container maxWidth="xl">
           <Stack spacing={3}>
             <CustomerHeaders  headerTitle={"All Store"}/>
-            <CustomersSearch  onSearch={onSearch} userType="" />
+            <BasicSearch onSearch={onSearch} />
 
           { stores.map((store,i) =>{
              return(<StoresCard key={i} 

@@ -4,7 +4,7 @@ import {  Alert, Box, Container, Snackbar, Stack, SvgIcon, Typography } from '@m
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { CustomersTable } from 'src/sections/customer/customers-table';
-import { CustomersSearch } from 'src/sections/customer/customers-search';
+import { BasicSearch, CustomersSearch } from 'src/sections/basic-search';
 import { applyPagination } from 'src/utils/apply-pagination';
 import axios from 'axios';
 import { host } from 'src/utils/util';
@@ -193,7 +193,7 @@ const Page = () => {
           <Stack spacing={3}>
         
           <CustomerHeaders  headerTitle={"Wholesalers"}/>
-            <CustomersSearch  onSearch={onSearch} />
+            <BasicSearch  onSearch={onSearch} />
 
              <CustomersTable
               count={totalElements}

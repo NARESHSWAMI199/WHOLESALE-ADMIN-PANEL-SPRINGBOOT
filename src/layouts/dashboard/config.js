@@ -6,6 +6,7 @@ import UsersIcon from '@heroicons/react/24/solid/UsersIcon';
 import { StoreOutlined } from '@mui/icons-material';
 import { SvgIcon } from '@mui/material';
 import StoreIcon from '@mui/icons-material/Store';
+import WorkspacePremium from '@mui/icons-material/WorkspacePremium';
 
 export const items = [
   {
@@ -76,6 +77,17 @@ export const items = [
   },
   
   {
+    title: 'Groups',
+    path: '/groups',
+    icon: (
+      <SvgIcon fontSize="small">
+        <WorkspacePremium />
+      </SvgIcon>
+    )
+  },
+
+
+  {
     title: 'Settings',
     path: '/settings',
     icon: (
@@ -84,9 +96,6 @@ export const items = [
       </SvgIcon>
     )
   },
-
-
-    
 
 
   // {

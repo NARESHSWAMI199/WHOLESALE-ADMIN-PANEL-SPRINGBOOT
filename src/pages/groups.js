@@ -1,13 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
-import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
-import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
-import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
 import {  Alert, Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Snackbar, Stack, SvgIcon, Typography } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { CustomersTable } from 'src/sections/customer/customers-table';
-import { CustomersSearch } from 'src/sections/customer/customers-search';
+import { BasicSearch, CustomersSearch } from 'src/sections/basic-search';
 import { applyPagination } from 'src/utils/apply-pagination';
 import axios, { all } from 'axios';
 import { host } from 'src/utils/util';
@@ -63,7 +60,6 @@ const Page = () => {
   const customersSelection = useSelection(customersIds);
   const [deleted,setDeleted] = useState(false);
   const [data,setData] = useState({
-    userType : "R",
     pageNumber : page,
     size : rowsPerPage
   })
@@ -141,7 +137,6 @@ const Page = () => {
     setData({
       ...data,
       ...searchData,
-      userType : "R"
     })
   } 
 
@@ -172,7 +167,7 @@ const Page = () => {
         <Container maxWidth="xl">
           <Stack spacing={3}>
           <CustomerHeaders  headerTitle={"All Groups"}/>
-          <CustomersSearch  onSearch={onSearch} userType="G" />
+          <BasicSearch  onSearch={onSearch} />
 
             <GroupTable
               count={totalElements}

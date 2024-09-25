@@ -7,12 +7,13 @@ import {  Alert, Box, Button, Container, Grid, Snackbar, Stack, SvgIcon, Typogra
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { CustomersTable } from 'src/sections/customer/customers-table';
-import { CustomersSearch } from 'src/sections/customer/customers-search';
 import { applyPagination } from 'src/utils/apply-pagination';
 import axios from 'axios';
 import { host } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
+import { Search } from '@mui/icons-material';
+import { BasicSearch } from 'src/sections/basic-search';
 
 
 
@@ -194,7 +195,7 @@ const Page = () => {
         <Container maxWidth="xl">
           <Stack spacing={3}>
             <CustomerHeaders  headerTitle={"All users"}/>
-            <CustomersSearch  onSearch={onSearch} userType="A" />
+            <BasicSearch onSearch={onSearch} type="A" />
 
           <CustomersTable
               count={totalElements}

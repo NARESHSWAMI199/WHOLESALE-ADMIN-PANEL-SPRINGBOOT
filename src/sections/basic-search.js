@@ -4,7 +4,7 @@ import { Button, Card, InputAdornment, MenuItem, OutlinedInput, Select, SvgIcon,
 import { format } from 'date-fns';
 import { useCallback } from 'react';
 import KeyIcon from '@mui/icons-material/Key';
-export const CustomersSearch = (props) => {
+export const BasicSearch = (props) => {
 
   const previousDate = format(new Date().getTime()-(10 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd')
   const currentDate = format(new Date().getTime(), 'yyyy-MM-dd')
@@ -21,7 +21,7 @@ export const CustomersSearch = (props) => {
       toDate : new Date(formData.get("toDate")).getTime(),
       slug : formData.get("slug"),
       status :  formData.get("status"),
-      userType : formData.get("userType") !== "A" ? formData.get("userType") : null
+      userType : formData.get("type") !== "A" ? formData.get("type") : null
     }
     props.onSearch(data);
   }
@@ -48,7 +48,7 @@ export const CustomersSearch = (props) => {
       sx={{ maxWidth: 240 }}
     />
 
-  { props.userType !== "A" && <OutlinedInput
+  { props.type !== "A" && <OutlinedInput
         defaultValue=""
         fullWidth
         placeholder="Token Id"
@@ -70,11 +70,11 @@ export const CustomersSearch = (props) => {
 
 
 
-          { props.userType === "A" && <Select
+          { props.type === "A" && <Select
                 sx={{minWidth:200}}
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                name='userType'
+                name='type'
                 defaultValue="A"
                 label="User type"
               >
@@ -84,7 +84,7 @@ export const CustomersSearch = (props) => {
                 <MenuItem value={'R'}>Retailer</MenuItem>
               </Select>}
 
-             {props.userType !== "G" && <Select
+             {props.type !== "G" && <Select
                 sx={{minWidth:200}}
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
