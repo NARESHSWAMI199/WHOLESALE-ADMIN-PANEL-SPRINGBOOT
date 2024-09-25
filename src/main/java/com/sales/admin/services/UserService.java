@@ -88,7 +88,7 @@ public class UserService extends RepoContainer {
             .and(greaterThanOrEqualFromDate(filters.getFromDate()))
             .and(lessThanOrEqualToToDate(filters.getToDate()))
             .and(isStatus(filters.getStatus()))
-            .and(hasUserType(filters.getUserType())).and(hasSlug(filters.getSlug().trim()))
+            .and(hasUserType(filters.getUserType())).and(hasSlug(filters.getSlug()))
         );
         Pageable pageable = getPageable(filters);
         return userRepository.findAll(specification,pageable);

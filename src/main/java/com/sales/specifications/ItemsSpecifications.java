@@ -79,7 +79,7 @@ public class ItemsSpecifications {
     public static Specification<Item> hasSlug(String slug) {
         return (root, query, criteriaBuilder) -> {
             if (slug == null) return null;
-            return criteriaBuilder.equal(root.get(Item_.slug), slug);
+            return criteriaBuilder.equal(root.get(Item_.slug), slug.trim());
         };
     }
 

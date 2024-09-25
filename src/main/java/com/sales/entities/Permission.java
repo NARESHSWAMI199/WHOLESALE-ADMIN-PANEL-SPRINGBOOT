@@ -29,5 +29,9 @@ public class Permission {
     String accessUrl;
 
 
+    @Column(name = "permission_for")
+    String permissionFor;
+
+
 
 }
