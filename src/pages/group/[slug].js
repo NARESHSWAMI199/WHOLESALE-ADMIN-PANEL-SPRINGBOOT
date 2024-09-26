@@ -6,8 +6,10 @@ import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
 import KeyIcon from '@mui/icons-material/Key';
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
-import { GroupHeaders } from 'src/sections/group-header';
 import { BasicHeaders } from 'src/sections/basic-header';
+import axios from 'axios';
+import { useAuth } from 'src/hooks/use-auth';
+import { host } from 'src/utils/util';
 
 const Page = ()=> {
   const [state, setState] = useState({
@@ -20,6 +22,24 @@ const Page = ()=> {
   const [flag,setFlag] = useState('warning')
   const [open,setOpen] = useState(false)
   const [message,setMessage] = useState("")
+  const [permissions, setPermissions] = useState({})
+  const auth = useAuth();
+
+  useEffect(() => {
+    axios.defaults.headers = {
+      Authorization: auth.token
+    }
+    axios.get(host + "/group/permissions/all/")
+      .then(res => {
+        let response = res.data;
+        setPermissions(response)
+        console.log(response)
+      })
+      .catch(err => console.log(err))
+  }, [])
+
+
+
 
   const handleChange = (event) => {
     setState({
@@ -86,82 +106,24 @@ const handleClose = () => {
                     sx={{ maxWidth: 540 }}
                 />
 
-<Box sx={{ display: 'flex' }}>
-                <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
-                    <FormLabel component="legend">Permissions</FormLabel>
-                    <FormGroup>
-                    <FormControlLabel
-                        control={
-                        <Checkbox checked={gilad} onChange={handleChange} name="gilad" />
-                        }
-                        label="Store List"
-                    />
-
-
-                    <FormControlLabel
-                        control={
-                        <Checkbox checked={gilad} onChange={handleChange} name="gilad" />
-                        }
-                        label="Store Edit"
-                    />
-
-
-                    <FormControlLabel
-                        control={
-                        <Checkbox checked={gilad} onChange={handleChange} name="gilad" />
-                        }
-                        label="Store Status"
-                    />
-
-                    <FormControlLabel
-                        control={
-                        <Checkbox checked={gilad} onChange={handleChange} name="gilad" />
-                        }
-                        label="Store Delete"
-                    />
-
-                    </FormGroup>
-                </FormControl>
-
-
-
-                <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
-                    <FormLabel component="legend">Users</FormLabel>
-                    <FormGroup>
-                    <FormControlLabel
-                        control={
-                        <Checkbox checked={gilad} onChange={handleChange} name="gilad" />
-                        }
-                        label="User List"
-                    />
-
-
-                    <FormControlLabel
-                        control={
-                        <Checkbox checked={gilad} onChange={handleChange} name="gilad" />
-                        }
-                        label="User Edit"
-                    />
-
-
-                    <FormControlLabel
-                        control={
-                        <Checkbox checked={gilad} onChange={handleChange} name="gilad" />
-                        }
-                        label="User Status"
-                    />
-
-                    <FormControlLabel
-                        control={
-                        <Checkbox checked={gilad} onChange={handleChange} name="gilad" />
-                        }
-                        label="User Delete"
-                    />
-
-                    </FormGroup>
-                </FormControl>
-
-
+          <Box sx={{ display: 'flex' }}>
+                {Object.keys(permissions).map(element => {
+                return (<FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+                    <FormLabel component="legend">{element}</FormLabel>
+                    {console.log(permissions[element][0].permission)}
+                    {<FormGroup>
+                      {console.log(permissions[element])}
+                      {permissions[element].map((item)=>{
+                       return( <FormControlLabel
+                          control={
+                            <Checkbox checked={gilad} onChange={handleChange} name="gilad" />
+                          }
+                         label={item.permission}
+                        />)
+                      })}
+                    </FormGroup>}
+                </FormControl>)
+                })}
                
             </Box>
             </Stack>
