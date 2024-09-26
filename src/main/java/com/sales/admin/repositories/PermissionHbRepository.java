@@ -24,7 +24,9 @@ public class PermissionHbRepository {
         Query query = entityManager.createQuery(hql);
         query.setParameter("name", groupDto.getName());
         query.setParameter("slug",groupDto.getSlug());
-        updatePermissions(groupId,groupDto.getPermissions());
+        List<Integer> permissions = groupDto.getPermissions();
+        if(permissions.size() > 0)
+        updatePermissions(groupId,permissions);
         return query.executeUpdate();
     }
 

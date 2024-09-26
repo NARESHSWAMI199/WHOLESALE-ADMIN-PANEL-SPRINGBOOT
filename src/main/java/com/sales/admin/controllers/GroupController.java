@@ -55,7 +55,7 @@ public class GroupController extends ServiceContainer {
             responseObj.put("res", groupPermission);
             responseObj.put("status", 200);
         } else {
-            responseObj.put("message", "Please check you parameters not a valid request.");
+            responseObj.put("message", "There is no permission at this time.");
             responseObj.put("status", 400);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
