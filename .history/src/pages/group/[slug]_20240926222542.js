@@ -118,9 +118,6 @@ const Page = ()=> {
     //console.log(givenPermissions)
   }
 
-  const changeName = (event) =>{
-    setGroup((perviouse) => ({...perviouse, group : event.target.value}))
-  }
 
   const handleChange = (event) => {
 
@@ -182,7 +179,6 @@ const handleClose = () => {
                           fullWidth
                           placeholder="Group Name"
                           name='groupName'
-                          onChange={changeName}
                           value={group.group}
                           startAdornment={(
                           <InputAdornment position="start" >

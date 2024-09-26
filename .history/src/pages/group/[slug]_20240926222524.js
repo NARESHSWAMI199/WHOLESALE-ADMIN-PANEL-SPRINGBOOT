@@ -106,11 +106,7 @@ const Page = ()=> {
         (permissions[key].map((permission) => allPermission.push(permission.id))
       )})
       setGivenPermissions(allPermission)
-      //setGivenPermissions([...(permissions.permissions)])
-      setCheckAll(true)
     }else{
-      //setGivenPermissions([...(permissions.permissions)])
-      setCheckAll(false)
       setGivenPermissions([])
     }
 
@@ -118,9 +114,6 @@ const Page = ()=> {
     //console.log(givenPermissions)
   }
 
-  const changeName = (event) =>{
-    setGroup((perviouse) => ({...perviouse, group : event.target.value}))
-  }
 
   const handleChange = (event) => {
 
@@ -182,7 +175,6 @@ const handleClose = () => {
                           fullWidth
                           placeholder="Group Name"
                           name='groupName'
-                          onChange={changeName}
                           value={group.group}
                           startAdornment={(
                           <InputAdornment position="start" >

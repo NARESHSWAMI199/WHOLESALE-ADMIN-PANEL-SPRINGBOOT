@@ -6,24 +6,23 @@ import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import { BasicHeaders } from 'src/sections/basic-header';
-import axios, { all } from 'axios';
+import axios from 'axios';
 import { useAuth } from 'src/hooks/use-auth';
 import { host } from 'src/utils/util';
 import { useRouter } from 'next/router';
 
 const Page = ()=> {
 
+
+  
   const [flag,setFlag] = useState('warning')
   const [open,setOpen] = useState(false)
   const [message,setMessage] = useState("")
   const [permissions, setPermissions] = useState({})
-  const [group , setGroup] = useState({})
   const [givenPermissions, setGivenPermissions] = useState([])
-  const [checkAll,setCheckAll] = useState(false)
   let permissionsIds = []
   const auth = useAuth();
-  const router = useRouter()
-  const {slug} = router.query
+
 
 
   useEffect(() => {
@@ -38,32 +37,36 @@ const Page = ()=> {
         setPermissions(response)
       })
       .catch(err => {
-        setFlag("error")
         setMessage(!!err.response  ? err.response.data.message : err.message)
+        setFlag("error")
         setOpen(true)
       })
       // end here.
 
-
-      
-    // Get detailed permmission 
-    axios.get(host + "/group/detail/"+slug)
-    .then(res => {
-      let response = res.data.res;
-      setGroup(response)
-      permissionsIds = permissionsIds.concat(response.permissions)
-      setGivenPermissions(response.permissions)
-    })
-    .catch(err => {
-      setMessage(!!err.response  ? err.response.data.message : err.message)
-      setFlag("error")
-      setOpen(true)
-    })
-    // end here.
-
-
   }, [])
 
+
+  const allowAll = (event) => {
+    let isChecked = event.target.checked
+    let allPermission = []
+    if (isChecked) {
+      Object.keys(permissions).map((key) => {
+        //allPermission = [...allPermission, ...permissions[key].permission]
+        (permissions[key].map((permission) => allPermission.push(permission.id))
+        )
+      })
+      setGivenPermissions(allPermission)
+      //setGivenPermissions([...(permissions.permissions)])
+      setCheckAll(true)
+    } else {
+      //setGivenPermissions([...(permissions.permissions)])
+      setCheckAll(false)
+      setGivenPermissions([])
+    }
+
+
+    //console.log(givenPermissions)
+  }
 
 
   const createGroup = (event) =>{
@@ -72,7 +75,6 @@ const Page = ()=> {
     let formData = new FormData(form)
     
     let data = {
-      slug : slug,
       name : formData.get("groupName"),
       permissions : givenPermissions
 
@@ -97,43 +99,18 @@ const Page = ()=> {
 
 
 
-  const allowAll = (event) =>{
-    let isChecked = event.target.checked
-    let allPermission = []
-    if(isChecked){
-      Object.keys(permissions).map((key)=>{
-        //allPermission = [...allPermission, ...permissions[key].permission]
-        (permissions[key].map((permission) => allPermission.push(permission.id))
-      )})
-      setGivenPermissions(allPermission)
-      //setGivenPermissions([...(permissions.permissions)])
-      setCheckAll(true)
-    }else{
-      //setGivenPermissions([...(permissions.permissions)])
-      setCheckAll(false)
-      setGivenPermissions([])
-    }
-
-
-    //console.log(givenPermissions)
-  }
-
-  const changeName = (event) =>{
-    setGroup((perviouse) => ({...perviouse, group : event.target.value}))
-  }
-
   const handleChange = (event) => {
 
     const permissionId =  event.target.name
     let isChecked =  event.target.checked
- if(isChecked){
-      setGivenPermissions((perviouse)=>[...perviouse,parseInt(permissionId)])
+    if(isChecked){
+      setGivenPermissions([...givenPermissions,parseInt(permissionId)])
     }else {
-      setGivenPermissions((perviouse)=>perviouse.filter((item)=> item != parseInt(permissionId)))
+      setGivenPermissions(givenPermissions.filter((item)=> item != parseInt(permissionId)))
     } 
 
+    console.log(permissionsIds)
 
-    console.log(givenPermissions)
   };
 
 
@@ -173,40 +150,29 @@ const handleClose = () => {
           
           <form onSubmit={(e)=>createGroup(e)}>
           <Stack spacing={3}>
-          <BasicHeaders  headerTitle={"Edit Group Permissions"}/>
-          <Grid spacing={3}>
+          <BasicHeaders  headerTitle={"Create Group"}/>
+
           {/* Group input */}
-                <Grid xs={2}>
-                  <OutlinedInput
-                          defaultValue=""
-                          fullWidth
-                          placeholder="Group Name"
-                          name='groupName'
-                          onChange={changeName}
-                          value={group.group}
-                          startAdornment={(
-                          <InputAdornment position="start" >
-                              
-                              <WorkspacePremiumIcon
-                              color="action"
-                              fontSize="small"
-                              >
-                              <MagnifyingGlassIcon />
-                              </WorkspacePremiumIcon>
-                          </InputAdornment>
-                          )}
-                          sx={{ maxWidth: 540 }}
-                      />
-  
+            <OutlinedInput
+                    defaultValue=""
+                    fullWidth
+                    placeholder="Group Name"
+                    name='groupName'
+                    startAdornment={(
+                    <InputAdornment position="start" >
+                        
+                        <WorkspacePremiumIcon
+                        color="action"
+                        fontSize="small"
+                        >
+                        <MagnifyingGlassIcon />
+                        </WorkspacePremiumIcon>
+                    </InputAdornment>
+                    )}
+                    sx={{ maxWidth: 540 }}
+                />
                 {/* end here... */}
-     
-                  <FormControlLabel sx={{mx:5}}
-                    control={
-                      <Checkbox checked={checkAll} onChange={allowAll} name={0} />
-                    }
-                    label={"All Permissions"}/>
-                </Grid>
-              </Grid>
+
           {/* permissions */}
           <Grid container spacing={3}>
                 {Object.keys(permissions).map(element => {
@@ -217,7 +183,7 @@ const handleClose = () => {
                       {permissions[element].map((item)=>{
                        return( <FormControlLabel
                           control={
-                            <Checkbox checked={givenPermissions.includes(item.id) || checkAll} onChange={handleChange} name={item.id} />
+                            <Checkbox checked={givenPermissions.includes(item.id)} onChange={handleChange} name={item.id} />
                           }
                          label={item.permission}
                         />)

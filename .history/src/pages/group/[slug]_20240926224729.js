@@ -119,7 +119,7 @@ const Page = ()=> {
   }
 
   const changeName = (event) =>{
-    setGroup((perviouse) => ({...perviouse, group : event.target.value}))
+    setGroup ((perviouse) => ({... event.target.value})
   }
 
   const handleChange = (event) => {

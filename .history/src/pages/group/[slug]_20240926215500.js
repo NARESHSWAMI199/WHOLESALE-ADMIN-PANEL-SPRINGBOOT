@@ -6,7 +6,7 @@ import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import { BasicHeaders } from 'src/sections/basic-header';
-import axios, { all } from 'axios';
+import axios from 'axios';
 import { useAuth } from 'src/hooks/use-auth';
 import { host } from 'src/utils/util';
 import { useRouter } from 'next/router';
@@ -97,43 +97,21 @@ const Page = ()=> {
 
 
 
-  const allowAll = (event) =>{
-    let isChecked = event.target.checked
-    let allPermission = []
-    if(isChecked){
-      Object.keys(permissions).map((key)=>{
-        //allPermission = [...allPermission, ...permissions[key].permission]
-        (permissions[key].map((permission) => allPermission.push(permission.id))
-      )})
-      setGivenPermissions(allPermission)
-      //setGivenPermissions([...(permissions.permissions)])
-      setCheckAll(true)
-    }else{
-      //setGivenPermissions([...(permissions.permissions)])
-      setCheckAll(false)
-      setGivenPermissions([])
-    }
-
-
-    //console.log(givenPermissions)
-  }
-
-  const changeName = (event) =>{
-    setGroup((perviouse) => ({...perviouse, group : event.target.value}))
-  }
-
   const handleChange = (event) => {
 
     const permissionId =  event.target.name
     let isChecked =  event.target.checked
- if(isChecked){
+    if(permissionId ==0){
+      //setGivenPermissions([...(permissions.permissions)])
+      setCheckAll(true)
+    }else if(isChecked){
       setGivenPermissions((perviouse)=>[...perviouse,parseInt(permissionId)])
     }else {
       setGivenPermissions((perviouse)=>perviouse.filter((item)=> item != parseInt(permissionId)))
     } 
 
-
     console.log(givenPermissions)
+
   };
 
 
@@ -182,7 +160,6 @@ const handleClose = () => {
                           fullWidth
                           placeholder="Group Name"
                           name='groupName'
-                          onChange={changeName}
                           value={group.group}
                           startAdornment={(
                           <InputAdornment position="start" >
@@ -202,7 +179,7 @@ const handleClose = () => {
      
                   <FormControlLabel sx={{mx:5}}
                     control={
-                      <Checkbox checked={checkAll} onChange={allowAll} name={0} />
+                      <Checkbox checked={checkAll} onChange={handleChange} name={0} />
                     }
                     label={"All Permissions"}/>
                 </Grid>
