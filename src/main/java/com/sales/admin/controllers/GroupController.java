@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ public class GroupController extends ServiceContainer {
 
 
 
+    @Transactional
     @PostMapping(value = {"create", "update"})
     public ResponseEntity<Map<String,Object>> createOrUpdate(HttpServletRequest request, @RequestBody GroupDto groupDto){
         User loggedUser =  (User)request.getAttribute("user");
@@ -59,5 +61,20 @@ public class GroupController extends ServiceContainer {
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
+
+    @Transactional
+    @GetMapping("/delete/{slug}")
+    public ResponseEntity<Map<String, Object>> deleteGroupBySlug(@PathVariable String slug) {
+        Map<String,Object> responseObj = new HashMap<>();
+        int isUpdated = groupService.deleteGroupBySlug(slug);
+        if (isUpdated > 0) {
+            responseObj.put("message", "User has been successfully deleted.");
+            responseObj.put("status", 200);
+        } else {
+            responseObj.put("message", "There is nothing to delete. recheck you parameters");
+            responseObj.put("status", 400);
+        }
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+    }
 
 }

@@ -9,7 +9,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,29 +36,36 @@ public class GroupService extends RepoContainer {
     }
 
 
+    @Transactional
     public Map<String,Object> createOrUpdateGroup(GroupDto groupDto, User loggededUser) {
         Map<String,Object> responseObject = new HashMap<>();
-        if (groupDto.getSlug() != null && !groupDto.getSlug().trim().equals("")) {
-            int isUpdated =  permissionHbRepository.updateGroup(groupDto);
-            if (isUpdated > 0){
-                responseObject.put("message" , "The group has been updated successfully.");
-                responseObject.put("status" , 201);
-            }else{
-                responseObject.put("message" , "Something went wrong during update "+groupDto.getName()+" group.");
-                responseObject.put("status" , 400);
+        try {
+            if (groupDto.getSlug() != null && !groupDto.getSlug().trim().equals("")) {
+                Group group = groupRepository.findGroupBySlug(groupDto.getSlug());
+                int isUpdated = permissionHbRepository.updateGroup(groupDto, group.getId());
+                if (isUpdated > 0) {
+                    responseObject.put("message", "The group has been updated successfully.");
+                    responseObject.put("status", 201);
+                } else {
+                    responseObject.put("message", "Something went wrong during update " + groupDto.getName() + " group.");
+                    responseObject.put("status", 400);
+                }
+            } else {
+                Group group = new Group(loggededUser);
+                group.setName(groupDto.getName());
+                Group insertedGroup = groupRepository.save(group);
+                if (insertedGroup.getId() > 0) {
+                    permissionHbRepository.updatePermissions(insertedGroup.getId(), groupDto.getPermissions());
+                    responseObject.put("message", groupDto.getName() + " successfully created.");
+                    responseObject.put("status", 200);
+                } else {
+                    responseObject.put("message", "Something went wrong during create " + groupDto.getName() + " group.");
+                    responseObject.put("status", 400);
+                }
             }
-        }else {
-            Group group = new Group(loggededUser);
-            group.setName(groupDto.getName());
-            Group insertedGroup =  groupRepository.save(group);
-            if (insertedGroup.getId() > 0){
-                permissionHbRepository.updatePermissions(insertedGroup.getId(),groupDto.getPermissions());
-                responseObject.put("message" , groupDto.getName()+" successfully created.");
-                responseObject.put("status" , 200);
-            }else{
-                responseObject.put("message" , "Something went wrong during create "+groupDto.getName()+" group.");
-                responseObject.put("status" , 400);
-            }
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            throw e;
         }
         return responseObject;
     }
@@ -67,12 +76,9 @@ public class GroupService extends RepoContainer {
         if(group == null) return null;
         List<Map<String,Object>> groupWithPermission =  permissionRepository.getGroupPermissionByGroupId(group.getId());
         Map<String,Object> formattedGroup = null;
-        List<Map<String,Object>> permissionList = new ArrayList<Map<String,Object>>();
+        List<Integer> permissionList = new ArrayList<>();
         for (Map<String, Object> map : groupWithPermission) {
-            Map<String,Object> permissionData = new HashMap<String,Object>();
-            permissionData.put("permission" ,map.get("permission"));
-            permissionData.put("id" ,map.get("id"));
-            permissionList.add(permissionData);
+            permissionList.add((Integer) map.get("id"));
         }
         if(permissionList.size() > 0){
             formattedGroup = new HashMap<String,Object>();
@@ -100,6 +106,12 @@ public class GroupService extends RepoContainer {
       }
       return formattedPermissions;
     }
+
+    public int deleteGroupBySlug(String slug){
+        return permissionHbRepository.deleteGroupBySlug(slug);
+    }
+
+
 
 
 }
