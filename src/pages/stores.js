@@ -29,7 +29,7 @@ const Page = () => {
   const [error,setErrors] = useState("")
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [stores,setStores] = useState([{}])
+  const [stores,setStores] = useState([])
   const[deleted , setDeleted] = useState(false)
   
   const [data,setData] = useState({
@@ -61,31 +61,6 @@ const Page = () => {
    },[data,page,rowsPerPage])
 
 
-
-  const onStatusChange = (slug,status) => {
-    axios.defaults.headers = {
-      Authorization :  auth.token  
-    }
-    axios.post(host+`/admin/store/status`,{
-      slug : slug,
-      status : status
-    })
-    .then(res => {
-      if (status === "A") {
-        setFlag("success")
-        setMessage("Successfully activated.")
-      }else {
-        setFlag("warning")
-        setMessage("Successfully deactivated.")
-      }
-      setOpen(true)
-    }).catch(err => {
-      console.log(err)
-      setFlag("error")
-      setMessage(!!err.response ? err.response.data.message : err.message)
-      setOpen(true)
-    } )
-  }
   
 
   const udpateDeltedStore = (slug)=>{
@@ -107,7 +82,7 @@ const Page = () => {
         udpateDeltedStore(slug)
     }).catch(err => {
       console.log(err)
-      setMessage(err.message)
+      setMessage(!!err.response ? err.response.data.message : err.message)
       setFlag("error")
       setOpen(true)
     } )
@@ -176,9 +151,8 @@ const Page = () => {
             <CustomerHeaders  headerTitle={"All Store"}/>
             <BasicSearch onSearch={onSearch} />
 
-          {stores.length > 0 && stores.map((store,i) =>{
+          {stores.map((store,i) =>{
              return(<StoresCard key={i} 
-              updateStatus={onStatusChange}
               deleteStore={onDelete}
               store={store}  />)
           } ) }

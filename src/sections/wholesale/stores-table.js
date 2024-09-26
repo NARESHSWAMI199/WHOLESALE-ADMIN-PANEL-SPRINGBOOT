@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Rating, useMediaQuery } from '@mui/material';
+import { Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Rating, Snackbar, useMediaQuery } from '@mui/material';
 import { Button } from 'antd';
 import { bgcolor, color } from '@mui/system';
 import { bg } from 'date-fns/locale';
@@ -20,6 +20,9 @@ import { useEffect } from 'react';
 
 import { format } from 'date-fns';
 import Link from 'next/link';
+import axios from 'axios';
+import { useAuth } from 'src/hooks/use-auth';
+import { host } from 'src/utils/util';
 
 export const StoresCard = (props) => {
   const [store , setStore] = useState(props.store)
@@ -28,6 +31,11 @@ export const StoresCard = (props) => {
   const [slug , setSlug] = useState(store.slug)
   const [status , setStatus] = useState(store.status)
   const [confrim , setConfirm] = useState(false)
+
+  const [flag, setFlag] = useState("warning")
+  const [open,setOpen] = useState()
+  
+  const auth = useAuth()
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -46,8 +54,31 @@ export const StoresCard = (props) => {
     return "____"
   }
 
-  const updateStatus = (slug,status) =>{
-    props.updateStatus(slug,status)
+
+  const updateStatus = (slug,status) => {
+    axios.defaults.headers = {
+      Authorization :  auth.token  
+    }
+    axios.post(host+`/admin/store/status`,{
+      slug : slug,
+      status : status
+    })
+    .then(res => {
+      if (status === "A") {
+        setFlag("success")
+        setMessage("Successfully activated.")
+      }else {
+        setFlag("warning")
+        setMessage("Successfully deactivated.")
+      }
+      setOpen(true)
+      setStatus(status)
+    }).catch(err => {
+      console.log(err)
+      setFlag("error")
+      setMessage(!!err.response ? err.response.data.message : err.message)
+      setOpen(true)
+    } )
   }
 
   const confirmBox = () =>{
@@ -67,7 +98,6 @@ export const StoresCard = (props) => {
 
 
   return (<>
-  {!!store.storeName &&
     <Card sx={{ display: 'flex', paddingRight : 5 }}>
         {/* Wholesale image */}
         <CardMedia
@@ -128,7 +158,6 @@ export const StoresCard = (props) => {
         { status !== 'A' ?
         <Button  type='primary' variant="outlined" icon={<CheckCircleOutlined />} style={{background:'#5cb85c'}} onClick={(e)=> {
                           setMessage("We are going to activate this store.")
-                          setStatus("A")
                           updateStatus(store.slug,"A")
 
                         }} >
@@ -137,7 +166,6 @@ export const StoresCard = (props) => {
         :
         <Button  type='primary' variant="outlined" icon={<CheckCircleOutlined />} onClick={(e)=> {
                           setMessage("We are going to deactivate this store.")
-                          setStatus("D")
                           updateStatus(store.slug,"D")
                         }} style={{background:'#ffc107', color : "black"}}>
             Deactive
@@ -165,9 +193,6 @@ export const StoresCard = (props) => {
         </Button>
       </Box>
     </Card>
-
-
-}
       
     <Dialog
       fullScreen={fullScreen}
@@ -192,6 +217,19 @@ export const StoresCard = (props) => {
         </Button>
       </DialogActions>
     </Dialog>
+
+
+
+
+    <Snackbar anchorOrigin={{ vertical : 'top', horizontal : 'right' }}
+        open={open}
+        onClose={handleClose}
+        key={'top' + 'right'}
+      >
+     <Alert onClose={handleClose} severity={flag} sx={{ width: '100%' }}>
+        {message}
+    </Alert>
+    </Snackbar>
 
 </>
 
