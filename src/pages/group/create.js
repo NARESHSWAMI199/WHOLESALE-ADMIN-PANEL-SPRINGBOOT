@@ -12,23 +12,17 @@ import { host } from 'src/utils/util';
 import { useRouter } from 'next/router';
 
 const Page = ()=> {
-  const [state, setState] = useState({
-    isChecked: true,
-    jason: false,
-    antoine: false,
-  });
+
 
   
   const [flag,setFlag] = useState('warning')
   const [open,setOpen] = useState(false)
   const [message,setMessage] = useState("")
   const [permissions, setPermissions] = useState({})
-  const [group , setGroup] = useState({})
   const [givenPermissions, setGivenPermissions] = useState([])
   let permissionsIds = []
   const auth = useAuth();
-  const router = useRouter()
-  const {slug} = router.query
+
 
 
   useEffect(() => {
@@ -49,24 +43,6 @@ const Page = ()=> {
       })
       // end here.
 
-
-      
-    // Get detailed permmission 
-    axios.get(host + "/group/detail/"+slug)
-    .then(res => {
-      let response = res.data.res;
-      setGroup(response)
-      permissionsIds = permissionsIds.concat(response.permissions)
-      setGivenPermissions(response.permissions)
-    })
-    .catch(err => {
-      setMessage(!!err.response  ? err.response.data.messsage : err.message)
-      setFlag("error")
-      setOpen(true)
-    })
-    // end here.
-
-
   }, [])
 
 
@@ -77,7 +53,6 @@ const Page = ()=> {
     let formData = new FormData(form)
     
     let data = {
-      slug : slug,
       name : formData.get("groupName"),
       permissions : givenPermissions
 
@@ -107,9 +82,9 @@ const Page = ()=> {
     const permissionId =  event.target.name
     let isChecked =  event.target.checked
     if(isChecked){
-      setGivenPermissions((perviouse)=>[...perviouse,parseInt(permissionId)])
+      setGivenPermissions([...givenPermissions,parseInt(permissionId)])
     }else {
-      setGivenPermissions((perviouse)=>perviouse.filter((item)=> item != parseInt(permissionId)))
+      setGivenPermissions(givenPermissions.filter((item)=> item != parseInt(permissionId)))
     } 
 
     console.log(permissionsIds)
@@ -153,7 +128,7 @@ const handleClose = () => {
           
           <form onSubmit={(e)=>createGroup(e)}>
           <Stack spacing={3}>
-          <BasicHeaders  headerTitle={"Edit Group Permissions"}/>
+          <BasicHeaders  headerTitle={"Create Group"}/>
 
           {/* Group input */}
             <OutlinedInput
@@ -161,7 +136,6 @@ const handleClose = () => {
                     fullWidth
                     placeholder="Group Name"
                     name='groupName'
-                    value={group.group}
                     startAdornment={(
                     <InputAdornment position="start" >
                         

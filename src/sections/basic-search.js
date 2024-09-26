@@ -7,7 +7,7 @@ import KeyIcon from '@mui/icons-material/Key';
 export const BasicSearch = (props) => {
 
   const previousDate = format(new Date().getTime()-(10 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd')
-  const currentDate = format(new Date().getTime(), 'yyyy-MM-dd')
+  const currentDate = format(new Date().getTime()+(24 * 60 * 60 * 1000), 'yyyy-MM-dd')
 
 
 

@@ -13,6 +13,9 @@ import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
 import { Card, InputAdornment, OutlinedInput } from '@mui/material';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
 import { GroupTable } from 'src/sections/groups/groups-table';
+import { BasicHeaders } from 'src/sections/basic-header';
+import Link from 'next/link';
+import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
 
 
 
@@ -133,6 +136,7 @@ const Page = () => {
   );
 
 
+
   const onSearch = (searchData) => {
     setData({
       ...data,
@@ -166,8 +170,33 @@ const Page = () => {
       >
         <Container maxWidth="xl">
           <Stack spacing={3}>
-          <CustomerHeaders  headerTitle={"All Groups"}/>
-          <BasicSearch  onSearch={onSearch} />
+                   
+          <Stack
+              direction="row"
+              justifyContent="space-between"
+              spacing={4}
+            >
+          <BasicHeaders  headerTitle={"All Groups"}/>
+          <div>
+              <Link
+                    href={{
+                        pathname: '/group/create',
+                      }}
+                    >
+                <Button
+                  startIcon={(
+                    <SvgIcon fontSize="small">
+                      <PlusIcon />
+                    </SvgIcon>
+                  )}
+                  variant="contained"
+                >
+                  Add
+                </Button>
+                </Link>
+              </div>
+            </Stack>
+          <BasicSearch  onSearch={onSearch} type="G" />
 
             <GroupTable
               count={totalElements}

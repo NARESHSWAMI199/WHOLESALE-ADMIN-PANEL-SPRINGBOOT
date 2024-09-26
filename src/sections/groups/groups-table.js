@@ -207,7 +207,7 @@ export const GroupTable = (props) => {
                         } }  titleAccess='delete' onClick={(e)=>{
                           setSlug(group.slug)
                           setRowIndex(index)
-                          setMessage("We are going to delete this group if group type is wholesaler then user's store will also delete. if you agree press agree otherwise press disagree.")
+                          setMessage("We are going to delete this group. if you agree press agree otherwise press disagree.")
                           setAction("delete")
                           confirmBox()
                           }} />

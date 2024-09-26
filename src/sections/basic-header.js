@@ -12,37 +12,14 @@ const exp = require("constants")
 export function BasicHeaders(props){
     return (
         <>
-        
-        <Stack
-              direction="row"
-              justifyContent="space-between"
-              spacing={4}
-            >
+ 
               <Stack spacing={1}>
                 <Typography variant="h4">
                   {props.headerTitle}
                 </Typography>
                 
               </Stack>
-              <div>
-              <Link
-                    href={{
-                        pathname: '/users/create',
-                      }}
-                    >
-                <Button
-                  startIcon={(
-                    <SvgIcon fontSize="small">
-                      <PlusIcon />
-                    </SvgIcon>
-                  )}
-                  variant="contained"
-                >
-                  Add
-                </Button>
-                </Link>
-              </div>
-            </Stack>
+        
         </>
     )
 }
