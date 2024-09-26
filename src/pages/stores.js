@@ -176,7 +176,7 @@ const Page = () => {
             <CustomerHeaders  headerTitle={"All Store"}/>
             <BasicSearch onSearch={onSearch} />
 
-          { stores.map((store,i) =>{
+          {stores.length > 0 && stores.map((store,i) =>{
              return(<StoresCard key={i} 
               updateStatus={onStatusChange}
               deleteStore={onDelete}

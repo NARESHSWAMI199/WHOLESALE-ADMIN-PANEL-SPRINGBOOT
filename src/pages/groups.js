@@ -94,7 +94,7 @@ const Page = () => {
 
 
   
-  const onDelete = (slug) => {
+  const onDelete = (slug,rowIndex) => {
     axios.defaults.headers = {
       Authorization :  auth.token  
     }
@@ -104,12 +104,14 @@ const Page = () => {
         setMessage(res.data.message)
         setDeleted(true)
         setOpen(true)
+        setCustomers((items) =>items.filter((_, index) => index !== rowIndex));
     }).catch(err => {
       console.log(err)
       setFlag("error")
       setMessage(!!err.response ? err.response.data.message : err.message)
       setOpen(true)
     } )
+
   }
   
 

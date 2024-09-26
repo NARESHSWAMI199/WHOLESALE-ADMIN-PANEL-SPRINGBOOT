@@ -43,8 +43,8 @@ const Page = ()=> {
         setPermissions(response)
       })
       .catch(err => {
-        setMessage(!!err.response  ? err.response.data.messsage : err.message)
         setFlag("error")
+        setMessage(!!err.response  ? err.response.data.message : err.message)
         setOpen(true)
       })
       // end here.
@@ -60,7 +60,7 @@ const Page = ()=> {
       setGivenPermissions(response.permissions)
     })
     .catch(err => {
-      setMessage(!!err.response  ? err.response.data.messsage : err.message)
+      setMessage(!!err.response  ? err.response.data.message : err.message)
       setFlag("error")
       setOpen(true)
     })
@@ -94,7 +94,7 @@ const Page = ()=> {
         setOpen(true)
       })
       .catch(err => {
-        setMessage(!!err.response  ? err.response.data.messsage : err.message)
+        setMessage(!!err.response  ? err.response.data.message : err.message)
         setFlag("error")
         setOpen(true)
       })

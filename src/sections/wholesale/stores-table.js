@@ -67,6 +67,7 @@ export const StoresCard = (props) => {
 
 
   return (<>
+  {!!store.storeName &&
     <Card sx={{ display: 'flex', paddingRight : 5 }}>
         {/* Wholesale image */}
         <CardMedia
@@ -166,7 +167,7 @@ export const StoresCard = (props) => {
     </Card>
 
 
-
+}
       
     <Dialog
       fullScreen={fullScreen}

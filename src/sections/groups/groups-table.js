@@ -63,14 +63,17 @@ export const GroupTable = (props) => {
 
 
   const changeStatus = (slug,status) => {
-    setItems((items) => {
-        items.filter((_, index) => {
-          if(_.slug === slug) return _.status = status
-          return _;
-        })
-        return items
-    });
-      props.onStatusChange(slug,status)
+    let isChanged = props.onStatusChange(slug,status)
+    if(isChanged !=false){
+      setItems((items) => {
+          items.filter((_, index) => {
+            if(_.slug === slug) return _.status = status
+            return _;
+          })
+          return items
+      });
+      }
+     
   }
 
 
@@ -88,12 +91,7 @@ export const GroupTable = (props) => {
   };
 
   const takeAction = (action) =>{
-    if (action === 'delete'){
-      setItems((items) =>items.filter((_, index) => index !== rowIndex));
-      props.onDelete(slug)
-    }else if (action == 'status'){
-      changeStatus(slug,status)
-    }
+    props.onDelete(slug,rowIndex)
     setConfirm(false)
   }
 
