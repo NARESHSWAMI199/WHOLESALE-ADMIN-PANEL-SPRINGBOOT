@@ -27,7 +27,7 @@ public class GroupController extends ServiceContainer {
     }
 
 
-    @RequestMapping("/permission/all")
+    @RequestMapping("/permissions/all")
     public ResponseEntity<Map<String,List<Object>>> getAllPermissions(){
         Map<String,List<Object>> permissions =  groupService.getAllPermissions();
         return new ResponseEntity<>(permissions, HttpStatus.OK);
