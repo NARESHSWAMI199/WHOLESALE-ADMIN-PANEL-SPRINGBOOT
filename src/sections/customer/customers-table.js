@@ -33,7 +33,7 @@ import { getInitials } from 'src/utils/get-initials';
 import React, {useEffect, useState } from 'react';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
-import { host } from 'src/utils/util';
+import { host, toTitleCase } from 'src/utils/util';
 
 
 export const CustomersTable = (props) => {
@@ -188,7 +188,7 @@ export const CustomersTable = (props) => {
                         </Avatar>
                         </Link>
                         <Typography variant="subtitle2">
-                          {customer.username}
+                          {toTitleCase(customer.username)}
                         </Typography>
                       </Stack>
                     </TableCell>

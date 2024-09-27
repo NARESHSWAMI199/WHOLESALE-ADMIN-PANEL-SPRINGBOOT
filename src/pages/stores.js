@@ -3,7 +3,7 @@ import Head from 'next/head';
 import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
 import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import {  Alert, Box, Button, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Snackbar, Stack, SvgIcon, Typography, useMediaQuery } from '@mui/material';
+import {  Alert, Box, Button, CardActions, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Snackbar, Stack, SvgIcon, Typography, useMediaQuery } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { CustomersTable } from 'src/sections/customer/customers-table';
@@ -14,6 +14,8 @@ import { host } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
 import { StoresCard } from 'src/sections/wholesale/stores-table';
+import { Divider } from 'antd';
+import { ArrowRightIcon } from '@mui/x-date-pickers';
 
 
 
@@ -117,10 +119,14 @@ const Page = () => {
       ...data,
       ...searchData
     })
-  },[] 
-  )
+  },[] )
 
-
+  const getMore = () => {
+    setData({
+      ...data,
+      size : data.size + 10
+    })
+  }
 
   return (
     <>
@@ -158,8 +164,26 @@ const Page = () => {
           } ) }
 
 
+      <CardActions sx={{ justifyContent: 'flex-end' }}>
+        <Button
+          onClick={getMore}
+          color="inherit"
+          endIcon={(
+            <SvgIcon fontSize="small">
+              <ArrowRightIcon />
+            </SvgIcon>
+          )}
+          size="small"
+          variant="text"
+        >
+          View more
+        </Button>
+      </CardActions>
           </Stack>
         </Container>
+
+
+
       </Box>
     </>
   );
