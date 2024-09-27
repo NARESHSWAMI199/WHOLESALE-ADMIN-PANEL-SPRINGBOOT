@@ -191,3 +191,62 @@ create table user_groups(
 );
 
 ```
+
+# All permissions
+
+
+```sql
+
+
+
+
+
+
+
+
+
+
+
+
+insert into permissions (`permission`,`access_url`,`permission_for`) values
+
+-- ('List','/admin/auth/all','User'),
+-- ('Create','/admin/auth/create','User'),
+-- ('Edit','/admin/auth/update','User'),
+-- ('Detail','/admin/auth/detail','User'),
+-- ('Status','/admin/auth/status','User'),
+-- ('Delete','/admin/auth/delete','User'),
+-- 
+-- ('List','/admin/store/all','Store'),
+-- ('Create','/admin/store/create','Store'),
+-- ('Edit','/admin/store/update','Store'),
+-- ('Detail','/admin/store/detail','Store'),
+-- ('Status','/admin/store/status','Store'),
+-- ('Delete','/admin/store/delete','Store'),
+-- 
+-- ('List','/admin/item/all','Item'),
+-- ('Create','/admin/item/create','Item'),
+-- ('Edit','/admin/item/update','Item'),
+-- ('Detail','/admin/item/detail','Item'),
+-- ('Status','/admin/item/status','Item'),
+-- ('Delete','/admin/item/delete','Item'),
+-- ('Stock','/admin/item/stock','Item'),
+-- 
+-- 
+-- ('List','/group/all','Group'),
+-- ('Create','/group/create','Group'),
+-- ('Edit','/group/update','Group'),
+-- ('Detail','/group/detail','Group'),
+-- ('Status','/group/status','Group'),
+-- ('Delete','/group/delete','Group'),
+-- 
+-- 
+-- ('List','/admin/permissions/all','Permissions'),
+
+ ('List','/admin/dashboard','Dashboard');
+
+
+
+
+
+```

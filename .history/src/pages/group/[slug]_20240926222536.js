@@ -109,8 +109,6 @@ const Page = ()=> {
       //setGivenPermissions([...(permissions.permissions)])
       setCheckAll(true)
     }else{
-      //setGivenPermissions([...(permissions.permissions)])
-      setCheckAll(false)
       setGivenPermissions([])
     }
 
@@ -118,9 +116,6 @@ const Page = ()=> {
     //console.log(givenPermissions)
   }
 
-  const changeName = (event) =>{
-    setGroup((perviouse) => ({...perviouse, group : event.target.value}))
-  }
 
   const handleChange = (event) => {
 
@@ -182,7 +177,6 @@ const handleClose = () => {
                           fullWidth
                           placeholder="Group Name"
                           name='groupName'
-                          onChange={changeName}
                           value={group.group}
                           startAdornment={(
                           <InputAdornment position="start" >

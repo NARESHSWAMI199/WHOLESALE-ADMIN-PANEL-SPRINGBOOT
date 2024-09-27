@@ -6,7 +6,7 @@ import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import { BasicHeaders } from 'src/sections/basic-header';
-import axios, { all } from 'axios';
+import axios from 'axios';
 import { useAuth } from 'src/hooks/use-auth';
 import { host } from 'src/utils/util';
 import { useRouter } from 'next/router';
@@ -97,43 +97,21 @@ const Page = ()=> {
 
 
 
-  const allowAll = (event) =>{
-    let isChecked = event.target.checked
-    let allPermission = []
-    if(isChecked){
-      Object.keys(permissions).map((key)=>{
-        //allPermission = [...allPermission, ...permissions[key].permission]
-        (permissions[key].map((permission) => allPermission.push(permission.id))
-      )})
-      setGivenPermissions(allPermission)
-      //setGivenPermissions([...(permissions.permissions)])
-      setCheckAll(true)
-    }else{
-      //setGivenPermissions([...(permissions.permissions)])
-      setCheckAll(false)
-      setGivenPermissions([])
-    }
-
-
-    //console.log(givenPermissions)
-  }
-
-  const changeName = (event) =>{
-    setGroup((perviouse) => ({...perviouse, group : event.target.value}))
-  }
-
   const handleChange = (event) => {
 
     const permissionId =  event.target.name
     let isChecked =  event.target.checked
- if(isChecked){
+    if(permissionId ==0){
+      setGivenPermissions([...permissions])
+      setCheckAll(true)
+    }else if(isChecked){
       setGivenPermissions((perviouse)=>[...perviouse,parseInt(permissionId)])
     }else {
       setGivenPermissions((perviouse)=>perviouse.filter((item)=> item != parseInt(permissionId)))
     } 
 
+    console.log(permissionsIds)
 
-    console.log(givenPermissions)
   };
 
 
@@ -174,41 +152,45 @@ const handleClose = () => {
           <form onSubmit={(e)=>createGroup(e)}>
           <Stack spacing={3}>
           <BasicHeaders  headerTitle={"Edit Group Permissions"}/>
-          <Grid spacing={3}>
+
           {/* Group input */}
-                <Grid xs={2}>
-                  <OutlinedInput
-                          defaultValue=""
-                          fullWidth
-                          placeholder="Group Name"
-                          name='groupName'
-                          onChange={changeName}
-                          value={group.group}
-                          startAdornment={(
-                          <InputAdornment position="start" >
-                              
-                              <WorkspacePremiumIcon
-                              color="action"
-                              fontSize="small"
-                              >
-                              <MagnifyingGlassIcon />
-                              </WorkspacePremiumIcon>
-                          </InputAdornment>
-                          )}
-                          sx={{ maxWidth: 540 }}
-                      />
-  
+            <OutlinedInput
+                    defaultValue=""
+                    fullWidth
+                    placeholder="Group Name"
+                    name='groupName'
+                    value={group.group}
+                    startAdornment={(
+                    <InputAdornment position="start" >
+                        
+                        <WorkspacePremiumIcon
+                        color="action"
+                        fontSize="small"
+                        >
+                        <MagnifyingGlassIcon />
+                        </WorkspacePremiumIcon>
+                    </InputAdornment>
+                    )}
+                    sx={{ maxWidth: 540 }}
+                />
                 {/* end here... */}
-     
-                  <FormControlLabel sx={{mx:5}}
-                    control={
-                      <Checkbox checked={checkAll} onChange={allowAll} name={0} />
-                    }
-                    label={"All Permissions"}/>
-                </Grid>
-              </Grid>
+
           {/* permissions */}
           <Grid container spacing={3}>
+
+                <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+                  <FormLabel component="legend">{element}</FormLabel>
+                  {<FormGroup>
+                   
+                      return (<FormControlLabel
+                        control={
+                          <Checkbox checked={givenPermissions.includes(item.id) || checkAll} onChange={handleChange} name={item.id} />
+                        }
+                        label={"All Permissions"}
+                      />)
+                    })}
+                  </FormGroup>}
+                </FormControl>
                 {Object.keys(permissions).map(element => {
                 return (<Grid xs={3}>
                   <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
