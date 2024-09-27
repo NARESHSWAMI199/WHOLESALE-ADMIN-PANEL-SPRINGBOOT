@@ -22,7 +22,7 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 import axios from 'axios';
 import { useAuth } from 'src/hooks/use-auth';
-import { host } from 'src/utils/util';
+import { host, toTitleCase } from 'src/utils/util';
 
 export const StoresCard = (props) => {
   const [store , setStore] = useState(props.store)
@@ -44,16 +44,6 @@ export const StoresCard = (props) => {
     setStore(props.store)
     console.log(store)
   },[props])
-
-  const toTitleCase = (str) => {
-    if (!!str)
-    return str.replace(
-      /\w\S*/g,
-      text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
-    );
-    return "____"
-  }
-
 
   const updateStatus = (slug,status) => {
     axios.defaults.headers = {

@@ -10,12 +10,14 @@ import {
   CardHeader,
   Divider,
   IconButton,
+  Link,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   SvgIcon
 } from '@mui/material';
+import { toTitleCase } from 'src/utils/util';
 
 export const OverviewLatestProducts = (props) => {
   const { products = [], sx } = props;
@@ -60,22 +62,24 @@ export const OverviewLatestProducts = (props) => {
                 }
               </ListItemAvatar>
               <ListItemText
-                primary={product.storeName}
+                primary={toTitleCase(product.storeName)}
                 primaryTypographyProps={{ variant: 'subtitle1' }}
                 secondary={`Updated ${ago} ago`}
                 secondaryTypographyProps={{ variant: 'body2' }}
               />
-              <IconButton edge="end">
+              {/* <IconButton edge="end">
                 <SvgIcon>
                   <EllipsisVerticalIcon />
                 </SvgIcon>
-              </IconButton>
+              </IconButton> */}
             </ListItem>
           );
         })}
       </List>
       <Divider />
       <CardActions sx={{ justifyContent: 'flex-end' }}>
+        <Link
+          href="/stores" >
         <Button
           color="inherit"
           endIcon={(
@@ -88,6 +92,7 @@ export const OverviewLatestProducts = (props) => {
         >
           View all
         </Button>
+        </Link>
       </CardActions>
     </Card>
   );

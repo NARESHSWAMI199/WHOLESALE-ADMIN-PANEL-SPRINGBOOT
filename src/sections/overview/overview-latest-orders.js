@@ -8,6 +8,7 @@ import {
   CardActions,
   CardHeader,
   Divider,
+  Link,
   SvgIcon,
   Table,
   TableBody,
@@ -17,6 +18,7 @@ import {
 } from '@mui/material';
 import { Scrollbar } from 'src/components/scrollbar';
 import { SeverityPill } from 'src/components/severity-pill';
+import { toTitleCase } from 'src/utils/util';
 
 const statusMap = {
   pending: 'warning',
@@ -24,8 +26,8 @@ const statusMap = {
   refunded: 'error'
 };
 
-export const OverviewLatestOrders = (props) => {
-  const { orders = [], sx } = props;
+export const OverviewLatestUsers = (props) => {
+  const { users = [], sx } = props;
 
   return (
     <Card sx={sx}>
@@ -35,11 +37,11 @@ export const OverviewLatestOrders = (props) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>
+                {/* <TableCell>
                   Order
-                </TableCell>
+                </TableCell> */}
                 <TableCell>
-                  Customer
+                  Username
                 </TableCell>
                 <TableCell sortDirection="desc">
                   Date
@@ -50,26 +52,26 @@ export const OverviewLatestOrders = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {orders.map((order) => {
-                const createdAt = format(order.createdAt, 'dd/MM/yyyy');
+              {users.map((user) => {
+                const createdAt = format(user.createdAt, 'dd/MM/yyyy');
 
                 return (
                   <TableRow
                     hover
-                    key={order.id}
+                    key={user.slug}
                   >
-                    <TableCell>
+                    {/* <TableCell>
                       {order.ref}
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell>
-                      {order.customer.name}
+                      {toTitleCase(user.username)}
                     </TableCell>
                     <TableCell>
                       {createdAt}
                     </TableCell>
                     <TableCell>
-                      <SeverityPill color={statusMap[order.status]}>
-                        {order.status}
+                      <SeverityPill color={statusMap[user.status == "A" ? "success" : "error"]}>
+                        {user.status == "A" ? "Active" : "Deactive"}
                       </SeverityPill>
                     </TableCell>
                   </TableRow>
@@ -81,6 +83,7 @@ export const OverviewLatestOrders = (props) => {
       </Scrollbar>
       <Divider />
       <CardActions sx={{ justifyContent: 'flex-end' }}>
+        <Link href="/users">
         <Button
           color="inherit"
           endIcon={(
@@ -93,12 +96,13 @@ export const OverviewLatestOrders = (props) => {
         >
           View all
         </Button>
+        </Link>
       </CardActions>
     </Card>
   );
 };
 
-OverviewLatestOrders.prototype = {
+OverviewLatestUsers.prototype = {
   orders: PropTypes.array,
   sx: PropTypes.object
 };
