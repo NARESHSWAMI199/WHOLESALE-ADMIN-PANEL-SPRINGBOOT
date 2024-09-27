@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class UserDto extends StoreDto {
@@ -17,4 +19,6 @@ public class UserDto extends StoreDto {
     private String contact="";
     private String slug;
     private MultipartFile profileImage;
+    Integer userId;
+    List<Integer> groupList;
 }

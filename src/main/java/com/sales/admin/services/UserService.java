@@ -13,12 +13,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -115,6 +117,8 @@ public class UserService extends RepoContainer {
         StoreDto storeDto = null;
         if (!Utils.isEmpty(userDto.getSlug())) {
             int isUpdated = updateUser(userDto, loggedUser);
+             Integer userId = userRepository.getUserIdBySlug(userDto.getSlug());
+             userDto.setUserId(userId);
             if (userDto.getUserType().equalsIgnoreCase("W")){
                 storeDto =  userDtoToStoreDto(userDto);
                 storeDto.setUserSlug(userDto.getSlug());
@@ -127,9 +131,10 @@ public class UserService extends RepoContainer {
                 responseObj.put("message", "nothing to updated. may be something went wrong");
                 responseObj.put("status", 400);
             }
-            return responseObj;
+           // return responseObj;
         } else {
             User updatedUser = createUser(userDto, loggedUser);
+            userDto.setUserId(updatedUser.getId());
             System.out.println(userDto.getUserType() + " : "+userDto.getUserSlug());
             if (userDto.getUserType().equalsIgnoreCase("W")){
                 storeDto =  userDtoToStoreDto(userDto);
@@ -141,9 +146,17 @@ public class UserService extends RepoContainer {
                 responseObj.put("message", "successfully inserted.");
                 responseObj.put("status", 200);
             } else {
-                responseObj.put("message", "nothing to insert. may be something went wrong");
+                responseObj.put("message", "nothing to save. may be something went wrong please contact to administrator.");
                 responseObj.put("status", 400);
             }
+        }
+
+        /** going to update user's groups */
+        int isAssigned= permissionHbRepository.assignGroupsToUser(userDto.getUserId(),userDto.getGroupList());
+        if(isAssigned < 1) {
+            responseObj.put("message", "Something went wrong during update user's groups. please contact to administrator");
+            responseObj.put("status", 400);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
         return responseObj;
     }
@@ -196,5 +209,8 @@ public class UserService extends RepoContainer {
         return matcher.matches();
     }
 
+    public List<Integer> getUserGroupsIdBySlug(String slug) {
+        return userRepository.getUserGroupsIdBySlug(slug);
+    }
 
 }

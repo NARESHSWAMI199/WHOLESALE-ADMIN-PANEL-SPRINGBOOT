@@ -23,6 +23,7 @@ import javax.transaction.Transactional;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -150,6 +151,26 @@ public class UserController extends ServiceContainer {
 
 
 
+
+
+//    @Transactional
+//    @PostMapping(value = {"group/create", "group/update"})
+//    public ResponseEntity<Map<String,Object>> assignOrRemoveGroupsToUser(HttpServletRequest request, @RequestBody UserPermissionsDto userPermissionsDto){
+//        Map<String,Object> responseObject = new HashMap<>();
+//        int isAssigned= groupService.assignGroupsToUser(userPermissionsDto);
+//        if (isAssigned > 0) {
+//            responseObject.put("message", "The group has been updated successfully.");
+//            responseObject.put("status", 201);
+//        } else {
+//            responseObject.put("message", "Something went wrong during update user groups");
+//            responseObject.put("status", 400);
+//        }
+//        return new ResponseEntity<Map<String,Object>>(responseObject, HttpStatus.valueOf((Integer) responseObject.get("status")));
+//    }
+
+
+
+
     @Value("${profile.get}")
     String filePath;
 
@@ -160,7 +181,19 @@ public class UserController extends ServiceContainer {
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
     }
 
-
+    @GetMapping("/groups/{slug}")
+    public ResponseEntity<Map<String,Object>> getUserGroupsIdsBySlug(@PathVariable String slug){
+        Map responseObj = new HashMap();
+        List<Integer> groupsIds = userService.getUserGroupsIdBySlug(slug);
+        if (groupsIds.size() > 0) {
+            responseObj.put("content", groupsIds);
+            responseObj.put("status", 200);
+        } else {
+            responseObj.put("message", "There is no groups.");
+            responseObj.put("status", 400);
+        }
+        return new ResponseEntity<Map<String,Object>>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+    }
 
 }
 

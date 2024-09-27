@@ -44,7 +44,9 @@ public class PermissionHbRepository {
     }
 
 
-    public int deleteGroupBySlug(String slug){
+    public int deleteGroupBySlug(String slug, int groupId){
+        deleteGroupPermissionByGroupId(groupId);
+        deleteGroupFromUser(groupId);
         String sql = "delete from `groups` where slug=:slug";
         Query query = entityManager.createNativeQuery(sql);
         query.setParameter("slug",slug);
@@ -58,5 +60,34 @@ public class PermissionHbRepository {
         return query.executeUpdate();
     }
 
+    public int deleteGroupFromUser(int groupId){
+        String sql = "delete from `user_permissions` where group_id = :groupId";
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter("groupId",groupId);
+        return query.executeUpdate();
+    }
+
+
+    public int deleteUserGroups(int userId){
+        String sql = "delete from `user_groups` where user_id = :userId";
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter("userId",userId);
+        return query.executeUpdate();
+    }
+
+
+
+    public int assignGroupsToUser(int userId, List<Integer> groups){
+        deleteUserGroups(userId);
+        String values = "";
+        for(int i=0; i < groups.size(); i++){
+            values +="("+userId+","+groups.get(i)+")";
+            if(i < groups.size()-1) values += ",";
+        }
+        System.out.println(values);
+        String sql = "insert into user_groups (user_id,group_id) values "+values;
+        Query query = entityManager.createNativeQuery(sql);
+        return query.executeUpdate();
+    }
 
 }

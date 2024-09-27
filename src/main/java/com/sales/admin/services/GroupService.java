@@ -3,6 +3,7 @@ package com.sales.admin.services;
 
 import com.sales.dto.GroupDto;
 import com.sales.dto.SearchFilters;
+import com.sales.dto.UserPermissionsDto;
 import com.sales.entities.Group;
 import com.sales.entities.User;
 import org.springframework.data.domain.Page;
@@ -107,11 +108,16 @@ public class GroupService extends RepoContainer {
       return formattedPermissions;
     }
 
+    @Transactional
     public int deleteGroupBySlug(String slug){
-        return permissionHbRepository.deleteGroupBySlug(slug);
+        Group group = groupRepository.findGroupBySlug(slug);
+        return permissionHbRepository.deleteGroupBySlug(slug,group.getId());
     }
 
-
+    public int assignGroupsToUser(UserPermissionsDto userPermissionsDto){
+        int userId = userPermissionsDto.getUserId();
+        return permissionHbRepository.assignGroupsToUser(userId,userPermissionsDto.getGroupList());
+    }
 
 
 }
