@@ -198,7 +198,7 @@ const Page = () => {
       >
         <Container maxWidth="xl">
           <Stack spacing={3}>
-          <CustomerHeaders  headerTitle={"Retailer"}/>
+          <CustomerHeaders  headerTitle={"Retailer"} userType="R"/>
           <BasicSearch onSearch={onSearch} />
 
             <CustomersTable

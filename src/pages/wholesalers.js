@@ -192,7 +192,7 @@ const Page = () => {
         <Container maxWidth="xl">
           <Stack spacing={3}>
         
-          <CustomerHeaders  headerTitle={"Wholesalers"}/>
+          <CustomerHeaders  headerTitle={"Wholesalers"} userType="W" />
             <BasicSearch  onSearch={onSearch} />
 
              <CustomersTable

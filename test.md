@@ -198,16 +198,7 @@ create table user_groups(
 ```sql
 
 
-
-
-
-
-
-
-
-
-
-
+       
 insert into permissions (`permission`,`access_url`,`permission_for`) values
 
 -- ('List','/admin/auth/all','User'),
@@ -242,11 +233,11 @@ insert into permissions (`permission`,`access_url`,`permission_for`) values
 -- 
 -- 
 -- ('List','/admin/permissions/all','Permissions'),
-
- ('List','/admin/dashboard','Dashboard');
-
-
-
+-- 
+--  ('List','/admin/dashboard','Dashboard'),    
+    ('City List','/admin/address/city','Address'),
+    ('State List','/admin/address/state','Address');
+       
 
 
 ```

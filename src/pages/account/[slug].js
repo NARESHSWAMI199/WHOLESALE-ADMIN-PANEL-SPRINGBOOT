@@ -22,7 +22,58 @@ const Page = () => {
     const auth = useAuth()
     const [user,setUser] = useState({})
     const [content, setContent] = useState(user)
+    const [groups,setGroups] = useState([])
+    const [assignGroup , setAssignGroup] = useState([])
+    const [data,setData] = useState({
+      pageNumber : 0,
+      size : 1000000
+    })
 
+
+
+
+    useEffect( ()=>{
+      const getData = async () => {
+         axios.defaults.headers = {
+           Authorization : auth.token
+         }
+         await axios.get(host+"/admin/auth/groups/"+slug)
+         .then(res => {
+            const data = res.data.content;
+             setAssignGroup(data);
+             console.log(data)
+         })
+         .catch(err => {
+           setFlag("error")
+           setMessage(!!err.response ? err.response.data.message : err.message)
+           setOpen(true)
+         } )
+       }
+      getData();
+  
+     },[data])
+
+
+    useEffect( ()=>{
+      const getData = async () => {
+         axios.defaults.headers = {
+           Authorization : auth.token
+         }
+         await axios.post(host+"/group/all",data)
+         .then(res => {
+            const data = res.data.content;
+             setGroups(data);
+         })
+         .catch(err => {
+           //setErrors(err.message)
+           setFlag("error")
+           setMessage(!!err.response ? err.response.data.message : err.message)
+           setOpen(true)
+         } )
+       }
+      getData();
+  
+     },[data])
 
 
     useEffect(()=>{
@@ -121,7 +172,7 @@ const Page = () => {
                   md={6}
                   lg={8}
                 >
-                 <AccountProfileDetails user={content} updateProfile={updateProfile} /> 
+                 <AccountProfileDetails user={content} updateProfile={updateProfile} assignGroup={assignGroup} groups={groups} /> 
                 </Grid>
               </Grid>
             </div>

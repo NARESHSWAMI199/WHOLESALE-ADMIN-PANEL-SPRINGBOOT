@@ -6,7 +6,7 @@ import { AccountProfileDetails } from 'src/sections/account/account-profile-deta
 import axios from 'axios';
 import { useAuth } from 'src/hooks/use-auth';
 import { host } from 'src/utils/util';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const Page = () => { 
 
@@ -18,6 +18,64 @@ const Page = () => {
     const auth = useAuth()
     const [content, setContent] = useState(auth.user)
     const user = auth.user
+    const [groups,setGroups] = useState([])
+    const [assignGroup , setAssignGroup] = useState([])
+    const [data,setData] = useState({
+      pageNumber : 0,
+      size : 1000000
+    })
+
+
+
+
+    useEffect( ()=>{
+      const getData = async () => {
+         axios.defaults.headers = {
+           Authorization : auth.token
+         }
+         await axios.get(host+"/admin/auth/groups/"+user.slug)
+         .then(res => {
+            const data = res.data.content;
+             setAssignGroup(data);
+         })
+         .catch(err => {
+           setFlag("error")
+           setMessage(!!err.response ? err.response.data.message : err.message)
+           setOpen(true)
+         } )
+       }
+      getData();
+  
+     },[])
+
+
+
+    useEffect( ()=>{
+      const getData = async () => {
+         axios.defaults.headers = {
+           Authorization : auth.token
+         }
+         await axios.post(host+"/group/all",data)
+         .then(res => {
+            const data = res.data.content;
+             setGroups(data);
+             console.log(alert)
+         })
+         .catch(err => {
+           //setErrors(err.message)
+           setFlag("error")
+           setMessage(!!err.response ? err.response.data.message : err.message)
+           setOpen(true)
+         } )
+       }
+      getData();
+  
+     },[data])
+
+
+
+
+
 
     const updateProfile = async (updatedUser) =>{
         axios.defaults.headers = {
@@ -100,7 +158,7 @@ const Page = () => {
                   md={6}
                   lg={8}
                 >
-                  <AccountProfileDetails user={content} updateProfile={updateProfile} />
+                  <AccountProfileDetails user={content} updateProfile={updateProfile} assignGroup={assignGroup} groups={groups} />
                 </Grid>
               </Grid>
             </div>

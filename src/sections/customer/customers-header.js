@@ -53,11 +53,15 @@ export function CustomerHeaders(props){
                 
               </Stack>
               <div>
+
+
+
               <Link
                     href={{
-                        pathname: '/users/create',
-                      }}
-                    >
+                      pathname:'/users/create/[createUserType]',
+                      query: { createUserType: props.userType},
+                    }}
+                      >
                 <Button
                   startIcon={(
                     <SvgIcon fontSize="small">

@@ -17,11 +17,13 @@ import { Box,
         Stack
     } from "@mui/material";
 import axios from "axios";
+import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { BasicHeaders } from "src/sections/basic-header";
 import { host } from "src/utils/util";
+
 
 
 
@@ -35,8 +37,17 @@ const createUser = () =>{
     const[cityList,setCityList] = useState([])
     const[stateList,setStateList] = useState([])
     const [selectedState , setSelectedState] = useState(1)
-    const [values,setValues] = useState({})
-    const [userType,setUserType] = useState(null)
+    const router = useRouter()
+    const { createUserType } = router.query
+    const [userType,setUserType] = useState(createUserType)
+    const [values,setValues] = useState({userType : userType})
+    const [groups,setGroups] = useState([])
+    const [assignGroup , setAssignGroup] = useState([])
+    const [data,setData] = useState({
+      pageNumber : 0,
+      size : 1000000
+    })
+
     useEffect(()=>{
         axios.defaults.headers={
             Authorization : auth.token
@@ -46,6 +57,27 @@ const createUser = () =>{
         .catch(err=>console.log(err))
     },[])
 
+
+    useEffect( ()=>{
+      const getData = async () => {
+         axios.defaults.headers = {
+           Authorization : auth.token
+         }
+         await axios.post(host+"/group/all",data)
+         .then(res => {
+            const data = res.data.content;
+             setGroups(data);
+         })
+         .catch(err => {
+           //setErrors(err.message)
+           setFlag("error")
+           setMessage(!!err.response ? err.response.data.message : err.message)
+           setOpen(true)
+         } )
+       }
+      getData();
+  
+     },[data])
 
 
     useEffect(()=>{
@@ -92,6 +124,7 @@ const createUser = () =>{
             userType: formData.get("userType"),
             email: formData.get("email"),
             contact: formData.get("contact"),
+            groupList : assignGroup
           }
 
         if (userType === "W"){
@@ -131,6 +164,18 @@ const createUser = () =>{
       setValues({})
     }
   
+
+    const handleChangeMultiple = (event) =>{
+        const { options } = event.target;
+        const value = [];
+        for (let i = 0, l = options.length; i < l; i += 1) {
+          if (options[i].selected) {
+            value.push(options[i].value);
+          }
+        }
+        setAssignGroup(value);
+    }
+
 
     return ( <>
 
@@ -268,7 +313,7 @@ const createUser = () =>{
                           />
                         </Grid>
                         <Grid
-                          xs={12}
+                          xs={24}
                           md={6}
                         >
                           <TextField
@@ -280,6 +325,35 @@ const createUser = () =>{
                             value={values.contact}
                           />
                         </Grid>
+
+                        <Grid
+                          xs={12}
+                          md={6}
+                        >
+                        <FormControl sx={{ m: 1, minWidth: 500, maxWidth: 500 }}>
+                                <InputLabel shrink htmlFor="select-multiple-native">
+                                  Groups
+                                </InputLabel>
+                                <Select
+                                  multiple
+                                  native
+                                  name="groups"
+                                  // @ts-ignore Typings are not considering `native`
+                                  onChange={handleChangeMultiple}
+                                  label="Native"
+                                  inputProps={{
+                                    id: 'select-multiple-native',
+                                  }}
+                                >
+                                  {groups.map((group) => (
+                                    <option key={group.id} value={group.id}>
+                                      {group.name}
+                                    </option>
+                                  ))}
+                                </Select>
+                          </FormControl>
+                        </Grid>
+
                       </Grid>
                     </Box>
                   </CardContent>

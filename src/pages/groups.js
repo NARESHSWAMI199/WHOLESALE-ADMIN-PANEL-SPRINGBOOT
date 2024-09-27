@@ -58,9 +58,9 @@ const Page = () => {
   const [error,setErrors] = useState("")
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [customers,setCustomers] = useState([])
-  const customersIds = useCustomerIds(customers);
-  const customersSelection = useSelection(customersIds);
+  const [groups,setGroups] = useState([])
+  const groupsIds = useCustomerIds(groups);
+  const groupsSelection = useSelection(groupsIds);
   const [deleted,setDeleted] = useState(false);
   const [data,setData] = useState({
     pageNumber : page,
@@ -78,7 +78,7 @@ const Page = () => {
        .then(res => {
           const data = res.data.content;
            setTotalElements(res.data.totalElements)
-           setCustomers(data);
+           setGroups(data);
        })
        .catch(err => {
          setErrors(err.message)
@@ -202,16 +202,16 @@ const Page = () => {
 
             <GroupTable
               count={totalElements}
-              items={customers}
-              onDeselectAll={customersSelection.handleDeselectAll}
-              onDeselectOne={customersSelection.handleDeselectOne}
+              items={groups}
+              onDeselectAll={groupsSelection.handleDeselectAll}
+              onDeselectOne={groupsSelection.handleDeselectOne}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
-              onSelectAll={customersSelection.handleSelectAll}
-              onSelectOne={customersSelection.handleSelectOne}
+              onSelectAll={groupsSelection.handleSelectAll}
+              onSelectOne={groupsSelection.handleSelectOne}
               page={page}
               rowsPerPage={rowsPerPage}
-              selected={customersSelection.selected}
+              selected={groupsSelection.selected}
               onDelete = {onDelete}
             />
           </Stack>

@@ -68,7 +68,7 @@ export const items = [
 
   {
     title: 'Add User',
-    path: '/users/create',
+    path: '/users/create/R',
     icon: (
       <SvgIcon fontSize="small">
         <CogIcon />

@@ -194,7 +194,7 @@ const Page = () => {
       >
         <Container maxWidth="xl">
           <Stack spacing={3}>
-          <CustomerHeaders  headerTitle={"Staffs"}/>
+          <CustomerHeaders  headerTitle={"Staffs"} userType="S" />
 
             <BasicSearch onSearch={onSearch} />
 

@@ -131,9 +131,6 @@ const Page = ()=> {
     }else {
       setGivenPermissions((perviouse)=>perviouse.filter((item)=> item != parseInt(permissionId)))
     } 
-
-
-    console.log(givenPermissions)
   };
 
 
