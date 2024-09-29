@@ -12,13 +12,14 @@ import { Box,
     InputLabel,
     FormControl,
     Snackbar,
-    Alert
+    Alert,
+    Stack,
+    Container
 } from "@mui/material";
 import { Image, Upload } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { Container, Stack } from "react-bootstrap";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import ImageInput from "src/sections/image-input";
@@ -45,7 +46,7 @@ const {slug} = router.query
 
 useEffect(()=>{
     axios.defaults.headers={
-        Authorization : auth.token
+        Authorization : auth.token,
     }
     axios.get(host+"/admin/store/detail/"+slug)
     .then(res=>{
@@ -112,6 +113,7 @@ const changeState = useCallback(
     e.preventDefault()
     const form = e.target;
     const formData = new FormData(form)
+    console.log(store)
     let storeData = {
       ...store,
       storeSlug : store.slug,
@@ -124,21 +126,50 @@ const changeState = useCallback(
       storeName :  formData.get("storeName"),
     }
 
-    axios.defaults.headers = {
-        Authorization : auth.token
+    const updateStore = ()=> {
+      axios.defaults.headers = {
+          Authorization : auth.token,
+      }
+      axios.post(host+"/admin/store/update",storeData)
+      .then(res => {
+        console.log(res.data)
+        setMessage(res.data.message)
+        setFlag("success")
+        form.reset();
+        //setStore({})
+      }).catch(err=>{
+          let errResponse = err.response
+          setMessage(!!errResponse ? errResponse.data.message : err.message)
+          setFlag("error")
+      })
     }
-    axios.post(host+"/admin/store/update",storeData)
-    .then(res => {
-      console.log(res.data)
-      setMessage(res.data.message)
-      setFlag("success")
-      form.reset();
-      //reset()
-    }).catch(err=>{
-        setMessage(err.message)
-        setFlag("error")
-    })
-    setOpen(true)
+    updateStore();
+
+    /** update profile is a seperate api */
+    const updateProfile = ()=> {
+      axios.defaults.headers = {
+          Authorization : auth.token,
+          "Content-Type" : "multipart/form-data"
+      }
+      let formData = new FormData()
+      console.log(store.storeImage)
+      formData.append("storeProfile",store.storeImage)
+      axios.post(host+"/admin/store/profile/"+slug,formData)
+      .then(res => {
+        console.log(res.data)
+        // setMessage(res.data.message)
+        // setFlag("success")
+        // form.reset();
+        // setStore({})
+      }).catch(err=>{
+          let errResponse = err.response
+          setMessage(!!errResponse ? errResponse.data.message : err.message)
+          setFlag("error")
+      })
+    }
+    //updateProfile();
+  
+
   })
 
   const handleClose = useCallback(()=>{
@@ -146,8 +177,14 @@ const changeState = useCallback(
   })
    
 
-const reset = () =>{
-  setStore({})
+  
+
+const onSubmit = (image) =>{
+  console.log('image : '+image)
+  setStore((pervious)=>({
+    ...pervious,
+    storeImage : image
+  }))
 }
 
 
@@ -191,8 +228,9 @@ return ( <>
 
           {/* store image input */}
 
-          <ImageInput/>
-
+          <div style={{marginLeft : '10px'}}>
+          <ImageInput onChange={onSubmit} avtar={host+'/admin/store/image/'+store.avtar} action ={host+"/admin/store/profile/"+slug}/>
+          </div>
             <Grid
               xs={12}
               md={12}
