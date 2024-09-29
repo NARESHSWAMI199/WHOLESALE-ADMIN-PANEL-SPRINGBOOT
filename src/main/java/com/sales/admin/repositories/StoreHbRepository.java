@@ -49,6 +49,7 @@ public class StoreHbRepository {
                 "email=:email, "+
                 "phone=:phone, "+
                 "rating=:rating, "+
+              //  "avtar=:avtar, "+
                 "description=:description, "+
                 "updatedAt=:updatedAt, "+
                 "updatedBy=:updatedBy "+
@@ -59,10 +60,18 @@ public class StoreHbRepository {
         query.setParameter("email", storeDto.getStoreEmail());
         query.setParameter("phone", storeDto.getStorePhone());
         query.setParameter("rating", storeDto.getRating());
+      //  query.setParameter("avtar", storeDto.getStoreAvatar());
         query.setParameter("description", storeDto.getDescription());
         query.setParameter("updatedAt", Utils.getCurrentMillis());
         query.setParameter("updatedBy", loggedUser.getId());
         query.setParameter("slug", storeDto.getStoreSlug());
+        return query.executeUpdate();
+    }
+
+
+    public int updateStoreAvatar(String filename , String slug){
+        String hql = "update Store set avtar =:avtar set slug=:slug";
+        Query query = entityManager.createQuery(hql);
         return query.executeUpdate();
     }
 

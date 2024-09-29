@@ -5,14 +5,24 @@ import com.sales.dto.StatusDto;
 import com.sales.dto.StoreDto;
 import com.sales.entities.Store;
 import com.sales.entities.User;
+import com.sales.utils.Utils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,11 +84,11 @@ public class StoreController extends ServiceContainer{
 
 
 
+
     @Transactional
     @PostMapping(value = {"/add","/update"})
     public ResponseEntity<Map<String,Object>> addStoreOrUpdateStore(HttpServletRequest request, @RequestBody StoreDto storeDto) {
         Map responseObj = new HashMap();
-
         try{
             User logggedUser = (User) request.getAttribute("user");
             responseObj = storeService.createOrUpdateStore(storeDto,logggedUser);
@@ -91,6 +101,26 @@ public class StoreController extends ServiceContainer{
 
 
     }
+
+
+    @Transactional
+    @PostMapping("profile/{slug}")
+    public ResponseEntity<Map<String,Object>> uploadStoreImage(HttpServletRequest request, @RequestPart MultipartFile file , @PathVariable String slug) {
+        Map responseObj = new HashMap();
+        try{
+            User logggedUser = (User) request.getAttribute("user");
+            int isUpdated = storeService.updateStoreImage(file,slug);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();;
+            responseObj.put("message",e.getMessage());
+            responseObj.put("status",500);
+        }
+        return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
+
+
+    }
+
+
 
     @Transactional
     @PostMapping("/status")
@@ -107,4 +137,15 @@ public class StoreController extends ServiceContainer{
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
+
+
+    @Value("${store.get}")
+    String filePath;
+
+    @GetMapping("/image/{filename}")
+    public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename) throws Exception {
+        Path path = Paths.get(filePath + filename);
+        Resource resource = new UrlResource(path.toUri());
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
+    }
 }

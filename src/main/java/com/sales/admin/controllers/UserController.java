@@ -66,7 +66,7 @@ public class UserController extends ServiceContainer {
     @Transactional
     @PostMapping(value = {"/add", "/update"})
     public ResponseEntity<Map<String, Object>> register(HttpServletRequest request, @RequestBody UserDto userDto) {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         try {
             User logggedUser = (User) request.getAttribute("user");
             responseObj = userService.createOrUpdateUser(userDto, logggedUser);

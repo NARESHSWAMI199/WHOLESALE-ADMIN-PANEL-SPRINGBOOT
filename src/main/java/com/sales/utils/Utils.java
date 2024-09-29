@@ -7,6 +7,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
 
@@ -55,5 +57,14 @@ public class Utils {
         }
         return null;
     }
+
+    public static boolean isValidImage(String image){
+        String IMAGE_PATTERN =
+                "([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)";
+        Pattern pattern =  Pattern.compile(IMAGE_PATTERN);
+        Matcher matcher = pattern.matcher(image);
+        return matcher.matches();
+    }
+
 
 }

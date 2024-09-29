@@ -41,8 +41,7 @@ public class UserService extends RepoContainer {
     @Value("${default.password}")
     String password;
 
-    private static final String IMAGE_PATTERN =
-            "([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)";
+
 
     public User findByEmailAndPassword(UserDto userDto) {
         return userRepository.findByEmailAndPassword(userDto.getEmail(), userDto.getPassword());
@@ -223,17 +222,12 @@ public class UserService extends RepoContainer {
 
 
     public int updateProfileImage(MultipartFile profileImage,String slug,User loggerdUser) throws IOException {
-        if (!isValidImage(profileImage.getOriginalFilename())) return 0;
+        if (!Utils.isValidImage(profileImage.getOriginalFilename())) return 0;
         profileImage.transferTo(new File(profilePath+slug+profileImage.getOriginalFilename()));
         return  userHbRepository.updateProfileImage(slug,profileRelativePath+slug+profileImage.getOriginalFilename());
     }
 
 
-    public boolean isValidImage(String image){
-        Pattern pattern =  Pattern.compile(IMAGE_PATTERN);
-        Matcher matcher = pattern.matcher(image);
-        return matcher.matches();
-    }
 
     public List<Integer> getUserGroupsIdBySlug(String slug) {
         return userRepository.getUserGroupsIdBySlug(slug);
