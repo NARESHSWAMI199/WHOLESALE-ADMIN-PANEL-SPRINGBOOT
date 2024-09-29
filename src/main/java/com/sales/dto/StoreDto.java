@@ -14,4 +14,5 @@ public class StoreDto extends AddressDto {
     private String storePhone="";
     private String storeSlug;
     private String description ="";
+    private String addressId;
 }

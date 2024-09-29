@@ -1,9 +1,6 @@
 package com.sales.admin.controllers;
 
-import com.sales.admin.services.AddressService;
-import com.sales.admin.services.ItemService;
-import com.sales.admin.services.StoreService;
-import com.sales.admin.services.UserService;
+import com.sales.admin.services.*;
 import com.sales.utils.ReadExcel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,6 +25,9 @@ public class ServiceContainer {
 
     @Autowired
     ReadExcel readExcel;
+
+    @Autowired
+    GroupService groupService;
 
 
 }

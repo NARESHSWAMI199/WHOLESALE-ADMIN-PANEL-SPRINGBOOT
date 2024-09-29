@@ -17,6 +17,6 @@ public class SearchFilters extends ItemSearchFields {
     String order = "desc";
     int pageNumber = 0;
     int size = 10;
-    String slug;
+    String slug="";
     int storeId;
 }

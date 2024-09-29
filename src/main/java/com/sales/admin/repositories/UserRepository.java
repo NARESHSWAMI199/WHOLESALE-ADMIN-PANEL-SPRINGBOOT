@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -22,6 +23,9 @@ public interface UserRepository  extends JpaRepository<User, Integer> , JpaSpeci
 
     User findUserBySlug(String slug);
 
+    @Query("select id from User where slug=:slug")
+    Integer getUserIdBySlug(String slug);
+
     @Query(value = "select count(id) as count from User")
     Integer totalUserCount();
     @Query(value = "select count(id) as count from User where status=:status")
@@ -33,5 +37,9 @@ public interface UserRepository  extends JpaRepository<User, Integer> , JpaSpeci
 
     @Query(value = "select count(id) as count from User where status=:status and userType=:userType")
     Integer getUserWithUserType(@Param("status") String status,@Param("userType") String userType);
+
+
+    @Query(value = "select ug.group_id as groupId  from user_groups ug left join `user` u on ug.user_id = u.user_id where u.slug = :slug",nativeQuery = true)
+    List<Integer> getUserGroupsIdBySlug(String slug);
 
 }

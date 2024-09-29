@@ -64,8 +64,8 @@ public class UserSpecifications {
 
     public static Specification<User> hasSlug(String slug) {
         return (root, query, criteriaBuilder) -> {
-            if (slug == null) return null;
-            return criteriaBuilder.equal(root.get(User_.SLUG), slug);
+            if (slug == null || slug.isEmpty()) return null;
+            return criteriaBuilder.equal(root.get(User_.SLUG), slug.trim());
         };
     }
 

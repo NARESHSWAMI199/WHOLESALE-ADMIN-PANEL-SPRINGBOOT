@@ -1,5 +1,6 @@
 package com.sales.interceptors;
 
+import com.sales.admin.repositories.PermissionRepository;
 import com.sales.admin.repositories.UserRepository;
 import com.sales.jwtUtils.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    PermissionRepository permissionRepository;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         String arr[] = {
@@ -31,9 +35,10 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                 "/swagger-resources/**",
                 "/swagger-ui/**",
                 "/webjars/**",
+                "/admin/auth/profile/**"
 
         };
-        registry.addInterceptor(new SalesInterceptor(jwtToken,userRepository))
+        registry.addInterceptor(new SalesInterceptor(jwtToken,userRepository,permissionRepository))
                 .excludePathPatterns(Arrays.asList(arr));
     }
 

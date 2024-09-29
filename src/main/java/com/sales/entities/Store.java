@@ -47,7 +47,7 @@ public class Store implements Serializable {
     @Column(name = "created_at")
     Long createdAt;
     @Column(name = "created_by")
-    int createdBy;
+    Integer createdBy;
     @Column(name = "updated_at")
     Long updatedAt;
     @Column(name = "updated_by")

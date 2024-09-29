@@ -27,7 +27,7 @@ public class AddressHbRepository {
                 "state =:state," +
                 "latitude =:latitude," +
                 "altitude =:altitude, " +
-                "updatedAt =:updatedAt " +
+                "updatedAt =:updatedAt, " +
                 "updatedBy =:updatedBy " +
                 "where slug =:slug ";
         Query query = entityManager.createQuery(hqQuery);

@@ -1,22 +1,28 @@
 package com.sales.admin.services;
 
 
-import com.sales.dto.StatusDto;
-import com.sales.dto.StoreDto;
-import com.sales.dto.UserDto;
-import com.sales.dto.UserSearchFilters;
+import com.sales.dto.*;
+import com.sales.entities.Store;
 import com.sales.entities.User;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.sales.specifications.UserSpecifications.*;
 
@@ -25,6 +31,18 @@ public class UserService extends RepoContainer {
 
     @Autowired
     StoreService storeService;
+
+    @Value("${profile.absolute}")
+    String profilePath;
+
+    @Value("${profile.relative}")
+    String profileRelativePath;
+
+    @Value("${default.password}")
+    String password;
+
+    private static final String IMAGE_PATTERN =
+            "([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)";
 
     public User findByEmailAndPassword(UserDto userDto) {
         return userRepository.findByEmailAndPassword(userDto.getEmail(), userDto.getPassword());
@@ -71,7 +89,7 @@ public class UserService extends RepoContainer {
             .and(greaterThanOrEqualFromDate(filters.getFromDate()))
             .and(lessThanOrEqualToToDate(filters.getToDate()))
             .and(isStatus(filters.getStatus()))
-            .and(hasUserType(filters.getUserType()))
+            .and(hasUserType(filters.getUserType())).and(hasSlug(filters.getSlug()))
         );
         Pageable pageable = getPageable(filters);
         return userRepository.findAll(specification,pageable);
@@ -88,6 +106,7 @@ public class UserService extends RepoContainer {
         storeDto.setCity(userDto.getCity());
         storeDto.setState(userDto.getState());
         storeDto.setStorePhone(userDto.getStorePhone());
+        storeDto.setStoreSlug(userDto.getStoreSlug());
         return storeDto;
     }
 
@@ -97,6 +116,8 @@ public class UserService extends RepoContainer {
         StoreDto storeDto = null;
         if (!Utils.isEmpty(userDto.getSlug())) {
             int isUpdated = updateUser(userDto, loggedUser);
+             Integer userId = userRepository.getUserIdBySlug(userDto.getSlug());
+             userDto.setUserId(userId);
             if (userDto.getUserType().equalsIgnoreCase("W")){
                 storeDto =  userDtoToStoreDto(userDto);
                 storeDto.setUserSlug(userDto.getSlug());
@@ -109,9 +130,10 @@ public class UserService extends RepoContainer {
                 responseObj.put("message", "nothing to updated. may be something went wrong");
                 responseObj.put("status", 400);
             }
-            return responseObj;
+           // return responseObj;
         } else {
             User updatedUser = createUser(userDto, loggedUser);
+            userDto.setUserId(updatedUser.getId());
             System.out.println(userDto.getUserType() + " : "+userDto.getUserSlug());
             if (userDto.getUserType().equalsIgnoreCase("W")){
                 storeDto =  userDtoToStoreDto(userDto);
@@ -123,9 +145,17 @@ public class UserService extends RepoContainer {
                 responseObj.put("message", "successfully inserted.");
                 responseObj.put("status", 200);
             } else {
-                responseObj.put("message", "nothing to insert. may be something went wrong");
+                responseObj.put("message", "nothing to save. may be something went wrong please contact to administrator.");
                 responseObj.put("status", 400);
             }
+        }
+
+        /** going to update user's groups */
+        int isAssigned= permissionHbRepository.assignGroupsToUser(userDto.getUserId(),userDto.getGroupList());
+        if(isAssigned < 1) {
+            responseObj.put("message", "Something went wrong during update user's groups. please contact to administrator");
+            responseObj.put("status", 400);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
         return responseObj;
     }
@@ -159,8 +189,54 @@ public class UserService extends RepoContainer {
         return userHbRepository.deleteUserBySlug(slug);
     }
 
+
+    @Transactional
+    public int resetPasswordByUserSlug(PasswordDto passwordDto){
+        password = !Utils.isEmpty(password) ?  passwordDto.getPassword() : password;
+        User user = getUserDetail(passwordDto.getSlug());
+        user.setPassword(password);
+        return user.getId();
+    }
+
+    @Transactional
     public int updateStatusBySlug(StatusDto statusDto){
-        return userHbRepository.updateStatus(statusDto.getSlug(),statusDto.getStatus());
+        try {
+            String status = statusDto.getStatus();
+            User user = userRepository.findUserBySlug(statusDto.getSlug());
+            user.setStatus(status);
+            if(!user.getUserType().equals("W")){
+                user = userRepository.save(user);
+                return user.getId();
+            }
+            Store store = storeRepository.findStoreByUserId(user.getId());
+            store.setStatus(status);
+            store = storeRepository.save(store);
+            if (store != null && store.getId() > 0)
+                user = userRepository.save(user);
+            return user.getId();
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            throw e;
+        }
+    }
+
+
+
+    public int updateProfileImage(MultipartFile profileImage,String slug,User loggerdUser) throws IOException {
+        if (!isValidImage(profileImage.getOriginalFilename())) return 0;
+        profileImage.transferTo(new File(profilePath+slug+profileImage.getOriginalFilename()));
+        return  userHbRepository.updateProfileImage(slug,profileRelativePath+slug+profileImage.getOriginalFilename());
+    }
+
+
+    public boolean isValidImage(String image){
+        Pattern pattern =  Pattern.compile(IMAGE_PATTERN);
+        Matcher matcher = pattern.matcher(image);
+        return matcher.matches();
+    }
+
+    public List<Integer> getUserGroupsIdBySlug(String slug) {
+        return userRepository.getUserGroupsIdBySlug(slug);
     }
 
 }
