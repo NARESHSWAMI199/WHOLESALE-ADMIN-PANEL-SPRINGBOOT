@@ -43,7 +43,7 @@ public class JwtToken implements Serializable {
     }
 
     //check if the token has expired
-    private Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
@@ -67,8 +67,5 @@ public class JwtToken implements Serializable {
     }
 
     //validate token
-    public Boolean validateToken(String token, User user) {
-        final String slug = getSlugFromToken(token);
-        return (slug.equals(user.getSlug()) && !isTokenExpired(token));
-    }
+
 }

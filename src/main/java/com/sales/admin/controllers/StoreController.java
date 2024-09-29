@@ -26,6 +26,7 @@ public class StoreController extends ServiceContainer{
         return new ResponseEntity<>(storePage, HttpStatus.OK);
     }
 
+    @Transactional
     @GetMapping("/delete/{slug}")
     public ResponseEntity<Map<String,Object>> deleteStore(@PathVariable String slug) {
         Map responseObj = new HashMap();
@@ -91,6 +92,7 @@ public class StoreController extends ServiceContainer{
 
     }
 
+    @Transactional
     @PostMapping("/status")
     public ResponseEntity<Map<String,Object>> stockSlug (@RequestBody StatusDto statusDto) {
         Map responseObj = new HashMap();

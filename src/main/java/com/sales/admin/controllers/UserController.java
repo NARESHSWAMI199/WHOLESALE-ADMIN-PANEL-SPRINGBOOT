@@ -1,6 +1,7 @@
 package com.sales.admin.controllers;
 
 
+import com.sales.dto.PasswordDto;
 import com.sales.dto.StatusDto;
 import com.sales.dto.UserDto;
 import com.sales.dto.UserSearchFilters;
@@ -70,6 +71,7 @@ public class UserController extends ServiceContainer {
             User logggedUser = (User) request.getAttribute("user");
             responseObj = userService.createOrUpdateUser(userDto, logggedUser);
         } catch (Exception e) {
+            e.printStackTrace();
             responseObj.put("message", e.getMessage());
             responseObj.put("status", 500);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -102,6 +104,21 @@ public class UserController extends ServiceContainer {
             responseObj.put("status", 200);
         } else {
             responseObj.put("message", "There is nothing to delete.recheck you parameters");
+            responseObj.put("status", 400);
+        }
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+    }
+
+    @Transactional
+    @PostMapping("/password")
+    public ResponseEntity<Map<String, Object>> resetUserPasswordBySlug(@RequestBody PasswordDto passwordDto) {
+        Map<String,Object> responseObj = new HashMap<>();
+        int isUpdated = userService.resetPasswordByUserSlug(passwordDto);
+        if (isUpdated > 0) {
+            responseObj.put("message", "User password has been successfully updated.");
+            responseObj.put("status", 200);
+        } else {
+            responseObj.put("message", "There is nothing to update.recheck you parameters");
             responseObj.put("status", 400);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));

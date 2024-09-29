@@ -1,10 +1,8 @@
 package com.sales.admin.services;
 
 
-import com.sales.dto.StatusDto;
-import com.sales.dto.StoreDto;
-import com.sales.dto.UserDto;
-import com.sales.dto.UserSearchFilters;
+import com.sales.dto.*;
+import com.sales.entities.Store;
 import com.sales.entities.User;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +38,8 @@ public class UserService extends RepoContainer {
     @Value("${profile.relative}")
     String profileRelativePath;
 
-
+    @Value("${default.password}")
+    String password;
 
     private static final String IMAGE_PATTERN =
             "([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)";
@@ -190,8 +189,35 @@ public class UserService extends RepoContainer {
         return userHbRepository.deleteUserBySlug(slug);
     }
 
+
+    @Transactional
+    public int resetPasswordByUserSlug(PasswordDto passwordDto){
+        password = !Utils.isEmpty(password) ?  passwordDto.getPassword() : password;
+        User user = getUserDetail(passwordDto.getSlug());
+        user.setPassword(password);
+        return user.getId();
+    }
+
+    @Transactional
     public int updateStatusBySlug(StatusDto statusDto){
-        return userHbRepository.updateStatus(statusDto.getSlug(),statusDto.getStatus());
+        try {
+            String status = statusDto.getStatus();
+            User user = userRepository.findUserBySlug(statusDto.getSlug());
+            user.setStatus(status);
+            if(!user.getUserType().equals("W")){
+                user = userRepository.save(user);
+                return user.getId();
+            }
+            Store store = storeRepository.findStoreByUserId(user.getId());
+            store.setStatus(status);
+            store = storeRepository.save(store);
+            if (store != null && store.getId() > 0)
+                user = userRepository.save(user);
+            return user.getId();
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            throw e;
+        }
     }
 
 

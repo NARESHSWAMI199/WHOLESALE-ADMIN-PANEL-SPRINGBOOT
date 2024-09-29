@@ -24,7 +24,7 @@ public class UserHbRepository {
                 "email=:email,"+
                 "password=:password,"+
                 "contact=:contact,"+
-                "userType=:userType,"+
+               // "userType=:userType,"+
                 "updatedAt=:updatedAt,"+
                 "updatedBy=:updatedBy "+
                 "where slug =:slug";
@@ -34,7 +34,7 @@ public class UserHbRepository {
         query.setParameter("email", userDto.getEmail());
         query.setParameter("password", userDto.getPassword());
         query.setParameter("contact", userDto.getContact());
-        query.setParameter("userType", userDto.getUserType());
+        //query.setParameter("userType", userDto.getUserType());
         query.setParameter("updatedAt", Utils.getCurrentMillis());
         query.setParameter("updatedBy", loggedUser.getId());
         query.setParameter("slug", userDto.getSlug());

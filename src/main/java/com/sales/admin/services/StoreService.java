@@ -1,9 +1,6 @@
 package com.sales.admin.services;
 
-import com.sales.dto.AddressDto;
-import com.sales.dto.SearchFilters;
-import com.sales.dto.StatusDto;
-import com.sales.dto.StoreDto;
+import com.sales.dto.*;
 import com.sales.entities.Address;
 import com.sales.entities.Store;
 import com.sales.entities.User;
@@ -13,11 +10,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.transaction.Transactional;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.time.Month;
+import java.time.format.TextStyle;
+import java.util.*;
 
 import static com.sales.specifications.StoreSpecifications.*;
 
@@ -60,11 +58,29 @@ public class StoreService extends RepoContainer{
         return addressDto;
     }
 
+    public Map<String,Object> getStoreCountByMonths(GraphDto graphDto){
+        List<Integer> months = graphDto.getMonths();
+        months = (months == null || months.size() < 1) ?
+                Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12) : months;
+        Integer year = graphDto.getYear();
+        Map<String,Object> monthsObj= new LinkedHashMap<>();
+        for(Integer month : months) {
+            monthsObj.put(getMonthName(month),storeRepository.totalStoreViaMonth(month,year));
+        }
+        return monthsObj;
+    }
+
+    public String getMonthName(int month) {
+        if (month <= 0 || month > 12) {
+            return null;
+        }
+        return Month.of(month).getDisplayName(TextStyle.FULL, new Locale("eng"));
+    }
 
     @Transactional
     public Map<String, Object> createOrUpdateStore(StoreDto storeDto,User loggedUser) throws Exception {
         Map<String, Object> responseObj = new HashMap<>();
-            if(storeDto.getStoreSlug().equals("only-profile")) {
+            if(storeDto.getStoreSlug()!=null && storeDto.getStoreSlug().equals("only-profile")) {
                 responseObj.put("message", "successfully updated.");
                 responseObj.put("status", 200);
             }
@@ -130,8 +146,17 @@ public class StoreService extends RepoContainer{
         return storeHbRepository.updateStore(storeDto,loggedUser);
     }
 
+    @Transactional
     public int deleteStoreBySlug(String slug){
-        return storeHbRepository.deleteStore(slug);
+        try {
+            Store store = storeRepository.findStoreBySlug(slug);
+            Optional<User> user = userRepository.findById(store.getUser().getId());
+            userHbRepository.deleteUserBySlug(user.get().getSlug());
+            return storeHbRepository.deleteStore(slug);
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            throw e;
+        }
     }
 
     public int deleteStoreByUserId(int userId){
@@ -151,9 +176,18 @@ public class StoreService extends RepoContainer{
         return storeRepository.findStoreByUserId(user.getId());
     }
 
-
+    @Transactional
     public int updateStatusBySlug(StatusDto statusDto){
-        return storeHbRepository.updateStatus(statusDto.getSlug(),statusDto.getStatus());
+        try {
+            Store store = storeRepository.findStoreBySlug(statusDto.getSlug());
+            String status = statusDto.getStatus();
+            store.getUser().setStatus(statusDto.getStatus());
+            store.setStatus(status);
+            return storeRepository.save(store).getId();
+        }catch(Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            throw e;
+        }
     }
 
 }

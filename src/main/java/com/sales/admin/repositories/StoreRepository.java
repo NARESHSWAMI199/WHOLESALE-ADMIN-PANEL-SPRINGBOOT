@@ -18,4 +18,7 @@ public interface StoreRepository extends JpaRepository<Store, Integer> , JpaSpec
     Integer totalWholesaleCount();
     @Query(value = "select count(id) as count from Store where status=:status")
     Integer optionWholesaleCount(@Param("status") String status);
+    @Query(value = "SELECT count(id) from store s where FROM_UNIXTIME(created_at /1000,'%m') =:month and FROM_UNIXTIME(created_at /1000,'%Y') =:year and is_deleted='N'",nativeQuery = true)
+    Integer totalStoreViaMonth(@Param("month") Integer month,@Param("year") Integer year);
+
 }

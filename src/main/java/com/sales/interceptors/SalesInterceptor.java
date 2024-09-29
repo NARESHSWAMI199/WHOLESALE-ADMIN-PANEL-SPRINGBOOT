@@ -35,6 +35,7 @@ public class SalesInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         System.out.println("request url : "+request.getRequestURI());
+        try {
         if (token != null && (token.substring(0, 7)).equals("Bearer ")) {
             token = token.substring(7, token.length());
             String slug = jwtToken.getSlugFromToken(token);
@@ -56,7 +57,7 @@ public class SalesInterceptor implements HandlerInterceptor {
                 }
             }
             if (!isPermitted) {
-                sendError(response, "You don't permissions to access this page.Please contact your administrator.", 400);
+                sendError(response, "You don't permissions to access "+request.getRequestURI()+".Please contact your administrator.", 400);
                 return false;
             }
             request.setAttribute("user",user);
@@ -64,6 +65,10 @@ public class SalesInterceptor implements HandlerInterceptor {
         }
         sendError(response,"Invalid authorization.",401);
         return false;
+        }catch (Exception e){
+            sendError(response,e.getMessage(),401);
+            return false;
+        }
     }
 
     public void sendError(HttpServletResponse response ,String message, Integer status) throws IOException {
