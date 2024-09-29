@@ -14,12 +14,14 @@ import { Box,
     Snackbar,
     Alert
 } from "@mui/material";
+import { Image, Upload } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { Container, Stack } from "react-bootstrap";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
+import ImageInput from "src/sections/image-input";
 import { host } from "src/utils/util";
 
 
@@ -186,6 +188,11 @@ return ( <>
             container
             spacing={3}
           >
+
+          {/* store image input */}
+
+          <ImageInput/>
+
             <Grid
               xs={12}
               md={12}
