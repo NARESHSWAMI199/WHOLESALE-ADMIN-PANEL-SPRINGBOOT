@@ -72,7 +72,7 @@ public class UserController extends ServiceContainer {
 
     @GetMapping("/detail/{slug}")
     public ResponseEntity<Map<String, Object>> getDetailUser(@PathVariable String slug) {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         User user = userService.getUserDetail(slug);
         if (user != null) {
             responseObj.put("res", user);
@@ -87,7 +87,7 @@ public class UserController extends ServiceContainer {
     @Transactional
     @GetMapping("/delete/{slug}")
     public ResponseEntity<Map<String, Object>> deleteUserBySlug(@PathVariable String slug) {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         int isUpdated = userService.deleteUserBySlug(slug);
         if (isUpdated > 0) {
             responseObj.put("message", "User has been successfully deleted.");
@@ -102,7 +102,7 @@ public class UserController extends ServiceContainer {
 
     @PostMapping("/status")
     public ResponseEntity<Map<String, Object>> stockSlug(@RequestBody StatusDto statusDto) {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         int isUpdated = userService.updateStatusBySlug(statusDto);
         if (isUpdated > 0) {
             responseObj.put("message", "Item's status has been successfully updated.");
