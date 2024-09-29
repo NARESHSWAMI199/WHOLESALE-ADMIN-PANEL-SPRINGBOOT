@@ -8,7 +8,6 @@ export const updateObject = (state, updatedObject) => {
     }
 }
 
-
 // export const host = "http://192.168.1.15:8081"
 
 export const host = "http://localhost:8081"
