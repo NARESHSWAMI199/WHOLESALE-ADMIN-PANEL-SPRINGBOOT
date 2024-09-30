@@ -105,11 +105,13 @@ public class StoreController extends ServiceContainer{
 
     @Transactional
     @PostMapping("profile/{slug}")
-    public ResponseEntity<Map<String,Object>> uploadStoreImage(HttpServletRequest request, @RequestPart MultipartFile file , @PathVariable String slug) {
+    public ResponseEntity<Map<String,Object>> uploadStoreImage(HttpServletRequest request, @RequestPart MultipartFile storeImage , @PathVariable String slug) {
         Map responseObj = new HashMap();
-        try{
+        try {
             User logggedUser = (User) request.getAttribute("user");
-            int isUpdated = storeService.updateStoreImage(file,slug);
+            int isUpdated = storeService.updateStoreImage(storeImage, slug);
+            responseObj.put("message","successfully updated");
+            responseObj.put("status",201);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();;
             responseObj.put("message",e.getMessage());

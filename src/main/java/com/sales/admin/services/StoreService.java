@@ -209,10 +209,12 @@ public class StoreService extends RepoContainer{
     }
 
 
+
     public int updateStoreImage(MultipartFile profileImage, String slug) throws Exception {
-        if (!Utils.isValidImage(profileImage.getOriginalFilename())) throw new Exception("Not a valid file.");
-        profileImage.transferTo(new File(storeImagePath+slug+profileImage.getOriginalFilename()));
-        return storeHbRepository.updateStoreAvatar(slug,storeImageRelativePath+slug+profileImage.getOriginalFilename());
+        String fileOriginalName = profileImage.getOriginalFilename().replaceAll(" ", "_");
+        if (!Utils.isValidImage(fileOriginalName)) throw new Exception("Not a valid file.");
+        profileImage.transferTo(new File(storeImagePath+slug+fileOriginalName));
+        return storeHbRepository.updateStoreAvatar(slug,storeImageRelativePath+slug+fileOriginalName);
     }
 
 

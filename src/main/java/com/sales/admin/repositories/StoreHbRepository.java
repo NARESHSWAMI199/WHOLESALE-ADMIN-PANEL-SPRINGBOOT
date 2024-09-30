@@ -69,9 +69,11 @@ public class StoreHbRepository {
     }
 
 
-    public int updateStoreAvatar(String filename , String slug){
-        String hql = "update Store set avtar =:avtar set slug=:slug";
+    public int updateStoreAvatar(String slug,String filename ){
+        String hql = "update Store set avtar =:avtar where slug=:slug";
         Query query = entityManager.createQuery(hql);
+        query.setParameter("avtar", filename);
+        query.setParameter("slug", slug);
         return query.executeUpdate();
     }
 
