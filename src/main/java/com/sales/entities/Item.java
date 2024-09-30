@@ -37,7 +37,7 @@ public class Item implements Serializable {
     @Column(name = "description")
     String description;
     @Column(name = "avatar")
-    String avatar;
+    String avtar;
     @Column(name = "rating")
     float rating;
     @Column(name = "status")

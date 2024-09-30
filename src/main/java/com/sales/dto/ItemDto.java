@@ -3,6 +3,7 @@ package com.sales.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -16,4 +17,6 @@ public class ItemDto {
     private String InStock;
     private  String slug;
     private String label;
+    private String  avtar;
+    private MultipartFile itemImage;
 }

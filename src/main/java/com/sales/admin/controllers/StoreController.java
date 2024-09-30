@@ -5,7 +5,6 @@ import com.sales.dto.StatusDto;
 import com.sales.dto.StoreDto;
 import com.sales.entities.Store;
 import com.sales.entities.User;
-import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -19,8 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -87,7 +84,7 @@ public class StoreController extends ServiceContainer{
 
     @Transactional
     @PostMapping(value = {"/add","/update"})
-    public ResponseEntity<Map<String,Object>> addStoreOrUpdateStore(HttpServletRequest request, @RequestBody StoreDto storeDto) {
+    public ResponseEntity<Map<String,Object>> addStoreOrUpdateStore(HttpServletRequest request,  @ModelAttribute StoreDto storeDto) {
         Map responseObj = new HashMap();
         try{
             User logggedUser = (User) request.getAttribute("user");
@@ -110,8 +107,14 @@ public class StoreController extends ServiceContainer{
         try {
             User logggedUser = (User) request.getAttribute("user");
             int isUpdated = storeService.updateStoreImage(storeImage, slug);
-            responseObj.put("message","successfully updated");
-            responseObj.put("status",201);
+            if (isUpdated > 0){
+                responseObj.put("message","successfully updated");
+                responseObj.put("status",201);
+            }else{
+                responseObj.put("message","Something went wrong. Please recheck you parameters.");
+                responseObj.put("status",400);
+            }
+
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();;
             responseObj.put("message",e.getMessage());

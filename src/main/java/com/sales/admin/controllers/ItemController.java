@@ -6,13 +6,19 @@ import com.sales.dto.StatusDto;
 import com.sales.entities.Item;
 import com.sales.entities.Store;
 import com.sales.entities.User;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +48,7 @@ public class ItemController extends ServiceContainer {
 
 
     @PostMapping(value = {"/add", "/update"})
-    public ResponseEntity<Map<String, Object>> addOrUpdateItems(HttpServletRequest request, @RequestBody ItemDto itemDto) {
+    public ResponseEntity<Map<String, Object>> addOrUpdateItems(HttpServletRequest request, @ModelAttribute ItemDto itemDto) {
         Map responseObj = new HashMap();
         try {
             User logggedUser = (User) request.getAttribute("user");
@@ -152,6 +158,17 @@ public class ItemController extends ServiceContainer {
             responseObj.put("status", 400);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+    }
+
+
+    @Value("${item.get}")
+    String filePath;
+
+    @GetMapping("/image/{filename}")
+    public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename) throws Exception {
+        Path path = Paths.get(filePath + filename);
+        Resource resource = new UrlResource(path.toUri());
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
     }
 
 }

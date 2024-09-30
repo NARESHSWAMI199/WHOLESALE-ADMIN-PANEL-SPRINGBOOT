@@ -10,13 +10,17 @@ import com.sales.entities.Item;
 import com.sales.entities.Store;
 import com.sales.entities.User;
 import com.sales.utils.Utils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -26,6 +30,11 @@ import static com.sales.specifications.ItemsSpecifications.*;
 public class ItemService extends RepoContainer implements ItemsDao {
 
 
+    @Value("${item.absolute}")
+    String itemImagePath;
+
+    @Value("${item.relative}")
+    String itemImageRelativePath;
 
     @Override
     public Page<Item> getAllItems(SearchFilters searchFilters) {
@@ -94,6 +103,7 @@ public class ItemService extends RepoContainer implements ItemsDao {
         Map<String, Object> responseObj = new HashMap<>();
         if (!Utils.isEmpty(itemDto.getSlug())) {
             int isUpdated = updateItem(itemDto, loggedUser);
+            updateStoreImage(itemDto.getItemImage(),itemDto.getSlug());
             if (isUpdated > 0) {
                 responseObj.put("message", "successfully updated.");
                 responseObj.put("status", 201);
@@ -134,6 +144,14 @@ public class ItemService extends RepoContainer implements ItemsDao {
         item.setUpdatedBy(loggedUser.getId());
         item.setLabel(itemDto.getLabel());
         item.setSlug(UUID.randomUUID().toString());
+        MultipartFile itemImage = itemDto.getItemImage();
+
+        if(itemImage !=null) {
+            String fileOriginalName = itemImage.getOriginalFilename().replaceAll(" ", "_");
+            if (!Utils.isValidImage(fileOriginalName)) throw new Exception("Not a valid file.");
+            itemImage.transferTo(new File(itemImagePath + item.getSlug() + fileOriginalName));
+            item.setAvtar(itemImageRelativePath + item.getSlug() + fileOriginalName);
+        }
         return itemRepository.save(item);
     }
 
@@ -162,5 +180,20 @@ public class ItemService extends RepoContainer implements ItemsDao {
         wholesaleId = wholesaleId == null ? 0 : wholesaleId;
         return  itemHbRepository.insertItemsList(excel,userId,wholesaleId);
     }
+
+
+
+    @Transactional
+    public int updateStoreImage(MultipartFile profileImage, String slug) throws Exception {
+        if(profileImage !=null) {
+            String fileOriginalName = profileImage.getOriginalFilename().replaceAll(" ", "_");
+            if (!Utils.isValidImage(fileOriginalName)) throw new Exception("Not a valid file.");
+            profileImage.transferTo(new File(itemImagePath + slug + fileOriginalName));
+            return itemHbRepository.updateItemImage(slug, itemImageRelativePath + slug + fileOriginalName);
+        }
+        return 0;
+    }
+
+
 
 }

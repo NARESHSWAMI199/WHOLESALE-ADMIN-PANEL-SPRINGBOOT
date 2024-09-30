@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.File;
-import java.io.IOException;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.*;
@@ -98,6 +97,7 @@ public class StoreService extends RepoContainer{
                 responseObj.put("message", "successfully updated.");
                 responseObj.put("status", 200);
             } else if (!Utils.isEmpty(storeDto.getStoreSlug())) {
+                updateStoreImage(storeDto.getStorePic(),storeDto.getStoreSlug());
                 int isUpdated = updateStore(storeDto, loggedUser);
                 if (isUpdated > 0) {
                     responseObj.put("message", "successfully updated.");
@@ -210,11 +210,15 @@ public class StoreService extends RepoContainer{
 
 
 
+    @Transactional
     public int updateStoreImage(MultipartFile profileImage, String slug) throws Exception {
-        String fileOriginalName = profileImage.getOriginalFilename().replaceAll(" ", "_");
-        if (!Utils.isValidImage(fileOriginalName)) throw new Exception("Not a valid file.");
-        profileImage.transferTo(new File(storeImagePath+slug+fileOriginalName));
-        return storeHbRepository.updateStoreAvatar(slug,storeImageRelativePath+slug+fileOriginalName);
+        if(profileImage !=null ) {
+            String fileOriginalName = profileImage.getOriginalFilename().replaceAll(" ", "_");
+            if (!Utils.isValidImage(fileOriginalName)) throw new Exception("Not a valid file.");
+            profileImage.transferTo(new File(storeImagePath + slug + fileOriginalName));
+            return storeHbRepository.updateStoreAvatar(slug, storeImageRelativePath + slug + fileOriginalName);
+        }
+        return 0;
     }
 
 
