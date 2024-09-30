@@ -21,3 +21,7 @@ export const toTitleCase = (str) => {
     return "____"
   }
 
+
+  export  const itemImage = host+"/admin/item/image/";
+  export const storeImage = host+"/admin/store/image/"
+  export const userImage = host+"/admin/auth/profile/"

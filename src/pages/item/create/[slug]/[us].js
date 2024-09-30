@@ -13,7 +13,9 @@ import { Box,
     FormControl,
     Snackbar,
     Checkbox,
-    Alert
+    Alert,
+    Container,
+    Stack
 } from "@mui/material";
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
@@ -24,6 +26,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import { useRouter } from "next/router";
 import { redirect } from "next/navigation";
+import ImageInput from "src/sections/image-input";
 
 
 const createItem = () =>{    
@@ -66,7 +69,8 @@ const [values,setValues] = useState({})
       }
 
     axios.defaults.headers = {
-        Authorization : auth.token
+        Authorization : auth.token,
+        "Content-Type" : "multipart/form-data"
     }
     axios.post(host+"/admin/item/add",item)
     .then(res => {
@@ -74,7 +78,6 @@ const [values,setValues] = useState({})
       setFlag("success")
       form.reset();
       reset()
-      router.push("/wholesale/"+us)
     }).catch(err=>{
         setMessage(!!err.response  ? err.response.data.message : err.message)
         setFlag("error")
@@ -92,7 +95,29 @@ const reset = () =>{
 }
 
 
+const onSubmit = (image) =>{
+  console.log(image)
+  setValues((pervious)=>({
+    ...pervious,
+    itemImage : image.originFileObj
+  }))
+}
+
+
 return ( <>
+
+
+<Box
+            component="main"
+            sx={{
+                flexGrow: 1,
+                py: 8
+            }}
+        >
+            <Container maxWidth="xl">
+                <Stack spacing={3}>
+               
+
 <Grid
     xs={12}
     md={6}
@@ -101,7 +126,6 @@ return ( <>
 
     <form
     autoComplete="off"
-    noValidate
     onSubmit={handleSubmit}
   >
 <Card >
@@ -112,6 +136,11 @@ return ( <>
       />
       <CardContent sx={{ pt: 0 }}>
         <Box sx={{ m: -1.5 }}>
+
+        <div style={{marginLeft : '10px',marginTop: '10px'}}>
+          <ImageInput onChange={onSubmit} avtar={host+'/admin/store/image/'+values.avtar}/>
+        </div>
+
           <Grid
             container
             spacing={3}
@@ -148,6 +177,7 @@ return ( <>
                 required={true}
                 type="number"
                 value={values.itemPrice}
+                InputLabelProps={{shrink: true}}
               />
 
             </Grid>
@@ -218,7 +248,6 @@ return ( <>
         <FormControlLabel control={<Checkbox  
                     name="inStock"
                     onChange={handleChange}
-                    required={true}
                     value={values.itemInStock} />}
                   label="In stock" />
       </FormGroup>
@@ -238,7 +267,9 @@ return ( <>
   </form>
   </Grid>
 
-
+  </Stack>
+  </Container>
+  </Box>
 
     <Snackbar anchorOrigin={{ vertical : 'top', horizontal : 'right' }}
       open={open}

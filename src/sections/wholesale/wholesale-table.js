@@ -36,6 +36,7 @@ import { getInitials } from 'src/utils/get-initials';
 import React, {useEffect, useState } from 'react';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
+import { itemImage } from 'src/utils/util';
 
 
 export const ItemsTable = (props) => {
@@ -203,8 +204,9 @@ export const ItemsTable = (props) => {
                         direction="row"
                         spacing={2}
                       >      
-            {!!item.avatar ? <Image src='item.avtar'/>  : 
-                        <Avatar src={item.avatar} >
+                 
+                    {!!item.avtar ? <Image src='item.avtar'/>  : 
+                        <Avatar src={itemImage+item.avtar} >
                           {getInitials(item.name)}
                         </Avatar>
                         }

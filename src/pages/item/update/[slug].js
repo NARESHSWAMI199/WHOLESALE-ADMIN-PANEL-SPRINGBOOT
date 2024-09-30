@@ -27,6 +27,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import { useRouter } from "next/router";
 import { redirect } from "next/navigation";
+import ImageInput from "src/sections/image-input";
 
 
 const createItem = () => {
@@ -87,10 +88,12 @@ const createItem = () => {
                 inStock: formData.get("inStock") ? 'Y' : 'N',
                 label: formData.get("itemLabel"),
                 description: formData.get("description"),
+                itemImage : values.itemImage
             }
 
             axios.defaults.headers = {
-                Authorization: auth.token
+                Authorization: auth.token,
+                "Content-Type" : "multipart/form-data"
             }
             axios.post(host + "/admin/item/update", item)
                 .then(res => {
@@ -110,10 +113,13 @@ const createItem = () => {
     })
 
 
-    const reset = () => {
-        setValues({})
-    }
-
+    const onSubmit = (image) =>{
+        console.log(image)
+        setValues((pervious)=>({
+          ...pervious,
+          itemImage : image.originFileObj
+        }))
+      }
 
     return (<>
 
@@ -127,7 +133,7 @@ const createItem = () => {
             <Container maxWidth="xl">
                 <Stack spacing={3}>
                
-        
+
 
         <Grid
             xs={12}
@@ -137,7 +143,6 @@ const createItem = () => {
 
             <form
                 autoComplete="off"
-                noValidate
                 onSubmit={handleSubmit}
             >
                 <Card >
@@ -148,6 +153,11 @@ const createItem = () => {
                         />
                         <CardContent sx={{ pt: 0 }}>
                             <Box sx={{ m: -1.5 }}>
+        
+                            <div style={{marginLeft : '10px',marginTop: '10px'}}>
+                                <ImageInput onChange={onSubmit} avtar={host+'/admin/store/image/'+values.avtar}/>
+                            </div>
+
                                 <Grid
                                     container
                                     spacing={3}

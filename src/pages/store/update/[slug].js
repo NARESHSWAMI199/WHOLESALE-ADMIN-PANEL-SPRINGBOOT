@@ -123,53 +123,26 @@ const changeState = useCallback(
       storePhone : formData.get("storePhone"),
       state:  formData.get("state"),
       city :  formData.get("city"),
-      storeName :  formData.get("storeName"),
+      storeName :  formData.get("storeName")
     }
-
-    const updateStore = ()=> {
+    
       axios.defaults.headers = {
           Authorization : auth.token,
+           "Content-Type" : "multipart/form-data"
       }
       axios.post(host+"/admin/store/update",storeData)
       .then(res => {
-        console.log(res.data)
+        setStore((previous) => ({...previous , avtar : !!store.storePic ? store.storePic.name  : store.avtar }))  
         setMessage(res.data.message)
         setFlag("success")
         form.reset();
-        //setStore({})
       }).catch(err=>{
           let errResponse = err.response
           setMessage(!!errResponse ? errResponse.data.message : err.message)
           setFlag("error")
       })
-    }
-    updateStore();
-
-    /** update profile is a seperate api */
-    const updateProfile = ()=> {
-      axios.defaults.headers = {
-          Authorization : auth.token,
-          "Content-Type" : "multipart/form-data"
-      }
-      let formData = new FormData()
-      formData.append("storeImage",store.storeImage.originFileObj)
-      axios.post(host+"/admin/store/profile/"+slug,formData)
-      .then(res => {
-        console.log(res.data)
-        // setMessage(res.data.message)
-        // setFlag("success")
-        // form.reset();
-        // setStore({})
-      }).catch(err=>{
-          let errResponse = err.response
-          setMessage(!!errResponse ? errResponse.data.message : err.message)
-          setFlag("error")
-      })
-    }
-    updateProfile();
-  
-
-  })
+      setOpen(true)
+    })
 
   const handleClose = useCallback(()=>{
         setOpen(false)
@@ -182,7 +155,7 @@ const onSubmit = (image) =>{
   console.log(image)
   setStore((pervious)=>({
     ...pervious,
-    storeImage : image
+    storePic : image.originFileObj
   }))
 }
 
@@ -208,7 +181,6 @@ return ( <>
 
     <form
     autoComplete="off"
-    noValidate
     onSubmit={handleSubmit}
   >
 <Card >
@@ -227,8 +199,8 @@ return ( <>
 
           {/* store image input */}
 
-          <div style={{marginLeft : '10px'}}>
-          <ImageInput onChange={onSubmit} avtar={host+'/admin/store/image/'+store.avtar} action ={host+"/admin/store/profile/"+slug}/>
+          <div style={{marginLeft : '10px',marginTop: '10px'}}>
+          <ImageInput onChange={onSubmit} avtar={host+'/admin/store/image/'+store.avtar}/>
           </div>
             <Grid
               xs={12}

@@ -91,18 +91,21 @@ export const StoresCard = (props) => {
 
 
   return (<>
+  {!!store.user  &&
     <Card sx={{ display: 'flex', paddingRight : 5 }}>
         {/* Wholesale image */}
         <CardMedia
             component="img"
-            sx={{ width: 200 }}
-            image={store.avtar}
-            alt="Live from space album cover"
+            sx={{ width: 250 }}
+            image= {host+"/admin/store/image/"+store.avtar}
+            alt="Live from space store cover"
       />
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <CardContent sx={{ flex: '1 0 auto', mx : '20px' }}>
           <Typography component="div" variant="h5">
-            {toTitleCase(store.storeName)}
+            <Link style={{textDecoration : 'none' , color : 'black'}} href={"/store/"+ store.user.slug}>
+              {toTitleCase(store.storeName)}
+            </Link>
           </Typography>
           <Typography
             variant="subtitle"
@@ -149,7 +152,7 @@ export const StoresCard = (props) => {
               textDecoration: 'none'
             }}>
               <PersonIcon sx={{ mr: 1 }} />
-              {!!store.user ? toTitleCase(store.user.username) : "Unkown"}
+              {toTitleCase(store.user.username)}
             </div> 
           </Typography>
 
@@ -234,6 +237,7 @@ export const StoresCard = (props) => {
         </Button>
       </Box>
     </Card>
+}
       
     <Dialog
       fullScreen={fullScreen}

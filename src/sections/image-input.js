@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Image, Upload } from 'antd';
 const getBase64 = (file) =>
@@ -11,15 +11,19 @@ const getBase64 = (file) =>
 const ImageInput = (props) => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
-  const [fileList, setFileList] = useState([
-    {
-      uid: '-1',
-      name: 'image.png',
-      status: 'done',
-      url: props.avtar
-    },
+  const [avtar, setAvtar] = useState(props.avtar)
+  const [fileList, setFileList] = useState([]);
 
-  ]);
+  const accept = {
+    accept: '.png,.jpg',
+ };
+  useEffect(()=>{
+    setAvtar(props.avtar)
+    setFileList([{
+      url: props.avtar
+    }])
+  },[props.avtar])
+
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
@@ -51,13 +55,13 @@ const ImageInput = (props) => {
   );
   return (
     <>
-    { props.avtar}
       <Upload
         //action={props.action}
         listType="picture-circle"
         fileList={fileList}
         onPreview={handlePreview}
         onChange={handleChange}
+        {...accept}
       >
         {fileList.length >= 8 ? null : uploadButton}
       </Upload>
