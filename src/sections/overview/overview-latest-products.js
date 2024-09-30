@@ -17,9 +17,9 @@ import {
   ListItemText,
   SvgIcon
 } from '@mui/material';
-import { toTitleCase } from 'src/utils/util';
+import { storeImage, toTitleCase } from 'src/utils/util';
 
-export const OverviewLatestProducts = (props) => {
+export const OverviewLatestStores = (props) => {
   const { products = [], sx } = props;
 
   return (
@@ -41,7 +41,7 @@ export const OverviewLatestProducts = (props) => {
                     ? (
                       <Box
                         component="img"
-                        src={product.avtar}
+                        src={storeImage+product.avtar}
                         sx={{
                           borderRadius: 1,
                           height: 48,
@@ -98,7 +98,7 @@ export const OverviewLatestProducts = (props) => {
   );
 };
 
-OverviewLatestProducts.propTypes = {
+OverviewLatestStores.propTypes = {
   products: PropTypes.array,
   sx: PropTypes.object
 };

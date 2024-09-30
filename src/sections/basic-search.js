@@ -21,7 +21,8 @@ export const BasicSearch = (props) => {
       toDate : new Date(formData.get("toDate")).getTime(),
       slug : formData.get("slug"),
       status :  formData.get("status"),
-      userType : formData.get("type") !== "A" ? formData.get("type") : null
+      userType : formData.get("type") !== "A" ? formData.get("type") : null,
+      inStock :  formData.get("inStock")
     }
     props.onSearch(data);
   }
@@ -48,7 +49,7 @@ export const BasicSearch = (props) => {
       sx={{ maxWidth: 240 }}
     />
 
-  { props.type !== "A" && <OutlinedInput
+  { props.type !== "A" &&  props.type !== "item" && <OutlinedInput
         defaultValue=""
         fullWidth
         placeholder="Token Id"
@@ -96,6 +97,18 @@ export const BasicSearch = (props) => {
                 <MenuItem value={"D"}>Deactive</MenuItem>
               </Select>}
 
+
+              {props.type == "item" && <Select
+                sx={{minWidth:200}}
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                name='inStock'
+                defaultValue="Y"
+                label="Status"
+              >
+                <MenuItem value={"Y"}>In stock</MenuItem>
+                <MenuItem value={"N"}>Out of stock</MenuItem>
+              </Select>}
       <TextField
         sx={{minWidth:200}}
         id="datetime-local"

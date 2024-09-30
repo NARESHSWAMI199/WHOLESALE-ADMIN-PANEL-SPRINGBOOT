@@ -20,7 +20,7 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 import axios from 'axios';
 import { useAuth } from 'src/hooks/use-auth';
-import { host, toTitleCase } from 'src/utils/util';
+import { host, storeImage, toTitleCase } from 'src/utils/util';
 
 
 export const StoresCard = (props) => {
@@ -92,15 +92,17 @@ export const StoresCard = (props) => {
 
   return (<>
   {!!store.user  &&
-    <Card sx={{ display: 'flex', paddingRight : 5 }}>
+    <Card sx={{ display: 'flex', paddingRight : 5 }}  
+    //style={{background : "linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5)), url('"+storeImage+store.avtar+"')" }} 
+    > 
         {/* Wholesale image */}
         <CardMedia
             component="img"
-            sx={{ width: 250 }}
-            image= {host+"/admin/store/image/"+store.avtar}
+            sx={{ width: 300 }}
+            image= {storeImage+store.avtar}
             alt="Live from space store cover"
       />
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column'}} >
         <CardContent sx={{ flex: '1 0 auto', mx : '20px' }}>
           <Typography component="div" variant="h5">
             <Link style={{textDecoration : 'none' , color : 'black'}} href={"/store/"+ store.user.slug}>

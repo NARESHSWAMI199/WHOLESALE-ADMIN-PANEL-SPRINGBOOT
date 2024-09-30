@@ -4,7 +4,7 @@ import { Box, Container, Unstable_Grid2 as Grid, Link } from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import {OverviewUsers } from 'src/sections/overview/overview-users';
 import { OverviewLatestUsers } from 'src/sections/overview/overview-latest-orders';
-import { OverviewLatestProducts } from 'src/sections/overview/overview-latest-products';
+import { OverviewLatestStores } from 'src/sections/overview/overview-latest-products';
 import { OverviewStores } from 'src/sections/overview/overview-sales';
 import { OverviewTraffic } from 'src/sections/overview/overview-traffic';
 import { useCallback, useEffect, useState } from 'react';
@@ -299,7 +299,7 @@ useEffect( ()=>{
             md={6}
             lg={4}
           >
-         <OverviewLatestProducts
+         <OverviewLatestStores
               products = {wholesales }
               sx={{ height: '100%' }}
             />

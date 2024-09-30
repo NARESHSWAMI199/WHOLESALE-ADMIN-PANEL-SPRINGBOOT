@@ -36,7 +36,7 @@ import { getInitials } from 'src/utils/get-initials';
 import React, {useEffect, useState } from 'react';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
-import { itemImage } from 'src/utils/util';
+import { itemImage, toTitleCase } from 'src/utils/util';
 
 
 export const ItemsTable = (props) => {
@@ -137,6 +137,9 @@ export const ItemsTable = (props) => {
                 <TableCell>
                   Name
                 </TableCell>
+                <TableCell>
+                  Token
+                </TableCell>
 
                 <TableCell>
                   label
@@ -205,19 +208,24 @@ export const ItemsTable = (props) => {
                         spacing={2}
                       >      
                  
-                    {!!item.avtar ? <Image src='item.avtar'/>  : 
+                    {!!item.avtar ? <Image src={itemImage+item.avtar}/>  : 
                         <Avatar src={itemImage+item.avtar} >
                           {getInitials(item.name)}
                         </Avatar>
                         }
                    
                       <Typography variant="subtitle2">
-                      {item.name}
+                      {toTitleCase(item.name)}
                     </Typography>
                          
                       </Stack>
                     </TableCell>
-
+               
+                    <TableCell align='center'>
+                      <Typography variant="subtitle2" sx={{color:'green'}}>
+                        {item.slug}
+                      </Typography>
+                    </TableCell>
                     <TableCell align='center'>
                         {item.label === "O" && <Badge color="error" badgeContent={'Old'} />}
                         {item.label === "N" && <Badge color="success" badgeContent={'New'} />}

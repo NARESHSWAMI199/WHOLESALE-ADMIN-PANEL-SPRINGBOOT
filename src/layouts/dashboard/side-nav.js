@@ -8,6 +8,7 @@ import {
   Button,
   Divider,
   Drawer,
+  Link,
   Stack,
   SvgIcon,
   Typography,
@@ -66,12 +67,13 @@ export const SideNav = (props) => {
               p: '12px'
             }}
           >
+            <Link style={{textDecoration:'white', color:'white'}} href={'/'}>
             <div>
               <Typography
                 color="inherit"
                 variant="subtitle1"
               >
-                Carlos Sales
+                Swami Sales
               </Typography>
               <Typography
                 color="neutral.400"
@@ -80,6 +82,7 @@ export const SideNav = (props) => {
                 Admin pannel
               </Typography>
             </div>
+            </Link>
             <SvgIcon
               fontSize="small"
               sx={{ color: 'neutral.500' }}

@@ -15,6 +15,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import DialogFormForExcelImport from 'src/layouts/excel/import-excel';
 import { StoresCard } from 'src/sections/wholesale/stores-table';
+import { BasicSearch } from 'src/sections/basic-search';
 
 const now = new Date();
 
@@ -252,7 +253,6 @@ const Page = () => {
         setData({
             ...data,
             ...searchData,
-            userType: "R"
         })
     }
 
@@ -285,7 +285,6 @@ const Page = () => {
                     <Stack spacing={3}>
 
                         <StoresCard deleteStore={onDeleteStore} store={wholesale} />
-
 
                         <Stack
                             direction="row"
@@ -335,6 +334,7 @@ const Page = () => {
 
                         
                     
+                        <BasicSearch onSearch={onSearch} type="item" />
                         <ItemsTable
                             count={totalElements}
                             items={items}

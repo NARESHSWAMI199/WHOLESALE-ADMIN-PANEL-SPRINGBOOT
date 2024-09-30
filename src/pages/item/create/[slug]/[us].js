@@ -65,7 +65,8 @@ const [values,setValues] = useState({})
         inStock: formData.get("inStock") ? 'Y' : 'N',
         label: formData.get("itemLabel"),
         description: formData.get("description"),
-        wholesaleSlug : slug
+        wholesaleSlug : slug,
+        itemImage : values.itemImage
       }
 
     axios.defaults.headers = {
