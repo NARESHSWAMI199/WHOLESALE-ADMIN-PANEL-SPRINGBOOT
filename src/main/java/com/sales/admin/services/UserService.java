@@ -168,6 +168,7 @@ public class UserService extends RepoContainer {
         user.setContact(userDto.getContact());
         user.setEmail(userDto.getEmail());
         user.setUserType(userDto.getUserType());
+        user.setPassword(password);
         return userRepository.save(user);
     }
 

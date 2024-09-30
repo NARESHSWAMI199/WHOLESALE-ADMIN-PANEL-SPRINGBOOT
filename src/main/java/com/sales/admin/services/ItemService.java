@@ -42,7 +42,7 @@ public class ItemService extends RepoContainer implements ItemsDao {
                 Sort.by(searchFilters.getOrderBy()).ascending() :
                 Sort.by(searchFilters.getOrderBy()).descending();
         Specification<Item> specification = Specification.where(
-            containsName(searchFilters.getName())
+            containsName(searchFilters.getSearchKey().trim())
                 .and(isWholesale(searchFilters.getStoreId()))
                 .and(isStatus(searchFilters.getStatus()))
                 .and(inStock(searchFilters.getInStock()))
