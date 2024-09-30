@@ -12,6 +12,12 @@ const ImageInput = (props) => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [fileList, setFileList] = useState([
+    {
+      uid: '-1',
+      name: 'image.png',
+      status: 'done',
+      url: props.avtar
+    },
 
   ]);
   const handlePreview = async (file) => {
@@ -21,9 +27,9 @@ const ImageInput = (props) => {
     setPreviewImage(file.url || file.preview);
     setPreviewOpen(true);
   };
-  const handleChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
-   // props.onChange(fileList[0]);
+  const handleChange = (info) => {
+    setFileList(info.fileList);
+    props.onChange(info.file);
   }
   const uploadButton = (
     <button
@@ -45,6 +51,7 @@ const ImageInput = (props) => {
   );
   return (
     <>
+    { props.avtar}
       <Upload
         //action={props.action}
         listType="picture-circle"

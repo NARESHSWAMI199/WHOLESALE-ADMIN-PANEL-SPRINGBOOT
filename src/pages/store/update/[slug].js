@@ -152,8 +152,7 @@ const changeState = useCallback(
           "Content-Type" : "multipart/form-data"
       }
       let formData = new FormData()
-      console.log(store.storeImage)
-      formData.append("storeProfile",store.storeImage)
+      formData.append("storeImage",store.storeImage.originFileObj)
       axios.post(host+"/admin/store/profile/"+slug,formData)
       .then(res => {
         console.log(res.data)
@@ -167,7 +166,7 @@ const changeState = useCallback(
           setFlag("error")
       })
     }
-    //updateProfile();
+    updateProfile();
   
 
   })
@@ -180,7 +179,7 @@ const changeState = useCallback(
   
 
 const onSubmit = (image) =>{
-  console.log('image : '+image)
+  console.log(image)
   setStore((pervious)=>({
     ...pervious,
     storeImage : image
