@@ -93,9 +93,7 @@ export const GroupTable = (props) => {
           setAssignGroup(data);
        })
        .catch(err => {
-         setFlag("error")
          setMessage(!!err.response ? err.response.data.message : err.message)
-         setOpen(true)
        } )
      }
     getData();
