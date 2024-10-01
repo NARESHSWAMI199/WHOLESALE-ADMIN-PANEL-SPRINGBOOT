@@ -34,8 +34,9 @@ public class UserController extends ServiceContainer {
     @Autowired
     JwtToken jwtToken;
 
-    @PostMapping("/all")
-    public ResponseEntity<Page<User>> getAllUsers(@RequestBody UserSearchFilters searchFilters, HttpServletRequest httpServletRequest) {
+    @PostMapping("/{userType}/all")
+    public ResponseEntity<Page<User>> getAllUsers(@RequestBody UserSearchFilters searchFilters, @PathVariable String userType, HttpServletRequest httpServletRequest) {
+        if(!userType.equals("A")) searchFilters.setUserType(userType);
         Page<User> userPage = userService.getAllUser(searchFilters);
         return new ResponseEntity<>(userPage, HttpStatus.OK);
     }
@@ -65,25 +66,19 @@ public class UserController extends ServiceContainer {
 
     @Transactional
     @PostMapping(value = {"/add", "/update"})
-    public ResponseEntity<Map<String, Object>> register(HttpServletRequest request, @RequestBody UserDto userDto) {
+    public ResponseEntity<Map<String, Object>> register(HttpServletRequest request, @RequestBody UserDto userDto) throws Exception {
         Map<String,Object> responseObj = new HashMap<>();
-        try {
-            User logggedUser = (User) request.getAttribute("user");
-            responseObj = userService.createOrUpdateUser(userDto, logggedUser);
-        } catch (Exception e) {
-            e.printStackTrace();
-            responseObj.put("message", e.getMessage());
-            responseObj.put("status", 500);
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        }
+        User logggedUser = (User) request.getAttribute("user");
+        responseObj = userService.createOrUpdateUser(userDto, logggedUser);
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
 
     }
 
     @GetMapping("/detail/{slug}")
-    public ResponseEntity<Map<String, Object>> getDetailUser(@PathVariable String slug) {
+    public ResponseEntity<Map<String, Object>> getDetailUser(HttpServletRequest request,@PathVariable String slug) {
         Map<String,Object> responseObj = new HashMap<>();
-        User user = userService.getUserDetail(slug);
+        User logggedUser = (User) request.getAttribute("user");
+        User user = userService.getUserDetail(slug,logggedUser);
         if (user != null) {
             responseObj.put("res", user);
             responseObj.put("status", 200);
@@ -199,10 +194,11 @@ public class UserController extends ServiceContainer {
     }
 
     @GetMapping("/groups/{slug}")
-    public ResponseEntity<Map<String,Object>> getUserGroupsIdsBySlug(@PathVariable String slug){
+    public ResponseEntity<Map<String,Object>> getUserGroupsIdsBySlug(HttpServletRequest request,@PathVariable String slug){
         Map responseObj = new HashMap();
         List<Integer> groupsIds = userService.getUserGroupsIdBySlug(slug);
-        if (groupsIds.size() > 0) {
+        User logggedUser = (User) request.getAttribute("user");
+        if (groupsIds.size() > 0 ) {
             responseObj.put("content", groupsIds);
             responseObj.put("status", 200);
         } else {

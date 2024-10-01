@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository  extends JpaRepository<User, Integer> , JpaSpecificationExecutor {
 
-    @Query(value = "from User where email=:email and password=:password and userType='S' ")
+    @Query(value = "from User where email=:email and password=:password and (userType='S' or userType='A' or userType='SA') ")
     User findByEmailAndPassword(@Param("email") String email, @Param("password") String password);
 
 

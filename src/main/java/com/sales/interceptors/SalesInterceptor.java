@@ -49,17 +49,20 @@ public class SalesInterceptor implements HandlerInterceptor {
                 sendError(response,"User is not active.",401);
                 return false;
             }
+            String requestUrI = request.getRequestURI();
+            /** if user have list permission also has detail permission */
+            requestUrI = requestUrI.replaceAll("detail","all");
             boolean isPermitted = false;
             for( String permission : permittedUrls) {
-                if(request.getRequestURI().contains(permission)){
+                if(requestUrI.contains(permission)){
                     isPermitted = true;
                     break;
                 }
             }
-//            if (!isPermitted) {
-//                sendError(response, "You don't permissions to access "+request.getRequestURI()+".Please contact your administrator.", 400);
-//                return false;
-//            }
+            if (!isPermitted) {
+                sendError(response, "You don't permissions to access "+requestUrI+".Please contact your administrator.", 400);
+                return false;
+            }
             request.setAttribute("user",user);
             return true;
         }

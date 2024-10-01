@@ -32,6 +32,7 @@ public class PermissionHbRepository {
 
 
     public int updatePermissions(int groupId, List<Integer> permissions){
+        if(permissions.isEmpty()) return 0;
         String values = "";
         for(int i=0; i < permissions.size(); i++){
             values +="("+groupId+","+permissions.get(i)+")";
@@ -44,7 +45,8 @@ public class PermissionHbRepository {
     }
 
 
-    public int deleteGroupBySlug(String slug, int groupId){
+    public int deleteGroupBySlug(String slug, int groupId) throws Exception {
+        if (groupId == 0) throw new Exception("We can't this group.");
         deleteGroupPermissionByGroupId(groupId);
         deleteGroupFromUser(groupId);
         String sql = "delete from `groups` where slug=:slug";
@@ -54,6 +56,7 @@ public class PermissionHbRepository {
     }
 
     public int deleteGroupPermissionByGroupId(int groupId){
+        if (groupId == 0) return  0;
         String sql = "delete from `group_permissions` where group_id = :groupId";
         Query query = entityManager.createNativeQuery(sql);
         query.setParameter("groupId",groupId);
@@ -61,7 +64,8 @@ public class PermissionHbRepository {
     }
 
     public int deleteGroupFromUser(int groupId){
-        String sql = "delete from `user_permissions` where group_id = :groupId";
+        if (groupId == 0) return  0;
+        String sql = "delete from `user_groups` where group_id = :groupId";
         Query query = entityManager.createNativeQuery(sql);
         query.setParameter("groupId",groupId);
         return query.executeUpdate();
@@ -69,6 +73,7 @@ public class PermissionHbRepository {
 
 
     public int deleteUserGroups(int userId){
+        if (userId == 0) return  0;
         String sql = "delete from `user_groups` where user_id = :userId";
         Query query = entityManager.createNativeQuery(sql);
         query.setParameter("userId",userId);
@@ -77,8 +82,10 @@ public class PermissionHbRepository {
 
 
 
-    public int assignGroupsToUser(int userId, List<Integer> groups){
+    public int assignGroupsToUser(int userId, List<Integer> groups) throws Exception {
+        if(groups.contains(0)) groups.remove((Integer) 0);
         deleteUserGroups(userId);
+        if(groups.isEmpty()) throw new Exception("Please provide at least one group.");
         String values = "";
         for(int i=0; i < groups.size(); i++){
             values +="("+userId+","+groups.get(i)+")";

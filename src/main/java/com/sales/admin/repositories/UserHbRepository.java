@@ -18,7 +18,7 @@ public class UserHbRepository {
     @Autowired
     EntityManager entityManager;
 
-    public int updateUser(UserDto userDto,User loggedUser){
+    public int updateUser(UserDto userDto,User loggedUser) throws Exception {
         String strQuery = "update User set " +
                 "username=:username , " +
                 "email=:email,"+

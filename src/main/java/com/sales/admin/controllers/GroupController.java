@@ -22,14 +22,15 @@ public class GroupController extends ServiceContainer {
 
 
     @PostMapping("/all")
-    public ResponseEntity<Page<Group>> getAllGroup(@RequestBody SearchFilters searchFilters){
-        Page<Group> storePage =  groupService.getALlGroups(searchFilters);
+    public ResponseEntity<Page<Group>> getAllGroup( HttpServletRequest request,@RequestBody SearchFilters searchFilters){
+        User loggedUser =  (User)request.getAttribute("user");
+        Page<Group> storePage =  groupService.getALlGroups(searchFilters,loggedUser);
         return new ResponseEntity<>(storePage, HttpStatus.OK);
     }
 
 
     @RequestMapping("/permissions/all")
-    public ResponseEntity<Map<String,List<Object>>> getAllPermissions(){
+    public ResponseEntity<Map<String,List<Object>>> getAllPermissions(HttpServletRequest request){
         Map<String,List<Object>> permissions =  groupService.getAllPermissions();
         return new ResponseEntity<>(permissions, HttpStatus.OK);
     }
@@ -38,7 +39,7 @@ public class GroupController extends ServiceContainer {
 
     @Transactional
     @PostMapping(value = {"create", "update"})
-    public ResponseEntity<Map<String,Object>> createOrUpdate(HttpServletRequest request, @RequestBody GroupDto groupDto){
+    public ResponseEntity<Map<String,Object>> createOrUpdate(HttpServletRequest request, @RequestBody GroupDto groupDto) throws Exception {
         User loggedUser =  (User)request.getAttribute("user");
          Map<String,Object> response= groupService.createOrUpdateGroup(groupDto,loggedUser);
          return new ResponseEntity<Map<String,Object>>(response, HttpStatus.valueOf((Integer) response.get("status")));
@@ -64,7 +65,7 @@ public class GroupController extends ServiceContainer {
 
     @Transactional
     @GetMapping("/delete/{slug}")
-    public ResponseEntity<Map<String, Object>> deleteGroupBySlug(@PathVariable String slug) {
+    public ResponseEntity<Map<String, Object>> deleteGroupBySlug(@PathVariable String slug) throws Exception {
         Map<String,Object> responseObj = new HashMap<>();
         int isUpdated = groupService.deleteGroupBySlug(slug);
         if (isUpdated > 0) {

@@ -25,12 +25,14 @@ public class GroupService extends RepoContainer {
 
 
 
-    public Page<Group> getALlGroups(SearchFilters filters) {
+    public Page<Group> getALlGroups(SearchFilters filters,User loggedUser) {
         Specification<Group> specification = Specification.where(
                 (containsName(filters.getSearchKey()))
                         .and(greaterThanOrEqualFromDate(filters.getFromDate()))
                         .and(lessThanOrEqualToToDate(filters.getToDate()))
                         .and(hasSlug(filters.getSlug()))
+                        .and(notSuperAdmin(loggedUser))
+
         );
         Pageable pageable = getPageable(filters);
         return groupRepository.findAll(specification,pageable);
@@ -38,13 +40,17 @@ public class GroupService extends RepoContainer {
 
 
     @Transactional
-    public Map<String,Object> createOrUpdateGroup(GroupDto groupDto, User loggededUser) {
+    public Map<String,Object> createOrUpdateGroup(GroupDto groupDto, User loggededUser) throws Exception {
         Map<String,Object> responseObject = new HashMap<>();
         try {
             if (groupDto.getSlug() != null && !groupDto.getSlug().trim().equals("")) {
                 Group group = groupRepository.findGroupBySlug(groupDto.getSlug());
+                if(group.getId() == 0 && loggededUser.getId() !=0 ) throw  new Exception("There is nothing to update.");
                 int isUpdated = permissionHbRepository.updateGroup(groupDto, group.getId());
-                if (isUpdated > 0) {
+                if (isUpdated > 0 && group.getId() ==0) {
+                    responseObject.put("message", "The group has been updated successfully.But dear "+loggededUser.getUsername()+" ji We are not able to remove permissions. from "+group.getName()+" New permissions updated .");
+                    responseObject.put("status", 201);
+                }else if (isUpdated > 0) {
                     responseObject.put("message", "The group has been updated successfully.");
                     responseObject.put("status", 201);
                 } else {
@@ -76,16 +82,14 @@ public class GroupService extends RepoContainer {
         Group group = groupRepository.findGroupBySlug(slug);
         if(group == null) return null;
         List<Map<String,Object>> groupWithPermission =  permissionRepository.getGroupPermissionByGroupId(group.getId());
-        Map<String,Object> formattedGroup = null;
+        Map<String,Object> formattedGroup = new HashMap<String,Object>();;
         List<Integer> permissionList = new ArrayList<>();
         for (Map<String, Object> map : groupWithPermission) {
             permissionList.add((Integer) map.get("id"));
         }
-        if(permissionList.size() > 0){
-            formattedGroup = new HashMap<String,Object>();
-            formattedGroup.put("group",(String) groupWithPermission.get(0).get("name"));
-            formattedGroup.put("permissions",permissionList);
-        }
+        formattedGroup.put("group",group.getName());
+        formattedGroup.put("permissions",permissionList);
+
         return formattedGroup;
     }
 
@@ -109,12 +113,12 @@ public class GroupService extends RepoContainer {
     }
 
     @Transactional
-    public int deleteGroupBySlug(String slug){
+    public int deleteGroupBySlug(String slug) throws Exception {
         Group group = groupRepository.findGroupBySlug(slug);
         return permissionHbRepository.deleteGroupBySlug(slug,group.getId());
     }
 
-    public int assignGroupsToUser(UserPermissionsDto userPermissionsDto){
+    public int assignGroupsToUser(UserPermissionsDto userPermissionsDto) throws Exception {
         int userId = userPermissionsDto.getUserId();
         return permissionHbRepository.assignGroupsToUser(userId,userPermissionsDto.getGroupList());
     }

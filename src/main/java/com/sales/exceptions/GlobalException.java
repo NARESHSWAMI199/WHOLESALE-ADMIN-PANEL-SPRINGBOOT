@@ -17,20 +17,22 @@ import java.sql.SQLIntegrityConstraintViolationException;
 @RestControllerAdvice
 public class GlobalException {
 
-
+    @Transactional
     @ExceptionHandler(value = {ObjectNotFoundException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ErrorDto resourceNotFoundException(ObjectNotFoundException ex, WebRequest request) {
         ErrorDto message = new ErrorDto(ex.getMessage(),404);
+        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         ex.printStackTrace();
         return message;
     }
 
-
+    @Transactional
     @ExceptionHandler(value = {SQLIntegrityConstraintViolationException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorDto resourceNotFoundException(SQLIntegrityConstraintViolationException ex, WebRequest request) {
         ErrorDto message = new ErrorDto(ex.getMessage(),500);
+        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         ex.printStackTrace();
         return message;
     }
@@ -47,22 +49,24 @@ public class GlobalException {
 
 
 
-
+    @Transactional
     @ExceptionHandler(value = {DataIntegrityViolationException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorDto dataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
         String message = ex.getMessage().contains("constraint [null]") ? "Required parameters can't be null or a duplicate entry." : ex.getMessage();
         ErrorDto err = new ErrorDto(message,400);
+        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         ex.printStackTrace();
         return err;
     }
 
 
-
+    @Transactional
     @ExceptionHandler(value = {HttpMessageNotReadableException.class})
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto httpMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest request) {
         ErrorDto message = new ErrorDto("May be request body is empty or required parameter are missing.",500);
+        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         ex.printStackTrace();
         return message;
     }
@@ -71,7 +75,14 @@ public class GlobalException {
     @ExceptionHandler(value = {Exception.class})
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto resourceNotFoundException(Exception ex, WebRequest request) {
-        ErrorDto message = new ErrorDto(ex.getMessage(),500);
+        ErrorDto message = null;
+        if(ex.getMessage().contains("ConstraintViolationException")){
+            message = new ErrorDto("Duplicate entry not allowed",500);
+        }else if(ex.getMessage().contains("DataException")){
+            message = new ErrorDto("Unexpected input",500);
+        }else {
+            message = new ErrorDto(ex.getMessage(), 500);
+        }
         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         ex.printStackTrace();
         return message;

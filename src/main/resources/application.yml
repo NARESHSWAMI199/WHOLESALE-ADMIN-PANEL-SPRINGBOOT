@@ -26,23 +26,23 @@ jwt:
 
 
 profile :
-  absolute : C:/Users/DATA/Documents/sales/sales-backend/src/main/resources/public/
-#  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/profiles/
+#  absolute : C:/Users/DATA/Documents/sales/sales-backend/src/main/resources/public/
+  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/profiles/
   relative :
-  get : src/main/resources/public/
-#  get : images/profiles/
+#  get : src/main/resources/public/
+  get : src/main/resources/images/profiles/
 
 store :
-  absolute : C:/Users/DATA/Documents/sales/sales-backend/src/main/resources/public/
-#    absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/store/
+  #  absolute : C:/Users/DATA/Documents/sales/sales-backend/src/main/resources/public/
+  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/stores/
   relative :
-#  get : src/main/resources/images/store/
-  get : src/main/resources/public/
+  get : src/main/resources/images/stores/
+#  get : src/main/resources/public/
 
 item:
-  absolute: C:/Users/DATA/Documents/sales/sales-backend/src/main/resources/public/
+  absolute: /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/items/
   #    absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/store/
   relative:
   #  get : src/main/resources/images/store/
-  get: src/main/resources/public/
+  get: src/main/resources/images/items/
 

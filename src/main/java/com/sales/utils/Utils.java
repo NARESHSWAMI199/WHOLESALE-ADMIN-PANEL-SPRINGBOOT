@@ -17,6 +17,7 @@ public class Utils {
         return millis;
     }
 
+    public static String mobileRegex = "^(?=(?:[8-9]){1})(?=[0-9]{8}).*";
 
     public static String getMillisToDate(Long millis){
         DateFormat format = new SimpleDateFormat("dd MMM yyyy HH:mm:ss:SSS Z");
@@ -66,5 +67,19 @@ public class Utils {
         return matcher.matches();
     }
 
+
+    public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
+            Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+
+    public static boolean isValidEmail(String emailStr) {
+        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailStr);
+        return matcher.matches();
+    }
+
+
+    public static void mobileAndEmailValidation(String email ,String contact,String errorMessage) throws Exception {
+        if (Utils.isEmpty(contact) || !contact.matches(Utils.mobileRegex)) throw new Exception(errorMessage.replaceAll("_","mobile number") +  " ["+contact+"]") ;
+        if (Utils.isEmpty(email) || !isValidEmail(email)) throw new Exception(errorMessage.replaceAll("_","email address") + " ["+email+"]") ;
+    }
 
 }

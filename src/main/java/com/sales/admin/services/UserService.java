@@ -88,7 +88,9 @@ public class UserService extends RepoContainer {
             .and(greaterThanOrEqualFromDate(filters.getFromDate()))
             .and(lessThanOrEqualToToDate(filters.getToDate()))
             .and(isStatus(filters.getStatus()))
-            .and(hasUserType(filters.getUserType())).and(hasSlug(filters.getSlug()))
+            .and(hasUserType(filters.getUserType()))
+                        .and(hasSlug(filters.getSlug()))
+                        .and(notSuperAdmin())
         );
         Pageable pageable = getPageable(filters);
         return userRepository.findAll(specification,pageable);
@@ -113,6 +115,8 @@ public class UserService extends RepoContainer {
     public Map<String, Object> createOrUpdateUser(UserDto userDto, User loggedUser) throws Exception {
         Map<String, Object> responseObj = new HashMap<>();
         StoreDto storeDto = null;
+        /** make sure email and phone numbers are valid */
+        Utils.mobileAndEmailValidation(userDto.getEmail(),userDto.getContact(),"Not a valid user's _ recheck your and user's _.");
         if (!Utils.isEmpty(userDto.getSlug())) {
             int isUpdated = updateUser(userDto, loggedUser);
              Integer userId = userRepository.getUserIdBySlug(userDto.getSlug());
@@ -120,6 +124,7 @@ public class UserService extends RepoContainer {
             if (userDto.getUserType().equalsIgnoreCase("W")){
                 storeDto =  userDtoToStoreDto(userDto);
                 storeDto.setUserSlug(userDto.getSlug());
+                Utils.mobileAndEmailValidation(storeDto.getStoreEmail(),storeDto.getStorePhone(),"Not a valid store's _ recheck your and store's _.");
                 storeService.createOrUpdateStore(storeDto,loggedUser);
             }
             if (isUpdated > 0) {
@@ -150,17 +155,16 @@ public class UserService extends RepoContainer {
         }
 
         /** going to update user's groups */
-        int isAssigned= permissionHbRepository.assignGroupsToUser(userDto.getUserId(),userDto.getGroupList());
-        if(isAssigned < 1) {
-            responseObj.put("message", "Something went wrong during update user's groups. please contact to administrator");
-            responseObj.put("status", 400);
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        if (userDto.getUserId() != loggedUser.getId()) {
+            int isAssigned = permissionHbRepository.assignGroupsToUser(userDto.getUserId(), userDto.getGroupList());
+            if (isAssigned < 1)
+                throw new Exception("Something went wrong during update user's groups. please contact to administrator.");
         }
         return responseObj;
     }
 
     @Transactional
-    public User createUser(UserDto userDto, User loggedUser) {
+    public User createUser(UserDto userDto, User loggedUser) throws Exception {
         User user = new User(loggedUser);
         user.setUsername(userDto.getUsername());
         user.setSlug(UUID.randomUUID().toString());
@@ -173,14 +177,26 @@ public class UserService extends RepoContainer {
     }
 
     @Transactional
-    public int updateUser(UserDto userDto, User loggedUser){
+    public int updateUser(UserDto userDto, User loggedUser) throws Exception {
         return userHbRepository.updateUser(userDto,loggedUser);
     }
 
-    public User getUserDetail(String slug){
-        return userRepository.findUserBySlug(slug);
+    public User getUserDetail(String slug ,User loggedUser){
+       User user = userRepository.findUserBySlug(slug);
+        if(user !=null && (user.getId() !=0 || loggedUser.getId() == 0)){
+            return user;
+        }
+        return null;
     }
 
+
+    public User getUserDetail(String slug){
+        User user = userRepository.findUserBySlug(slug);
+        if(user !=null && (user.getId() !=0)){
+            return user;
+        }
+        return null;
+    }
 
     @Transactional
     public int deleteUserBySlug(String slug){

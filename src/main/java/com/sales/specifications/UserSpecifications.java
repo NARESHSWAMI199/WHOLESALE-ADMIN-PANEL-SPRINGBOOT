@@ -69,5 +69,12 @@ public class UserSpecifications {
         };
     }
 
+    public static Specification<User> notSuperAdmin() {
+        return (root, query, criteriaBuilder) -> {
+            return criteriaBuilder.notEqual(root.get(User_.id), 0);
+        };
+    }
+
+
 
 }
