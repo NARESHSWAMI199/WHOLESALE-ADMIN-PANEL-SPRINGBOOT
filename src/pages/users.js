@@ -72,7 +72,7 @@ const Page = () => {
        axios.defaults.headers = {
          Authorization : auth.token
        }
-       await axios.post(host+"/admin/auth/all",data)
+       await axios.post(host+"/admin/auth/A/all",data)
        .then(res => {
           const response = res.data.content;
            setTotalElements(res.data.totalElements)
@@ -89,7 +89,15 @@ const Page = () => {
 
    },[data,page,rowsPerPage])
 
-
+   const updateStatusOnUi = (status,slug) =>{
+    setCustomers((items) => {
+      items.filter((_, index) => {
+        if(_.slug === slug) return _.status = status
+        return _;
+      })
+      return items
+    });
+  }
 
   const onStatusChange = (slug,status) => {
     axios.defaults.headers = {
@@ -108,6 +116,7 @@ const Page = () => {
         setMessage("Successfully deactivated.")
       }
       setOpen(true)
+      updateStatusOnUi(status,slug)
     }).catch(err => {
       console.log(err)
       setFlag("error")
@@ -128,6 +137,7 @@ const Page = () => {
         setMessage(res.data.message)
         setDeleted(true)
         setOpen(true)
+        setCustomers((items) =>items.filter((item) => item.slug !== slug));
     }).catch(err => {
       console.log(err)
       setMessage(err.message)

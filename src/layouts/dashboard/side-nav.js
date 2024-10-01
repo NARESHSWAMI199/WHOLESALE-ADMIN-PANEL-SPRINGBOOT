@@ -18,14 +18,36 @@ import { Logo } from 'src/components/logo';
 import { Scrollbar } from 'src/components/scrollbar';
 import { items } from './config';
 import { SideNavItem } from './side-nav-item';
+import { useAuth } from 'src/hooks/use-auth';
+import { WorkspacePremium } from '@mui/icons-material';
+import { useEffect, useState } from 'react';
 
 export const SideNav = (props) => {
   const { open, onClose } = props;
   const pathname = usePathname();
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
+  const auth = useAuth()
+  const [user,setUser] =  useState(auth.user)
+  const [updatedItems, setUpdatedItems] = useState(items(auth.user))
 
-  const content = (
-    <Scrollbar
+
+  useEffect(()=>{
+    setUser(auth.user)
+  },[auth.user])
+
+
+  useEffect(()=>{
+    setUpdatedItems(items(user))
+  },[])
+
+
+  // useEffect(()=>{
+  //   if(!!user && user.id == 0){
+  //     setUpdatedItems((pervious) => [...pervious.filter(item => item.title != "Groups" )]
+  //   )}
+  
+  // },[])
+  const content = (<Scrollbar
       sx={{
         height: '100%',
         '& .simplebar-content': {
@@ -109,7 +131,9 @@ export const SideNav = (props) => {
               m: 0
             }}
           >
-            {items.map((item) => {
+     
+
+            {updatedItems.filter(item=>item.show == true).map((item) => {
               const active = item.path ? (pathname === item.path) : false;
 
               return (

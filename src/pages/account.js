@@ -35,8 +35,8 @@ const Page = () => {
          }
          await axios.get(host+"/admin/auth/groups/"+user.slug)
          .then(res => {
-            const data = res.data.content;
-             setAssignGroup(data);
+            const data = res.data.content
+            setAssignGroup(data);
          })
          .catch(err => {
            setFlag("error")
@@ -59,7 +59,6 @@ const Page = () => {
          .then(res => {
             const data = res.data.content;
              setGroups(data);
-             console.log(alert)
          })
          .catch(err => {
            //setErrors(err.message)
@@ -158,7 +157,7 @@ const Page = () => {
                   md={6}
                   lg={8}
                 >
-                  <AccountProfileDetails user={content} updateProfile={updateProfile} assignGroup={assignGroup} groups={groups} />
+                  <AccountProfileDetails user={content} updateProfile={updateProfile} assignGroup={assignGroup} groups={groups} userType ="Owner"/>
                 </Grid>
               </Grid>
             </div>

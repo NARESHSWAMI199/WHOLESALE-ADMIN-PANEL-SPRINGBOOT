@@ -23,7 +23,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import ImageInput from "src/sections/image-input";
-import { host } from "src/utils/util";
+import { host, storeImage } from "src/utils/util";
 
 
 
@@ -119,8 +119,8 @@ const changeState = useCallback(
       storeSlug : store.slug,
       addressSlug : store.address.slug,
       description : formData.get("description"),
-      storeEmail : formData.get("storeEmail"),
-      storePhone : formData.get("storePhone"),
+      storeEmail : formData.get("email"),
+      storePhone : formData.get("phone"),
       state:  formData.get("state"),
       city :  formData.get("city"),
       storeName :  formData.get("storeName")
@@ -152,7 +152,6 @@ const changeState = useCallback(
   
 
 const onSubmit = (image) =>{
-  console.log(image)
   setStore((pervious)=>({
     ...pervious,
     storePic : image.originFileObj
@@ -200,7 +199,7 @@ return ( <>
           {/* store image input */}
 
           <div style={{marginLeft : '10px',marginTop: '10px'}}>
-          <ImageInput onChange={onSubmit} avtar={host+'/admin/store/image/'+store.avtar}/>
+          <ImageInput onChange={onSubmit} avtar={storeImage+store.avtar}/>
           </div>
             <Grid
               xs={12}
@@ -233,6 +232,7 @@ return ( <>
                 value={!!address ? address.state: 0}
                 label="State"
                 onChange={changeState}
+                required
                 InputLabelProps={{ shrink: true }}
               >
               {stateList.map((state,i)=>{
@@ -274,9 +274,10 @@ return ( <>
               <TextField
                 fullWidth
                 label="Store Email Address"
-                name="storeEmail"
+                name="email"
                 onChange={handleChange}
                 required
+                type="email"
                 value={store.email}
                 InputLabelProps={{ shrink: true }}
               />
@@ -288,7 +289,7 @@ return ( <>
               <TextField
                 fullWidth
                 label="Store Phone Number"
-                name="storePhone"
+                name="phone"
                 onChange={handleChange}
                 type="number"
                 value={store.phone}

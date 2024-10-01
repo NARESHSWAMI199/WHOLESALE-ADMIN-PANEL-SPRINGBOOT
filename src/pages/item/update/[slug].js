@@ -22,7 +22,7 @@ import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { host } from "src/utils/util";
+import { host, itemImage } from "src/utils/util";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import { useRouter } from "next/router";
@@ -155,7 +155,7 @@ const createItem = () => {
                             <Box sx={{ m: -1.5 }}>
         
                             <div style={{marginLeft : '10px',marginTop: '10px'}}>
-                                <ImageInput onChange={onSubmit} avtar={host+'/admin/store/image/'+values.avtar}/>
+                                <ImageInput onChange={onSubmit} avtar={itemImage+values.avtar}/>
                             </div>
 
                                 <Grid

@@ -66,7 +66,6 @@ export const AccountProfileDetails = (props) => {
   return (
     <form
       autoComplete="off"
-      noValidate
       onSubmit={handleSubmit}
     >
       <Card>
@@ -92,6 +91,7 @@ export const AccountProfileDetails = (props) => {
                   onChange={handleChange}
                   required
                   value={values.username || ''}
+                  InputLabelProps={{shrink:true}}
                 />
               </Grid>
        
@@ -101,6 +101,7 @@ export const AccountProfileDetails = (props) => {
               >
                 <TextField
                   fullWidth
+                  type='email'
                   label="Email Address"
                   name="email"
                   onChange={handleChange}
@@ -121,18 +122,20 @@ export const AccountProfileDetails = (props) => {
                   value={values.contact || ''}
                 />
               </Grid>
-
+         
               <Grid
                 xs={12}
                 md={6}
               >
-              <FormControl sx={{ minWidth: 350, maxWidth: 500 }}>
+
+             <FormControl sx={{ minWidth: 350, maxWidth: 500 }}>
                       <InputLabel shrink htmlFor="select-multiple-native">
                         Groups
                       </InputLabel>
                       <Select
                         multiple
                         native
+                        disabled={props.userType =="Owner"}
                         name="groups"
                         // @ts-ignore Typings are not considering `native`
                         onChange={handleChangeMultiple}
@@ -147,47 +150,12 @@ export const AccountProfileDetails = (props) => {
                           </option>
                         ))}
                       </Select>
-                </FormControl>
-              </Grid>
+                </FormControl> 
+              </Grid> 
 
 
-              {/* <Grid
-                xs={12}
-                md={6}
-              >
-                <TextField
-                  fullWidth
-                  label="Country"
-                  name="country"
-                  onChange={handleChange}
-                  required
-                  value={values.country}
-                />
-              </Grid>
-              <Grid
-                xs={12}
-                md={6}
-              >
-                <TextField
-                  fullWidth
-                  label="Select State"
-                  name="state"
-                  onChange={handleChange}
-                  required
-                  select
-                  SelectProps={{ native: true }}
-                  value={values.state}
-                >
-                  {states.map((option) => (
-                    <option
-                      key={option.value}
-                      value={option.value}
-                    >
-                      {option.label}
-                    </option>
-                  ))}
-                </TextField>
-              </Grid> */}
+              
+
             </Grid>
           </Box>
         </CardContent>

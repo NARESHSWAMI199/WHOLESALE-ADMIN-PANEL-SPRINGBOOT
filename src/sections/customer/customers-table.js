@@ -33,7 +33,9 @@ import { getInitials } from 'src/utils/get-initials';
 import React, {useEffect, useState } from 'react';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
-import { host, toTitleCase } from 'src/utils/util';
+import { host, toTitleCase, userImage } from 'src/utils/util';
+import { Image } from 'antd';
+import { useAuth } from 'src/hooks/use-auth';
 
 
 export const CustomersTable = (props) => {
@@ -60,22 +62,16 @@ export const CustomersTable = (props) => {
   const [action,setAction] = useState('')
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-
+  const auth = useAuth()
+  const user = auth.user
 
   const changeStatus = (slug,status) => {
-    setItems((items) => {
-        items.filter((_, index) => {
-          if(_.slug === slug) return _.status = status
-          return _;
-        })
-        return items
-    });
       props.onStatusChange(slug,status)
   }
 
 
   useEffect(()=>{
-    setItems(props.items)
+    setItems((props.items).filter(customer => customer.slug != user.slug))
   },[props.items])
 
   
@@ -89,7 +85,7 @@ export const CustomersTable = (props) => {
 
   const takeAction = (action) =>{
     if (action === 'delete'){
-      setItems((items) =>items.filter((_, index) => index !== rowIndex));
+      //setItems((items) =>items.filter((_, index) => index !== rowIndex));
       props.onDelete(slug)
     }else if (action == 'status'){
       changeStatus(slug,status)
@@ -183,9 +179,12 @@ export const CustomersTable = (props) => {
                         query: { slug: customer.slug },
                       }}
                     >
-                        <Avatar src={host+"/admin/auth/profile/"+customer.avatar} >
+                      { !!customer.avatar ? <Image  style={{borderRadius : '50%', height : '50px', width : '50px'}} src={userImage+customer.avatar}/> :
+
+                        <Avatar src={userImage+customer.avatar} >
                           {getInitials(customer.username)}
                         </Avatar>
+                      }
                         </Link>
                         <Typography variant="subtitle2">
                           {toTitleCase(customer.username)}

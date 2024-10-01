@@ -66,7 +66,7 @@ const createUser = () =>{
          await axios.post(host+"/group/all",data)
          .then(res => {
             const data = res.data.content;
-             setGroups(data);
+             setGroups(data.filter((group)=>group.id != 0));
          })
          .catch(err => {
            //setErrors(err.message)
@@ -198,7 +198,7 @@ const createUser = () =>{
 
                 <form
                 autoComplete="off"
-                noValidate
+               // noValidate
                 onSubmit={handleSubmit}
               >
             <Card>
@@ -307,6 +307,7 @@ const createUser = () =>{
                             fullWidth
                             label="Email Address"
                             name="email"
+                            type="email"
                             onChange={handleChange}
                             required
                             value={values.email}

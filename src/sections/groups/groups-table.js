@@ -34,6 +34,8 @@ import React, {useEffect, useState } from 'react';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
 import { host } from 'src/utils/util';
+import { useAuth } from 'src/hooks/use-auth';
+import axios from 'axios';
 
 
 export const GroupTable = (props) => {
@@ -58,8 +60,11 @@ export const GroupTable = (props) => {
   const [rowIndex,setRowIndex] = useState(-1)
   const [status,setStatus] = useState('')
   const [action,setAction] = useState('')
+  const [assignGroup,setAssignGroup] = useState([])
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const auth = useAuth()
+  const user = auth.user
 
 
   const changeStatus = (slug,status) => {
@@ -77,8 +82,29 @@ export const GroupTable = (props) => {
   }
 
 
+  useEffect( ()=>{
+    const getData = async () => {
+       axios.defaults.headers = {
+         Authorization : auth.token
+       }
+       await axios.get(host+"/admin/auth/groups/"+user.slug)
+       .then(res => {
+          const data = res.data.content
+          setAssignGroup(data);
+       })
+       .catch(err => {
+         setFlag("error")
+         setMessage(!!err.response ? err.response.data.message : err.message)
+         setOpen(true)
+       } )
+     }
+    getData();
+
+   },[])
+
+
   useEffect(()=>{
-    setItems(props.items)
+    setItems((props.items).filter(group => !assignGroup.includes(group.id)|| user.id == 0))
   },[props.items])
 
   

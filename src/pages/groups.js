@@ -104,7 +104,7 @@ const Page = () => {
         setMessage(res.data.message)
         setDeleted(true)
         setOpen(true)
-        setCustomers((items) =>items.filter((_, index) => index !== rowIndex));
+        setGroups((items) =>items.filter((_, index) => index !== rowIndex));
     }).catch(err => {
       console.log(err)
       setFlag("error")

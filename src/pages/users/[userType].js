@@ -14,6 +14,8 @@ import { host } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
 import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
 import { Card, InputAdornment, OutlinedInput } from '@mui/material';
+import { useRouter } from 'next/router';
+
 
 
 
@@ -51,7 +53,8 @@ const Page = () => {
   const [message, setMessage] = useState("")
   const [flag, setFlag] = useState("warning")
 
-
+  const router = useRouter()
+  const {userType} = router.query
   const auth = useAuth()
   let [status,setStatus] = useState(null)
   const [error,setErrors] = useState("")
@@ -61,7 +64,7 @@ const Page = () => {
   const customersIds = useCustomerIds(customers);
   const customersSelection = useSelection(customersIds);
   const [data,setData] = useState({
-    userType : "R",
+    userType :userType !="A" ?userType : null,
     pageNumber : page,
     size : rowsPerPage
   })
@@ -77,7 +80,7 @@ const Page = () => {
        .then(res => {
           const data = res.data.content;
            setTotalElements(res.data.totalElements)
-           setCustomers(data);
+           setCustomers(data.filter((group)=>group.id != 0));
        })
        .catch(err => {
          setErrors(err.message)
@@ -105,6 +108,7 @@ const Page = () => {
         setFlag("warning")
         setMessage("Successfully deactivated.")
       }
+      updateStatusOnUi(status,slug)
       setOpen(true)
       setStatus(status)
     }).catch(err => {
@@ -113,6 +117,15 @@ const Page = () => {
   }
   
 
+  const updateStatusOnUi = (status,slug) =>{
+    setCustomers((items) => {
+      items.filter((_, index) => {
+        if(_.slug === slug) return _.status = status
+        return _;
+      })
+      return items
+    });
+  }
   
   const onDelete = (slug) => {
     axios.defaults.headers = {

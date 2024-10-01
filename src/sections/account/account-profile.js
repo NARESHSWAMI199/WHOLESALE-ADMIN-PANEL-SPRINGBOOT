@@ -13,8 +13,10 @@ import {
 import { useAuth } from 'src/hooks/use-auth';
 import axios from 'axios';
 import { format } from 'date-fns';
-import { host } from 'src/utils/util';
+import { host, userImage } from 'src/utils/util';
 import { useCallback, useEffect, useState } from 'react';
+import { getInitials } from 'src/utils/get-initials';
+import { Image } from 'antd';
 
 export const AccountProfile = (props) => {
   const user = props.user
@@ -88,14 +90,18 @@ export const AccountProfile = (props) => {
                   flexDirection: 'column'
                 }}
               >
-                <Avatar
-                  src={!!user ? host+"/admin/auth/profile/"+user.avatar : ''}
-                  sx={{
-                    height: 80,
-                    mb: 2,
-                    width: 80
-                  }}
-                />
+
+              { !!user.avatar ? <Image  style={{borderRadius : '50%', height : '50px', width : '50px'}} src={userImage+user.avatar}/> :
+
+              <Avatar sx={{
+                height: 80,
+                mb: 2,
+                width: 80
+              }} src={userImage+user.avatar} >
+                {getInitials(user.username)}
+              </Avatar>
+              }
+  
                 <Typography
                   gutterBottom
                   variant="h5"

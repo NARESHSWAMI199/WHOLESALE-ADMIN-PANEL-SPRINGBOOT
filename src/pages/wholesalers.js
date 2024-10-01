@@ -70,7 +70,7 @@ const Page = () => {
        axios.defaults.headers = {
          Authorization : auth.token
        }
-       await axios.post(host+"/admin/auth/all",data)
+       await axios.post(host+"/admin/auth/W/all",data)
        .then(res => {
           const data = res.data.content;
            setTotalElements(res.data.totalElements)

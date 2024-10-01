@@ -208,7 +208,7 @@ export const ItemsTable = (props) => {
                         spacing={2}
                       >      
                  
-                    {!!item.avtar ? <Image src={itemImage+item.avtar}/>  : 
+                    {!!item.avtar ? <Image src={itemImage+item.avtar} style={{borderRadius : "50%" , width:"50px", height : "50px" }}/>  : 
                         <Avatar src={itemImage+item.avtar} >
                           {getInitials(item.name)}
                         </Avatar>

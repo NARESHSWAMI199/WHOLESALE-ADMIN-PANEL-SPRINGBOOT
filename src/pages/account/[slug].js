@@ -40,8 +40,7 @@ const Page = () => {
          await axios.get(host+"/admin/auth/groups/"+slug)
          .then(res => {
             const data = res.data.content;
-             setAssignGroup(data);
-             console.log(data)
+            setAssignGroup(data);
          })
          .catch(err => {
            setFlag("error")
@@ -62,7 +61,7 @@ const Page = () => {
          await axios.post(host+"/group/all",data)
          .then(res => {
             const data = res.data.content;
-             setGroups(data);
+             setGroups(data.filter((group)=>group.id != 0));
          })
          .catch(err => {
            //setErrors(err.message)
@@ -101,7 +100,7 @@ const Page = () => {
         const data = {
           ...user,
           ...updatedUser,
-          storeSlug  : updatedUser.userType == "W" ? "only-profile" : null 
+          storeSlug  : user.userType == "W" ? "only-profile" : null 
         }
         await axios.post(host+"/admin/auth/update",data)
         .then(res => {
