@@ -2,6 +2,7 @@ package com.sales.admin.repositories;
 
 
 import com.sales.dto.GroupDto;
+import com.sales.exceptions.MyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -82,10 +83,10 @@ public class PermissionHbRepository {
 
 
 
-    public int assignGroupsToUser(int userId, List<Integer> groups) throws Exception {
+    public int assignGroupsToUser(int userId, List<Integer> groups) throws MyException {
         if(groups.contains(0)) groups.remove((Integer) 0);
         deleteUserGroups(userId);
-        if(groups.isEmpty()) throw new Exception("Please provide at least one group.");
+        if(groups.isEmpty()) throw new MyException("Please provide at least one group.");
         String values = "";
         for(int i=0; i < groups.size(); i++){
             values +="("+userId+","+groups.get(i)+")";

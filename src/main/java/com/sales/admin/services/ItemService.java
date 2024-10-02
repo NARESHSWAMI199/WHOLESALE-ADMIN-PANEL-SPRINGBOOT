@@ -100,6 +100,7 @@ public class ItemService extends RepoContainer implements ItemsDao {
 
 
     public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser) throws Exception {
+        if(itemDto.getPrice() < itemDto.getDiscount()) throw new Exception("Discount can't be greater then price.");
         Map<String, Object> responseObj = new HashMap<>();
         if (!Utils.isEmpty(itemDto.getSlug())) {
             int isUpdated = updateItem(itemDto, loggedUser);

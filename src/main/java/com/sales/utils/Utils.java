@@ -1,7 +1,10 @@
 package com.sales.utils;
 
+import com.sales.exceptions.MyException;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import javax.transaction.Transactional;
 import java.security.Key;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -76,10 +79,9 @@ public class Utils {
         return matcher.matches();
     }
 
-
-    public static void mobileAndEmailValidation(String email ,String contact,String errorMessage) throws Exception {
-        if (Utils.isEmpty(contact) || !contact.matches(Utils.mobileRegex)) throw new Exception(errorMessage.replaceAll("_","mobile number") +  " ["+contact+"]") ;
-        if (Utils.isEmpty(email) || !isValidEmail(email)) throw new Exception(errorMessage.replaceAll("_","email address") + " ["+email+"]") ;
+    public static void mobileAndEmailValidation(String email ,String contact,String errorMessage) throws MyException {
+        if (Utils.isEmpty(contact) || !contact.matches(Utils.mobileRegex)) throw new MyException(errorMessage.replaceAll("_","mobile number") +  " ["+contact+"]") ;
+        if (Utils.isEmpty(email) || !isValidEmail(email)) throw new MyException(errorMessage.replaceAll("_","email address") + " ["+email+"]") ;
     }
 
 }

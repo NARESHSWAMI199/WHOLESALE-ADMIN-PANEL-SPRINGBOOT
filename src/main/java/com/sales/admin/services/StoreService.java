@@ -4,6 +4,7 @@ import com.sales.dto.*;
 import com.sales.entities.Address;
 import com.sales.entities.Store;
 import com.sales.entities.User;
+import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.File;
+import java.io.IOException;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.*;
@@ -71,7 +73,7 @@ public class StoreService extends RepoContainer{
 
     public Map<String,Object> getStoreCountByMonths(GraphDto graphDto){
         List<Integer> months = graphDto.getMonths();
-        months = (months == null || months.size() < 1) ?
+        months = (months == null || months.isEmpty()) ?
                 Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12) : months;
         Integer year = graphDto.getYear();
         Map<String,Object> monthsObj= new LinkedHashMap<>();
@@ -88,48 +90,45 @@ public class StoreService extends RepoContainer{
         return Month.of(month).getDisplayName(TextStyle.FULL, new Locale("eng"));
     }
 
-    @Transactional
-    public Map<String, Object> createOrUpdateStore(StoreDto storeDto,User loggedUser) throws Exception {
-        try {
+    @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
+    public Map<String, Object> createOrUpdateStore(StoreDto storeDto,User loggedUser) throws MyException, IOException {
             Map<String, Object> responseObj = new HashMap<>();
-            /** if user want update only his profile */
-            if (storeDto.getStoreSlug() != null && storeDto.getStoreSlug().equals("only-profile")) {
-                responseObj.put("message", "successfully updated.");
-                responseObj.put("status", 200);
-            } else if (!Utils.isEmpty(storeDto.getStoreSlug())) {
-                updateStoreImage(storeDto.getStorePic(),storeDto.getStoreSlug());
-                int isUpdated = updateStore(storeDto, loggedUser);
-                if (isUpdated > 0) {
+                /** if user want update only his profile */
+                if (storeDto.getStoreSlug() != null && storeDto.getStoreSlug().equals("only-profile")) {
                     responseObj.put("message", "successfully updated.");
-                    responseObj.put("status", 201);
-                } else {
-                    responseObj.put("message", "nothing to updated. may be something went wrong");
-                    responseObj.put("status", 400);
-                }
-                return responseObj;
-            } else {
-                Store createdStore = createStore(storeDto, loggedUser);
-                if (createdStore.getId() > 0) {
-                    responseObj.put("res", createdStore);
-                    responseObj.put("message", "successfully inserted.");
                     responseObj.put("status", 200);
+                } else if (!Utils.isEmpty(storeDto.getStoreSlug())) {
+                    Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid store's _ recheck your and store's _.");
+                    updateStoreImage(storeDto.getStorePic(), storeDto.getStoreSlug());
+                    int isUpdated = updateStore(storeDto, loggedUser);
+                    if (isUpdated > 0) {
+                        responseObj.put("message", "successfully updated.");
+                        responseObj.put("status", 201);
+                    } else {
+                        responseObj.put("message", "nothing to updated. may be something went wrong");
+                        responseObj.put("status", 400);
+                    }
+                    return responseObj;
                 } else {
-                    responseObj.put("message", "nothing to insert. may be something went wrong");
-                    responseObj.put("status", 400);
+                    Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid store's _ recheck your and store's _.");
+                    Store createdStore = createStore(storeDto, loggedUser);
+                    if (createdStore.getId() > 0) {
+                        responseObj.put("res", createdStore);
+                        responseObj.put("message", "successfully inserted.");
+                        responseObj.put("status", 200);
+                    } else {
+                        responseObj.put("message", "nothing to insert. may be something went wrong");
+                        responseObj.put("status", 400);
+                    }
+
                 }
-            }
             return responseObj;
-        }catch (Exception e){
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            throw  e;
-        }
+
     }
 
 
-    @Transactional
-    public Store createStore(StoreDto storeDto , User loggedUser) throws Exception {
-
-
+    @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
+    public Store createStore(StoreDto storeDto , User loggedUser) throws MyException {
         /** inserting  address during create a wholesale */
         AddressDto addressDto = getAddressObjFromStore(storeDto);
         Address address =  addressService.insertAddress(addressDto,loggedUser);
@@ -137,10 +136,10 @@ public class StoreService extends RepoContainer{
 
         Store store = new Store();
         if(Utils.isEmpty(storeDto.getUserSlug())){
-            throw new Exception("Must provide a store user");
+            throw new MyException("Must provide a store user");
         }
         Optional<User> storeOwner = userRepository.findByWholesalerSLug(storeDto.getUserSlug());
-        if (storeOwner == null)  throw new Exception("Make sure user is wholesaler.");
+        if (storeOwner == null)  throw new MyException("Make sure user is wholesaler.");
 
         store = new Store(loggedUser);
         store.setUser(storeOwner.get());
@@ -211,10 +210,10 @@ public class StoreService extends RepoContainer{
 
 
     @Transactional
-    public int updateStoreImage(MultipartFile profileImage, String slug) throws Exception {
+    public int updateStoreImage(MultipartFile profileImage, String slug) throws MyException, IOException {
         if(profileImage !=null ) {
             String fileOriginalName = profileImage.getOriginalFilename().replaceAll(" ", "_");
-            if (!Utils.isValidImage(fileOriginalName)) throw new Exception("Not a valid file.");
+            if (!Utils.isValidImage(fileOriginalName)) throw new MyException("Not a valid file.");
             profileImage.transferTo(new File(storeImagePath + slug + fileOriginalName));
             return storeHbRepository.updateStoreAvatar(slug, storeImageRelativePath + slug + fileOriginalName);
         }

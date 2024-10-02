@@ -4,6 +4,7 @@ package com.sales.admin.services;
 import com.sales.dto.*;
 import com.sales.entities.Store;
 import com.sales.entities.User;
+import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -111,8 +112,8 @@ public class UserService extends RepoContainer {
         return storeDto;
     }
 
-    @Transactional
-    public Map<String, Object> createOrUpdateUser(UserDto userDto, User loggedUser) throws Exception {
+    @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
+    public Map<String, Object> createOrUpdateUser(UserDto userDto, User loggedUser) throws MyException, IOException {
         Map<String, Object> responseObj = new HashMap<>();
         StoreDto storeDto = null;
         /** make sure email and phone numbers are valid */
@@ -124,8 +125,7 @@ public class UserService extends RepoContainer {
             if (userDto.getUserType().equalsIgnoreCase("W")){
                 storeDto =  userDtoToStoreDto(userDto);
                 storeDto.setUserSlug(userDto.getSlug());
-                Utils.mobileAndEmailValidation(storeDto.getStoreEmail(),storeDto.getStorePhone(),"Not a valid store's _ recheck your and store's _.");
-                storeService.createOrUpdateStore(storeDto,loggedUser);
+                storeService.createOrUpdateStore(storeDto, loggedUser);
             }
             if (isUpdated > 0) {
                 responseObj.put("message", "successfully updated.");
@@ -158,13 +158,13 @@ public class UserService extends RepoContainer {
         if (userDto.getUserId() != loggedUser.getId()) {
             int isAssigned = permissionHbRepository.assignGroupsToUser(userDto.getUserId(), userDto.getGroupList());
             if (isAssigned < 1)
-                throw new Exception("Something went wrong during update user's groups. please contact to administrator.");
+                throw new MyException("Something went wrong during update user's groups. please contact to administrator.");
         }
         return responseObj;
     }
 
     @Transactional
-    public User createUser(UserDto userDto, User loggedUser) throws Exception {
+    public User createUser(UserDto userDto, User loggedUser) {
         User user = new User(loggedUser);
         user.setUsername(userDto.getUsername());
         user.setSlug(UUID.randomUUID().toString());
@@ -177,7 +177,7 @@ public class UserService extends RepoContainer {
     }
 
     @Transactional
-    public int updateUser(UserDto userDto, User loggedUser) throws Exception {
+    public int updateUser(UserDto userDto, User loggedUser) {
         return userHbRepository.updateUser(userDto,loggedUser);
     }
 
