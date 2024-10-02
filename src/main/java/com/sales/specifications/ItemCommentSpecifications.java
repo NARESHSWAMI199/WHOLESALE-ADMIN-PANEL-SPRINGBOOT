@@ -21,6 +21,13 @@ public class ItemCommentSpecifications {
         };
     }
 
+    public static Specification<ItemComments> isParentComment() {
+        return (root, query, criteriaBuilder) -> {
+            return criteriaBuilder.equal(root.get(ItemComments_.PARENT_ID), 0);
+        };
+    }
+
+
 
     public static Specification<ItemComments> greaterThanOrEqualFromDate(Long fromDate) {
             return (root, query, criteriaBuilder) -> {

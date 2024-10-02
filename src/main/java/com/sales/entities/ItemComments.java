@@ -36,7 +36,7 @@ public class ItemComments {
     Integer userId;
 
     @Column(name = "parent_id")
-    Integer parent_id;
+    Integer parentId;
 
     @Column(name = "message")
     String message;
@@ -50,6 +50,7 @@ public class ItemComments {
     @Column(name = "updated_at")
     String updatedAt;
 
-
+    @Transient
+    Integer repliesCount;
 
 }

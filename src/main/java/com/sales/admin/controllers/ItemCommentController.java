@@ -13,14 +13,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("admin/item/comments")
 public class ItemCommentController extends ServiceContainer {
 
     @PostMapping("all")
-    public ResponseEntity<Page<ItemComments>> getAllUsers(@RequestBody ItemCommentsFilterDto itemCommentsFilterDto,  HttpServletRequest httpServletRequest) {
-        Page<ItemComments> itemCommentsPage =  itemCommentService.getALlItemComment(itemCommentsFilterDto);
+    public ResponseEntity<List<ItemComments>> getAllUsers(@RequestBody ItemCommentsFilterDto itemCommentsFilterDto, HttpServletRequest httpServletRequest) {
+        List<ItemComments> itemCommentsPage =  itemCommentService.getALlItemComment(itemCommentsFilterDto);
         return new ResponseEntity<>(itemCommentsPage, HttpStatus.OK);
     }
 
