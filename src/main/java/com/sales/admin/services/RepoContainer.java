@@ -25,6 +25,9 @@ public class RepoContainer {
     protected ItemRepository itemRepository;
 
     @Autowired
+    ItemCommentRepository itemCommentRepository;
+
+    @Autowired
     protected ItemHbRepository itemHbRepository;
     @Autowired
     protected StoreHbRepository storeHbRepository;

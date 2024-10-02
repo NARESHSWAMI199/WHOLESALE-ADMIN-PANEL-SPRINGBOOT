@@ -3,7 +3,6 @@ package com.sales.specifications;
 import com.sales.entities.Group;
 import com.sales.entities.Group_;
 import com.sales.entities.User;
-import com.sales.entities.User_;
 import org.springframework.data.jpa.domain.Specification;
 
 public class GroupSpecifications {

@@ -1,5 +1,6 @@
 package com.sales.admin.controllers;
 
+import com.sales.admin.repositories.ItemCommentRepository;
 import com.sales.admin.services.*;
 import com.sales.utils.ReadExcel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class ServiceContainer {
 
     @Autowired
     protected ItemService itemService;
+
+    @Autowired
+    ItemCommentService itemCommentService;
 
     @Autowired
     protected AddressService addressService;

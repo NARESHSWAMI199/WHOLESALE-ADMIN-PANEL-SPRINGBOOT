@@ -59,7 +59,7 @@ public class SalesInterceptor implements HandlerInterceptor {
                     break;
                 }
             }
-            if (!isPermitted) {
+            if (!isPermitted && user.getId() !=0) {
                 sendError(response, "You don't permissions to access "+requestUrI+".Please contact your administrator.", 400);
                 return false;
             }
