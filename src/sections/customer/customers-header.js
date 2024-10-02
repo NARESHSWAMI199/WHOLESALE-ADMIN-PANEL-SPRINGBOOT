@@ -32,16 +32,6 @@ export function CustomerHeaders(props){
                     color="inherit"
                     startIcon={(
                       <SvgIcon fontSize="small">
-                        <ArrowUpOnSquareIcon />
-                      </SvgIcon>
-                    )}
-                  >
-                    Import
-                  </Button>
-                  <Button
-                    color="inherit"
-                    startIcon={(
-                      <SvgIcon fontSize="small">
                         <ArrowDownOnSquareIcon />
                       </SvgIcon>
                     )}

@@ -179,7 +179,7 @@ const Page = () => {
     setData({
       ...data,
       ...searchData,
-      userType : userType
+      userType : "R"
     })
   } 
 

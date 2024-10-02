@@ -104,6 +104,7 @@ const Page = () => {
         setFlag("warning")
         setMessage("Successfully deactivated.")
       }
+      updateStatusOnUi(status,slug)
       setOpen(true)
       setStatus(status)
     }).catch(err => {
@@ -114,6 +115,17 @@ const Page = () => {
     } )
   }
   
+
+  const updateStatusOnUi = (status,slug) =>{
+    setCustomers((items) => {
+      items.filter((_, index) => {
+        if(_.slug === slug) return _.status = status
+        return _;
+      })
+      return items
+    });
+  }
+
 
   
   const onDelete = (slug) => {
@@ -126,6 +138,7 @@ const Page = () => {
         setMessage(res.data.message)
         setDeleted(true)
         setOpen(true)
+        setCustomers((items) =>items.filter((item) => item.slug !== slug));
     }).catch(err => {
       console.log(err)
       setFlag("error")

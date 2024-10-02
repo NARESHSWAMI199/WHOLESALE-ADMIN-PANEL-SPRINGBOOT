@@ -36,6 +36,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { host, toTitleCase, userImage } from 'src/utils/util';
 import { Image } from 'antd';
 import { useAuth } from 'src/hooks/use-auth';
+import { CopyOutlined } from '@ant-design/icons';
 
 
 export const CustomersTable = (props) => {
@@ -60,6 +61,7 @@ export const CustomersTable = (props) => {
   const [rowIndex,setRowIndex] = useState(-1)
   const [status,setStatus] = useState('')
   const [action,setAction] = useState('')
+  const [isCopied, setIsCopied] = useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const auth = useAuth()
@@ -93,6 +95,43 @@ export const CustomersTable = (props) => {
     setConfirm(false)
   }
 
+
+  async function copyTextToClipboard(text) {
+    if ('clipboard' in navigator) {
+      return await navigator.clipboard.writeText(text);
+    } else {
+      return document.execCommand('copy', true, text);
+    }
+  }
+
+  const handleCopyClick = (slug) => {
+    // Asynchronously call copyTextToClipboard
+      copyTextToClipboard(slug)
+      .then(() => {
+        // If successful, update the isCopied state value
+        setItems((items).filter(customer => {
+         if(customer.slug == slug){
+          customer.isCopied = true
+          setIsCopied(true);
+         }
+         return customer
+      }))
+        setTimeout(() => {
+          setItems((items).filter(customer => {
+            if(customer.slug == slug){
+             customer.isCopied = false
+             setIsCopied(false);
+            }
+            return customer
+         }))
+        }, 1500);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+
   return ( <>
     <Card>
       <Scrollbar>
@@ -101,7 +140,7 @@ export const CustomersTable = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox">
-                  <Checkbox
+                  {/* <Checkbox
                     checked={selectedAll}
                     indeterminate={selectedSome}
                     onChange={(event) => {
@@ -111,7 +150,7 @@ export const CustomersTable = (props) => {
                         onDeselectAll?.();
                       }
                     }}
-                  />
+                  /> */}
                 </TableCell>
                 <TableCell>
                   Name
@@ -156,7 +195,7 @@ export const CustomersTable = (props) => {
                     selected={isSelected}
                   >
                     <TableCell padding="checkbox">
-                      <Checkbox
+                      {/* <Checkbox
                         checked={isSelected}
                         onChange={(event) => {
                           if (event.target.checked) {
@@ -165,7 +204,7 @@ export const CustomersTable = (props) => {
                             onDeselectOne?.(customer.slug);
                           }
                         }}
-                      />
+                      /> */}
                     </TableCell>
                     <TableCell>
                       <Stack
@@ -173,30 +212,39 @@ export const CustomersTable = (props) => {
                         direction="row"
                         spacing={2}
                       >      
-                  <Link
-                      href={{
-                        pathname: '/account/[slug]',
-                        query: { slug: customer.slug },
-                      }}
-                    >
+              
                       { !!customer.avatar ? <Image  style={{borderRadius : '50%', height : '50px', width : '50px'}} src={userImage+customer.avatar}/> :
 
                         <Avatar src={userImage+customer.avatar} >
                           {getInitials(customer.username)}
                         </Avatar>
                       }
-                        </Link>
-                        <Typography variant="subtitle2">
+                  
+                        <Link
+                          href={{
+                            pathname: '/account/[slug]',
+                            query: { slug: customer.slug },
+                          }}
+                          style={{textDecoration : 'none'}}
+                        >
+                        <Typography variant="subtitle2" sx={{color : "text.primary"}} >
                           {toTitleCase(customer.username)}
                         </Typography>
+                        </Link>
                       </Stack>
                     </TableCell>
-                    <TableCell sx={{color:'green'}}>
-                      {customer.slug}
+
+                    <TableCell sx={{color:'text.secondary'}}>
+                     <span style={{color:'green'}}>{customer.slug} </span> 
+                      {!!customer.isCopied && customer.isCopied && isCopied ? <Badge color="primary"  badgeContent="copied" style={{marginBottom:'35px'}} /> : <></>}
+                      <CopyOutlined onClick={() => { handleCopyClick(customer.slug) }} />
                     </TableCell>
+
+
                     <TableCell align='center'>
                         {customer.userType === "R" && <Badge color="error" badgeContent={'Retailer'} />}
-
+                        {customer.userType === "A" && <Badge color="success" badgeContent={'Admin'} />}
+                        {customer.userType === "Su" && <Badge color="warning" badgeContent={'Big boss'} />}
                         {customer.userType === "W" && 
                           <Link
                                 href={{
@@ -204,7 +252,7 @@ export const CustomersTable = (props) => {
                                   query: { userSlug: customer.slug },
                                 }}
                               >
-                        <Badge color="success" badgeContent={'Wholesaler'} />
+                        <Badge color="info" badgeContent={'Wholesaler'} />
                         </Link>
                         }
                         

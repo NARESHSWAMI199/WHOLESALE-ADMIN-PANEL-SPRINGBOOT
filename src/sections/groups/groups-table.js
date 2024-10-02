@@ -36,6 +36,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import { host } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
 import axios from 'axios';
+import { CopyOutlined } from '@ant-design/icons';
+
 
 
 export const GroupTable = (props) => {
@@ -61,6 +63,7 @@ export const GroupTable = (props) => {
   const [status,setStatus] = useState('')
   const [action,setAction] = useState('')
   const [assignGroup,setAssignGroup] = useState([])
+  const [isCopied, setIsCopied] = useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const auth = useAuth()
@@ -119,6 +122,42 @@ export const GroupTable = (props) => {
     setConfirm(false)
   }
 
+
+  async function copyTextToClipboard(text) {
+    if ('clipboard' in navigator) {
+      return await navigator.clipboard.writeText(text);
+    } else {
+      return document.execCommand('copy', true, text);
+    }
+  }
+
+  const handleCopyClick = (slug) => {
+    // Asynchronously call copyTextToClipboard
+      copyTextToClipboard(slug)
+      .then(() => {
+        // If successful, update the isCopied state value
+        setItems((items).filter(group => {
+         if(group.slug == slug){
+          group.isCopied = true
+          setIsCopied(true);
+         }
+         return group
+      }))
+        setTimeout(() => {
+          setItems((items).filter(group => {
+            if(group.slug == slug){
+              group.isCopied = false
+             setIsCopied(false);
+            }
+            return group
+         }))
+        }, 1500);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
   return ( <>
     <Card>
       <Scrollbar>
@@ -127,7 +166,7 @@ export const GroupTable = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox">
-                  <Checkbox
+                  {/* <Checkbox
                     checked={selectedAll}
                     indeterminate={selectedSome}
                     onChange={(event) => {
@@ -137,7 +176,7 @@ export const GroupTable = (props) => {
                         onDeselectAll?.();
                       }
                     }}
-                  />
+                  /> */}
                 </TableCell>
                 <TableCell>
                   Name
@@ -167,7 +206,7 @@ export const GroupTable = (props) => {
                     selected={isSelected}
                   >
                     <TableCell padding="checkbox">
-                      <Checkbox
+                      {/* <Checkbox
                         checked={isSelected}
                         onChange={(event) => {
                           if (event.target.checked) {
@@ -176,7 +215,7 @@ export const GroupTable = (props) => {
                             onDeselectOne?.(group.slug);
                           }
                         }}
-                      />
+                      /> */}
                     </TableCell>
                     <TableCell>
                       <Stack
@@ -199,8 +238,10 @@ export const GroupTable = (props) => {
                         </Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell sx={{color:'green'}}>
-                      {group.slug}
+                    <TableCell sx={{color:'text.secondary'}}>
+                    <span style={{color:'green'}}>{group.slug} </span> 
+                    {!!group.isCopied && group.isCopied && isCopied ? <Badge color="primary"  badgeContent="copied" style={{marginBottom:'35px'}} /> : <></>}
+                    <CopyOutlined onClick={() => { handleCopyClick(group.slug) }} />
                     </TableCell>
         
                     <TableCell>

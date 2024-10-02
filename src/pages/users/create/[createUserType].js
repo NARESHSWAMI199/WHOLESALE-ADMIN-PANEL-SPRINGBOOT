@@ -148,11 +148,14 @@ const createUser = () =>{
           setFlag("success")
           form.reset();
           reset()
+          setOpen(true)
         }).catch(err=>{
+            console.log(err)
             setMessage(!!err.response ? err.response.data.message : err.message)
             setFlag("error")
+            setOpen(true)
         })
-        setOpen(true)
+     
       })
 
       const handleClose = useCallback(()=>{
@@ -323,6 +326,7 @@ const createUser = () =>{
                             name="contact"
                             onChange={handleChange}
                             type="number"
+                            required
                             value={values.contact}
                           />
                         </Grid>
@@ -403,6 +407,7 @@ const createUser = () =>{
                             value={values.state}
                             label="State"
                             onChange={changeState}
+                            required
                           >
                           {stateList.map((state,i)=>{
                               return (<MenuItem key={i+state.stateName} value={state.id}>{state.stateName}</MenuItem>)
@@ -426,6 +431,7 @@ const createUser = () =>{
                             label="City"
                             value={values.city}
                             onChange={handleChange}
+                            required
                           >
                           {cityList.map((city,i) => {
                               return (<MenuItem key={i} value={city.id}>{city.cityName}</MenuItem>)
@@ -458,6 +464,7 @@ const createUser = () =>{
                             name="storePhone"
                             onChange={handleChange}
                             type="number"
+                            required
                             value={values.storePhone}
                           />
                         </Grid>

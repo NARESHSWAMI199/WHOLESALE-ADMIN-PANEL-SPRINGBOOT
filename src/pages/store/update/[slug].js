@@ -31,7 +31,7 @@ import { host, storeImage } from "src/utils/util";
 const  UpdateWholesale = () =>{
 const [open,setOpen] = useState(false)
 const [message,setMessage] = useState("")
-const [flag,setFlag] = useState("success")
+const [flag,setFlag] = useState("warning")
 const auth = useAuth()
 const[cityList,setCityList] = useState([])
 const[stateList,setStateList] = useState([])
@@ -109,7 +109,7 @@ const changeState = useCallback(
     },[])
 
 
-  const handleSubmit = useCallback((e) =>{
+  const handleSubmit = useCallback(async (e) =>{
     e.preventDefault()
     const form = e.target;
     const formData = new FormData(form)
@@ -130,12 +130,13 @@ const changeState = useCallback(
           Authorization : auth.token,
            "Content-Type" : "multipart/form-data"
       }
-      axios.post(host+"/admin/store/update",storeData)
+      await axios.post(host+"/admin/store/update",storeData)
       .then(res => {
         setStore((previous) => ({...previous , avtar : !!store.storePic ? store.storePic.name  : store.avtar }))  
         setMessage(res.data.message)
         setFlag("success")
         form.reset();
+        setStore({})
       }).catch(err=>{
           let errResponse = err.response
           setMessage(!!errResponse ? errResponse.data.message : err.message)
@@ -154,7 +155,7 @@ const changeState = useCallback(
 const onSubmit = (image) =>{
   setStore((pervious)=>({
     ...pervious,
-    storePic : image.originFileObj
+    storePic : image.originFileObj,
   }))
 }
 
