@@ -24,7 +24,7 @@ public class ItemCommentService extends  RepoContainer {
                         .and(lessThanOrEqualToToDate(filters.getToDate()))
                         .and(hasSlug(filters.getSlug()))
                         .and(isItemId(filters.getItemId()))
-                        .and(isParentComment())
+                        .and(isParentComment(filters.getParentId()))
         );
         Pageable pageable = getPageable(filters);
         Page<ItemComments> itemComments = itemCommentRepository.findAll(specification,pageable);

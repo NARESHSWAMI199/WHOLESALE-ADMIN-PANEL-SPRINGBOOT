@@ -11,4 +11,5 @@ public class ItemCommentsFilterDto extends SearchFilters{
     String userSlug;
     String itemSlug;
     int itemId;
+    int parentId = 0;
 }

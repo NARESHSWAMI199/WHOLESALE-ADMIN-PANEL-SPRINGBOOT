@@ -21,9 +21,9 @@ public class ItemCommentSpecifications {
         };
     }
 
-    public static Specification<ItemComments> isParentComment() {
+    public static Specification<ItemComments> isParentComment(int parentId) {
         return (root, query, criteriaBuilder) -> {
-            return criteriaBuilder.equal(root.get(ItemComments_.PARENT_ID), 0);
+            return criteriaBuilder.equal(root.get(ItemComments_.PARENT_ID), parentId);
         };
     }
 
