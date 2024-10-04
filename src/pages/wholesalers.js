@@ -10,6 +10,8 @@ import axios from 'axios';
 import { host } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
+import { ArrowButtons } from 'src/layouts/arrow-button';
+import { useRouter } from 'next/router';
 
 
 
@@ -47,6 +49,8 @@ const Page = () => {
   const [message, setMessage] = useState("")
   const [flag, setFlag] = useState("warning")
 
+  const router = useRouter()
+  const {slug} = router.query
 
   const auth = useAuth()
   let [status,setStatus] = useState(null)
@@ -58,6 +62,7 @@ const Page = () => {
   const customersSelection = useSelection(customersIds);
   const [deleted,setDeleted] = useState(false);
   const [data,setData] = useState({
+    slug : slug,
     userType : "W",
     pageNumber : page,
     size : rowsPerPage

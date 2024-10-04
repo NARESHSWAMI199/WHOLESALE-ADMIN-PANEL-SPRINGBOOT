@@ -59,7 +59,7 @@ const Page = () => {
        .then(res => {
           const response = res.data.content;
           setTotalElements(res.data.totalElements)
-          setStores([...stores, ...response]);
+          setStores(response);
        })
        .catch(err => {
          setFlag("error")
@@ -132,9 +132,8 @@ const Page = () => {
   const getMore = () => {
     setData({
       ...data,
-      pageNumber : page+1,
+      size : stores.length +10,
     })
-    setPage(page+1)
   }
 
   return (

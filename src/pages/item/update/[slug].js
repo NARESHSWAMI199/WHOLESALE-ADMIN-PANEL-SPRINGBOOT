@@ -16,7 +16,8 @@ import {
     Checkbox,
     Alert,
     Container,
-    Stack
+    Stack,
+    SvgIcon
 } from "@mui/material";
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
@@ -28,6 +29,8 @@ import FormGroup from '@mui/material/FormGroup';
 import { useRouter } from "next/router";
 import { redirect } from "next/navigation";
 import ImageInput from "src/sections/image-input";
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { ArrowButtons } from "src/layouts/arrow-button";
 
 
 const createItem = () => {
@@ -268,6 +271,18 @@ const createItem = () => {
                     <CardActions sx={{ justifyContent: 'flex-end' }}>
                         <Button type="submit" variant="contained">
                             Save details
+                        </Button>
+                        
+                         <Button
+                            startIcon = {
+                                <SvgIcon fontSize="small">
+                                <RefreshIcon />
+                                </SvgIcon>
+                            }
+                            sx={{color:'text-secondary'}}
+                            onClick={(e) => window.location.reload()}
+                             variant="contained"
+                        >
                         </Button>
                     </CardActions>
                 </Card>

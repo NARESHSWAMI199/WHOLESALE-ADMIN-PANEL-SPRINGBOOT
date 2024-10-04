@@ -9,6 +9,7 @@ import { host } from 'src/utils/util';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { tr } from 'date-fns/locale';
+import { ArrowButtons } from 'src/layouts/arrow-button';
 
 const Page = () => { 
 

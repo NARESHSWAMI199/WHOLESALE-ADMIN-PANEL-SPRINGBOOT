@@ -20,6 +20,7 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "src/hooks/use-auth";
+import { ArrowButtons } from "src/layouts/arrow-button";
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { BasicHeaders } from "src/sections/basic-header";
 import { host } from "src/utils/util";
@@ -191,6 +192,7 @@ const createUser = () =>{
         }}
       >
         <Container maxWidth="xl">
+          <ArrowButtons/>
           <Stack spacing={3}>
             {/* <BasicHeaders  headerTitle="Create User"  /> */}
             <Grid

@@ -21,6 +21,7 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "src/hooks/use-auth";
+import { ArrowButtons } from "src/layouts/arrow-button";
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import ImageInput from "src/sections/image-input";
 import { host, storeImage } from "src/utils/util";

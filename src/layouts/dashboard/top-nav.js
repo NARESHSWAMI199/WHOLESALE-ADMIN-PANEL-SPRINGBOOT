@@ -18,6 +18,7 @@ import { usePopover } from 'src/hooks/use-popover';
 import { AccountPopover } from './account-popover';
 import { useAuth } from 'src/hooks/use-auth';
 import { host } from 'src/utils/util';
+import { ArrowButtons } from '../arrow-button';
 
 const SIDE_NAV_WIDTH = 280;
 const TOP_NAV_HEIGHT = 64;
@@ -77,6 +78,9 @@ export const TopNav = (props) => {
             </Tooltip> */}
             ADMIN PANNEL
           </Stack>
+          <Box>
+            <ArrowButtons/>
+          </Box>
           <Stack
             alignItems="center"
             direction="row"

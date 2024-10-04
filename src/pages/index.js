@@ -133,7 +133,7 @@ useEffect( ()=>{
     axios.defaults.headers = {
       Authorization : auth.token
     }
-    await axios.post(host+"/admin/auth/all",{})
+    await axios.post(host+"/admin/auth/A/all",{})
     .then(res => {
         const data = res.data.content;
         setAllUsers(data);

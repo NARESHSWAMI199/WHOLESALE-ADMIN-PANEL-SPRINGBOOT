@@ -91,7 +91,7 @@ export const AccountProfile = (props) => {
                 }}
               >
 
-              { !!user.avatar ? <Image  style={{borderRadius : '50%', height : '50px', width : '50px'}} src={userImage+user.avatar}/> :
+              { !!user.avatar ? <Image  style={{borderRadius : '50%', height : '80px', width : '80px'}} src={userImage+user.avatar}/> :
 
               <Avatar sx={{
                 height: 80,

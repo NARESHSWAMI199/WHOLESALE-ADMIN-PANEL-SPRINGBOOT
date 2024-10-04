@@ -21,6 +21,7 @@ import { SideNavItem } from './side-nav-item';
 import { useAuth } from 'src/hooks/use-auth';
 import { WorkspacePremium } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
+import { ArrowButtons } from '../arrow-button';
 
 export const SideNav = (props) => {
   const { open, onClose } = props;
@@ -150,6 +151,8 @@ export const SideNav = (props) => {
             })}
           </Stack>
         </Box>
+      
+
          <Divider sx={{ borderColor: 'neutral.700' }} />
       {/*  <Box
           sx={{

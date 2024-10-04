@@ -105,7 +105,7 @@ export const StoresCard = (props) => {
       <Box sx={{ display: 'flex', flexDirection: 'column'}} >
         <CardContent sx={{ flex: '1 0 auto', mx : '20px' }}>
           <Typography component="div" variant="h5">
-            <Link style={{textDecoration : 'none' , color : 'black'}} href={"/store/"+ store.user.slug}>
+            <Link title='Store Detail' style={{textDecoration : 'none' , color : 'black'}} href={"/store/"+ store.user.slug}>
               {toTitleCase(store.storeName)}
             </Link>
           </Typography>
@@ -145,16 +145,18 @@ export const StoresCard = (props) => {
           <Typography
             variant="subtitle"
             component="div"
-            sx={{ color: 'text.secondary',fontSize : 15, my:1 }}
+            sx={{ color: 'text.secondary',fontSize : 15, my:1}}
           >
             <div style={{
               display: 'flex',
               alignItems: 'center',
               flexWrap: 'wrap',
-              textDecoration: 'none'
             }}>
+          
               <PersonIcon sx={{ mr: 1 }} />
-              {toTitleCase(store.user.username)}
+              <Link style={{textDecoration : 'none' , color : '#6C737F'}} href={"/wholesalers/"+store.user.slug}>
+              <span title='Check user Detail' >{toTitleCase(store.user.username)}</span>
+              </Link>
             </div> 
           </Typography>
 

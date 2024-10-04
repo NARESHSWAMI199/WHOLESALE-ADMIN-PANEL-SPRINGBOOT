@@ -37,7 +37,7 @@ import React, {useEffect, useState } from 'react';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
 import { itemImage, toTitleCase } from 'src/utils/util';
-
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 export const ItemsTable = (props) => {
   const {
@@ -334,6 +334,23 @@ export const ItemsTable = (props) => {
 
                     <TableCell>
                                         
+
+                    <Link
+                            href={{
+                              pathname: '/item/comments/[slug]',
+                              query: { slug: item.slug },
+                            }}
+                          >
+                              <VisibilityIcon sx = {{
+                                  marginX : '5px',
+                                  color : '#111927'
+                            }}
+                            titleAccess='Edit'
+                            />   
+                      </Link>
+
+
+
                       <Link
                             href={{
                               pathname: '/item/update/[slug]',

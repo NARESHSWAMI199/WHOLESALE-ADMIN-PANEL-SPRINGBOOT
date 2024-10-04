@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useAuth } from 'src/hooks/use-auth';
 import { host } from 'src/utils/util';
 import { useEffect, useState } from 'react';
+import { ArrowButtons } from 'src/layouts/arrow-button';
 
 const Page = () => { 
 
