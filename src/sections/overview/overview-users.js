@@ -5,6 +5,7 @@ import LocalGroceryStoreIcon from '@mui/icons-material/LocalGroceryStore';
 import StoreIcon from '@mui/icons-material/Store';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import { useEffect, useMemo, useState } from 'react';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 export const OverviewUsers = (props) => {
   const { sx, title } = props;
   const [value, setValue] = useState(props.value)
@@ -70,6 +71,10 @@ export const OverviewUsers = (props) => {
               }
               {title==="STAFFS" &&
                 <VerifiedUserIcon />
+              }
+
+              {title==="ADMINS" &&
+                <AdminPanelSettingsIcon />
               }
 
               </SvgIcon>

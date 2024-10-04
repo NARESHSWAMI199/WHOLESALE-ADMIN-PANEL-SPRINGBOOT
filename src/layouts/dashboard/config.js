@@ -11,6 +11,8 @@ import { useAuth } from 'src/hooks/use-auth';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import SecurityIcon from '@mui/icons-material/Security';
 import BadgeIcon from '@mui/icons-material/Badge';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import { suId } from 'src/utils/util';
 export const items = (user) =>{
 
   return [
@@ -55,6 +57,18 @@ export const items = (user) =>{
         </SvgIcon>
       )
     },
+
+      
+    {
+      title: 'Admins',
+      path: '/users/SA',
+      show : !!user ? user.id == suId : false ,
+      icon: (
+        <SvgIcon fontSize="small">
+          <AdminPanelSettingsIcon />
+        </SvgIcon>
+      )
+    },
     {
       title: 'Profile',
       path: '/account',
@@ -91,7 +105,7 @@ export const items = (user) =>{
     {
       title: 'Groups',
       path: '/groups',
-      show : !!user ? user.userType =="A" || user.userType == 'SA' : false,
+      show : !!user ? user.userType == 'SA' : false,
       icon: (
         <SvgIcon fontSize="small">
           <SecurityIcon />

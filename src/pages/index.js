@@ -10,7 +10,7 @@ import { OverviewTraffic } from 'src/sections/overview/overview-traffic';
 import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from 'src/hooks/use-auth';
-import { host } from 'src/utils/util';
+import { host, suId } from 'src/utils/util';
 import { useRouter } from 'next/router';
 
 
@@ -29,10 +29,12 @@ const [dashboardData,setDashboardData] = useState({
   users : {},
   retailers : {},
   wholesalers : {},
-  staffs : {}
+  staffs : {},
+  admins : {},
 })    
 const currentYear = new Date().getFullYear();
 const auth = useAuth()
+const user = auth.user
 const router = useRouter();
 
 
@@ -124,6 +126,7 @@ useEffect( ()=>{
   },[])
 
 
+
 // All users 
 
 
@@ -172,7 +175,7 @@ useEffect( ()=>{
           <Grid
             xs={12}
             sm={6}
-            lg={3}
+            lg={!!user && user.userType=="SA" &&  user.id != suId ? 3 : 4}
           >
            <Link href="/users" sx={{textDecoration:'none'}} > <OverviewUsers
               title="USERS"
@@ -185,7 +188,7 @@ useEffect( ()=>{
           <Grid
             xs={12}
             sm={6}
-            lg={3}
+            lg={!!user && user.userType=="SA" &&  user.id != suId ? 3 : 4}
           >
           <Link sx={{
             textDecoration:'none'
@@ -197,27 +200,27 @@ useEffect( ()=>{
           </Grid>
 
 
+            <Grid
+              xs={12}
+              sm={6}
+              lg={!!user && user.userType=="SA" &&  user.id != suId ? 3 : 4}
+            >
+            <Link sx={{
+              textDecoration:'none'
+            }} href="/wholesalers" >  <OverviewUsers
+                title="WHOLESALERS"
+                sx={{ height: '100%' }}
+                value={dashboardData.wholesalers}
+              /> </Link>
+            </Grid>
+          
 
+
+          {!!user && user.userType == 'SA' &&
           <Grid
             xs={12}
             sm={6}
-            lg={3}
-          >
-          <Link sx={{
-            textDecoration:'none'
-           }} href="/wholesalers" >  <OverviewUsers
-              title="WHOLESALERS"
-              sx={{ height: '100%' }}
-              value={dashboardData.wholesalers}
-            /> </Link>
-          </Grid>
-
-
-
-          <Grid
-            xs={12}
-            sm={6}
-            lg={3}
+            lg={!!user && user.userType=="SA" &&  user.id != suId ? 3 : 4}
           >
           <Link sx={{
             textDecoration:'none'
@@ -227,8 +230,28 @@ useEffect( ()=>{
               value={dashboardData.staffs}
             /> </Link>
           </Grid>
+        }
 
- {/*          <Grid
+
+        {!!user && user.id ==  0 &&
+          <Grid
+            xs={12}
+            sm={6}
+            lg={!!user && user.userType=="SA" &&  user.id != suId ? 3 : 4}
+          >
+          <Link sx={{
+            textDecoration:'none'
+           }} href="/users/SA" >  <OverviewUsers
+              title='ADMINS'
+              sx={{ height: '100%' }}
+              value={dashboardData.admins}
+            /> </Link>
+          </Grid>
+          }
+
+
+
+   {/*     <Grid
             xs={12}
             sm={6}
             lg={3}
@@ -240,7 +263,7 @@ useEffect( ()=>{
               value="1.6k"
             />
           </Grid>
-          <Grid
+           <Grid
             xs={12}
             sm={6}
             lg={3}

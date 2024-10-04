@@ -8,9 +8,9 @@ export const updateObject = (state, updatedObject) => {
     }
 }
 
-export const host = "http://10.11.13.49:8081"
+// export const host = "http://10.11.13.49:8081"
 
-// export const host = "http://localhost:8081"
+export const host = "http://localhost:8081"
 
 export const toTitleCase = (str) => {
     if (!!str)
@@ -25,3 +25,6 @@ export const toTitleCase = (str) => {
   export  const itemImage = host+"/admin/item/image/";
   export const storeImage = host+"/admin/store/image/"
   export const userImage = host+"/admin/auth/profile/"
+
+
+  export const suId = 0;

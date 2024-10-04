@@ -1,21 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
-import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
-import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
-import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import {  Alert, Box, Button, Container, Grid, Snackbar, Stack, SvgIcon, Typography } from '@mui/material';
+import {  Alert, Box, Container, Snackbar, Stack, SvgIcon, Typography } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { CustomersTable } from 'src/sections/customer/customers-table';
-import { BasicSearch, CustomersSearch } from 'src/sections/basic-search';
+import { BasicSearch, adminsSearch } from 'src/sections/basic-search';
 import { applyPagination } from 'src/utils/apply-pagination';
-import axios, { all } from 'axios';
+import axios from 'axios';
 import { host } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
-import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
-import { Card, InputAdornment, OutlinedInput } from '@mui/material';
+import { CustomerHeaders } from 'src/sections/customer/customers-header';
+import { ArrowButtons } from 'src/layouts/arrow-button';
 import { useRouter } from 'next/router';
-
+import { CustomersTable } from 'src/sections/customer/customers-table';
 
 
 
@@ -25,7 +21,7 @@ import { useRouter } from 'next/router';
 const now = new Date();
 
 
-const useCustomers = (content,page,rowsPerPage) => {
+const useadmins = (content,page,rowsPerPage) => {
   return useMemo(
     () => {
       return applyPagination(content, page, rowsPerPage);
@@ -34,12 +30,12 @@ const useCustomers = (content,page,rowsPerPage) => {
   )
 };
 
-const useCustomerIds = (customers) => {
+const useCustomerIds = (admins) => {
   return useMemo(
     () => {
-      return customers.map((customer) => customer.id);
+      return admins.map((customer) => customer.id);
     },
-    [customers]
+    [admins]
   );
 };
 
@@ -55,16 +51,18 @@ const Page = () => {
 
   const router = useRouter()
   const {userType} = router.query
+
   const auth = useAuth()
   let [status,setStatus] = useState(null)
   const [error,setErrors] = useState("")
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [customers,setCustomers] = useState([])
-  const customersIds = useCustomerIds(customers);
-  const customersSelection = useSelection(customersIds);
+  const [admins,setAdmins] = useState([])
+  const adminsIds = useCustomerIds(admins);
+  const adminsSelection = useSelection(adminsIds);
+  const [deleted,setDeleted] = useState(false);
   const [data,setData] = useState({
-    userType :userType !="A" ?userType : null,
+    userType : userType,
     pageNumber : page,
     size : rowsPerPage
   })
@@ -76,19 +74,21 @@ const Page = () => {
        axios.defaults.headers = {
          Authorization : auth.token
        }
-       await axios.post(host+"/admin/auth/all",data)
+       await axios.post(host+"/admin/auth/"+userType+"/all",data)
        .then(res => {
           const data = res.data.content;
            setTotalElements(res.data.totalElements)
-           setCustomers(data.filter((group)=>group.id != 0));
+           setAdmins(data);
        })
        .catch(err => {
-         setErrors(err.message)
+         setFlag("error")
+         setMessage(!!err.response ? err.response.data.message : err.message)
+         setOpen(true)
        } )
      }
     getData();
 
-   },[data])
+   },[data,page,rowsPerPage])
 
 
 
@@ -113,12 +113,15 @@ const Page = () => {
       setStatus(status)
     }).catch(err => {
       console.log(err)
+      setFlag("error")
+      setMessage(!!err.response ? err.response.data.message : err.message)
+      setOpen(true)
     } )
   }
   
 
   const updateStatusOnUi = (status,slug) =>{
-    setCustomers((items) => {
+    setAdmins((items) => {
       items.filter((_, index) => {
         if(_.slug === slug) return _.status = status
         return _;
@@ -126,6 +129,8 @@ const Page = () => {
       return items
     });
   }
+
+
   
   const onDelete = (slug) => {
     axios.defaults.headers = {
@@ -135,10 +140,14 @@ const Page = () => {
     .then(res => {
         setFlag("success")
         setMessage(res.data.message)
-      setOpen(true)
-      setStatus(status)
+        setDeleted(true)
+        setOpen(true)
+        setAdmins((items) =>items.filter((item) => item.slug !== slug));;
     }).catch(err => {
       console.log(err)
+      setFlag("error")
+      setMessage(!!err.response ? err.response.data.message : err.message)
+      setOpen(true)
     } )
   }
   
@@ -152,7 +161,7 @@ const Page = () => {
   const handlePageChange = useCallback(
     (event, value) => {
       setPage(value);
-      setData((perviouse) => ({...perviouse, pageNumber : value}))
+      setData({...data, pageNumber : value})
     },
     []
   );
@@ -160,15 +169,16 @@ const Page = () => {
   const handleRowsPerPageChange = useCallback(
     (event) => {
       setRowsPerPage(event.target.value);
-      setData((perviouse) => ({...perviouse,size :event.target.value}))
     },
     []
   );
 
-  const onSearch = (value) => {
+
+  const onSearch = (searchData) => {
     setData({
       ...data,
-      searchKey : value
+      ...searchData,
+      userType : "W"
     })
   } 
 
@@ -186,7 +196,7 @@ const Page = () => {
     </Snackbar>
       <Head>
         <title>
-          Retailer | Swami Sales
+          Wholesaler | Swami Sales
         </title>
       </Head>
       <Box
@@ -198,70 +208,22 @@ const Page = () => {
       >
         <Container maxWidth="xl">
           <Stack spacing={3}>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              spacing={4}
-            >
-              <Stack spacing={1}>
-                <Typography variant="h4">
-                  Retailer
-                </Typography>
-                <Stack
-                  alignItems="center"
-                  direction="row"
-                  spacing={1}
-                >
-                  <Button
-                    color="inherit"
-                    startIcon={(
-                      <SvgIcon fontSize="small">
-                        <ArrowUpOnSquareIcon />
-                      </SvgIcon>
-                    )}
-                  >
-                    Import
-                  </Button>
-                  <Button
-                    color="inherit"
-                    startIcon={(
-                      <SvgIcon fontSize="small">
-                        <ArrowDownOnSquareIcon />
-                      </SvgIcon>
-                    )}
-                  >
-                    Export
-                  </Button>
-                </Stack>
-              </Stack>
-              <div>
-                <Button
-                  startIcon={(
-                    <SvgIcon fontSize="small">
-                      <PlusIcon />
-                    </SvgIcon>
-                  )}
-                  variant="contained"
-                >
-                  Add
-                </Button>
-              </div>
-            </Stack>
-
+        
+          <CustomerHeaders  headerTitle={"Admins"} userType={userType} />
             <BasicSearch  onSearch={onSearch} />
 
-            <CustomersTable
+             <CustomersTable
               count={totalElements}
-              items={customers}
-              onDeselectAll={customersSelection.handleDeselectAll}
-              onDeselectOne={customersSelection.handleDeselectOne}
+              items={admins}
+              onDeselectAll={adminsSelection.handleDeselectAll}
+              onDeselectOne={adminsSelection.handleDeselectOne}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
-              onSelectAll={customersSelection.handleSelectAll}
-              onSelectOne={customersSelection.handleSelectOne}
+              onSelectAll={adminsSelection.handleSelectAll}
+              onSelectOne={adminsSelection.handleSelectOne}
               page={page}
               rowsPerPage={rowsPerPage}
-              selected={customersSelection.selected}
+              selected={adminsSelection.selected}
               onStatusChange = {onStatusChange}
               onDelete = {onDelete}
             />

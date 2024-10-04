@@ -23,7 +23,7 @@ import { useAuth } from "src/hooks/use-auth";
 import { ArrowButtons } from "src/layouts/arrow-button";
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { BasicHeaders } from "src/sections/basic-header";
-import { host } from "src/utils/util";
+import { host, suId } from "src/utils/util";
 
 
 
@@ -35,6 +35,7 @@ const createUser = () =>{
     const [message,setMessage] = useState("")
     const [flag,setFlag] = useState("success")
     const auth = useAuth()
+    const user = auth.user
     const[cityList,setCityList] = useState([])
     const[stateList,setStateList] = useState([])
     const [selectedState , setSelectedState] = useState(1)
@@ -192,7 +193,7 @@ const createUser = () =>{
         }}
       >
         <Container maxWidth="xl">
-          <ArrowButtons/>
+
           <Stack spacing={3}>
             {/* <BasicHeaders  headerTitle="Create User"  /> */}
             <Grid
@@ -253,6 +254,9 @@ const createUser = () =>{
                         <MenuItem value={"S"}>Staff</MenuItem>
                         <MenuItem value={"W"}>Wholesaler</MenuItem>
                         <MenuItem value={'R'}>Retailer</MenuItem>
+                        {!!user && user.id == suId && 
+                          <MenuItem value={'SA'}>Admin</MenuItem>
+                         }
                       </Select>
                       </FormControl>
                       </Grid>

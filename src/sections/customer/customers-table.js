@@ -243,8 +243,7 @@ export const CustomersTable = (props) => {
 
                     <TableCell align='center'>
                         {customer.userType === "R" && <Badge color="error" badgeContent={'Retailer'} />}
-                        {customer.userType === "A" && <Badge color="success" badgeContent={'Admin'} />}
-                        {customer.userType === "Su" && <Badge color="warning" badgeContent={'Big boss'} />}
+                        {customer.userType === "SA" && <Badge color='warning' badgeContent={'Admin'} />}
                         {customer.userType === "W" && 
                           <Link
                                 href={{
