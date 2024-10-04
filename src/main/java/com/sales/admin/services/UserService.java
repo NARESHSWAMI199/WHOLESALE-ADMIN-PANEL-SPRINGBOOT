@@ -78,19 +78,36 @@ public class UserService extends RepoContainer {
         return responseObj;
     }
 
+    public Map<String, Integer> getAdminsCounts () {
+        Map<String,Integer> responseObj = new HashMap<>();
+        responseObj.put("all",userRepository.getUserWithUserType("SA"));
+        responseObj.put("active",userRepository.getUserWithUserType("A","SA"));
+        responseObj.put("deactive",userRepository.getUserWithUserType("D","SA"));
+        return responseObj;
+    }
 
 
 
-    public Page<User> getAllUser(UserSearchFilters filters) {
+
+    public Page<User> getAllUser(UserSearchFilters filters, User loggedUser) {
+       String notUserType = null;
+        if(filters.getUserType().equals("SA") && loggedUser.getId() !=0){
+            filters.setUserType(null);
+        }else if(filters.getUserType().equals("A")) {
+            notUserType = "SA";
+            filters.setUserType(null);
+        }
         Specification<User> specification = Specification.where(
                 (containsName(filters.getSearchKey()).or(containsEmail(filters.getSearchKey())))
             .and(greaterThanOrEqualFromDate(filters.getFromDate()))
             .and(lessThanOrEqualToToDate(filters.getToDate()))
             .and(isStatus(filters.getStatus()))
-            .and(hasUserType(filters.getUserType()))
                         .and(hasSlug(filters.getSlug()))
                         .and(notSuperAdmin())
+                        .and(hasUserType(filters.getUserType()))
+                        .and(hasNotUserType(notUserType))
         );
+
         Pageable pageable = getPageable(filters);
         return userRepository.findAll(specification,pageable);
     }
@@ -114,6 +131,7 @@ public class UserService extends RepoContainer {
     public Map<String, Object> createOrUpdateUser(UserDto userDto, User loggedUser) throws MyException, IOException {
         Map<String, Object> responseObj = new HashMap<>();
         StoreDto storeDto = null;
+        if(loggedUser.getId() !=0 && userDto.getUserType().equals("SA")) throw new MyException("You don't have permissions to create a admin.");
         /** make sure email and phone numbers are valid */
         Utils.mobileAndEmailValidation(userDto.getEmail(),userDto.getContact(),"Not a valid user's _ recheck your and user's _.");
         if (!Utils.isEmpty(userDto.getSlug())) {

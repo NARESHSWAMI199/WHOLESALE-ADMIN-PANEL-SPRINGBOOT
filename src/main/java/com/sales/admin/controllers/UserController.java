@@ -35,9 +35,10 @@ public class UserController extends ServiceContainer {
     JwtToken jwtToken;
 
     @PostMapping("/{userType}/all")
-    public ResponseEntity<Page<User>> getAllUsers(@RequestBody UserSearchFilters searchFilters, @PathVariable String userType, HttpServletRequest httpServletRequest) {
-        if(!userType.equals("A")) searchFilters.setUserType(userType);
-        Page<User> userPage = userService.getAllUser(searchFilters);
+    public ResponseEntity<Page<User>> getAllUsers(HttpServletRequest request,@RequestBody UserSearchFilters searchFilters, @PathVariable(required = true) String userType, HttpServletRequest httpServletRequest) {
+        searchFilters.setUserType(userType);
+        User logggedUser = (User) request.getAttribute("user");
+        Page<User> userPage = userService.getAllUser(searchFilters,logggedUser);
         return new ResponseEntity<>(userPage, HttpStatus.OK);
     }
 

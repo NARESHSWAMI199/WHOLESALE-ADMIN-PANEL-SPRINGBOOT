@@ -21,6 +21,7 @@ public class AdminDashboardController extends ServiceContainer {
         responseObj.put("retailers" , userService.getRetailersCounts());
         responseObj.put("wholesalers" , userService.getWholesalersCounts());
         responseObj.put("staffs" , userService.getStaffsCounts());
+        responseObj.put("admins" , userService.getAdminsCounts());
         responseObj.put("items",itemService.getItemCounts());
         responseObj.put("wholesales",storeService.getWholesaleCounts());
         responseObj.put("status", 200);

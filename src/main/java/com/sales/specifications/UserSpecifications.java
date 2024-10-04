@@ -18,6 +18,13 @@ public class UserSpecifications {
             return criteriaBuilder.equal(root.get(User_.USER_TYPE), userType);
         };
     }
+    public static Specification<User> hasNotUserType(String userType) {
+        return (root, query, criteriaBuilder) -> {
+            if (userType == null) return null;
+            return criteriaBuilder.notEqual(root.get(User_.USER_TYPE), userType);
+        };
+    }
+
 
     public static Specification<User> isUserId(Integer wholesaleId) {
         return (root, query, criteriaBuilder) -> {
