@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.sales.specifications.UserSpecifications.*;
 
@@ -159,6 +157,8 @@ public class UserService extends RepoContainer {
             int isAssigned = permissionHbRepository.assignGroupsToUser(userDto.getUserId(), userDto.getGroupList());
             if (isAssigned < 1)
                 throw new MyException("Something went wrong during update user's groups. please contact to administrator.");
+        }else{
+            throw new MyException("Can't update self groups.");
         }
         return responseObj;
     }
