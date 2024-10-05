@@ -3,6 +3,7 @@ package com.sales.admin.repositories;
 
 import com.sales.dto.GroupDto;
 import com.sales.exceptions.MyException;
+import com.sales.global.GlobalConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -47,7 +48,7 @@ public class PermissionHbRepository {
 
 
     public int deleteGroupBySlug(String slug, int groupId) throws Exception {
-        if (groupId == 0) throw new Exception("We can't this group.");
+        if (groupId == GlobalConstant.groupId) throw new Exception("We can't this group.");
         deleteGroupPermissionByGroupId(groupId);
         deleteGroupFromUser(groupId);
         String sql = "delete from `groups` where slug=:slug";
@@ -57,7 +58,7 @@ public class PermissionHbRepository {
     }
 
     public int deleteGroupPermissionByGroupId(int groupId){
-        if (groupId == 0) return  0;
+        if (groupId == GlobalConstant.groupId) return  0;
         String sql = "delete from `group_permissions` where group_id = :groupId";
         Query query = entityManager.createNativeQuery(sql);
         query.setParameter("groupId",groupId);
@@ -65,7 +66,7 @@ public class PermissionHbRepository {
     }
 
     public int deleteGroupFromUser(int groupId){
-        if (groupId == 0) return  0;
+        if (groupId == GlobalConstant.groupId) return  0;
         String sql = "delete from `user_groups` where group_id = :groupId";
         Query query = entityManager.createNativeQuery(sql);
         query.setParameter("groupId",groupId);
@@ -74,7 +75,7 @@ public class PermissionHbRepository {
 
 
     public int deleteUserGroups(int userId){
-        if (userId == 0) return  0;
+        if (userId == GlobalConstant.suId) return  0;
         String sql = "delete from `user_groups` where user_id = :userId";
         Query query = entityManager.createNativeQuery(sql);
         query.setParameter("userId",userId);
@@ -84,7 +85,7 @@ public class PermissionHbRepository {
 
 
     public int assignGroupsToUser(int userId, List<Integer> groups) throws MyException {
-        if(groups.contains(0)) groups.remove((Integer) 0);
+        if(groups.contains(GlobalConstant.suId)) groups.remove((Integer) GlobalConstant.suId);
         deleteUserGroups(userId);
         if(groups.isEmpty()) throw new MyException("Please provide at least one group.");
         String values = "";

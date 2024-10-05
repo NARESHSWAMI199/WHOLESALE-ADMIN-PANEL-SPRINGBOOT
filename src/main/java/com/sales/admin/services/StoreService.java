@@ -214,8 +214,11 @@ public class StoreService extends RepoContainer{
         if(profileImage !=null ) {
             String fileOriginalName = profileImage.getOriginalFilename().replaceAll(" ", "_");
             if (!Utils.isValidImage(fileOriginalName)) throw new MyException("Not a valid file.");
-            profileImage.transferTo(new File(storeImagePath + slug + fileOriginalName));
-            return storeHbRepository.updateStoreAvatar(slug, storeImageRelativePath + slug + fileOriginalName);
+            String dirPath = storeImagePath+"/"+slug+"/";
+            File dir = new File(dirPath);
+            if(!dir.exists()) dir.mkdirs();
+            profileImage.transferTo(new File(dirPath+fileOriginalName));
+            return storeHbRepository.updateStoreAvatar(slug,fileOriginalName);
         }
         return 0;
     }

@@ -92,9 +92,10 @@ public class UserController extends ServiceContainer {
 
     @Transactional
     @GetMapping("/delete/{slug}")
-    public ResponseEntity<Map<String, Object>> deleteUserBySlug(@PathVariable String slug) {
+    public ResponseEntity<Map<String, Object>> deleteUserBySlug(HttpServletRequest request,@PathVariable String slug) {
         Map<String,Object> responseObj = new HashMap<>();
-        int isUpdated = userService.deleteUserBySlug(slug);
+        User logggedUser = (User) request.getAttribute("user");
+        int isUpdated = userService.deleteUserBySlug(slug,logggedUser);
         if (isUpdated > 0) {
             responseObj.put("message", "User has been successfully deleted.");
             responseObj.put("status", 200);
@@ -107,9 +108,10 @@ public class UserController extends ServiceContainer {
 
     @Transactional
     @PostMapping("/password")
-    public ResponseEntity<Map<String, Object>> resetUserPasswordBySlug(@RequestBody PasswordDto passwordDto) {
+    public ResponseEntity<Map<String, Object>> resetUserPasswordBySlug(HttpServletRequest request ,@RequestBody PasswordDto passwordDto) {
         Map<String,Object> responseObj = new HashMap<>();
-        int isUpdated = userService.resetPasswordByUserSlug(passwordDto);
+        User logggedUser = (User) request.getAttribute("user");
+        int isUpdated = userService.resetPasswordByUserSlug(passwordDto,logggedUser);
         if (isUpdated > 0) {
             responseObj.put("message", "User password has been successfully updated.");
             responseObj.put("status", 200);
@@ -122,9 +124,10 @@ public class UserController extends ServiceContainer {
 
 
     @PostMapping("/status")
-    public ResponseEntity<Map<String, Object>> stockSlug(@RequestBody StatusDto statusDto) {
+    public ResponseEntity<Map<String, Object>> stockSlug(HttpServletRequest request,@RequestBody StatusDto statusDto) {
         Map<String,Object> responseObj = new HashMap<>();
-        int isUpdated = userService.updateStatusBySlug(statusDto);
+        User logggedUser = (User) request.getAttribute("user");
+        int isUpdated = userService.updateStatusBySlug(statusDto,logggedUser);
         if (isUpdated > 0) {
             responseObj.put("message", "Item's status has been successfully updated.");
             responseObj.put("status", 200);
@@ -187,9 +190,9 @@ public class UserController extends ServiceContainer {
     @Value("${profile.get}")
     String filePath;
 
-    @GetMapping("/profile/{filename}")
-    public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename) throws Exception {
-        Path path = Paths.get(filePath + filename);
+    @GetMapping("/profile/{slug}/{filename}")
+    public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename ,@PathVariable String slug) throws Exception {
+        Path path = Paths.get(filePath +"/"+slug+"/"+ filename);
         Resource resource = new UrlResource(path.toUri());
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
     }

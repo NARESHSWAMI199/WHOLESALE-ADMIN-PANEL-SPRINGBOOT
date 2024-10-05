@@ -2,6 +2,7 @@ package com.sales.specifications;
 
 import com.sales.entities.User;
 import com.sales.entities.User_;
+import com.sales.global.GlobalConstant;
 import org.springframework.data.jpa.domain.Specification;
 
 public class UserSpecifications {
@@ -78,7 +79,7 @@ public class UserSpecifications {
 
     public static Specification<User> notSuperAdmin() {
         return (root, query, criteriaBuilder) -> {
-            return criteriaBuilder.notEqual(root.get(User_.id), 0);
+            return criteriaBuilder.notEqual(root.get(User_.id), GlobalConstant.suId);
         };
     }
 

@@ -5,6 +5,7 @@ import com.sales.dto.*;
 import com.sales.entities.Store;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
+import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -91,7 +92,7 @@ public class UserService extends RepoContainer {
 
     public Page<User> getAllUser(UserSearchFilters filters, User loggedUser) {
        String notUserType = null;
-        if(filters.getUserType().equals("SA") && loggedUser.getId() !=0){
+        if(filters.getUserType().equals("SA") && loggedUser.getId() !=GlobalConstant.suId){
             filters.setUserType(null);
         }else if(filters.getUserType().equals("A")) {
             notUserType = "SA";
@@ -131,9 +132,11 @@ public class UserService extends RepoContainer {
     public Map<String, Object> createOrUpdateUser(UserDto userDto, User loggedUser) throws MyException, IOException {
         Map<String, Object> responseObj = new HashMap<>();
         StoreDto storeDto = null;
-        if(loggedUser.getId() !=0 && userDto.getUserType().equals("SA")) throw new MyException("You don't have permissions to create a admin.");
-        /** make sure email and phone numbers are valid */
+
+        if(loggedUser.getId() !=GlobalConstant.suId && userDto.getUserType().equals("SA")) throw new MyException("You don't have permissions to create a admin contact to administrator.");
         Utils.mobileAndEmailValidation(userDto.getEmail(),userDto.getContact(),"Not a valid user's _ recheck your and user's _.");
+        Utils.isValidPerson(userDto.getUserType(),loggedUser);
+
         if (!Utils.isEmpty(userDto.getSlug())) {
             int isUpdated = updateUser(userDto, loggedUser);
              Integer userId = userRepository.getUserIdBySlug(userDto.getSlug());
@@ -171,7 +174,7 @@ public class UserService extends RepoContainer {
         }
 
         /** going to update user's groups */
-        if (userDto.getUserId() != loggedUser.getId()) {
+        if ((userDto.getUserId() != loggedUser.getId()) && (userDto.getUserType().equals("SA")) ) {
             int isAssigned = permissionHbRepository.assignGroupsToUser(userDto.getUserId(), userDto.getGroupList());
             if (isAssigned < 1)
                 throw new MyException("Something went wrong during update user's groups. please contact to administrator.");
@@ -199,7 +202,7 @@ public class UserService extends RepoContainer {
 
     public User getUserDetail(String slug ,User loggedUser){
        User user = userRepository.findUserBySlug(slug);
-        if(user !=null && (user.getId() !=0 || loggedUser.getId() == 0)){
+        if(user !=null && (user.getId() !=GlobalConstant.suId || loggedUser.getId() == GlobalConstant.suId )){
             return user;
         }
         return null;
@@ -208,33 +211,36 @@ public class UserService extends RepoContainer {
 
     public User getUserDetail(String slug){
         User user = userRepository.findUserBySlug(slug);
-        if(user !=null && (user.getId() !=0)){
+        if(user !=null && (user.getId() !=GlobalConstant.suId )){
             return user;
         }
         return null;
     }
 
     @Transactional
-    public int deleteUserBySlug(String slug){
+    public int deleteUserBySlug(String slug,User loggedUser){
         User user = getUserDetail(slug);
+        Utils.isValidPerson(user.getUserType(),loggedUser);
         storeService.deleteStoreByUserId(user.getId());
         return userHbRepository.deleteUserBySlug(slug);
     }
 
 
     @Transactional
-    public int resetPasswordByUserSlug(PasswordDto passwordDto){
+    public int resetPasswordByUserSlug(PasswordDto passwordDto,User loggedUser){
         password = !Utils.isEmpty(password) ?  passwordDto.getPassword() : password;
         User user = getUserDetail(passwordDto.getSlug());
+        Utils.isValidPerson(user.getUserType(),loggedUser);
         user.setPassword(password);
         return user.getId();
     }
 
     @Transactional
-    public int updateStatusBySlug(StatusDto statusDto){
+    public int updateStatusBySlug(StatusDto statusDto,User loggedUser){
         try {
             String status = statusDto.getStatus();
             User user = userRepository.findUserBySlug(statusDto.getSlug());
+            Utils.isValidPerson(user.getUserType(),loggedUser);
             user.setStatus(status);
             if(!user.getUserType().equals("W")){
                 user = userRepository.save(user);
@@ -243,7 +249,7 @@ public class UserService extends RepoContainer {
             Store store = storeRepository.findStoreByUserId(user.getId());
             store.setStatus(status);
             store = storeRepository.save(store);
-            if (store != null && store.getId() > 0)
+            if (store.getId() > 0)
                 user = userRepository.save(user);
             return user.getId();
         }catch (Exception e){
@@ -254,10 +260,15 @@ public class UserService extends RepoContainer {
 
 
 
-    public int updateProfileImage(MultipartFile profileImage,String slug,User loggerdUser) throws IOException {
+    public int updateProfileImage(MultipartFile profileImage,String slug,User loggedUser) throws IOException {
+        User user = userRepository.findUserBySlug(slug);
+        Utils.isValidPerson(user.getUserType(),loggedUser);
         if (!Utils.isValidImage(profileImage.getOriginalFilename())) return 0;
-        profileImage.transferTo(new File(profilePath+slug+profileImage.getOriginalFilename()));
-        return  userHbRepository.updateProfileImage(slug,profileRelativePath+slug+profileImage.getOriginalFilename());
+        String dirPath = profilePath+"/"+slug+"/";
+        File dir = new File(dirPath);
+        if(!dir.exists()) dir.mkdirs();
+        profileImage.transferTo(new File(dirPath+profileImage.getOriginalFilename()));
+        return  userHbRepository.updateProfileImage(slug,profileImage.getOriginalFilename());
     }
 
 

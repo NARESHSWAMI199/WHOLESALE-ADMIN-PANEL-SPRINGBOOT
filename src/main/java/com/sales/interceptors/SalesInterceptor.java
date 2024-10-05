@@ -6,6 +6,7 @@ import com.sales.admin.repositories.PermissionRepository;
 import com.sales.admin.repositories.UserRepository;
 import com.sales.dto.ErrorDto;
 import com.sales.entities.User;
+import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -59,7 +60,7 @@ public class SalesInterceptor implements HandlerInterceptor {
                     break;
                 }
             }
-            if (!isPermitted && user.getId() !=0) {
+            if (!isPermitted && user.getId() != GlobalConstant.suId) {
                 sendError(response, "You don't permissions to access "+requestUrI+".Please contact your administrator.", 400);
                 return false;
             }

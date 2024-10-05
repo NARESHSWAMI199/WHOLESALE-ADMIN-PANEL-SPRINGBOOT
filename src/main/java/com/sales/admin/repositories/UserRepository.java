@@ -26,7 +26,7 @@ public interface UserRepository  extends JpaRepository<User, Integer> , JpaSpeci
     @Query("select id from User where slug=:slug")
     Integer getUserIdBySlug(String slug);
 
-    @Query(value = "select count(id) as count from User")
+    @Query(value = "select count(id) as count from User where userType !='SA'")
     Integer totalUserCount();
     @Query(value = "select count(id) as count from User where status=:status")
     Integer optionUserCount(@Param("status") String status);

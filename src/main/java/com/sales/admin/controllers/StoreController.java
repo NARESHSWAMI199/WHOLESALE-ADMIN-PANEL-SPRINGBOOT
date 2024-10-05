@@ -100,6 +100,7 @@ public class StoreController extends ServiceContainer{
     }
 
 
+    /** currently we are not using for upload store image */
     @Transactional
     @PostMapping("profile/{slug}")
     public ResponseEntity<Map<String,Object>> uploadStoreImage(HttpServletRequest request, @RequestPart MultipartFile storeImage , @PathVariable String slug) {
@@ -147,9 +148,9 @@ public class StoreController extends ServiceContainer{
     @Value("${store.get}")
     String filePath;
 
-    @GetMapping("/image/{filename}")
-    public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename) throws Exception {
-        Path path = Paths.get(filePath + filename);
+    @GetMapping("/image/{slug}/{filename}")
+    public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename , @PathVariable String slug) throws Exception {
+        Path path = Paths.get(filePath +slug+"/"+ filename);
         Resource resource = new UrlResource(path.toUri());
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
     }

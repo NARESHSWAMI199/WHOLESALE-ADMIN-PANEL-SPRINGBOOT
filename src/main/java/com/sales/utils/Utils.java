@@ -1,6 +1,8 @@
 package com.sales.utils;
 
+import com.sales.entities.User;
 import com.sales.exceptions.MyException;
+import com.sales.global.GlobalConstant;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -82,6 +84,10 @@ public class Utils {
     public static void mobileAndEmailValidation(String email ,String contact,String errorMessage) throws MyException {
         if (Utils.isEmpty(contact) || !contact.matches(Utils.mobileRegex)) throw new MyException(errorMessage.replaceAll("_","mobile number") +  " ["+contact+"]") ;
         if (Utils.isEmpty(email) || !isValidEmail(email)) throw new MyException(errorMessage.replaceAll("_","email address") + " ["+email+"]") ;
+    }
+
+    public static void isValidPerson(String userType , User loggedUser){
+        if((!loggedUser.getUserType().equals("SA") || loggedUser.getId() != GlobalConstant.suId) && userType.equals("S")) throw new MyException("You don't have permissions to create or update a staff contact to administrator.");
     }
 
 }
