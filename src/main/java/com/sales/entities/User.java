@@ -1,6 +1,7 @@
 package com.sales.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +31,7 @@ public class User {
     String avatar;
     @Column(name = "username")
     String username;
+    @JsonIgnore
     @Column(name = "password")
     String password;
     @Column(name = "email")

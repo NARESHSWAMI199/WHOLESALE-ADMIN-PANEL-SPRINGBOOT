@@ -229,7 +229,7 @@ public class UserService extends RepoContainer {
     @Transactional
     public int resetPasswordByUserSlug(PasswordDto passwordDto,User loggedUser){
         password = !Utils.isEmpty(password) ?  passwordDto.getPassword() : password;
-        User user = getUserDetail(passwordDto.getSlug());
+        User user = userRepository.findUserBySlug(passwordDto.getSlug());
         Utils.isValidPerson(user.getUserType(),loggedUser);
         user.setPassword(password);
         return user.getId();
@@ -264,7 +264,7 @@ public class UserService extends RepoContainer {
         User user = userRepository.findUserBySlug(slug);
         Utils.isValidPerson(user.getUserType(),loggedUser);
         if (!Utils.isValidImage(profileImage.getOriginalFilename())) return 0;
-        String dirPath = profilePath+"/"+slug+"/";
+        String dirPath = profilePath+slug+"/";
         File dir = new File(dirPath);
         if(!dir.exists()) dir.mkdirs();
         profileImage.transferTo(new File(dirPath+profileImage.getOriginalFilename()));

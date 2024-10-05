@@ -164,9 +164,9 @@ public class ItemController extends ServiceContainer {
     @Value("${item.get}")
     String filePath;
 
-    @GetMapping("/image/{filename}")
-    public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename) throws Exception {
-        Path path = Paths.get(filePath + filename);
+    @GetMapping("/image/{slug}/{filename}")
+    public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename, @PathVariable("slug") String slug ) throws Exception {
+        Path path = Paths.get(filePath +slug+ "/"+filename);
         Resource resource = new UrlResource(path.toUri());
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
     }

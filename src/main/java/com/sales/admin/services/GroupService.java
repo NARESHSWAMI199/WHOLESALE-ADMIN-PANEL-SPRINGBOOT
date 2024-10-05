@@ -7,6 +7,7 @@ import com.sales.dto.UserPermissionsDto;
 import com.sales.entities.Group;
 import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
+import com.sales.utils.Utils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -44,9 +45,9 @@ public class GroupService extends RepoContainer {
     public Map<String,Object> createOrUpdateGroup(GroupDto groupDto, User loggededUser) throws Exception {
         Map<String,Object> responseObject = new HashMap<>();
         try {
-            if (groupDto.getSlug() != null && !groupDto.getSlug().trim().equals("")) {
+            if (!Utils.isEmpty(groupDto.getSlug())) {
                 Group group = groupRepository.findGroupBySlug(groupDto.getSlug());
-                if(group.getId() == GlobalConstant.suId && loggededUser.getId() != GlobalConstant.suId) throw  new Exception("There is nothing to update.");
+                if(group.getId() == GlobalConstant.groupId && loggededUser.getId() != GlobalConstant.suId) throw  new Exception("There is nothing to update.");
                 int isUpdated = permissionHbRepository.updateGroup(groupDto, group.getId());
                 if (isUpdated > 0 && group.getId() ==0) {
                     responseObject.put("message", "The group has been updated successfully.But dear "+loggededUser.getUsername()+" ji We are not able to remove permissions. from "+group.getName()+" New permissions updated .");

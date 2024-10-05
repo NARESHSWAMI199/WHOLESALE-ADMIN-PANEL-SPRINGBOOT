@@ -6,6 +6,7 @@ import com.sales.dto.StatusDto;
 import com.sales.dto.UserDto;
 import com.sales.dto.UserSearchFilters;
 import com.sales.entities.User;
+import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -112,7 +113,7 @@ public class UserController extends ServiceContainer {
         Map<String,Object> responseObj = new HashMap<>();
         User logggedUser = (User) request.getAttribute("user");
         int isUpdated = userService.resetPasswordByUserSlug(passwordDto,logggedUser);
-        if (isUpdated > 0) {
+        if (isUpdated > 0 || logggedUser.getId() == GlobalConstant.suId) {
             responseObj.put("message", "User password has been successfully updated.");
             responseObj.put("status", 200);
         } else {
@@ -164,28 +165,6 @@ public class UserController extends ServiceContainer {
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
 
     }
-
-
-
-
-
-//    @Transactional
-//    @PostMapping(value = {"group/create", "group/update"})
-//    public ResponseEntity<Map<String,Object>> assignOrRemoveGroupsToUser(HttpServletRequest request, @RequestBody UserPermissionsDto userPermissionsDto){
-//        Map<String,Object> responseObject = new HashMap<>();
-//        int isAssigned= groupService.assignGroupsToUser(userPermissionsDto);
-//        if (isAssigned > 0) {
-//            responseObject.put("message", "The group has been updated successfully.");
-//            responseObject.put("status", 201);
-//        } else {
-//            responseObject.put("message", "Something went wrong during update user groups");
-//            responseObject.put("status", 400);
-//        }
-//        return new ResponseEntity<Map<String,Object>>(responseObject, HttpStatus.valueOf((Integer) responseObject.get("status")));
-//    }
-
-
-
 
     @Value("${profile.get}")
     String filePath;

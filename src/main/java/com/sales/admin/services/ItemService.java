@@ -150,8 +150,11 @@ public class ItemService extends RepoContainer implements ItemsDao {
         if(itemImage !=null) {
             String fileOriginalName = itemImage.getOriginalFilename().replaceAll(" ", "_");
             if (!Utils.isValidImage(fileOriginalName)) throw new Exception("Not a valid file.");
-            itemImage.transferTo(new File(itemImagePath + item.getSlug() + fileOriginalName));
-            item.setAvtar(itemImageRelativePath + item.getSlug() + fileOriginalName);
+            String dirPath = itemImagePath+item.getSlug()+"/";
+            File dir = new File(dirPath);
+            if(!dir.exists()) dir.mkdirs();
+            itemImage.transferTo(new File(dirPath+ fileOriginalName));
+            item.setAvtar(fileOriginalName);
         }
         return itemRepository.save(item);
     }
@@ -189,8 +192,11 @@ public class ItemService extends RepoContainer implements ItemsDao {
         if(profileImage !=null) {
             String fileOriginalName = profileImage.getOriginalFilename().replaceAll(" ", "_");
             if (!Utils.isValidImage(fileOriginalName)) throw new Exception("Not a valid file.");
-            profileImage.transferTo(new File(itemImagePath + slug + fileOriginalName));
-            return itemHbRepository.updateItemImage(slug, itemImageRelativePath + slug + fileOriginalName);
+            String dirPath = itemImagePath+slug+"/";
+            File dir = new File(dirPath);
+            if(!dir.exists()) dir.mkdirs();
+            profileImage.transferTo(new File(dirPath+fileOriginalName));
+            return itemHbRepository.updateItemImage(slug,fileOriginalName);
         }
         return 0;
     }

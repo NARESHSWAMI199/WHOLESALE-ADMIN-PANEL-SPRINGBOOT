@@ -32,7 +32,7 @@ public class Utils {
 
 
     public static boolean isEmpty(String string){
-        return (string ==null || string.equals(""));
+        return (string ==null || string.trim().equals(""));
     }
 
 
