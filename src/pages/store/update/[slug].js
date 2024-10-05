@@ -14,7 +14,8 @@ import { Box,
     Snackbar,
     Alert,
     Stack,
-    Container
+    Container,
+    SvgIcon
 } from "@mui/material";
 import { Image, Upload } from "antd";
 import axios from "axios";
@@ -25,6 +26,7 @@ import { ArrowButtons } from "src/layouts/arrow-button";
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import ImageInput from "src/sections/image-input";
 import { host, storeImage } from "src/utils/util";
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 
 
@@ -201,7 +203,7 @@ return ( <>
           {/* store image input */}
 
           <div style={{marginLeft : '10px',marginTop: '10px'}}>
-          <ImageInput onChange={onSubmit} avtar={storeImage+store.avtar}/>
+          <ImageInput onChange={onSubmit} avtar={storeImage+store.slug+"/"+store.avtar}/>
           </div>
             <Grid
               xs={12}
@@ -321,6 +323,17 @@ return ( <>
     <CardActions sx={{ justifyContent: 'flex-end' }}>
         <Button type="submit" variant="contained">
           Save details
+        </Button>
+        <Button
+            startIcon = {
+                <SvgIcon fontSize="small">
+                <RefreshIcon />
+                </SvgIcon>
+            }
+            sx={{color:'text-secondary'}}
+            onClick={(e) => window.location.reload()}
+              variant="contained"
+        >
         </Button>
       </CardActions>
     </Card>

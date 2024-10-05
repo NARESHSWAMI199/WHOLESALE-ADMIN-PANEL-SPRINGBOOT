@@ -2,7 +2,6 @@ import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIc
 import ArrowUpOnSquareIcon from "@heroicons/react/24/solid/ArrowUpOnSquareIcon"
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon"
 import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/material"
-import Head from "next/head"
 import Link from "next/link"
 
 const exp = require("constants")

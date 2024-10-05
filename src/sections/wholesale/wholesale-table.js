@@ -38,6 +38,7 @@ import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
 import { itemImage, toTitleCase } from 'src/utils/util';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { CopyOutlined } from '@ant-design/icons';
 
 export const ItemsTable = (props) => {
   const {
@@ -61,8 +62,45 @@ export const ItemsTable = (props) => {
   const [rowIndex,setRowIndex] = useState(-1)
   const [status,setStatus] = useState('')
   const [action,setAction] = useState('')
+  const [isCopied, setIsCopied] = useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+  async function copyTextToClipboard(text) {
+    if ('clipboard' in navigator) {
+      return await navigator.clipboard.writeText(text);
+    } else {
+      return document.execCommand('copy', true, text);
+    }
+  }
+
+  const handleCopyClick = (slug) => {
+    // Asynchronously call copyTextToClipboard
+      copyTextToClipboard(slug)
+      .then(() => {
+        // If successful, update the isCopied state value
+        setItems((items).filter(customer => {
+         if(customer.slug == slug){
+          customer.isCopied = true
+          setIsCopied(true);
+         }
+         return customer
+      }))
+        setTimeout(() => {
+          setItems((items).filter(customer => {
+            if(customer.slug == slug){
+             customer.isCopied = false
+             setIsCopied(false);
+            }
+            return customer
+         }))
+        }, 1500);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
 
 
   const changeStatus = (slug,status) => {
@@ -208,8 +246,8 @@ export const ItemsTable = (props) => {
                         spacing={2}
                       >      
                  
-                    {!!item.avtar ? <Image src={itemImage+item.avtar} style={{borderRadius : "50%" , width:"50px", height : "50px" }}/>  : 
-                        <Avatar src={itemImage+item.avtar} >
+                    {!!item.avtar ? <Image src={itemImage+item.slug+"/"+item.avtar} style={{borderRadius : "50%" , width:"50px", height : "50px" }}/>  : 
+                        <Avatar src={itemImage+item.slug+"/"+item.avtar} >
                           {getInitials(item.name)}
                         </Avatar>
                         }
@@ -221,11 +259,13 @@ export const ItemsTable = (props) => {
                       </Stack>
                     </TableCell>
                
-                    <TableCell align='center'>
-                      <Typography variant="subtitle2" sx={{color:'green'}}>
-                        {item.slug}
-                      </Typography>
+       
+                    <TableCell sx={{color:'text.secondary'}}>
+                     <span style={{color:'green'}}>{item.slug} </span> 
+                      {!!item.isCopied && item.isCopied && isCopied ? <Badge color="primary"  badgeContent="copied" style={{marginBottom:'35px'}} /> : <></>}
+                      <CopyOutlined onClick={() => { handleCopyClick(item.slug) }} />
                     </TableCell>
+
                     <TableCell align='center'>
                         {item.label === "O" && <Badge color="error" badgeContent={'Old'} />}
                         {item.label === "N" && <Badge color="success" badgeContent={'New'} />}

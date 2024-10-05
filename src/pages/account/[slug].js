@@ -5,7 +5,7 @@ import { AccountProfile } from 'src/sections/account/account-profile';
 import { AccountProfileDetails } from 'src/sections/account/account-profile-details';
 import axios from 'axios';
 import { useAuth } from 'src/hooks/use-auth';
-import { host } from 'src/utils/util';
+import { host, suId } from 'src/utils/util';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { tr } from 'date-fns/locale';
@@ -62,7 +62,11 @@ const Page = () => {
          await axios.post(host+"/group/all",data)
          .then(res => {
             const data = res.data.content;
-             setGroups(data.filter((group)=>group.id != 0));
+            if(auth.user.id != suId){
+             setGroups(data.filter((group)=>(group.id != 0)));
+            }else{
+              setGroups(data);
+            }
          })
          .catch(err => {
            //setErrors(err.message)

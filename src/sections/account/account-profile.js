@@ -41,7 +41,7 @@ export const AccountProfile = (props) => {
     .then(res =>{
       flagStatus = "success"
       setMessage(res.data.message)
-      user.avatar = user.slug+image.name
+      user.avatar = image.name
       handleUpdateLoggedUser()
     }).catch(err=>{
         flagStatus = "error"
@@ -91,7 +91,7 @@ export const AccountProfile = (props) => {
                 }}
               >
 
-              { !!user.avatar ? <Image  style={{borderRadius : '50%', height : '80px', width : '80px'}} src={userImage+user.avatar}/> :
+              { !!user.avatar ? <Image  style={{borderRadius : '50%', height : '80px', width : '80px'}} src={userImage+user.slug+"/"+user.avatar}/> :
 
               <Avatar sx={{
                 height: 80,

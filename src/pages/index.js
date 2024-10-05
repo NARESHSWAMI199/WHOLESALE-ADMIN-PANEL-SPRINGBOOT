@@ -175,7 +175,7 @@ useEffect( ()=>{
           <Grid
             xs={12}
             sm={6}
-            lg={!!user && user.userType=="SA" &&  user.id != suId ? 3 : 4}
+            lg={!!user  &&  user.id != suId ? 3 : 4}
           >
            <Link href="/users" sx={{textDecoration:'none'}} > <OverviewUsers
               title="USERS"
@@ -188,7 +188,7 @@ useEffect( ()=>{
           <Grid
             xs={12}
             sm={6}
-            lg={!!user && user.userType=="SA" &&  user.id != suId ? 3 : 4}
+            lg={!!user &&  user.id != suId ? 3 : 4}
           >
           <Link sx={{
             textDecoration:'none'
@@ -203,7 +203,7 @@ useEffect( ()=>{
             <Grid
               xs={12}
               sm={6}
-              lg={!!user && user.userType=="SA" &&  user.id != suId ? 3 : 4}
+              lg={!!user &&  user.id != suId ? 3 : 4}
             >
             <Link sx={{
               textDecoration:'none'
@@ -216,11 +216,10 @@ useEffect( ()=>{
           
 
 
-          {!!user && user.userType == 'SA' &&
           <Grid
             xs={12}
             sm={6}
-            lg={!!user && user.userType=="SA" &&  user.id != suId ? 3 : 4}
+            lg={!!user  &&  user.id != suId ? 3 : 4}
           >
           <Link sx={{
             textDecoration:'none'
@@ -230,14 +229,14 @@ useEffect( ()=>{
               value={dashboardData.staffs}
             /> </Link>
           </Grid>
-        }
 
 
-        {!!user && user.id ==  0 &&
+
+        {!!user && user.id ==  suId &&
           <Grid
             xs={12}
             sm={6}
-            lg={!!user && user.userType=="SA" &&  user.id != suId ? 3 : 4}
+            lg={!!user &&  user.id != suId ? 3 : 4}
           >
           <Link sx={{
             textDecoration:'none'

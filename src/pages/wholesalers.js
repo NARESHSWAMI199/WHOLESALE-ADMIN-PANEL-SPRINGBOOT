@@ -53,14 +53,11 @@ const Page = () => {
   const {slug} = router.query
 
   const auth = useAuth()
-  let [status,setStatus] = useState(null)
-  const [error,setErrors] = useState("")
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [customers,setCustomers] = useState([])
   const customersIds = useCustomerIds(customers);
   const customersSelection = useSelection(customersIds);
-  const [deleted,setDeleted] = useState(false);
   const [data,setData] = useState({
     slug : slug,
     userType : "W",
@@ -141,7 +138,6 @@ const Page = () => {
     .then(res => {
         setFlag("success")
         setMessage(res.data.message)
-        setDeleted(true)
         setOpen(true)
         setCustomers((items) =>items.filter((item) => item.slug !== slug));
     }).catch(err => {

@@ -54,8 +54,6 @@ const Page = () => {
 
 
   const auth = useAuth()
-
-  const [error,setErrors] = useState("")
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [customers,setCustomers] = useState([])
@@ -80,7 +78,6 @@ const Page = () => {
            setCustomers(res.data.content);
        })
        .catch(err => {
-         setErrors(err.message)
          setFlag("error")
          setMessage(!!err.response ? err.response.data.message : err.message)
          setOpen(true)
@@ -122,7 +119,6 @@ const Page = () => {
       updateStatusOnUi(status,slug)
       setOpen(true)
     }).catch(err => {
-      console.log(err)
       setFlag("error")
       setMessage(!!err.response ? err.response.data.message : err.message)
       setOpen(true)
@@ -139,13 +135,11 @@ const Page = () => {
     .then(res => {
         setFlag("success")
         setMessage(res.data.message)
-        setDeleted(true)
         setOpen(true)
         setCustomers((items) =>items.filter((item) => item.slug !== slug));
     }).catch(err => {
-      console.log(err)
-      setMessage(err.message)
       setFlag("error")
+      setMessage(!!err.response ? err.response.data.message : err.message)
       setOpen(true)
     } )
   }
@@ -206,7 +200,7 @@ const Page = () => {
       >
         <Container maxWidth="xl">
           <Stack spacing={3}>
-          <CustomerHeaders  headerTitle={"Staffs"} userType="S" />
+          <CustomerHeaders  headerTitle={"Staffs"} userType={!!auth.user && auth.user.userType == "SA" ? "S" : "R" } />
 
             <BasicSearch onSearch={onSearch} />
 

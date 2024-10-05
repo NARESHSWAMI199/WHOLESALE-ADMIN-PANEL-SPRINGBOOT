@@ -213,7 +213,7 @@ export const CustomersTable = (props) => {
                         spacing={2}
                       >      
               
-                      { !!customer.avatar ? <Image  style={{borderRadius : '50%', height : '50px', width : '50px'}} src={userImage+customer.avatar}/> :
+                      { !!customer.avatar ? <Image  style={{borderRadius : '50%', height : '50px', width : '50px'}} src={userImage+customer.slug+"/"+customer.avatar}/> :
 
                         <Avatar src={userImage+customer.avatar} >
                           {getInitials(customer.username)}

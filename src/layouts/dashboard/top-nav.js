@@ -17,7 +17,7 @@ import { alpha } from '@mui/material/styles';
 import { usePopover } from 'src/hooks/use-popover';
 import { AccountPopover } from './account-popover';
 import { useAuth } from 'src/hooks/use-auth';
-import { host } from 'src/utils/util';
+import { host, userImage } from 'src/utils/util';
 import { ArrowButtons } from '../arrow-button';
 
 const SIDE_NAV_WIDTH = 280;
@@ -114,7 +114,7 @@ export const TopNav = (props) => {
                 height: 40,
                 width: 40
               }}
-              src={!!user ? host+"/admin/auth/profile/"+user.avatar : ""}
+              src={!!user ? userImage+user.slug+"/"+user.avatar : ""}
             />
           </Stack>
         </Stack>

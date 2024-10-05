@@ -99,7 +99,7 @@ export const StoresCard = (props) => {
         <CardMedia
             component="img"
             sx={{ width: 300 }}
-            image= {storeImage+store.avtar}
+            image= {storeImage+store.slug+"/"+store.avtar}
             alt="Live from space store cover"
       />
       <Box sx={{ display: 'flex', flexDirection: 'column'}} >

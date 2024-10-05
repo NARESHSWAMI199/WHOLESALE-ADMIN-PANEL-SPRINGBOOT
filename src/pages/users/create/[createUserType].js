@@ -68,7 +68,11 @@ const createUser = () =>{
          await axios.post(host+"/group/all",data)
          .then(res => {
             const data = res.data.content;
+            if(user.id != suId || userType != 'SA'){
              setGroups(data.filter((group)=>group.id != 0));
+            }else{
+              setGroups(data)
+            }
          })
          .catch(err => {
            //setErrors(err.message)
@@ -79,7 +83,7 @@ const createUser = () =>{
        }
       getData();
   
-     },[data])
+     },[data,userType])
 
 
     useEffect(()=>{
@@ -251,7 +255,9 @@ const createUser = () =>{
                         }
                         }
                       >
+                        {!!user && user.userType == "SA" && 
                         <MenuItem value={"S"}>Staff</MenuItem>
+                         }
                         <MenuItem value={"W"}>Wholesaler</MenuItem>
                         <MenuItem value={'R'}>Retailer</MenuItem>
                         {!!user && user.id == suId && 
@@ -337,6 +343,7 @@ const createUser = () =>{
                           />
                         </Grid>
 
+                      {(userType == "SA" || userType == "S") &&
                         <Grid
                           xs={12}
                           md={6}
@@ -364,7 +371,7 @@ const createUser = () =>{
                                 </Select>
                           </FormControl>
                         </Grid>
-
+                      }
                       </Grid>
                     </Box>
                   </CardContent>

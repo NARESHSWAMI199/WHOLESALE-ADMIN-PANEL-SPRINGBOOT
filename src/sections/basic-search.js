@@ -49,7 +49,8 @@ export const BasicSearch = (props) => {
       sx={{ maxWidth: 240 }}
     />
 
-  { props.type !== "A" &&  props.type !== "item" && <OutlinedInput
+  { props.type !== "A" &&  props.type !== "item" &&
+   <OutlinedInput
         defaultValue=""
         fullWidth
         placeholder="Token Id"
@@ -67,7 +68,7 @@ export const BasicSearch = (props) => {
         )}
         sx={{ maxWidth: 240 }}
       />
-  }
+ }
 
 
 

@@ -43,7 +43,7 @@ export const AccountProfileDetails = (props) => {
         username : formData.get("username"),
         email :  formData.get("email"),
         contact : formData.get("contact"),
-        groupList : assignedGroup
+        //groupList : assignedGroup
       }
       props.updateProfile(data)
     }
