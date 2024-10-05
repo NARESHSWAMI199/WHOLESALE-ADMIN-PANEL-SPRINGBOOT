@@ -41,7 +41,7 @@ export const OverviewLatestStores = (props) => {
                     ? (
                       <Box
                         component="img"
-                        src={storeImage+product.avtar}
+                        src={storeImage+product.slug+"/"+product.avtar}
                         sx={{
                           borderRadius: 1,
                           height: 48,

@@ -158,7 +158,7 @@ const createItem = () => {
                             <Box sx={{ m: -1.5 }}>
         
                             <div style={{marginLeft : '10px',marginTop: '10px'}}>
-                                <ImageInput onChange={onSubmit} avtar={itemImage+values.avtar}/>
+                                <ImageInput onChange={onSubmit} avtar={itemImage+values.slug+"/"+values.avtar}/>
                             </div>
 
                                 <Grid

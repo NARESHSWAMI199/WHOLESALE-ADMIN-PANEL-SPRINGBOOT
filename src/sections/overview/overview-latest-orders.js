@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import { Scrollbar } from 'src/components/scrollbar';
 import { SeverityPill } from 'src/components/severity-pill';
-import { host, toTitleCase } from 'src/utils/util';
+import { host, toTitleCase, userImage } from 'src/utils/util';
 import { getInitials } from 'src/utils/get-initials';
 import Link from 'next/link';
 
@@ -83,7 +83,7 @@ export const OverviewLatestUsers = (props) => {
                             query: { slug: user.slug },
                           }}
                         >
-                          <Avatar src={host + "/admin/auth/profile/" + user.avatar} >
+                          <Avatar src={userImage+user.slug +"/"+user.avatar} >
                             {getInitials(user.username)}
                           </Avatar>
                         </Link>

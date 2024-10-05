@@ -80,7 +80,7 @@ const Page = ()=> {
     axios.defaults.headers = {
       Authorization: auth.token
     }
-    axios.post(host + "/group/create",data)
+    axios.post(host + "/group/update",data)
       .then(res => {
         let response = res.data;
         console.log(response)

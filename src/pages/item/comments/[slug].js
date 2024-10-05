@@ -146,13 +146,14 @@ useEffect( ()=>{
           <Card>
             <CardContent sx={{mt:3}}>
               {/* <BasicSearch onSearch={onSearch} /> */}
-              <Grid container spacing={4}>
+              <Grid container spacing={3}>
                   <Grid xs={12} md={3}> 
                       <Image
-                          height={300}
+                          height="100%"
                           width ='100%'
                           max-width='300px'
-                          src={itemImage+item.avtar}
+                          max-height='300px'
+                          src={itemImage+item.slug+"/"+item.avtar}
                       />
                   </Grid>
                   {/* item Detail */}
@@ -237,7 +238,7 @@ useEffect( ()=>{
                               </Grid>
                           </Typography>
 
-                          <Rating value={item.rating} sx={{my:1}}/>
+                          <Rating value={parseFloat(item.rating)} sx={{my:1}}/>
 
                           <Typography
                                   variant="subtitle"
