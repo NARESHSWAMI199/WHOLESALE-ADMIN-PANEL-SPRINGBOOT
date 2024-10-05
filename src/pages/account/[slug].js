@@ -46,6 +46,7 @@ const Page = () => {
          .catch(err => {
            setFlag("error")
            setMessage(!!err.response ? err.response.data.message : err.message)
+           if(user.userType =="S" && user.userType =="SA" )
            setOpen(true)
          } )
        }

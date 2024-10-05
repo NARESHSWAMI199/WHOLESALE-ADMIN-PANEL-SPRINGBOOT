@@ -43,7 +43,7 @@ export const AccountProfileDetails = (props) => {
         username : formData.get("username"),
         email :  formData.get("email"),
         contact : formData.get("contact"),
-        //groupList : assignedGroup
+        groupList : assignedGroup
       }
       props.updateProfile(data)
     }
@@ -127,7 +127,7 @@ export const AccountProfileDetails = (props) => {
                 xs={12}
                 md={6}
               >
-
+              {(props.user.userType =="S" || props.user.userType =="SA" ) ?
              <FormControl sx={{ minWidth: 350, maxWidth: 500 }}>
                       <InputLabel shrink htmlFor="select-multiple-native">
                         Groups
@@ -151,8 +151,18 @@ export const AccountProfileDetails = (props) => {
                         ))}
                       </Select>
                 </FormControl> 
-              </Grid> 
+                :
+                <TextField
+                  fullWidth
+                  label="User type"
+                  name="userType"
+                  value={values.userType == "W" ? "Wholesaler" : "Retailer" }
+                  InputLabelProps={{shrink:true}}
+                />
 
+              }   
+              </Grid> 
+              
 
               
 
