@@ -47,8 +47,8 @@ public class WholesaleStoreHbRepository {
         String strQuery = "update Store set " +
                 "storeName=:name , " +
                 "email=:email, "+
+                "avtar=:avtar, "+
                 "phone=:phone, "+
-                "rating=:rating, "+
                 "description=:description, "+
                 "updatedAt=:updatedAt, "+
                 "updatedBy=:updatedBy "+
@@ -58,7 +58,7 @@ public class WholesaleStoreHbRepository {
         query.setParameter("name", storeDto.getStoreName());
         query.setParameter("email", storeDto.getStoreEmail());
         query.setParameter("phone", storeDto.getStorePhone());
-        query.setParameter("rating", storeDto.getRating());
+        query.setParameter("avtar", storeDto.getStoreAvatar());
         query.setParameter("description", storeDto.getDescription());
         query.setParameter("updatedAt", Utils.getCurrentMillis());
         query.setParameter("updatedBy", loggedUser.getId());

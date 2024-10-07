@@ -1,6 +1,8 @@
 package com.sales.wholesaler.services;
 
 
+import com.sales.admin.repositories.AddressHbRepository;
+import com.sales.admin.repositories.AddressRepository;
 import com.sales.dto.SearchFilters;
 import com.sales.wholesaler.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,14 @@ public class WholesaleRepoContainer {
     protected WholesaleAddressRepository wholesaleAddressRepository;
     @Autowired
     protected  WholesaleAddressHbRepository wholesaleAddressHbRepository;
+
+
+    /** same for both admin and wholesaler*/
+    @Autowired
+    AddressHbRepository addressHbRepository;
+
+    @Autowired
+    AddressRepository addressRepository;
 
 
     public Pageable getPageable(SearchFilters filters){

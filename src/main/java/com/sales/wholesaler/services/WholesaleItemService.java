@@ -35,14 +35,14 @@ public class WholesaleItemService extends WholesaleRepoContainer {
     String itemImageRelativePath;
 
 
-    public Page<Item> getAllItems(SearchFilters searchFilters) {
+    public Page<Item> getAllItems(SearchFilters searchFilters,Integer storeId) {
         Sort sort = searchFilters.getOrder().equalsIgnoreCase("asc") ?
                 Sort.by(searchFilters.getOrderBy()).ascending() :
                 Sort.by(searchFilters.getOrderBy()).descending();
         Specification<Item> specification = Specification.where(
                 (containsName(searchFilters.getSearchKey().trim())
                         .or(hasSlug(searchFilters.getSearchKey())))
-                        .and(isWholesale(searchFilters.getStoreId()))
+                        .and(isWholesale(storeId))
                         .and(isStatus(searchFilters.getStatus()))
                         .and(inStock(searchFilters.getInStock()))
                         .and(isLabel(searchFilters.getLabel()))

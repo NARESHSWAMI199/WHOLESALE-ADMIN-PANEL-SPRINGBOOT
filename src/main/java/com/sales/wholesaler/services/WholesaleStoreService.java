@@ -1,26 +1,31 @@
 package com.sales.wholesaler.services;
 
-import com.sales.admin.services.AddressService;
 import com.sales.dto.AddressDto;
 import com.sales.dto.StoreDto;
-import com.sales.entities.Address;
 import com.sales.entities.Store;
 import com.sales.entities.User;
+import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class WholesaleStoreService extends WholesaleRepoContainer {
 
 
-    @Autowired
-    AddressService addressService;
+
+    @Value("${store.absolute}")
+    String storeImagePath;
+
+    @Value("${store.relative}")
+    String storeImageRelativePath;
 
     public AddressDto getAddressObjFromStore(StoreDto storeDto){
         AddressDto addressDto = new AddressDto();
@@ -32,65 +37,39 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
     }
 
 
-    @Transactional
-    public Map<String, Object> createOrUpdateStore(StoreDto storeDto,User loggedUser) throws Exception {
+    @Transactional(rollbackOn = {MyException.class , RuntimeException.class})
+    public Map<String, Object> updateStoreBySlug(StoreDto storeDto,User loggedUser) throws IOException {
         Map<String, Object> responseObj = new HashMap<>();
-        if (!Utils.isEmpty(storeDto.getStoreSlug())) {
-            int isUpdated = updateStore(storeDto, loggedUser);
-            if (isUpdated > 0) {
-                responseObj.put("message", "successfully updated.");
-                responseObj.put("status", 201);
-            } else {
-                responseObj.put("message", "nothing to updated. may be something went wrong");
-                responseObj.put("status", 400);
-            }
-            return responseObj;
+        Store store = getStoreByUserId(loggedUser.getId());
+        String slug = store.getSlug();
+        storeDto.setStoreSlug(slug);
+        String imageName = saveStoreImage(storeDto.getStorePic(), slug);
+        if(imageName !=null){
+            storeDto.setStoreAvatar(imageName);
+        }else{
+            storeDto.setStoreAvatar(store.getAvtar());
+        }
+        int isUpdated = updateStore(storeDto, loggedUser);
+        if (isUpdated > 0) {
+            responseObj.put("message", "successfully updated.");
+            responseObj.put("status", 201);
         } else {
-            Store createdStore = createStore(storeDto, loggedUser);
-            if (createdStore.getId() > 0) {
-                responseObj.put("res", createdStore);
-                responseObj.put("message", "successfully inserted.");
-                responseObj.put("status", 200);
-            } else {
-                responseObj.put("message", "nothing to insert. may be something went wrong");
-                responseObj.put("status", 400);
-            }
+            responseObj.put("message", "nothing to updated. may be something went wrong");
+            responseObj.put("status", 400);
         }
         return responseObj;
     }
 
-    @Transactional
-    public Store createStore(StoreDto storeDto , User loggedUser) throws Exception {
-
-
-        /** inserting  address during create a wholesale */
-        AddressDto addressDto = getAddressObjFromStore(storeDto);
-        Address address =  addressService.insertAddress(addressDto,loggedUser);
-        /** @END inserting  address during create a wholesale */
-
-        Store store = new Store();
-        if(Utils.isEmpty(storeDto.getUserSlug())){
-            throw new Exception("Must provide a store user");
-        }
-        Optional<User> storeOwner = wholesaleUserRepository.findByWholesalerSLug(storeDto.getUserSlug());
-        if (storeOwner == null)  throw new Exception("Make sure user is wholesaler.");
-
-        store = new Store(loggedUser);
-        store.setUser(storeOwner.get());
-        store.setStoreName(storeDto.getStoreName());
-        store.setEmail(storeDto.getStoreEmail());
-        store.setAddress(address);
-        store.setDescription(storeDto.getDescription());
-        store.setPhone(storeDto.getStorePhone());
-        store.setRating(storeDto.getRating());
-        return wholesaleStoreRepository.save(store);
-    }
-
-    @Transactional
+    @Transactional(rollbackOn = {MyException.class,RuntimeException.class})
     public int updateStore(StoreDto storeDto, User loggedUser){
+        AddressDto address = new AddressDto();
+        address.setAddressSlug(storeDto.getAddressSlug());
+        address.setCity(storeDto.getCity());
+        address.setState(storeDto.getState());
+        int isUpdatedAddress = addressHbRepository.updateAddress(address,loggedUser);
+        if(isUpdatedAddress < 1) return isUpdatedAddress;
         return wholesaleStoreHbRepository.updateStore(storeDto,loggedUser);
     }
-
 
 
     @Transactional
@@ -99,13 +78,11 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
     }
 
 
-    public Store getStoreByUserSlug(String userSlug) throws Exception {
-        User user = wholesaleUserRepository.findUserBySlug(userSlug);
-        if (user == null) throw new Exception("sorry user not found.");
-        return wholesaleStoreRepository.findStoreByUserId(user.getId());
+    public Store getStoreByUserSlug(Integer userId) {
+        return wholesaleStoreRepository.findStoreByUserId(userId);
     }
 
-    public Store getStoreByUserId(Integer userId) throws Exception {
+    public Store getStoreByUserId(Integer userId){
         return wholesaleStoreRepository.findStoreByUserId(userId);
     }
 
@@ -113,5 +90,19 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         return wholesaleStoreRepository.getStoreIdByUserId(userId);
     }
 
+
+    @Transactional
+    public String saveStoreImage(MultipartFile profileImage, String slug) throws MyException, IOException {
+        if(profileImage !=null ) {
+            String fileOriginalName = profileImage.getOriginalFilename().replaceAll(" ", "_");
+            if (!Utils.isValidImage(fileOriginalName)) throw new MyException("Not a valid file.");
+            String dirPath = storeImagePath+"/"+slug+"/";
+            File dir = new File(dirPath);
+            if(!dir.exists()) dir.mkdirs();
+            profileImage.transferTo(new File(dirPath+fileOriginalName));
+            return fileOriginalName;
+        }
+        return null;
+    }
 
 }

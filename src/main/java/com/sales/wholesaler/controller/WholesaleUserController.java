@@ -53,23 +53,6 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         return null;
     }
 
-
-    @Transactional
-    @PostMapping(value = {"/register"})
-    public ResponseEntity<Map<String, Object>> register(HttpServletRequest request, @RequestBody UserDto userDto) {
-        Map<String,Object> responseObj = new HashMap<>();
-        try {
-            responseObj = wholesaleUserService.registerUser(userDto);
-        } catch (Exception e) {
-            responseObj.put("message", e.getMessage());
-            responseObj.put("status", 500);
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        }
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
-
-    }
-
-
     @Transactional
     @PostMapping(value = {"/update"})
     public ResponseEntity<Map<String, Object>> updateAuth(HttpServletRequest request, @RequestBody UserDto userDto) {
@@ -87,17 +70,14 @@ public class WholesaleUserController extends WholesaleServiceContainer {
     }
 
 
-    @GetMapping("/detail/{slug}")
-    public ResponseEntity<Map<String, Object>> getDetailUser(@PathVariable String slug) {
+    @GetMapping("/detail")
+    public ResponseEntity<Map<String, Object>> getDetailUser(HttpServletRequest request) {
         Map<String,Object> responseObj = new HashMap<>();
-        User user = wholesaleUserService.getUserDetail(slug);
-        if (user != null) {
-            responseObj.put("res", user);
-            responseObj.put("status", 200);
-        } else {
-            responseObj.put("message", "Please check you parameters not a valid request.");
-            responseObj.put("status", 400);
-        }
+        User user = (User) request.getAttribute("user");
+        Store store = wholesaleStoreService.getStoreByUserSlug(user.getId());
+        responseObj.put("store", store);
+        responseObj.put("user", user);
+        responseObj.put("status", 200);
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 

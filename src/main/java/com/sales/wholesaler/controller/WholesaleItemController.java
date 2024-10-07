@@ -17,8 +17,10 @@ import java.util.Map;
 @RequestMapping(value = {"wholesale/item"})
 public class WholesaleItemController extends WholesaleServiceContainer {
     @PostMapping("/all")
-    public ResponseEntity<Page<Item>> getAllItem(@RequestBody SearchFilters searchFilters) {
-        Page<Item> alItems = wholesaleItemService.getAllItems(searchFilters);
+    public ResponseEntity<Page<Item>> getAllItem(HttpServletRequest request,@RequestBody SearchFilters searchFilters) {
+        User logggedUser = (User) request.getAttribute("user");
+        Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(logggedUser.getId());
+        Page<Item> alItems = wholesaleItemService.getAllItems(searchFilters,storeId);
         return new ResponseEntity<>(alItems, HttpStatus.OK);
     }
 
