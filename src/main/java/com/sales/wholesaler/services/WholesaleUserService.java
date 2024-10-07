@@ -1,10 +1,13 @@
 package com.sales.wholesaler.services;
 
 
+import com.sales.dto.PasswordDto;
 import com.sales.dto.StoreDto;
 import com.sales.dto.UserDto;
 import com.sales.entities.User;
+import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -16,6 +19,9 @@ public class WholesaleUserService extends WholesaleRepoContainer {
 
     @Autowired
     WholesaleStoreService wholesaleStoreService;
+
+    @Value("${default.password}")
+    String password;
 
     public User findByEmailAndPassword(Map<String,String> param) {
         String email = param.get("email");
@@ -59,5 +65,11 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         return wholesaleUserRepository.findUserBySlug(slug);
     }
 
+    @Transactional
+    public int resetPasswordByUserSlug(PasswordDto passwordDto, User loggedUser){
+        password = !Utils.isEmpty(password) ?  passwordDto.getPassword() : password;
+        loggedUser.setPassword(password);
+        return loggedUser.getId();
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.sales.interceptors;
 
 import com.sales.admin.repositories.PermissionRepository;
+import com.sales.admin.repositories.StorePermissionsRepository;
 import com.sales.admin.repositories.UserRepository;
 import com.sales.jwtUtils.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
     @Autowired
     PermissionRepository permissionRepository;
 
+    @Autowired
+    StorePermissionsRepository storePermissionsRepository;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         String arr[] = {
@@ -40,7 +44,7 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                 "/admin/item/image/**"
 
         };
-        registry.addInterceptor(new SalesInterceptor(jwtToken,userRepository,permissionRepository))
+        registry.addInterceptor(new SalesInterceptor(jwtToken,userRepository,permissionRepository,storePermissionsRepository))
                 .excludePathPatterns(Arrays.asList(arr));
     }
 

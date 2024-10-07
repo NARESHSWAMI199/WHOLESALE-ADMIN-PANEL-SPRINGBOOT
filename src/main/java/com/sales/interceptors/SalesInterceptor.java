@@ -3,6 +3,7 @@ package com.sales.interceptors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sales.admin.repositories.PermissionRepository;
+import com.sales.admin.repositories.StorePermissionsRepository;
 import com.sales.admin.repositories.UserRepository;
 import com.sales.dto.ErrorDto;
 import com.sales.entities.User;
@@ -25,11 +26,13 @@ public class SalesInterceptor implements HandlerInterceptor {
     UserRepository userRepository;
 
     PermissionRepository permissionRepository;
+    StorePermissionsRepository storePermissionsRepository;
 
-    public SalesInterceptor(JwtToken jwtToken, UserRepository userRepository, PermissionRepository permissionRepository){
+    public SalesInterceptor(JwtToken jwtToken, UserRepository userRepository, PermissionRepository permissionRepository, StorePermissionsRepository storePermissionsRepository){
         this.jwtToken = jwtToken;
         this.userRepository = userRepository;
         this.permissionRepository = permissionRepository;
+        this.storePermissionsRepository = storePermissionsRepository;
     }
 
     @Override
@@ -42,7 +45,14 @@ public class SalesInterceptor implements HandlerInterceptor {
             String slug = jwtToken.getSlugFromToken(token);
             /** get user by slug. */
             User user = userRepository.findUserBySlug(slug);
-            Set<String> permittedUrls = permissionRepository.getUserAllPermission(user.getId());
+
+            Set<String> permittedUrls = null;
+            if(user.getUserType().equals("S")  || user.getUserType().equals("SA")){
+                permittedUrls = permissionRepository.getUserAllPermission(user.getId());;
+            }else if(user.getUserType().equals("W")){
+                permittedUrls = storePermissionsRepository.getAllAssignedPermissionByUserId(user.getId());
+            }
+
             if (user.getIsDeleted().equals("Y")) {
                 sendError(response,"User is not found.",401);
                 return false;
@@ -60,10 +70,10 @@ public class SalesInterceptor implements HandlerInterceptor {
                     break;
                 }
             }
-//            if (!isPermitted && user.getId() != GlobalConstant.suId) {
-//                sendError(response, "You don't permissions to access "+requestUrI+".Please contact your administrator.", 400);
-//                return false;
-//            }
+            if (!isPermitted && user.getId() != GlobalConstant.suId) {
+                sendError(response, "You don't permissions to access "+requestUrI+".Please contact your administrator.", 400);
+                return false;
+            }
             request.setAttribute("user",user);
             return true;
         }

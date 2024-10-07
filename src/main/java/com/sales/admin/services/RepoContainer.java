@@ -3,6 +3,7 @@ package com.sales.admin.services;
 
 import com.sales.admin.repositories.*;
 import com.sales.dto.SearchFilters;
+import com.sales.entities.StorePermissions;
 import com.sales.utils.WriteExcel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +52,9 @@ public class RepoContainer {
 
     @Autowired
     protected  GroupRepository groupRepository;
+
+    @Autowired
+    protected StorePermissionsRepository storePermissionsRepository;
 
 
     public Pageable getPageable(SearchFilters filters){

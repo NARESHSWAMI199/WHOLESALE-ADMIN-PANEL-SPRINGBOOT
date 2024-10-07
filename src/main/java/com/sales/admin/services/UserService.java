@@ -178,6 +178,11 @@ public class UserService extends RepoContainer {
             int isAssigned = permissionHbRepository.assignGroupsToUser(userDto.getUserId(), userDto.getGroupList());
             if (isAssigned < 1)
                 throw new MyException("Something went wrong during update user's groups. please contact to administrator.");
+        }else if((userDto.getUserId() != loggedUser.getId()) && userDto.getUserType().equals("W")){
+            List<Integer> defaultPermissions = storePermissionsRepository.getAllDefaultPermissionsIds();
+            int isAssigned = permissionHbRepository.assignPermissionsToWholesaler(userDto.getUserId(),defaultPermissions);
+            if (isAssigned < 1)
+                throw new MyException("Something went wrong during update wholesaler's permissions. please contact to administrator.");
         }
         return responseObj;
     }

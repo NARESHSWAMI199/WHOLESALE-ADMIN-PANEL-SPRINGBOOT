@@ -115,8 +115,15 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         if(itemDto.getPrice() < itemDto.getDiscount()) throw new Exception("Discount can't be greater then price.");
         Map<String, Object> responseObj = new HashMap<>();
         if (!Utils.isEmpty(itemDto.getSlug())) {
+            String itemImage = saveItemImage(itemDto.getItemImage(), itemDto.getSlug());
+            Item item = findItemBySLug(itemDto.getSlug());
+            if(itemImage != null){
+                itemDto.setAvtar(itemImage);
+            }else{
+                itemDto.setAvtar(item.getAvtar());
+            }
             int isUpdated = updateItem(itemDto, loggedUser);
-            updateStoreImage(itemDto.getItemImage(),itemDto.getSlug());
+
             if (isUpdated > 0) {
                 responseObj.put("message", "successfully updated.");
                 responseObj.put("status", 201);
@@ -160,7 +167,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
     }
 
     @Transactional
-    public int updateStoreImage(MultipartFile profileImage, String slug) throws Exception {
+    public String saveItemImage(MultipartFile profileImage, String slug) throws Exception {
         if(profileImage !=null) {
             String fileOriginalName = profileImage.getOriginalFilename().replaceAll(" ", "_");
             if (!Utils.isValidImage(fileOriginalName)) throw new Exception("Not a valid file.");
@@ -168,9 +175,9 @@ public class WholesaleItemService extends WholesaleRepoContainer {
             File dir = new File(dirPath);
             if(!dir.exists()) dir.mkdirs();
             profileImage.transferTo(new File(dirPath+fileOriginalName));
-            return wholesaleItemHbRepository.updateItemImage(slug,fileOriginalName);
+            return fileOriginalName;
         }
-        return 0;
+        return null;
     }
 
 
