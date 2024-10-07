@@ -35,6 +35,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
                 .and(isWholesale(searchFilters.getStoreId()))
                 .and(isStatus(searchFilters.getStatus()))
                 .and(inStock(searchFilters.getInStock()))
+                .and(isLabel(searchFilters.getLabel()))
                 .and(greaterThanOrEqualFromDate(searchFilters.getFromDate()))
                 .and(lessThanOrEqualToToDate(searchFilters.getToDate()))
         );
@@ -51,6 +52,40 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         responseObj.put("deactive",wholesaleItemRepository.optionItemCount("D"));
         return responseObj;
     }
+
+    public Map<String, Integer> getItemCountsForNewLabel () {
+        Map<String,Integer> responseObj = new HashMap<>();
+        responseObj.put("all",wholesaleItemRepository.getItemCountLabel("N"));
+        responseObj.put("active",wholesaleItemRepository.optionItemCountLabel("N","A"));
+        responseObj.put("deactive",wholesaleItemRepository.optionItemCountLabel("N","D"));
+        return responseObj;
+    }
+
+    public Map<String, Integer> getItemCountsForOldLabel () {
+        Map<String,Integer> responseObj = new HashMap<>();
+        responseObj.put("all",wholesaleItemRepository.getItemCountLabel("O"));
+        responseObj.put("active",wholesaleItemRepository.optionItemCountLabel("O","A"));
+        responseObj.put("deactive",wholesaleItemRepository.optionItemCountLabel("O","D"));
+        return responseObj;
+    }
+
+    public Map<String, Integer> getItemCountsForInStock () {
+        Map<String,Integer> responseObj = new HashMap<>();
+        responseObj.put("all",wholesaleItemRepository.getItemCountInStock("Y"));
+        responseObj.put("active",wholesaleItemRepository.optionItemCountInStock("Y","A"));
+        responseObj.put("deactive",wholesaleItemRepository.optionItemCountInStock("Y","D"));
+        return responseObj;
+    }
+
+
+    public Map<String, Integer> getItemCountsForOutStock () {
+        Map<String,Integer> responseObj = new HashMap<>();
+        responseObj.put("all",wholesaleItemRepository.getItemCountInStock("N"));
+        responseObj.put("active",wholesaleItemRepository.optionItemCountLabel("N","A"));
+        responseObj.put("deactive",wholesaleItemRepository.optionItemCountLabel("N","D"));
+        return responseObj;
+    }
+
 
 
     public Item findItemBySLug(String slug) {

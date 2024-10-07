@@ -1,4 +1,4 @@
-package com.sales.admin.controllers;
+package com.sales.wholesaler.controller;
 
 
 import com.sales.dto.GraphDto;
@@ -10,20 +10,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("admin/dashboard")
-public class AdminDashboardController extends ServiceContainer {
+@RequestMapping("wholesaler/dashboard")
+public class WholesaleDashboardController extends WholesaleServiceContainer {
 
 
     @GetMapping("/counts")
     public ResponseEntity<Map<String, Object>> getAllDashboardCount() {
         Map responseObj = new HashMap();
-        responseObj.put("users" , userService.getUserCounts());
-        responseObj.put("retailers" , userService.getRetailersCounts());
-        responseObj.put("wholesalers" , userService.getWholesalersCounts());
-        responseObj.put("staffs" , userService.getStaffsCounts());
-        responseObj.put("admins" , userService.getAdminsCounts());
-         // responseObj.put("items",itemService.getItemCounts());
-        //responseObj.put("wholesales",storeService.getWholesaleCounts());
+        responseObj.put("items" , wholesaleItemService.getItemCounts());
+        responseObj.put("newItems" , wholesaleItemService.getItemCountsForNewLabel());
+        responseObj.put("oldItems" , wholesaleItemService.getItemCountsForOldLabel() );
+        responseObj.put("inStock" , wholesaleItemService.getItemCountsForInStock());
+        responseObj.put("outStock" , wholesaleItemService.getItemCountsForOutStock());
         responseObj.put("status", 200);
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }

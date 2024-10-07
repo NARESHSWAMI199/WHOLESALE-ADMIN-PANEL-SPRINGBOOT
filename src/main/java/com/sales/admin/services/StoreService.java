@@ -6,6 +6,7 @@ import com.sales.entities.Store;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -189,9 +190,14 @@ public class StoreService extends RepoContainer{
 
     public Store getStoreByUserSlug(String userSlug) throws Exception {
         User user = userRepository.findUserBySlug(userSlug);
-        if (user == null) throw new Exception("sorry user not found.");
+        if (user == null) throw new MyException("sorry user not found.");
         return storeRepository.findStoreByUserId(user.getId());
     }
+
+    public Store getStoreByUserId(Integer userId) throws Exception {
+        return storeRepository.findStoreByUserId(userId);
+    }
+
 
     @Transactional
     public int updateStatusBySlug(StatusDto statusDto){

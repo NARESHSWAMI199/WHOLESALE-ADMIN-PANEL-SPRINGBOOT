@@ -15,7 +15,20 @@ public interface WholesaleItemRepository extends JpaRepository<Item, Integer> , 
 
    @Query(value = "select count(id) as count from Item")
    Integer totalItemCount();
+
    @Query(value = "select count(id) as count from Item where status=:status")
    Integer optionItemCount(@Param("status") String status);
+
+   @Query(value = "select count(id) as count from Item where label=:label")
+   Integer getItemCountLabel(@Param("label") String label);
+
+   @Query(value = "select count(id) as count from Item where label=:label and status=:status")
+   Integer optionItemCountLabel(@Param("label") String label,@Param("status") String status);
+
+   @Query(value = "select count(id) as count from Item where inStock=:inStock")
+   Integer getItemCountInStock(@Param("inStock") String inStock);
+
+   @Query(value = "select count(id) as count from Item where inStock=:inStock and status=:status")
+   Integer optionItemCountInStock(@Param("inStock") String inStock,@Param("status") String status);
 
 }

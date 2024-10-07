@@ -2,6 +2,7 @@ package com.sales.wholesaler.controller;
 
 
 import com.sales.dto.UserDto;
+import com.sales.entities.Store;
 import com.sales.entities.User;
 import com.sales.jwtUtils.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,24 +25,32 @@ public class WholesaleUserController extends WholesaleServiceContainer {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> findByEmailAndPassword(@RequestBody Map<String,String> param) {
-        logger.info("=============LOGIN PROCESSES STARTED =====================");
-        Map<String, Object> responseObj = new HashMap<>();
-        User user = wholesaleUserService.findByEmailAndPassword(param);
-        if (user == null) {
-            responseObj.put("message", "invalid credentials.");
-            responseObj.put("status", 401);
-            return new ResponseEntity<>(responseObj, HttpStatus.UNAUTHORIZED);
-        } else if (user.getStatus().equalsIgnoreCase("A")) {
-            responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
-            responseObj.put("message", "success");
-            responseObj.put("status", 200);
-            responseObj.put("user", user);
-            return new ResponseEntity<>(responseObj, HttpStatus.OK);
-        } else {
-            responseObj.put("message", "You are blocked by admin");
-            responseObj.put("status", 401);
-            return new ResponseEntity<>(responseObj, HttpStatus.OK);
+        try {
+            logger.info("=============LOGIN PROCESSES STARTED =====================");
+            Map<String, Object> responseObj = new HashMap<>();
+            User user = wholesaleUserService.findByEmailAndPassword(param);
+            if (user == null) {
+                responseObj.put("message", "invalid credentials.");
+                responseObj.put("status", 401);
+                return new ResponseEntity<>(responseObj, HttpStatus.UNAUTHORIZED);
+            } else if (user.getStatus().equalsIgnoreCase("A")) {
+                responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
+                Store store = storeService.getStoreByUserId(user.getId());
+                responseObj.put("message", "success");
+                responseObj.put("status", 200);
+                responseObj.put("user", user);
+                responseObj.put("store", store);
+                return new ResponseEntity<>(responseObj, HttpStatus.OK);
+            } else {
+                responseObj.put("message", "You are blocked by admin");
+                responseObj.put("status", 401);
+                return new ResponseEntity<>(responseObj, HttpStatus.OK);
+            }
+        }catch (Exception e){
+            System.out.println(e.getMessage());;
+            e.printStackTrace();
         }
+        return null;
     }
 
 

@@ -59,6 +59,12 @@ public class ItemsSpecifications {
     }
 
 
+    public static Specification<Item> isLabel(String label) {
+        return (root, query, criteriaBuilder) -> {
+            if (label == null) return null;
+            return criteriaBuilder.equal(root.get(Item_.LABEL),label);
+        };
+    }
 
     public static Specification<Item> inStock(String inStock) {
         return (root, query, criteriaBuilder) -> {
