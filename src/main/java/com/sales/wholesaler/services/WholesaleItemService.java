@@ -59,6 +59,8 @@ public class WholesaleItemService extends WholesaleRepoContainer {
     public Map<String, Integer> getItemCounts (Integer storeId) {
         Map<String,Integer> responseObj = new HashMap<>();
         responseObj.put("all",wholesaleItemRepository.totalItemCount(storeId));
+        responseObj.put("inStock",wholesaleItemRepository.getItemCountInStock("Y",storeId));
+        responseObj.put("outStock",wholesaleItemRepository.getItemCountInStock("N",storeId));
         responseObj.put("active",wholesaleItemRepository.optionItemCount("A",storeId));
         responseObj.put("deactive",wholesaleItemRepository.optionItemCount("D",storeId));
         return responseObj;
@@ -67,6 +69,8 @@ public class WholesaleItemService extends WholesaleRepoContainer {
     public Map<String, Integer> getItemCountsForNewLabel (Integer storeId) {
         Map<String,Integer> responseObj = new HashMap<>();
         responseObj.put("all",wholesaleItemRepository.getItemCountLabel("N",storeId));
+        responseObj.put("inStock",wholesaleItemRepository.getItemCountInStock("Y","N",storeId));
+        responseObj.put("outStock",wholesaleItemRepository.getItemCountInStock("N","N",storeId));
         responseObj.put("active",wholesaleItemRepository.optionItemCountLabel("N","A",storeId));
         responseObj.put("deactive",wholesaleItemRepository.optionItemCountLabel("N","D",storeId));
         return responseObj;
@@ -75,6 +79,8 @@ public class WholesaleItemService extends WholesaleRepoContainer {
     public Map<String, Integer> getItemCountsForOldLabel (Integer storeId) {
         Map<String,Integer> responseObj = new HashMap<>();
         responseObj.put("all",wholesaleItemRepository.getItemCountLabel("O",storeId));
+        responseObj.put("inStock",wholesaleItemRepository.getItemCountInStock("Y","O",storeId));
+        responseObj.put("outStock",wholesaleItemRepository.getItemCountInStock("N","O",storeId));
         responseObj.put("active",wholesaleItemRepository.optionItemCountLabel("O","A",storeId));
         responseObj.put("deactive",wholesaleItemRepository.optionItemCountLabel("O","D",storeId));
         return responseObj;
