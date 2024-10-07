@@ -35,7 +35,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
                 return new ResponseEntity<>(responseObj, HttpStatus.UNAUTHORIZED);
             } else if (user.getStatus().equalsIgnoreCase("A")) {
                 responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
-                Store store = storeService.getStoreByUserId(user.getId());
+                Store store = wholesaleStoreService.getStoreByUserId(user.getId());
                 responseObj.put("message", "success");
                 responseObj.put("status", 200);
                 responseObj.put("user", user);

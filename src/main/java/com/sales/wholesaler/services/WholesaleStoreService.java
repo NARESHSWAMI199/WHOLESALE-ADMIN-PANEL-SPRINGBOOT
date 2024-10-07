@@ -105,4 +105,13 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         return wholesaleStoreRepository.findStoreByUserId(user.getId());
     }
 
+    public Store getStoreByUserId(Integer userId) throws Exception {
+        return wholesaleStoreRepository.findStoreByUserId(userId);
+    }
+
+    public Integer getStoreIdByUserSlug(Integer userId) {
+        return wholesaleStoreRepository.getStoreIdByUserId(userId);
+    }
+
+
 }

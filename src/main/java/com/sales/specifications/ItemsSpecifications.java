@@ -22,9 +22,9 @@ public class ItemsSpecifications {
         };
     }*/
 
-    public static Specification<Item> isWholesale(Integer wholesale) {
+    public static Specification<Item> isWholesale(Integer wholesaleId) {
         return (root, query, criteriaBuilder) -> {
-            return criteriaBuilder.equal(root.get(Item_.WHOLESALE), wholesale);
+            return criteriaBuilder.equal(root.get(Item_.wholesaleId), wholesaleId);
         };
     }
 

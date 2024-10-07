@@ -13,8 +13,8 @@ public interface WholesaleStoreRepository extends JpaRepository<Store, Integer> 
 
     Store findStoreByUserId(int userId);
 
-    @Query(value = "select count(id) as count from Store")
-    Integer totalWholesaleCount();
-    @Query(value = "select count(id) as count from Store where status=:status")
-    Integer optionWholesaleCount(@Param("status") String status);
+    @Query(value = "select id from store where user_id=:userId",nativeQuery = true)
+    Integer getStoreIdByUserId(@Param("userId")Integer userId);
+
+
 }

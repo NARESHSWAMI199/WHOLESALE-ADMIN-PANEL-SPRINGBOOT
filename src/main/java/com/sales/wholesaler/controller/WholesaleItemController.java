@@ -39,20 +39,21 @@ public class WholesaleItemController extends WholesaleServiceContainer {
 
 
 
-    @PostMapping(value = {"/add","/update"})
-    public ResponseEntity<Map<String,Object>> addOrUpdateItems(HttpServletRequest request, @RequestBody ItemDto itemDto) {
-        Map<String,Object>responseObj = new HashMap<>();
+    @PostMapping(value = {"/add", "/update"})
+    public ResponseEntity<Map<String, Object>> addOrUpdateItems(HttpServletRequest request, @ModelAttribute ItemDto itemDto) {
+        Map responseObj = new HashMap();
         try {
             User logggedUser = (User) request.getAttribute("user");
-            responseObj = wholesaleItemService.createOrUpdateItem(itemDto,logggedUser);
-        }catch (Exception e){
-            logger.info("Exception in addOrUpdateItems : "+e.getMessage());
-            responseObj.put("message",e.getMessage());
-            responseObj.put("status",500);
-
+            responseObj = wholesaleItemService.createOrUpdateItem(itemDto, logggedUser);
+        } catch (Exception e) {
+            responseObj.put("message", e.getMessage());
+            responseObj.put("status", 500);
+            e.printStackTrace();
         }
-        return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
+
+
 
 
     @GetMapping("/delete/{slug}")

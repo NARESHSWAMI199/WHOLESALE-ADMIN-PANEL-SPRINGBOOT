@@ -56,9 +56,13 @@ public class Item implements Serializable {
     String slug;
     @Column(name = "in_stock")
     String inStock;
-    @ManyToOne
-    @JoinColumn(name = "wholesale_id")
-    Store wholesale;
+
+    @Column(name = "wholesale_id")
+    Integer wholesaleId;
+
+//    @ManyToOne
+//    @JoinColumn(name = "wholesale_id")
+//    Store wholesale;
 
 
 }

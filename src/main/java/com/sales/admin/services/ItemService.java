@@ -132,7 +132,7 @@ public class ItemService extends RepoContainer implements ItemsDao {
         Item item = new Item();
         Store store = storeRepository.findStoreBySlug(itemDto.getWholesaleSlug());
         if (store == null) throw new Exception("Not a valid store.");
-        item.setWholesale(store);
+        item.setWholesaleId(store.getId());
         item.setName(itemDto.getName());
         item.setPrice(itemDto.getPrice());
         item.setDiscount(itemDto.getDiscount());
