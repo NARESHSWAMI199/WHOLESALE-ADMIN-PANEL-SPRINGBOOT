@@ -19,4 +19,5 @@ public class ItemDto {
     private String label;
     private String  avtar;
     private MultipartFile itemImage;
+    private Integer storeId;
 }

@@ -5,7 +5,6 @@ import com.sales.dto.PasswordDto;
 import com.sales.dto.StoreDto;
 import com.sales.dto.UserDto;
 import com.sales.entities.User;
-import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -67,8 +66,9 @@ public class WholesaleUserService extends WholesaleRepoContainer {
 
     @Transactional
     public int resetPasswordByUserSlug(PasswordDto passwordDto, User loggedUser){
-        password = !Utils.isEmpty(password) ?  passwordDto.getPassword() : password;
+        String password = passwordDto.getPassword();
         loggedUser.setPassword(password);
+        wholesaleUserRepository.save(loggedUser);
         return loggedUser.getId();
     }
 

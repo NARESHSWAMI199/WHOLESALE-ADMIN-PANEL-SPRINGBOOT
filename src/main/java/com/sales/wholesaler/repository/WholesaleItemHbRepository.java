@@ -37,7 +37,7 @@ public class WholesaleItemHbRepository {
                 "avtar =:avtar,"+
                 "updatedAt =:updatedAt," +
                 "updatedBy =:updatedBy " +
-                "where slug =:slug ";
+                "where slug =:slug and wholesaleId =:wholesaleId";
         Query query = entityManager.createQuery(hqQuery);
         query.setParameter("name" , itemDto.getName());
         query.setParameter("description" , itemDto.getDescription());
@@ -47,22 +47,25 @@ public class WholesaleItemHbRepository {
         query.setParameter("updatedAt" , Utils.getCurrentMillis());
         query.setParameter("updatedBy" , loggedUser.getId());
         query.setParameter("slug",itemDto.getSlug());
+        query.setParameter("wholesaleId",itemDto.getStoreId());
         return  query.executeUpdate();
     }
 
 
-    public int deleteItem(String slug){
-        String hqlString = "update Item set isDeleted='Y' where slug=:slug";
+    public int deleteItem(String slug,Integer storeId){
+        String hqlString = "update Item set isDeleted='Y' where slug=:slug and wholesaleId =:wholesaleId";
         Query query = entityManager.createQuery(hqlString);
         query.setParameter("slug",slug);
+        query.setParameter("wholesaleId",storeId);
         return query.executeUpdate();
     }
 
-    public int updateStock(String stock , String slug){
-        String hqlString = "update Item set inStock=:stock where slug=:slug";
+    public int updateStock(String stock , String slug, Integer storeId){
+        String hqlString = "update Item set inStock=:stock where slug=:slug and wholesaleId =:wholesaleId";
         Query query = entityManager.createQuery(hqlString);
         query.setParameter("stock",stock);
         query.setParameter("slug",slug);
+        query.setParameter("wholesaleId",storeId);
         return query.executeUpdate();
     }
 

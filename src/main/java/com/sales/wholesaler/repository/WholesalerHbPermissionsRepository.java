@@ -1,4 +1,4 @@
-package com.sales.wholesaler.services;
+package com.sales.wholesaler.repository;
 
 
 import com.sales.exceptions.MyException;

@@ -59,9 +59,11 @@ public class WholesaleItemController extends WholesaleServiceContainer {
 
 
     @GetMapping("/delete/{slug}")
-    public ResponseEntity<Map<String,Object>> deleteItemBySlug(@PathVariable String slug) {
+    public ResponseEntity<Map<String,Object>> deleteItemBySlug(HttpServletRequest request,@PathVariable String slug) {
         Map<String,Object> responseObj = new HashMap<>();
-        int isUpdated = wholesaleItemService.deleteItem(slug);
+        User logggedUser = (User) request.getAttribute("user");
+        Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(logggedUser.getId());
+        int isUpdated = wholesaleItemService.deleteItem(slug,storeId);
         if (isUpdated > 0) {
             responseObj.put("message", "Item has been successfully deleted.");
             responseObj.put("status", 200);
@@ -74,9 +76,11 @@ public class WholesaleItemController extends WholesaleServiceContainer {
 
 
     @PostMapping("/stock")
-    public ResponseEntity<Map<String,Object>> updateItemStock (@RequestBody Map<String,String> params) {
+    public ResponseEntity<Map<String,Object>> updateItemStock (HttpServletRequest request,@RequestBody Map<String,String> params) {
         Map<String,Object> responseObj = new HashMap<>();
-        int isUpdated = wholesaleItemService.updateStock(params.get("stock"),params.get("slug"));
+        User logggedUser = (User) request.getAttribute("user");
+        Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(logggedUser.getId());
+        int isUpdated = wholesaleItemService.updateStock(params.get("stock"),params.get("slug"),storeId);
         if (isUpdated > 0) {
             responseObj.put("message", "Item's stock has been successfully updated.");
             responseObj.put("status", 200);

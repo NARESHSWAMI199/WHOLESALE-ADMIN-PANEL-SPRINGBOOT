@@ -5,7 +5,6 @@ import com.sales.dto.GraphDto;
 import com.sales.dto.ItemDto;
 import com.sales.dto.SearchFilters;
 import com.sales.entities.Item;
-import com.sales.entities.Store;
 import com.sales.entities.User;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
@@ -114,6 +113,8 @@ public class WholesaleItemService extends WholesaleRepoContainer {
     public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser) throws Exception {
         if(itemDto.getPrice() < itemDto.getDiscount()) throw new Exception("Discount can't be greater then price.");
         Map<String, Object> responseObj = new HashMap<>();
+        Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(loggedUser.getId());
+        itemDto.setStoreId(storeId);
         if (!Utils.isEmpty(itemDto.getSlug())) {
             String itemImage = saveItemImage(itemDto.getItemImage(), itemDto.getSlug());
             Item item = findItemBySLug(itemDto.getSlug());
@@ -148,9 +149,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
 
     public Item createItem (ItemDto itemDto, User loggedUser) throws Exception {
         Item item = new Item();
-        Store store = wholesaleStoreRepository.findStoreBySlug(itemDto.getWholesaleSlug());
-        if (store == null) throw new Exception("Not a valid store.");
-        item.setWholesaleId(store.getId());
+        item.setWholesaleId(itemDto.getStoreId());
         item.setName(itemDto.getName());
         item.setPrice(itemDto.getPrice());
         item.setDiscount(itemDto.getDiscount());
@@ -185,12 +184,12 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         return wholesaleItemHbRepository.updateItems(itemDto,loggedUser);
     }
 
-    public int deleteItem(String slug) {
-        return wholesaleItemHbRepository.deleteItem(slug);
+    public int deleteItem(String slug,Integer storeId) {
+        return wholesaleItemHbRepository.deleteItem(slug,storeId);
     }
 
-    public int updateStock(String stock, String slug) {
-        return wholesaleItemHbRepository.updateStock(stock,slug);
+    public int updateStock(String stock, String slug,Integer storeId) {
+        return wholesaleItemHbRepository.updateStock(stock,slug,storeId);
     }
 
 

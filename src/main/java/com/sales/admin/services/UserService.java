@@ -3,6 +3,7 @@ package com.sales.admin.services;
 
 import com.sales.dto.*;
 import com.sales.entities.Store;
+import com.sales.entities.StorePermissions;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
@@ -19,10 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.sales.specifications.UserSpecifications.*;
 
@@ -281,5 +279,58 @@ public class UserService extends RepoContainer {
     public List<Integer> getUserGroupsIdBySlug(String slug) {
         return userRepository.getUserGroupsIdBySlug(slug);
     }
+
+
+    public List<Integer> getWholesalerAllAssignedPermissions(String slug) {
+        User user = getUserDetail(slug);
+        if(user==null) return null;
+        return storePermissionsRepository.getAllAssignedPermissionsIdByUserId(user.getId());
+    }
+
+    public Map<String,Object> getWholesalerAllPermissions() {
+        List<StorePermissions> storePermissionsList = storePermissionsRepository.findAll();
+        Map<String,Object> result = new HashMap<>();
+        for(StorePermissions storePermissions : storePermissionsList){
+            String key= storePermissions.getPermissionFor();
+            if(result.containsKey(key)){
+                Map<String,Object> newPermission = new HashMap<>();
+                newPermission.put("permission",storePermissions.getPermission());
+                newPermission.put("id",storePermissions.getId());
+                List<Object> oldList = (List<Object>) result.get(key);
+                oldList.add(newPermission);
+                result.put(key,oldList);
+            }else{
+                Map<String,Object> newPermission = new HashMap<>();
+                newPermission.put("permission",storePermissions.getPermission());
+                newPermission.put("id",storePermissions.getId());
+                List<Object> newList = new ArrayList<>();
+                newList.add(newPermission);
+                result.put(key,newList);
+            }
+        }
+        return result;
+    }
+
+
+
+
+
+    @Transactional(rollbackOn = {MyException.class,RuntimeException.class})
+    public Map<String,Object> updateWholesalerPermissions(UserDto userDto, User loggededUser) throws MyException {
+        Map<String,Object> responseObject = new HashMap<>();
+        if (Utils.isEmpty(userDto.getSlug()) || !userDto.getUserType().equals("W")) throw  new MyException("There is nothing to update.");
+        User user = getUserDetail(userDto.getSlug());
+        if (user == null) throw new MyException("Not a valid user.");
+        int isUpdated = permissionHbRepository.assignPermissionsToWholesaler(user.getId(), userDto.getStorePermissions());
+        if (isUpdated > 0) {
+            responseObject.put("message", "All permissions have been updated successfully.");
+            responseObject.put("status", 201);
+        } else {
+            responseObject.put("message", "Something went wrong during update permissions");
+            responseObject.put("status", 400);
+        }
+        return responseObject;
+    }
+
 
 }

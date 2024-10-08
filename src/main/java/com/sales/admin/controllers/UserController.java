@@ -180,7 +180,6 @@ public class UserController extends ServiceContainer {
     public ResponseEntity<Map<String,Object>> getUserGroupsIdsBySlug(HttpServletRequest request,@PathVariable String slug){
         Map responseObj = new HashMap();
         List<Integer> groupsIds = userService.getUserGroupsIdBySlug(slug);
-        User logggedUser = (User) request.getAttribute("user");
         if (groupsIds.size() > 0 ) {
             responseObj.put("content", groupsIds);
             responseObj.put("status", 200);
@@ -190,6 +189,40 @@ public class UserController extends ServiceContainer {
         }
         return new ResponseEntity<Map<String,Object>>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
+
+
+
+
+    @GetMapping("wholesale/permissions/{slug}")
+    public ResponseEntity<Map> getAllAssignedPermissionsForWholesaler(HttpServletRequest request,@PathVariable String slug){
+        Map<String, Object> wholesalerAllPermissions = userService.getWholesalerAllPermissions();
+        List<Integer> permissions =  userService.getWholesalerAllAssignedPermissions(slug);
+        Map responseObj = new HashMap();
+        if (permissions != null ) {
+            responseObj.put("assigned", permissions);
+            responseObj.put("allPermissions", wholesalerAllPermissions);
+            responseObj.put("status", 200);
+        } else {
+            responseObj.put("message", "There is no permission for this user.");
+            responseObj.put("status", 400);
+        }
+        return new ResponseEntity<>(responseObj,  HttpStatus.valueOf((Integer) responseObj.get("status")));
+    }
+
+
+
+
+    @Transactional
+    @PostMapping("wholesaler/permissions/update")
+    public ResponseEntity<Map<String,Object>> updateWholesalerPermissions(HttpServletRequest request, @RequestBody UserDto userDto){
+        User loggedUser =  (User)request.getAttribute("user");
+        Map<String,Object> response= userService.updateWholesalerPermissions(userDto,loggedUser);
+        return new ResponseEntity<>(response, HttpStatus.valueOf((Integer) response.get("status")));
+    }
+
+
+
+
 
 }
 

@@ -21,4 +21,5 @@ public class UserDto extends StoreDto {
     private MultipartFile profileImage;
     Integer userId;
     List<Integer> groupList;
+    List<Integer> storePermissions;
 }
