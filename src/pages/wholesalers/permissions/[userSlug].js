@@ -22,7 +22,7 @@ const Page = ()=> {
   let permissionsIds = []
   const auth = useAuth();
   const router = useRouter()
-  const {slug} = router.query
+  const {userSlug} = router.query
 
 
   useEffect(() => {
@@ -31,10 +31,12 @@ const Page = ()=> {
     }
 
     // Get all permmission 
-    axios.get(host + "/group/permissions/all/")
+    axios.get(host + "/admin/auth/wholesale/permissions/"+userSlug)
       .then(res => {
-        let response = res.data;
-        setPermissions(response)
+        let allPermissions = res.data.allPermissions;
+        setPermissions(allPermissions)
+        let assigned = res.data.assigned;
+        setGivenPermissions(assigned)
       })
       .catch(err => {
         setFlag("error")
@@ -42,44 +44,22 @@ const Page = ()=> {
         setOpen(true)
       })
       // end here.
-
-
-      
-    // Get detailed permmission 
-    axios.get(host + "/group/detail/"+slug)
-    .then(res => {
-      let response = res.data.res;
-      setGroup(response)
-      permissionsIds = permissionsIds.concat(response.permissions)
-      setGivenPermissions(response.permissions)
-    })
-    .catch(err => {
-      setMessage(!!err.response  ? err.response.data.message : err.message)
-      setFlag("error")
-      setOpen(true)
-    })
-    // end here.
-
-
   }, [])
 
 
 
   const createGroup = (event) =>{
     event.preventDefault()
-    let form = event.target;
-    let formData = new FormData(form)
-    
     let data = {
-      slug : slug,
-      name : formData.get("groupName"),
-      permissions : givenPermissions
+      userType : "W",
+      slug : userSlug,
+      storePermissions : givenPermissions
 
     }
     axios.defaults.headers = {
       Authorization: auth.token
     }
-    axios.post(host + "/group/update",data)
+    axios.post(host + "/admin/auth/wholesaler/permissions/update",data)
       .then(res => {
         let response = res.data;
         console.log(response)
@@ -151,7 +131,7 @@ const handleClose = () => {
     </Snackbar>
       <Head>
         <title>
-          Group Permissions | Swami Sales
+          Store Permissions | Swami Sales
         </title>
       </Head>
       <Box
@@ -167,36 +147,12 @@ const handleClose = () => {
           
           <form onSubmit={(e)=>createGroup(e)}>
           <Stack spacing={3}>
-          <BasicHeaders  headerTitle={"Edit Group Permissions"}/>
+          <BasicHeaders  headerTitle={"Edit Store Permissions"}/>
           <Grid spacing={3}>
-          {/* Group input */}
                 <Grid xs={2}>
-                  <OutlinedInput
-                          defaultValue=""
-                          fullWidth
-                          placeholder="Group Name"
-                          name='groupName'
-                          onChange={changeName}
-                          value={group.group}
-                          startAdornment={(
-                          <InputAdornment position="start" >
-                              
-                              <WorkspacePremiumIcon
-                              color="action"
-                              fontSize="small"
-                              >
-                              <MagnifyingGlassIcon />
-                              </WorkspacePremiumIcon>
-                          </InputAdornment>
-                          )}
-                          sx={{ maxWidth: 540 }}
-                      />
-  
-                {/* end here... */}
-     
                   <FormControlLabel sx={{mx:5}}
                     control={
-                      <Checkbox checked={givenPermissions.length > 0} indeterminate={givenPermissions.length > 0} onChange={allowAll} name={0} />
+                      <Checkbox checked={givenPermissions.length > 0} indeterminate={givenPermissions.length > 0}  onChange={allowAll} name={0} />
                     }
                     label={"All Permissions"}/>
                 </Grid>

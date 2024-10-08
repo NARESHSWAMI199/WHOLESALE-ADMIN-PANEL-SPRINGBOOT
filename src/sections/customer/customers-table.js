@@ -37,7 +37,7 @@ import { host, toTitleCase, userImage } from 'src/utils/util';
 import { Image } from 'antd';
 import { useAuth } from 'src/hooks/use-auth';
 import { CopyOutlined } from '@ant-design/icons';
-
+import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
 
 export const CustomersTable = (props) => {
   const {
@@ -316,6 +316,21 @@ export const CustomersTable = (props) => {
                             titleAccess='Edit'
                             />   
                       </Link>
+                    {customer.userType == "W" &&
+                      <Link
+                            href={{
+                              pathname: '/wholesalers/permissions/[slug]',
+                              query: { slug: customer.slug },
+                            }}
+                          >
+                              <AccessibilityNewIcon sx = {{
+                                  marginX : '5px',
+                                  color : '#111927'
+                            }}
+                            titleAccess='Edit'
+                            />   
+                      </Link>
+                    }
                       <DeleteIcon sx={ {
                         marginX : '5px',
                         color : 'Red'

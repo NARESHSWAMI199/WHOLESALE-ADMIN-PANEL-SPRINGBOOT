@@ -160,7 +160,7 @@ const Page = () => {
     </Snackbar>
       <Head>
         <title>
-          Retailer | Swami Sales
+          Group Permissions | Swami Sales
         </title>
       </Head>
       <Box

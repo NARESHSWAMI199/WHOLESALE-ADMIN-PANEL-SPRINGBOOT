@@ -22,7 +22,6 @@ const Page = ()=> {
   const [givenPermissions, setGivenPermissions] = useState([])
   let permissionsIds = []
   const auth = useAuth();
-  const [checkAll, setCheckAll] = useState(false)
 
 
 
@@ -58,10 +57,8 @@ const Page = ()=> {
       })
       setGivenPermissions(allPermission)
       //setGivenPermissions([...(permissions.permissions)])
-      setCheckAll(true)
     } else {
       //setGivenPermissions([...(permissions.permissions)])
-      setCheckAll(false)
       setGivenPermissions([])
     }
 
@@ -179,7 +176,7 @@ const handleClose = () => {
 
                   <FormControlLabel sx={{ mx: 5 }}
                     control={
-                      <Checkbox checked={checkAll} onChange={allowAll} name={0} />
+                      <Checkbox checked={givenPermissions.length > 0} indeterminate={givenPermissions.length > 0} onChange={allowAll} name={0} />
                     }
                     label={"All Permissions"} />
                 </Grid>
@@ -195,7 +192,7 @@ const handleClose = () => {
                       {permissions[element].map((item)=>{
                        return( <FormControlLabel
                           control={
-                            <Checkbox checked={givenPermissions.includes(item.id) || checkAll} onChange={handleChange} name={item.id} />
+                            <Checkbox checked={givenPermissions.includes(item.id)} onChange={handleChange} name={item.id} />
                           }
                          label={item.permission}
                         />)
