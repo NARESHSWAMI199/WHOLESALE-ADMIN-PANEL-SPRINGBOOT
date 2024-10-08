@@ -116,6 +116,8 @@ public class UserService extends RepoContainer {
 
     public StoreDto userDtoToStoreDto(UserDto userDto){
         StoreDto storeDto = new StoreDto();
+        storeDto.setStreet(userDto.getStreet());
+        storeDto.setZipCode(userDto.getZipCode());
         storeDto.setStoreName(userDto.getStoreName());
         storeDto.setStoreEmail(userDto.getStoreEmail());
         storeDto.setDescription(userDto.getDescription());

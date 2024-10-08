@@ -23,6 +23,8 @@ public class AddressHbRepository {
 
     public int updateAddress(AddressDto addressDto, User loggedUser){
         String hqQuery ="update Address set " +
+                "street =:street,"+
+                "zipCode =:zipCode,"+
                 "city =:city,"+
                 "state =:state," +
                 "latitude =:latitude," +
@@ -31,6 +33,8 @@ public class AddressHbRepository {
                 "updatedBy =:updatedBy " +
                 "where slug =:slug ";
         Query query = entityManager.createQuery(hqQuery);
+        query.setParameter("street",addressDto.getStreet());
+        query.setParameter("zipCode",addressDto.getZipCode());
         query.setParameter("city",addressDto.getCity());
         query.setParameter("state",addressDto.getState());
         query.setParameter("latitude",addressDto.getLatitude());

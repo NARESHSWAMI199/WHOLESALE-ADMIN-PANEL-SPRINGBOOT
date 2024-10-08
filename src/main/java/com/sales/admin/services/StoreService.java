@@ -64,6 +64,9 @@ public class StoreService extends RepoContainer{
 
     public AddressDto getAddressObjFromStore(StoreDto storeDto){
         AddressDto addressDto = new AddressDto();
+        addressDto.setAddressSlug(storeDto.getAddressSlug());
+        addressDto.setStreet(storeDto.getStreet());
+        addressDto.setZipCode(storeDto.getZipCode());
         addressDto.setCity(storeDto.getCity());
         addressDto.setState(storeDto.getState());
         addressDto.setLatitude(storeDto.getLatitude());
@@ -156,6 +159,9 @@ public class StoreService extends RepoContainer{
     public int updateStore(StoreDto storeDto, User loggedUser){
         AddressDto address = new AddressDto();
         address.setAddressSlug(storeDto.getAddressSlug());
+        address.setStreet(storeDto.getStreet());
+        address.setZipCode(storeDto.getZipCode());
+        address.setState(storeDto.getState());
         address.setCity(storeDto.getCity());
         address.setState(storeDto.getState());
         int isUpdatedAddress = addressHbRepository.updateAddress(address,loggedUser);

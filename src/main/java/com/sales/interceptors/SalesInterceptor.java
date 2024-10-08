@@ -45,10 +45,11 @@ public class SalesInterceptor implements HandlerInterceptor {
             String slug = jwtToken.getSlugFromToken(token);
             /** get user by slug. */
             User user = userRepository.findUserBySlug(slug);
-
+            String requestUrI = request.getRequestURI();
             Set<String> permittedUrls = null;
             if(user.getUserType().equals("S")  || user.getUserType().equals("SA")){
                 permittedUrls = permissionRepository.getUserAllPermission(user.getId());;
+                requestUrI = requestUrI.replaceAll("detail","all");
             }else if(user.getUserType().equals("W")){
                 permittedUrls = storePermissionsRepository.getAllAssignedPermissionByUserId(user.getId());
             }
@@ -60,9 +61,9 @@ public class SalesInterceptor implements HandlerInterceptor {
                 sendError(response,"User is not active.",401);
                 return false;
             }
-            String requestUrI = request.getRequestURI();
+
             /** if user have list permission also has detail permission */
-            requestUrI = requestUrI.replaceAll("detail","all");
+
             boolean isPermitted = false;
             for( String permission : permittedUrls) {
                 if(requestUrI.contains(permission)){

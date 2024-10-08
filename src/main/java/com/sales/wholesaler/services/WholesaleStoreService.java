@@ -29,6 +29,8 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
 
     public AddressDto getAddressObjFromStore(StoreDto storeDto){
         AddressDto addressDto = new AddressDto();
+        addressDto.setStreet(storeDto.getStreet());
+        addressDto.setZipCode(storeDto.getZipCode());
         addressDto.setCity(storeDto.getCity());
         addressDto.setState(storeDto.getState());
         addressDto.setLatitude(storeDto.getLatitude());
@@ -63,6 +65,8 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
     @Transactional(rollbackOn = {MyException.class,RuntimeException.class})
     public int updateStore(StoreDto storeDto, User loggedUser){
         AddressDto address = new AddressDto();
+        address.setStreet(storeDto.getStreet());
+        address.setZipCode(storeDto.getZipCode());
         address.setAddressSlug(storeDto.getAddressSlug());
         address.setCity(storeDto.getCity());
         address.setState(storeDto.getState());

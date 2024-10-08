@@ -22,6 +22,10 @@ public class Address {
     int id;
     @Column(name = "slug")
     String slug;
+    @Column(name = "street")
+    String street;
+    @Column(name = "zip_code")
+    String zipCode;
     @Column(name = "city")
     Integer city;
     @Column(name = "state")

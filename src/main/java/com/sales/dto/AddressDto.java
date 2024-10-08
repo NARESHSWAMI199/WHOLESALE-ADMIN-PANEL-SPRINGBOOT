@@ -9,6 +9,8 @@ import lombok.Setter;
 public class AddressDto {
 
     String addressSlug;
+    String street;
+    String zipCode;
     Integer city;
     Integer state;
     Float latitude;
