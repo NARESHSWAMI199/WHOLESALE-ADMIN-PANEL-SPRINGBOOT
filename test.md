@@ -173,7 +173,8 @@ create table `groups` (
 create table permissions (
 	id int primary key auto_increment,
 	permission varchar(50),
-	access_url text 
+	access_url text ,
+  permission_for varchar(20)
 );
 
 

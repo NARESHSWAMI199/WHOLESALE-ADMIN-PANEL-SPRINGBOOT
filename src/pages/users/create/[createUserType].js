@@ -141,7 +141,9 @@ const createUser = () =>{
             storePhone : formData.get("storePhone"),
             state:  formData.get("state"),
             city :  formData.get("city"),
-            storeName :  formData.get("storeName"),
+            street :  formData.get("street"),
+            zipCode :  formData.get("zipCode"),
+            storeName :  formData.get("storeName")
           }
         }
 
@@ -406,6 +408,41 @@ const createUser = () =>{
                         </Grid>
 
                         {/* address */}
+                        <Grid
+                          xs={12}
+                          md={6}
+                        >
+                          <TextField
+                            fullWidth
+                            label="Street Address"
+                            name="street"
+                            onChange={handleChange}
+                            required
+                            value={values.street}
+                            InputLabelProps={{shrink : true}}
+                          />
+
+                        </Grid>
+
+
+                        <Grid
+                          xs={12}
+                          md={6}
+                        >
+                          <TextField
+                            fullWidth
+                            label="Zip Code"
+                            name="zipCode"
+                            type="number"
+                            onChange={handleChange}
+                            required
+                            InputProps={{ maxLength: 6 }}
+                            value={values.zipCode}
+                            InputLabelProps={{shrink : true}}
+                          />
+
+                        </Grid>
+
 
                         <Grid
                           xs={12}

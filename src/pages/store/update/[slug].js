@@ -51,6 +51,7 @@ useEffect(()=>{
     axios.defaults.headers={
         Authorization : auth.token,
     }
+
     axios.get(host+"/admin/store/detail/"+slug)
     .then(res=>{
         let response = res.data.res;
@@ -126,6 +127,8 @@ const changeState = useCallback(
       storePhone : formData.get("phone"),
       state:  formData.get("state"),
       city :  formData.get("city"),
+      street:  formData.get("street"),
+      zipCode :  formData.get("zipCode"),
       storeName :  formData.get("storeName")
     }
     
@@ -221,7 +224,43 @@ return ( <>
 
             </Grid>
 
+
             {/* address */}
+            <Grid
+              xs={12}
+              md={6}
+            >
+              <TextField
+                fullWidth
+                label="Street Address"
+                name="street"
+                onChange={handleChange}
+                required
+                value={!!address && address.street}
+                InputLabelProps={{shrink : true}}
+              />
+
+            </Grid>
+
+
+            <Grid
+              xs={12}
+              md={6}
+            >
+              <TextField
+                fullWidth
+                label="Zip Code"
+                name="zipCode"
+                type="number"
+                onChange={handleChange}
+                required
+                InputProps={{ maxLength: 6 }}
+                value={!!address && address.zipCode}
+                InputLabelProps={{shrink : true}}
+              />
+
+            </Grid>
+
 
             <Grid
               xs={12}
