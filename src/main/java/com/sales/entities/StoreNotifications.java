@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
@@ -14,6 +15,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Where(clause = "is_deleted != 'Y' ")
 public class StoreNotifications {
 
     @Id
@@ -37,6 +39,9 @@ public class StoreNotifications {
 
     @Column(name ="is_deleted" )
     String isDeleted ="N";
+
+    @Column(name ="seen" )
+    String seen;
 
 
 

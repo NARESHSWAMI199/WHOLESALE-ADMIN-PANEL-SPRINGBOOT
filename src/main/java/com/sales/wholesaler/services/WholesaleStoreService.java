@@ -19,6 +19,7 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.sales.specifications.ItemCommentSpecifications.isUserId;
@@ -122,6 +123,12 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         Pageable pageable = getPageable(filters);
         Page<StoreNotifications> storeNotifications = wholesaleNotificationRepository.findAll(specification,pageable);
         return  storeNotifications;
+    }
+
+    public void updateSeen(List<Long> seenIds) {
+        for(long id : seenIds){
+            wholesaleStoreHbRepository.updateSeenNotifications(id);
+        }
     }
 
 

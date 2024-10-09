@@ -9,14 +9,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -43,10 +41,19 @@ public class WholesaleStoreController extends WholesaleServiceContainer{
 
     @Transactional
     @PostMapping(value = {"notifications"})
-    public ResponseEntity<Page<StoreNotifications>> getAllStoreNotification(HttpServletRequest request, @ModelAttribute SearchFilters searchFilters) {
+    public ResponseEntity<Page<StoreNotifications>> getAllStoreNotification(HttpServletRequest request, @RequestBody SearchFilters searchFilters) {
         User logggedUser = (User) request.getAttribute("user");
         Page<StoreNotifications> storeNotifications = wholesaleStoreService.getAllStoreNotification(searchFilters,logggedUser);
         return new ResponseEntity<>(storeNotifications, HttpStatus.OK);
+    }
+
+
+    @Transactional
+    @PostMapping(value = {"update/notifications"})
+    public ResponseEntity<String> getAllStoreNotification(HttpServletRequest request, @RequestBody StoreDto storeDto) {
+        User logggedUser = (User) request.getAttribute("user");
+        wholesaleStoreService.updateSeen(storeDto.getSeenIds());
+        return new ResponseEntity<>("success", HttpStatus.OK);
     }
 
 

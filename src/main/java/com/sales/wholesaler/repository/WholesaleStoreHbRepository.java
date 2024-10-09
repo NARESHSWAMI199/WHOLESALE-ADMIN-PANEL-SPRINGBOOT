@@ -67,4 +67,15 @@ public class WholesaleStoreHbRepository {
     }
 
 
+
+    public int updateSeenNotifications(long id){
+        String strQuery = "update StoreNotifications set " +
+                "seen='Y' " +
+                "where id=:id";
+        Query query = entityManager.createQuery(strQuery);
+        query.setParameter("id", id);
+        return query.executeUpdate();
+    }
+
+
 }
