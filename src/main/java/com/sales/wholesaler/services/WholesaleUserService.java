@@ -5,16 +5,24 @@ import com.sales.dto.PasswordDto;
 import com.sales.dto.StoreDto;
 import com.sales.dto.UserDto;
 import com.sales.entities.User;
+import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class WholesaleUserService extends WholesaleRepoContainer {
+
+
+    @Value("${profile.absolute}")
+    String profilePath;
 
     @Autowired
     WholesaleStoreService wholesaleStoreService;
@@ -71,5 +79,21 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         wholesaleUserRepository.save(loggedUser);
         return loggedUser.getId();
     }
+
+
+
+
+    public int updateProfileImage(MultipartFile profileImage, String slug, User loggedUser) throws IOException {
+        User user = wholesaleUserRepository.findUserBySlug(slug);
+        Utils.isValidPerson(user.getUserType(),loggedUser);
+        if (!Utils.isValidImage(profileImage.getOriginalFilename())) return 0;
+        String dirPath = profilePath+slug+"/";
+        File dir = new File(dirPath);
+        if(!dir.exists()) dir.mkdirs();
+        profileImage.transferTo(new File(dirPath+profileImage.getOriginalFilename()));
+        return  wholesaleUserHbRepository.updateProfileImage(slug,profileImage.getOriginalFilename());
+    }
+
+
 
 }

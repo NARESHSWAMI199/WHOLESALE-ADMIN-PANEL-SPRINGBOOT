@@ -1,6 +1,7 @@
 package com.sales.dto;
 
 
+import com.sales.entities.ItemCategory;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,4 +21,6 @@ public class ItemDto {
     private String  avtar;
     private MultipartFile itemImage;
     private Integer storeId;
+    private Integer categoryId = 0;
+    private ItemCategory itemCategory;
 }

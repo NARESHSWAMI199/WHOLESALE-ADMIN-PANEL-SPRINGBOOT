@@ -34,10 +34,18 @@ public class WholesaleRepoContainer {
 
     /** same for both admin and wholesaler*/
     @Autowired
-    AddressHbRepository addressHbRepository;
+    protected AddressHbRepository addressHbRepository;
 
     @Autowired
-    AddressRepository addressRepository;
+    protected AddressRepository addressRepository;
+
+
+    @Autowired
+    protected WholesaleItemCategoryRepository wholesaleItemCategoryRepository;
+
+
+    @Autowired
+    protected WholesaleItemCommentRepository wholesaleItemCommentRepository;
 
 
     public Pageable getPageable(SearchFilters filters){

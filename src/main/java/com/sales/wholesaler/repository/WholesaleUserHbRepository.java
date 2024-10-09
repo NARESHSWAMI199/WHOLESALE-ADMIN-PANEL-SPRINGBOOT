@@ -22,9 +22,7 @@ public class WholesaleUserHbRepository {
         String strQuery = "update User set " +
                 "username=:username , " +
                 "email=:email,"+
-                "password=:password,"+
                 "contact=:contact,"+
-                "userType=:userType,"+
                 "updatedAt=:updatedAt,"+
                 "updatedBy=:updatedBy "+
                 "where slug =:slug";
@@ -32,9 +30,7 @@ public class WholesaleUserHbRepository {
         Query query = entityManager.createQuery(strQuery);
         query.setParameter("username", userDto.getUsername());
         query.setParameter("email", userDto.getEmail());
-        query.setParameter("password", userDto.getPassword());
         query.setParameter("contact", userDto.getContact());
-        query.setParameter("userType", userDto.getUserType());
         query.setParameter("updatedAt", Utils.getCurrentMillis());
         query.setParameter("updatedBy", loggedUser.getId());
         query.setParameter("slug", userDto.getSlug());
@@ -58,6 +54,14 @@ public class WholesaleUserHbRepository {
         return query.executeUpdate();
     }
 
+
+    public int updateProfileImage(String slug, String avatarPath){
+        String hql = "Update User set avatar=:avatar where slug=:slug";
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("avatar",avatarPath);
+        query.setParameter("slug",slug);
+        return query.executeUpdate();
+    }
 
 
 }

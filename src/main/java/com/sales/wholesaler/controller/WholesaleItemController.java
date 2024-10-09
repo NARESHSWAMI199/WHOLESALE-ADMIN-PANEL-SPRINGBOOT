@@ -3,6 +3,7 @@ package com.sales.wholesaler.controller;
 import com.sales.dto.ItemDto;
 import com.sales.dto.SearchFilters;
 import com.sales.entities.Item;
+import com.sales.entities.ItemCategory;
 import com.sales.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -90,5 +92,12 @@ public class WholesaleItemController extends WholesaleServiceContainer {
         }
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
+
+    @GetMapping("category")
+    public ResponseEntity<List<ItemCategory>> getAllCategory() {
+        List<ItemCategory> itemCategories = wholesaleItemService.getAllCategory();
+        return new ResponseEntity<>(itemCategories, HttpStatus.OK);
+    }
+
 
 }

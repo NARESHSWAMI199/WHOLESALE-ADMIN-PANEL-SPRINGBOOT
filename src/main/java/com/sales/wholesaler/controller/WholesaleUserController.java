@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -99,6 +100,33 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put("status", 400);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+    }
+
+
+
+
+
+    @Transactional
+    @PostMapping("/update_profile/{slug}")
+    public ResponseEntity<Map<String, Object>> updateProfileImage(HttpServletRequest request, @RequestPart MultipartFile profileImage, @PathVariable String slug ) {
+        Map responseObj = new HashMap();
+        try {
+            User logggedUser = (User) request.getAttribute("user");
+            int  isUpdated = wholesaleUserService.updateProfileImage(profileImage,slug,logggedUser);
+            if(isUpdated > 0) {
+                responseObj.put("status" , 200);
+                responseObj.put("message" , "Profile image successfully updated");
+            }else {
+                responseObj.put("status" , 400);
+                responseObj.put("message" , "Not a valid profile image");
+            }
+        } catch (Exception e) {
+            responseObj.put("message", e.getMessage());
+            responseObj.put("status", 500);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        }
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+
     }
 
 }

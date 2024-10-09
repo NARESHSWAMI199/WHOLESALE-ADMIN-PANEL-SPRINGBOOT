@@ -5,7 +5,9 @@ import com.sales.dto.GraphDto;
 import com.sales.dto.ItemDto;
 import com.sales.dto.SearchFilters;
 import com.sales.entities.Item;
+import com.sales.entities.ItemCategory;
 import com.sales.entities.User;
+import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.File;
+import java.io.IOException;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.*;
@@ -110,14 +113,18 @@ public class WholesaleItemService extends WholesaleRepoContainer {
 
 
 
+    @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
     public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser) throws Exception {
-        if(itemDto.getPrice() < itemDto.getDiscount()) throw new Exception("Discount can't be greater then price.");
+        if(itemDto.getPrice() < itemDto.getDiscount()) throw new MyException("Discount can't be greater then price.");
         Map<String, Object> responseObj = new HashMap<>();
         Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(loggedUser.getId());
         itemDto.setStoreId(storeId);
+        ItemCategory itemCategory = wholesaleItemCategoryRepository.findById(itemDto.getCategoryId()).get();
+        itemDto.setItemCategory(itemCategory);
         if (!Utils.isEmpty(itemDto.getSlug())) {
-            String itemImage = saveItemImage(itemDto.getItemImage(), itemDto.getSlug());
             Item item = findItemBySLug(itemDto.getSlug());
+            if (item.getStatus().equals("D")) throw new MyException("You can't update a blocked item.");;
+            String itemImage = saveItemImage(itemDto.getItemImage(), itemDto.getSlug());
             if(itemImage != null){
                 itemDto.setAvtar(itemImage);
             }else{
@@ -147,7 +154,8 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         return responseObj;
     }
 
-    public Item createItem (ItemDto itemDto, User loggedUser) throws Exception {
+    @Transactional
+    public Item createItem (ItemDto itemDto, User loggedUser) throws IOException {
         Item item = new Item();
         item.setWholesaleId(itemDto.getStoreId());
         item.setName(itemDto.getName());
@@ -161,15 +169,22 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         item.setCreatedBy(loggedUser.getId());
         item.setUpdatedBy(loggedUser.getId());
         item.setLabel(itemDto.getLabel());
+        item.setItemCategory(itemDto.getItemCategory());
         item.setSlug(UUID.randomUUID().toString());
+        String itemImage = saveItemImage(itemDto.getItemImage(), item.getSlug());
+        if(itemImage != null){
+            item.setAvtar(itemImage);
+        }else{
+            item.setAvtar(itemDto.getAvtar());
+        }
         return wholesaleItemRepository.save(item);
     }
 
     @Transactional
-    public String saveItemImage(MultipartFile profileImage, String slug) throws Exception {
+    public String saveItemImage(MultipartFile profileImage, String slug) throws MyException, IOException {
         if(profileImage !=null) {
             String fileOriginalName = profileImage.getOriginalFilename().replaceAll(" ", "_");
-            if (!Utils.isValidImage(fileOriginalName)) throw new Exception("Not a valid file.");
+            if (!Utils.isValidImage(fileOriginalName)) throw new MyException("Not a valid file.");
             String dirPath = itemImagePath+slug+"/";
             File dir = new File(dirPath);
             if(!dir.exists()) dir.mkdirs();
@@ -185,6 +200,8 @@ public class WholesaleItemService extends WholesaleRepoContainer {
     }
 
     public int deleteItem(String slug,Integer storeId) {
+        Item item = findItemBySLug(slug);
+        if (item.getStatus().equals("D")) return 0;
         return wholesaleItemHbRepository.deleteItem(slug,storeId);
     }
 
@@ -212,6 +229,10 @@ public class WholesaleItemService extends WholesaleRepoContainer {
             return null;
         }
         return Month.of(month).getDisplayName(TextStyle.FULL, new Locale("eng"));
+    }
+
+    public List<ItemCategory> getAllCategory() {
+        return wholesaleItemCategoryRepository.findAll();
     }
 
 

@@ -60,6 +60,11 @@ public class Item implements Serializable {
     @Column(name = "wholesale_id")
     Integer wholesaleId;
 
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category", referencedColumnName = "id")
+    ItemCategory itemCategory;
+
 //    @ManyToOne
 //    @JoinColumn(name = "wholesale_id")
 //    Store wholesale;

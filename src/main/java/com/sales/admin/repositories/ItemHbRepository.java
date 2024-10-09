@@ -27,6 +27,7 @@ public class ItemHbRepository{
                 "description =:description," +
                 "price =:price," +
                 "discount =:discount," +
+                "itemCategory =:itemCategory,"+
                 "updatedAt =:updatedAt," +
                 "updatedBy =:updatedBy " +
                 "where slug =:slug ";
@@ -35,6 +36,7 @@ public class ItemHbRepository{
         query.setParameter("description" , itemDto.getDescription());
         query.setParameter("price" , itemDto.getPrice());
         query.setParameter("discount" , itemDto.getDiscount());
+        query.setParameter("itemCategory" , itemDto.getItemCategory());
         query.setParameter("updatedAt" , Utils.getCurrentMillis());
         query.setParameter("updatedBy" , loggedUser.getId());
         query.setParameter("slug",itemDto.getSlug());

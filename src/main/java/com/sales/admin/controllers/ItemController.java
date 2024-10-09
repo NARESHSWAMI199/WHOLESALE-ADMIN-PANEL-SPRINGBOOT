@@ -4,6 +4,7 @@ import com.sales.dto.ItemDto;
 import com.sales.dto.SearchFilters;
 import com.sales.dto.StatusDto;
 import com.sales.entities.Item;
+import com.sales.entities.ItemCategory;
 import com.sales.entities.Store;
 import com.sales.entities.User;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -169,6 +171,13 @@ public class ItemController extends ServiceContainer {
         Path path = Paths.get(filePath +slug+ "/"+filename);
         Resource resource = new UrlResource(path.toUri());
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
+    }
+
+
+    @GetMapping("category")
+    public ResponseEntity<List<ItemCategory>> getAllCategory() {
+        List<ItemCategory> itemCategories = itemService.getAllCategory();
+        return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
 
 }

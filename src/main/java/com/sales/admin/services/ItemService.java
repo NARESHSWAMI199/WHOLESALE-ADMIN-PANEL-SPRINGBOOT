@@ -7,6 +7,7 @@ import com.sales.dto.ItemDto;
 import com.sales.dto.SearchFilters;
 import com.sales.dto.StatusDto;
 import com.sales.entities.Item;
+import com.sales.entities.ItemCategory;
 import com.sales.entities.Store;
 import com.sales.entities.User;
 import com.sales.utils.Utils;
@@ -102,6 +103,8 @@ public class ItemService extends RepoContainer implements ItemsDao {
     public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser) throws Exception {
         if(itemDto.getPrice() < itemDto.getDiscount()) throw new Exception("Discount can't be greater then price.");
         Map<String, Object> responseObj = new HashMap<>();
+        ItemCategory itemCategory = itemCategoryRepository.findById(itemDto.getCategoryId()).get();
+        itemDto.setItemCategory(itemCategory);
         if (!Utils.isEmpty(itemDto.getSlug())) {
             int isUpdated = updateItem(itemDto, loggedUser);
             updateStoreImage(itemDto.getItemImage(),itemDto.getSlug());
@@ -146,7 +149,7 @@ public class ItemService extends RepoContainer implements ItemsDao {
         item.setLabel(itemDto.getLabel());
         item.setSlug(UUID.randomUUID().toString());
         MultipartFile itemImage = itemDto.getItemImage();
-
+        item.setItemCategory(itemDto.getItemCategory());
         if(itemImage !=null) {
             String fileOriginalName = itemImage.getOriginalFilename().replaceAll(" ", "_");
             if (!Utils.isValidImage(fileOriginalName)) throw new Exception("Not a valid file.");
@@ -200,6 +203,14 @@ public class ItemService extends RepoContainer implements ItemsDao {
         }
         return 0;
     }
+
+
+
+    public List<ItemCategory> getAllCategory() {
+        return itemCategoryRepository.findAll();
+    }
+
+
 
 
 
