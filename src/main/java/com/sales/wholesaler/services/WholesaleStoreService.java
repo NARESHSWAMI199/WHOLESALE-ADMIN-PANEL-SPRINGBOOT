@@ -1,12 +1,17 @@
 package com.sales.wholesaler.services;
 
 import com.sales.dto.AddressDto;
+import com.sales.dto.SearchFilters;
 import com.sales.dto.StoreDto;
 import com.sales.entities.Store;
+import com.sales.entities.StoreNotifications;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.sales.specifications.ItemCommentSpecifications.isUserId;
 
 @Service
 public class WholesaleStoreService extends WholesaleRepoContainer {
@@ -110,6 +117,12 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
     }
 
 
+    public Page<StoreNotifications> getAllStoreNotification(SearchFilters filters,User loggedUser) {
+        Specification<StoreNotifications> specification = Specification.where(isUserId(loggedUser.getId()));
+        Pageable pageable = getPageable(filters);
+        Page<StoreNotifications> storeNotifications = wholesaleNotificationRepository.findAll(specification,pageable);
+        return  storeNotifications;
+    }
 
 
 }

@@ -48,6 +48,10 @@ public class WholesaleRepoContainer {
     protected WholesaleItemCommentRepository wholesaleItemCommentRepository;
 
 
+    @Autowired
+    protected WholesaleNotificationRepository wholesaleNotificationRepository;
+
+
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?

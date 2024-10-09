@@ -1,9 +1,7 @@
 package com.sales.specifications;
 
-import com.sales.entities.ItemComments;
-import com.sales.entities.User;
+import com.sales.entities.*;
 import org.springframework.data.jpa.domain.Specification;
-import com.sales.entities.ItemComments_;
 
 public class ItemCommentSpecifications {
 
@@ -58,4 +56,12 @@ public class ItemCommentSpecifications {
                 return criteriaBuilder.notEqual(root.get(ItemComments_.ID), 0);
             };
         }
+
+    public static Specification<StoreNotifications> isUserId(int userId) {
+        return (root, query, criteriaBuilder) -> {
+            if(userId == 0) return  null;
+            return criteriaBuilder.equal(root.get(StoreNotifications_.USER_ID), userId);
+        };
+    }
+
 }

@@ -1,8 +1,11 @@
 package com.sales.wholesaler.controller;
 
 
+import com.sales.dto.SearchFilters;
 import com.sales.dto.StoreDto;
+import com.sales.entities.StoreNotifications;
 import com.sales.entities.User;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -36,6 +39,16 @@ public class WholesaleStoreController extends WholesaleServiceContainer{
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
 
     }
+
+
+    @Transactional
+    @PostMapping(value = {"notifications"})
+    public ResponseEntity<Page<StoreNotifications>> getAllStoreNotification(HttpServletRequest request, @ModelAttribute SearchFilters searchFilters) {
+        User logggedUser = (User) request.getAttribute("user");
+        Page<StoreNotifications> storeNotifications = wholesaleStoreService.getAllStoreNotification(searchFilters,logggedUser);
+        return new ResponseEntity<>(storeNotifications, HttpStatus.OK);
+    }
+
 
 
 }

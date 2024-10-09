@@ -1,9 +1,7 @@
 package com.sales.admin.services;
 
 import com.sales.dto.ItemCommentsFilterDto;
-import com.sales.dto.UserSearchFilters;
 import com.sales.entities.ItemComments;
-import com.sales.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
