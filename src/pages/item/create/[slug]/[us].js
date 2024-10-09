@@ -41,7 +41,7 @@ const [flag,setFlag] = useState("success")
 
 const auth = useAuth()
 const [values,setValues] = useState({})
-
+const [categories,setItemCategories] = useState([])
 
   const handleChange = useCallback(
     (event) => {
@@ -53,6 +53,27 @@ const [values,setValues] = useState({})
     []
   );
 
+
+  
+  useEffect(() => {
+    const getData = async () => {
+        axios.defaults.headers = {
+            Authorization: auth.token
+        }
+        await axios.get(host + "/admin/item/category")
+            .then(res => {
+                const data = res.data;
+                setItemCategories(data)
+            })
+            .catch(err => {
+                setMessage(!!err.response ? err.response.data.message : err.message)
+                setFlag('error')
+                setOpen(true)
+            })
+    }
+    getData();
+
+}, [])
 
   const handleSubmit = useCallback(
     (e) =>{
@@ -66,6 +87,7 @@ const [values,setValues] = useState({})
         inStock: formData.get("inStock") ? 'Y' : 'N',
         label: formData.get("itemLabel"),
         description: formData.get("description"),
+        categoryId: formData.get("category"),
         wholesaleSlug : slug,
         itemImage : values.itemImage
       }
@@ -224,6 +246,31 @@ return ( <>
           </Select>
           </FormControl>
           </Grid>
+
+          
+              {/* Category */}
+              <Grid
+                xs={12}
+                md={6}
+            >
+                <FormControl fullWidth>
+                    <InputLabel id="itemLabel">Category</InputLabel>
+                    <Select
+                        labelId="itemLabel"
+                        id="category"
+                        name='category'
+                        value={""+values.category}
+                        label="Category"
+                        onChange={handleChange}
+                    >
+                    {categories.map((categroyObj , i) => {
+                        return ( <MenuItem key={i} value={categroyObj.id}>{categroyObj.category}</MenuItem>
+                        )})
+                    }
+                    </Select>
+                </FormControl>
+            </Grid>
+
 
           
           <Grid

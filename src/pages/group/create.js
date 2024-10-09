@@ -132,7 +132,7 @@ const handleClose = () => {
     </Snackbar>
       <Head>
         <title>
-          Retailer | Swami Sales
+          Groups | Swami Sales
         </title>
       </Head>
       <Box
