@@ -6,7 +6,6 @@ import com.sales.global.GlobalConstant;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import javax.transaction.Transactional;
 import java.security.Key;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -87,7 +86,7 @@ public class Utils {
     }
 
     public static void isValidPerson(String userType , User loggedUser){
-        if((!loggedUser.getUserType().equals("SA") || loggedUser.getId() != GlobalConstant.suId) && userType.equals("S")) throw new MyException("You don't have permissions to create or update a staff contact to administrator.");
+        if((!loggedUser.getUserType().equals("SA") && loggedUser.getId() != GlobalConstant.suId) && userType.equals("S")) throw new MyException("You don't have permissions to create or update a staff contact to administrator.");
     }
 
 }

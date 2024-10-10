@@ -22,7 +22,7 @@ public class UserHbRepository {
         String strQuery = "update User set " +
                 "username=:username , " +
                 "email=:email,"+
-                "password=:password,"+
+                //"password=:password,"+
                 "contact=:contact,"+
                // "userType=:userType,"+
                 "updatedAt=:updatedAt,"+
@@ -32,7 +32,7 @@ public class UserHbRepository {
         Query query = entityManager.createQuery(strQuery);
         query.setParameter("username", userDto.getUsername());
         query.setParameter("email", userDto.getEmail());
-        query.setParameter("password", userDto.getPassword());
+        //query.setParameter("password", userDto.getPassword());
         query.setParameter("contact", userDto.getContact());
         //query.setParameter("userType", userDto.getUserType());
         query.setParameter("updatedAt", Utils.getCurrentMillis());

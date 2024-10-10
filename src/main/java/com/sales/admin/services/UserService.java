@@ -133,7 +133,7 @@ public class UserService extends RepoContainer {
         Map<String, Object> responseObj = new HashMap<>();
         StoreDto storeDto = null;
 
-        if(loggedUser.getId() !=GlobalConstant.suId && userDto.getUserType().equals("SA")) throw new MyException("You don't have permissions to create a admin contact to administrator.");
+        if((loggedUser.getId() !=GlobalConstant.suId && userDto.getUserType().equals("SA") && !loggedUser.getSlug().equals(userDto.getSlug()))) throw new MyException("You don't have permissions to create a admin contact to administrator.");
         Utils.mobileAndEmailValidation(userDto.getEmail(),userDto.getContact(),"Not a valid user's _ recheck your and user's _.");
         Utils.isValidPerson(userDto.getUserType(),loggedUser);
 
@@ -173,7 +173,7 @@ public class UserService extends RepoContainer {
             }
         }
 
-        /** going to update user's groups */
+        /** going to update user's groups ------------> only for staffs and super admin has group permissions */
         if ((userDto.getUserId() != loggedUser.getId()) && (userDto.getUserType().equals("SA") || userDto.getUserType().equals("S")) ) {
             int isAssigned = permissionHbRepository.assignGroupsToUser(userDto.getUserId(), userDto.getGroupList());
             if (isAssigned < 1)
