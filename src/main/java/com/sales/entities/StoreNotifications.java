@@ -34,20 +34,21 @@ public class StoreNotifications {
     @Column(name = "created_at")
     Long createAt;
 
-    @Column(name = "created_by")
-    Integer createdBy;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "created_by")
+    User createdBy;
 
     @Column(name ="is_deleted" )
     String isDeleted ="N";
 
     @Column(name ="seen" )
-    String seen;
+    String seen="N";
 
 
 
 
     public StoreNotifications(User loggedUser){
-        this.createdBy = loggedUser.getId();
+        this.createdBy = loggedUser;
         this.createAt = Utils.getCurrentMillis();
     }
 

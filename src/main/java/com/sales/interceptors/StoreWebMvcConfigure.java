@@ -40,6 +40,7 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                 "/swagger-ui/**",
                 "/webjars/**",
                 "/admin/auth/profile/**",
+                "/wholesale/auth/profile/**",
                 "/admin/store/image/**",
                 "/admin/item/image/**"
 
