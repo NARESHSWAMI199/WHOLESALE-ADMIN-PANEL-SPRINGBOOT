@@ -1,10 +1,7 @@
 package com.sales.entities;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -15,7 +12,7 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
+@ToString
 @Entity
 @Table(name = "item")
 @Where(clause = "is_deleted != 'y'")
@@ -69,6 +66,16 @@ public class Item implements Serializable {
 //    @JoinColumn(name = "wholesale_id")
 //    Store wholesale;
 
+
+    public String toString() {
+        String label = this.getLabel().equals("O") ? "Old" : "New";
+        return "{  Key :  " + this.getSlug() + " , " +
+                "name :  " + this.getName() + ", " +
+                "price :  " + this.getPrice() + ", " +
+                "discount :  " + this.getDiscount() + "," +
+                "label :  " + label + "," +
+                "description :  " + this.getDescription() + "}";
+    }
 
 }
 

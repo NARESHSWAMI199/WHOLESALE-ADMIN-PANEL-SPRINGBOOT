@@ -119,9 +119,10 @@ public class ItemController extends ServiceContainer {
 
 
     @GetMapping("/delete/{slug}")
-    public ResponseEntity<Map<String, Object>> deleteItemBySlug(@PathVariable String slug) {
+    public ResponseEntity<Map<String, Object>> deleteItemBySlug(HttpServletRequest request,@PathVariable String slug) {
         Map responseObj = new HashMap();
-        int isUpdated = itemService.deleteItem(slug);
+        User user = (User) request.getAttribute("user");
+        int isUpdated = itemService.deleteItem(slug,user);
         if (isUpdated > 0) {
             responseObj.put("message", "Item has been successfully deleted.");
             responseObj.put("status", 200);
@@ -149,9 +150,10 @@ public class ItemController extends ServiceContainer {
 
 
     @PostMapping("/status")
-    public ResponseEntity<Map<String, Object>> updateItemStatus(@RequestBody StatusDto statusDto) {
+    public ResponseEntity<Map<String, Object>> updateItemStatus(HttpServletRequest request ,@RequestBody StatusDto statusDto) {
         Map responseObj = new HashMap();
-        int isUpdated = itemService.updateStatusBySlug(statusDto);
+        User user = (User) request.getAttribute("user");
+        int isUpdated = itemService.updateStatusBySlug(statusDto,user);
         if (isUpdated > 0) {
             responseObj.put("message", "Item's status has been successfully updated.");
             responseObj.put("status", 200);

@@ -59,6 +59,10 @@ public class RepoContainer {
     @Autowired
     protected ItemCategoryRepository itemCategoryRepository;
 
+
+    @Autowired
+    protected StoreNotificationRepository storeNotificationRepository;
+
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?

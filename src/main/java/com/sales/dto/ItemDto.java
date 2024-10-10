@@ -4,10 +4,12 @@ package com.sales.dto;
 import com.sales.entities.ItemCategory;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
+@ToString
 public class ItemDto {
     private String name;
     private String wholesaleSlug;

@@ -64,4 +64,11 @@ public class ItemCommentSpecifications {
         };
     }
 
+
+    public static Specification<StoreNotifications> isWholesaleId(int isWholesaleId) {
+        return (root, query, criteriaBuilder) -> {
+            if(isWholesaleId == 0) return  null;
+            return criteriaBuilder.equal(root.get(StoreNotifications_.WHOLESALE_ID), isWholesaleId);
+        };
+    }
 }

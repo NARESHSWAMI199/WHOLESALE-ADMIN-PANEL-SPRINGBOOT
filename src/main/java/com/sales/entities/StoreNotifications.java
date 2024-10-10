@@ -1,6 +1,5 @@
 package com.sales.entities;
 
-import com.sales.utils.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +24,9 @@ public class StoreNotifications {
     @Column(name = "user_id")
     Integer userId;
 
+    @Column(name = "wholesale_id")
+    Integer wholesaleId;
+
     @Column(name = "title")
     String title;
 
@@ -35,7 +37,7 @@ public class StoreNotifications {
     Long createAt;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "created_by")
+    @JoinColumn(name = "created_by",referencedColumnName = "user_id")
     User createdBy;
 
     @Column(name ="is_deleted" )
@@ -47,10 +49,10 @@ public class StoreNotifications {
 
 
 
-    public StoreNotifications(User loggedUser){
-        this.createdBy = loggedUser;
-        this.createAt = Utils.getCurrentMillis();
-    }
+//    public StoreNotifications(User loggedUser){
+//        this.createdBy = loggedUser;
+//        this.createAt = Utils.getCurrentMillis();
+//    }
 
 
 

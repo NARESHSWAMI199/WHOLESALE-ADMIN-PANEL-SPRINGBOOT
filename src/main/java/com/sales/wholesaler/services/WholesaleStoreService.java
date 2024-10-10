@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.sales.specifications.ItemCommentSpecifications.isUserId;
+import static com.sales.specifications.ItemCommentSpecifications.isWholesaleId;
 
 @Service
 public class WholesaleStoreService extends WholesaleRepoContainer {
@@ -119,7 +120,8 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
 
 
     public Page<StoreNotifications> getAllStoreNotification(SearchFilters filters,User loggedUser) {
-        Specification<StoreNotifications> specification = Specification.where(isUserId(loggedUser.getId()));
+        Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(loggedUser.getId());
+        Specification<StoreNotifications> specification = Specification.where(isUserId(loggedUser.getId()).or(isWholesaleId(storeId)));
         Pageable pageable = getPageable(filters);
         Page<StoreNotifications> storeNotifications = wholesaleNotificationRepository.findAll(specification,pageable);
         return  storeNotifications;

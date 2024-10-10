@@ -2,14 +2,10 @@ package com.sales.admin.services;
 
 
 import com.google.gson.Gson;
-import com.sales.dao.ItemsDao;
 import com.sales.dto.ItemDto;
 import com.sales.dto.SearchFilters;
 import com.sales.dto.StatusDto;
-import com.sales.entities.Item;
-import com.sales.entities.ItemCategory;
-import com.sales.entities.Store;
-import com.sales.entities.User;
+import com.sales.entities.*;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -28,7 +24,7 @@ import java.util.*;
 import static com.sales.specifications.ItemsSpecifications.*;
 
 @Service
-public class ItemService extends RepoContainer implements ItemsDao {
+public class ItemService extends RepoContainer{
 
 
     @Value("${item.absolute}")
@@ -37,7 +33,7 @@ public class ItemService extends RepoContainer implements ItemsDao {
     @Value("${item.relative}")
     String itemImageRelativePath;
 
-    @Override
+
     public Page<Item> getAllItems(SearchFilters searchFilters) {
         Sort sort = searchFilters.getOrder().equalsIgnoreCase("asc") ?
                 Sort.by(searchFilters.getOrderBy()).ascending() :
@@ -130,7 +126,7 @@ public class ItemService extends RepoContainer implements ItemsDao {
         return responseObj;
     }
 
-    @Override
+
     public Item createItem (ItemDto itemDto, User loggedUser) throws Exception {
         Item item = new Item();
         Store store = storeRepository.findStoreBySlug(itemDto.getWholesaleSlug());
@@ -163,22 +159,55 @@ public class ItemService extends RepoContainer implements ItemsDao {
     }
 
 
-    @Override
+
     public int updateItem(ItemDto itemDto, User loggedUser) {
+        Item item = findItemBySLug(itemDto.getSlug());
+        String title = "Item " + item.getName() + " updated.";
+        String messageBody = "Item " + item.getName() + " key : " + item.getSlug() + " updated by admin previous data was "+
+                item.toString()
+                +". If you have any issue please contact to administrator.";
+        sendNotification(title,messageBody,item.getWholesaleId(),loggedUser);
         return itemHbRepository.updateItems(itemDto,loggedUser);
     }
 
-    @Override
-    public int deleteItem(String slug) {
+
+    @Transactional
+    public void sendNotification(String title,String messageBody,int storeId,User loggedUser){
+        StoreNotifications storeNotifications = new StoreNotifications();
+        storeNotifications.setTitle(title);
+        storeNotifications.setMessageBody(messageBody);
+        storeNotifications.setWholesaleId(storeId);
+        storeNotifications.setCreatedBy(loggedUser);
+        storeHbRepository.insertStoreNotifications(storeNotifications);
+    }
+
+    @Transactional
+    public int deleteItem(String slug,User loggedUser) {
+        Item item = findItemBySLug(slug);
+        String title = "Item " + item.getName() + " deleted.";
+        String messageBody = "Item " + item.getName() + " key : " + item.getSlug() + " deleted by admin. If you have any issue please contact to administrator.";
+        sendNotification(title,messageBody,item.getWholesaleId(),loggedUser);
         return itemHbRepository.deleteItem(slug);
     }
 
-    @Override
+
     public int updateStock(String stock, String slug) {
         return itemHbRepository.updateStock(stock,slug);
     }
 
-    public int updateStatusBySlug(StatusDto statusDto){
+    public int updateStatusBySlug(StatusDto statusDto,User loggedUser){
+        Item item = findItemBySLug(statusDto.getSlug());
+        if(item == null) return 0;
+        String title = "";
+        String messageBody= "";
+        if(statusDto.getStatus().equals("D")) {
+            title = "Item " + item.getName() + " deactivated";
+            messageBody = "Item " + item.getName() + " key : " + item.getSlug() + " deactivated by admin because it's legal policy issue. If you have any issue please contact to administrator.";
+        }else{
+            title= "Item " + item.getName() + " activated";
+            messageBody = "Item " + item.getName() + " key : " + item.getSlug() + " activated successfully by admin.";
+        }
+        sendNotification(title,messageBody,item.getWholesaleId(),loggedUser);
         return itemHbRepository.updateStatus(statusDto.getSlug(),statusDto.getStatus());
     }
 
