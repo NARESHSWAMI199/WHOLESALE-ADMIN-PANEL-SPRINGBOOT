@@ -18,6 +18,7 @@ import { StoresCard } from 'src/sections/wholesale/stores-table';
 import { BasicSearch } from 'src/sections/basic-search';
 import { ReloadOutlined } from '@ant-design/icons';
 import { ArrowButtons } from 'src/layouts/arrow-button';
+import { set } from 'nprogress';
 
 const now = new Date();
 
@@ -164,6 +165,7 @@ const Page = () => {
                     setFlag("warning")
                     setMessage("Successfully deactivated.")
                 }
+                changeStatus(slug,status)
                 setOpen(true)
             }).catch(err => {
                 console.log(err)
@@ -173,6 +175,29 @@ const Page = () => {
             })
     }
 
+
+    const changeStatus = (slug,status) => {
+        setItems((items) => {
+            items.filter((_, index) => {
+              if(_.slug === slug) return _.status = status
+              return _;
+            })
+            return items
+        });
+      }
+
+
+
+      const changeInStock = (slug,inStock) => {
+        setItems((items) => {
+            items.filter((_, index) => {
+              if(_.slug === slug) return _.inStock = inStock
+              return _;
+            })
+            return items
+        });
+      }
+    
 
 
     const onChangeInStock = (slug, inStock) => {
@@ -191,6 +216,7 @@ const Page = () => {
                     setFlag("warning")
                     setMessage("Successfully removed from stock.")
                 }
+                changeInStock(slug,inStock)
                 setOpen(true)
             }).catch(err => {
                 console.log(err)
@@ -199,6 +225,8 @@ const Page = () => {
                 setOpen(true)
             })
     }
+
+    
 
 
     const onDeleteStore = (slug) => {
@@ -226,6 +254,7 @@ const Page = () => {
         }
         axios.get(host + `/admin/item/delete/${slug}`)
             .then(res => {
+                setItems((items) =>items.filter((_) => _.slug !== slug));
                 setFlag("success")
                 setMessage(res.data.message)
                 setOpen(true)
@@ -235,6 +264,7 @@ const Page = () => {
                 setFlag("error")
                 setOpen(true)
             })
+            
     }
 
 

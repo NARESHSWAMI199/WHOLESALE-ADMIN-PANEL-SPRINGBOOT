@@ -101,32 +101,6 @@ export const ItemsTable = (props) => {
       });
   }
 
-
-
-  const changeStatus = (slug,status) => {
-    setItems((items) => {
-        items.filter((_, index) => {
-          if(_.slug === slug) return _.status = status
-          return _;
-        })
-        return items
-    });
-      props.onStatusChange(slug,status)
-  }
-
-
-  const changeInStock = (slug,inStock) => {
-    setItems((items) => {
-        items.filter((_, index) => {
-          if(_.slug === slug) return _.inStock = inStock
-          return _;
-        })
-        return items
-    });
-      props.onChangeInStock(slug,inStock)
-  }
-
-
   useEffect(()=>{
     setItems(props.items)
   },[props.items])
@@ -142,12 +116,11 @@ export const ItemsTable = (props) => {
 
   const takeAction = (action) =>{
     if (action === 'delete'){
-      setItems((items) =>items.filter((_, index) => index !== rowIndex));
       props.onDelete(slug)
     }else if (action == 'status'){
-      changeStatus(slug,status)
+      props.onStatusChange(slug,status)
     }else if (action == 'stock'){
-      changeInStock(slug,status)
+      props.onChangeInStock(slug,status)
     }
     setConfirm(false)
   }
