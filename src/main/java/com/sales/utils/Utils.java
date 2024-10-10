@@ -85,7 +85,7 @@ public class Utils {
         if (Utils.isEmpty(email) || !isValidEmail(email)) throw new MyException(errorMessage.replaceAll("_","email address") + " ["+email+"]") ;
     }
 
-    public static void isValidPerson(String slug ,String userType, User loggedUser){
+    public static void canUpdateAStaff(String slug ,String userType, User loggedUser){
         if((!loggedUser.getUserType().equals("SA") &&
             loggedUser.getId() != GlobalConstant.suId) &&
             userType.equals("S") &&

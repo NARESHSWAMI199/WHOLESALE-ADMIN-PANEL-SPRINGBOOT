@@ -137,7 +137,7 @@ public class UserService extends RepoContainer {
         if((loggedUser.getId() !=GlobalConstant.suId && userDto.getUserType().equals("SA") && !loggedUser.getSlug().equals(userDto.getSlug()))) throw new MyException("You don't have permissions to create a admin contact to administrator.");
         Utils.mobileAndEmailValidation(userDto.getEmail(),userDto.getContact(),"Not a valid user's _ recheck your and user's _.");
         /** condition who can update a staff */
-        Utils.isValidPerson(userDto.getSlug(),userDto.getUserType(),loggedUser);
+        Utils.canUpdateAStaff(userDto.getSlug(),userDto.getUserType(),loggedUser);
 
         if (!Utils.isEmpty(userDto.getSlug())) {
             int isUpdated = updateUser(userDto, loggedUser);
@@ -227,7 +227,7 @@ public class UserService extends RepoContainer {
     @Transactional
     public int deleteUserBySlug(String slug,User loggedUser){
         User user = getUserDetail(slug);
-        Utils.isValidPerson(slug,user.getUserType(),loggedUser);
+        Utils.canUpdateAStaff(slug,user.getUserType(),loggedUser);
         storeService.deleteStoreByUserId(user.getId());
         return userHbRepository.deleteUserBySlug(slug);
     }
@@ -237,7 +237,7 @@ public class UserService extends RepoContainer {
     public int resetPasswordByUserSlug(PasswordDto passwordDto,User loggedUser){
         password = !Utils.isEmpty(password) ?  passwordDto.getPassword() : password;
         User user = userRepository.findUserBySlug(passwordDto.getSlug());
-        Utils.isValidPerson(passwordDto.getSlug(),user.getUserType(),loggedUser);
+        Utils.canUpdateAStaff(passwordDto.getSlug(),user.getUserType(),loggedUser);
         user.setPassword(password);
         return user.getId();
     }
@@ -247,7 +247,7 @@ public class UserService extends RepoContainer {
         try {
             String status = statusDto.getStatus();
             User user = userRepository.findUserBySlug(statusDto.getSlug());
-            Utils.isValidPerson(statusDto.getSlug(),user.getUserType(),loggedUser);
+            Utils.canUpdateAStaff(statusDto.getSlug(),user.getUserType(),loggedUser);
             user.setStatus(status);
             if(!user.getUserType().equals("W")){
                 user = userRepository.save(user);
@@ -269,7 +269,7 @@ public class UserService extends RepoContainer {
 
     public int updateProfileImage(MultipartFile profileImage,String slug,User loggedUser) throws IOException {
         User user = userRepository.findUserBySlug(slug);
-        Utils.isValidPerson(slug,user.getUserType(),loggedUser);
+        Utils.canUpdateAStaff(slug,user.getUserType(),loggedUser);
         if (!Utils.isValidImage(profileImage.getOriginalFilename())) return 0;
         String dirPath = profilePath+slug+"/";
         File dir = new File(dirPath);
