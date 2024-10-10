@@ -85,7 +85,7 @@ public class WholesaleUserService extends WholesaleRepoContainer {
 
     public int updateProfileImage(MultipartFile profileImage, String slug, User loggedUser) throws IOException {
         User user = wholesaleUserRepository.findUserBySlug(slug);
-        Utils.isValidPerson(user.getUserType(),loggedUser);
+        Utils.isValidPerson(slug,user.getUserType(),loggedUser);
         if (!Utils.isValidImage(profileImage.getOriginalFilename())) return 0;
         String dirPath = profilePath+slug+"/";
         File dir = new File(dirPath);

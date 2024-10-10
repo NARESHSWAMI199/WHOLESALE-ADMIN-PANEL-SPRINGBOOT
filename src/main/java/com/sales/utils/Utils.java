@@ -85,8 +85,13 @@ public class Utils {
         if (Utils.isEmpty(email) || !isValidEmail(email)) throw new MyException(errorMessage.replaceAll("_","email address") + " ["+email+"]") ;
     }
 
-    public static void isValidPerson(String userType , User loggedUser){
-        if((!loggedUser.getUserType().equals("SA") && loggedUser.getId() != GlobalConstant.suId) && userType.equals("S")) throw new MyException("You don't have permissions to create or update a staff contact to administrator.");
+    public static void isValidPerson(String slug ,String userType, User loggedUser){
+        if((!loggedUser.getUserType().equals("SA") &&
+            loggedUser.getId() != GlobalConstant.suId) &&
+            userType.equals("S") &&
+            !loggedUser.getSlug().equals(slug)) {
+            throw new MyException("You don't have permissions to create or update a staff contact to administrator.");
+        }
     }
 
 }
