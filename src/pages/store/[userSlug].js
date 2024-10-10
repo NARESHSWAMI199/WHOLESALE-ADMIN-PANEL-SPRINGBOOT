@@ -110,7 +110,9 @@ const Page = () => {
                     setItems(data);
                 })
                 .catch(err => {
-                    setMessage(err.message)
+                    console.log(err)
+                    setMessage(!!err.response ? err.response.data.message : err.message)
+                    setFlag("error")
                     setOpen(true)
                 })
         }
@@ -136,9 +138,10 @@ const Page = () => {
             setFlag("success")
         })
             .catch(err => {
-                setFlag("error")
                 console.log(err)
-                setMessage(err.response.data.message)
+                setMessage(!!err.response ? err.response.data.message : err.message)
+                setFlag("error")
+                setOpen(true)
             })
         setOpen(true)
         return success;
@@ -164,6 +167,9 @@ const Page = () => {
                 setOpen(true)
             }).catch(err => {
                 console.log(err)
+                setMessage(!!err.response ? err.response.data.message : err.message)
+                setFlag("error")
+                setOpen(true)
             })
     }
 
@@ -188,6 +194,9 @@ const Page = () => {
                 setOpen(true)
             }).catch(err => {
                 console.log(err)
+                setMessage(!!err.response ? err.response.data.message : err.message)
+                setFlag("error")
+                setOpen(true)
             })
     }
 
