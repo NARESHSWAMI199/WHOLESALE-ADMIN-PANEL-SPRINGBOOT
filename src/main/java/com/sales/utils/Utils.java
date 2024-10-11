@@ -21,7 +21,7 @@ public class Utils {
         return millis;
     }
 
-    public static String mobileRegex = "^(?=(?:[8-9]){1})(?=[0-9]{8}).*";
+    public static String mobileRegex = "^[789]\\d{9}$";
 
     public static String getMillisToDate(Long millis){
         DateFormat format = new SimpleDateFormat("dd MMM yyyy HH:mm:ss:SSS Z");
