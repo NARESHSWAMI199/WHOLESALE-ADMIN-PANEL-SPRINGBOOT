@@ -242,3 +242,25 @@ insert into permissions (`permission`,`access_url`,`permission_for`) values
 
 
 ```
+# Promotions
+
+```sql 
+
+   create table store_promotions(
+   		id int primary key auto_increment,
+   		banner_img text,
+   		promotion_type enum ('I','S'),
+   		store_id int,
+   		item_id int,
+   		priority enum('1','2','3','4','5'),
+   		priority_hours bigint,
+   		max_repeat int default 10,
+   		state int,
+   		city int,
+   		created_date bigint,
+   		expiry_date bigint,
+   		created_by int
+   );
+       
+
+```
