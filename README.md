@@ -1,7 +1,7 @@
 # sales
 Sales, wholesale market loophole solution
 
-#Dependencies
+## Dependencies
 
 ```XML
 
