@@ -3,9 +3,7 @@ package com.sales.wholesaler.services;
 import com.sales.dto.AddressDto;
 import com.sales.dto.SearchFilters;
 import com.sales.dto.StoreDto;
-import com.sales.entities.Store;
-import com.sales.entities.StoreNotifications;
-import com.sales.entities.User;
+import com.sales.entities.*;
 import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
@@ -132,6 +130,17 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
             wholesaleStoreHbRepository.updateSeenNotifications(id);
         }
     }
+
+
+    public List<StoreCategory> getAllStoreCategory() {
+        return wholesaleCategoryRepository.findAll();
+    }
+
+
+    public List<StoreSubCategory> getAllStoreSubCategories(int categoryId) {
+        return wholesaleSubCategoryRepository.getSubCategories(categoryId);
+    }
+
 
 
 }

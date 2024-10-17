@@ -6,6 +6,7 @@ import com.sales.dto.ItemDto;
 import com.sales.dto.SearchFilters;
 import com.sales.entities.Item;
 import com.sales.entities.ItemCategory;
+import com.sales.entities.ItemSubCategory;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
@@ -235,5 +236,9 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         return wholesaleItemCategoryRepository.findAll();
     }
 
+
+    public List<ItemSubCategory> getAllItemsSubCategories(int categoryId) {
+        return wholesaleItemSubCategoryRepository.getSubCategories(categoryId);
+    }
 
 }

@@ -4,6 +4,7 @@ import com.sales.dto.ItemDto;
 import com.sales.dto.SearchFilters;
 import com.sales.entities.Item;
 import com.sales.entities.ItemCategory;
+import com.sales.entities.ItemSubCategory;
 import com.sales.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -99,5 +100,11 @@ public class WholesaleItemController extends WholesaleServiceContainer {
         return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
 
+
+    @GetMapping("subcategory/{categoryId}")
+    public ResponseEntity<List<ItemSubCategory>> getSubCategory(@PathVariable(required = true) int categoryId) {
+        List<ItemSubCategory> itemCategories = wholesaleItemService.getAllItemsSubCategories(categoryId);
+        return new ResponseEntity<>(itemCategories, HttpStatus.OK);
+    }
 
 }

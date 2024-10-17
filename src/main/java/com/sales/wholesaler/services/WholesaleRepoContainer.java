@@ -43,6 +43,14 @@ public class WholesaleRepoContainer {
     @Autowired
     protected WholesaleItemCategoryRepository wholesaleItemCategoryRepository;
 
+    @Autowired
+    protected WholesaleItemSubCategoryRepository wholesaleItemSubCategoryRepository;
+
+    @Autowired
+    WholesaleCategoryRepository wholesaleCategoryRepository;
+
+    @Autowired
+    protected WholesaleSubCategoryRepository wholesaleSubCategoryRepository;
 
     @Autowired
     protected WholesaleItemCommentRepository wholesaleItemCommentRepository;

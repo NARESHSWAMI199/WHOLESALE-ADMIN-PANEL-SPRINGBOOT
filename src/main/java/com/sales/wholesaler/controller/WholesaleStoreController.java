@@ -3,7 +3,9 @@ package com.sales.wholesaler.controller;
 
 import com.sales.dto.SearchFilters;
 import com.sales.dto.StoreDto;
+import com.sales.entities.StoreCategory;
 import com.sales.entities.StoreNotifications;
+import com.sales.entities.StoreSubCategory;
 import com.sales.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -56,6 +58,19 @@ public class WholesaleStoreController extends WholesaleServiceContainer{
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
 
+
+    @GetMapping("category")
+    public ResponseEntity<List<StoreCategory>> getAllStoreCategory() {
+        List<StoreCategory> storeCategories = wholesaleStoreService.getAllStoreCategory();
+        return new ResponseEntity<>(storeCategories, HttpStatus.OK);
+    }
+
+
+    @GetMapping("subcategory/{categoryId}")
+    public ResponseEntity<List<StoreSubCategory>> getStoreSubCategory(@PathVariable(required = true) int categoryId) {
+        List<StoreSubCategory> storeSubCategories = wholesaleStoreService.getAllStoreSubCategories(categoryId);
+        return new ResponseEntity<>(storeSubCategories, HttpStatus.OK);
+    }
 
 
 }
