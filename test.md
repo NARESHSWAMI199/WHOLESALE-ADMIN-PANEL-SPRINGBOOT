@@ -263,4 +263,89 @@ insert into permissions (`permission`,`access_url`,`permission_for`) values
    );
        
 
+
+
+
+
+
+
+
+create table item_subcategory (
+	id int primary key auto_increment,
+	category_id int,
+	subcategroy varchar(250),
+	icon text
+);
+
+
+
+create table store_category (
+	id int primary key auto_increment,
+	categroy varchar(250),
+	icon text
+);
+
+alter table item_category add column icon text;
+
+
+create table service_plans (
+	id int primary key auto_increment,
+	name varchar(500),
+	price float,
+	discount float,
+	status enum ('A','D'),
+	icon text,
+	months int,
+	description text,
+	is_deleted enum('Y','N'),
+	created_at bigint,
+	created_by int,
+	updated_at bigint,
+	updated_by int
+);
+
+
+create table store_subcategory (
+	id int primary key auto_increment,
+	category_id int,
+	subcategroy varchar(250),
+	icon text
+);
+
+
+create table plan_offers  (
+	id int primary key auto_increment,
+	plan_id int,
+	name varchar(500),
+	discount float,
+	status enum ('A','D'),
+	description text,	
+	start_date bigint,
+	expiry_date bigint,
+	created_at bigint,
+	created_by int,
+	updated_at bigint,
+	updated_by int
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
