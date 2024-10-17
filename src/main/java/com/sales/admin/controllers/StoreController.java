@@ -159,14 +159,14 @@ public class StoreController extends ServiceContainer{
 
     @GetMapping("category")
     public ResponseEntity<List<StoreCategory>> getAllStoreCategory() {
-        List<StoreCategory> itemCategories = itemService.getAllCategory();
-        return new ResponseEntity<>(itemCategories, HttpStatus.OK);
+        List<StoreCategory> storeCategories = storeService.getAllStoreCategory();
+        return new ResponseEntity<>(storeCategories, HttpStatus.OK);
     }
 
 
     @GetMapping("subcategory/{categoryId}")
     public ResponseEntity<List<StoreSubCategory>> getStoreSubCategory(@PathVariable(required = true) int categoryId) {
-        List<StoreSubCategory> itemCategories = itemService.getAllItemsSubCategories(categoryId);
-        return new ResponseEntity<>(itemCategories, HttpStatus.OK);
+        List<StoreSubCategory> storeSubCategories = storeService.getAllStoreSubCategories(categoryId);
+        return new ResponseEntity<>(storeSubCategories, HttpStatus.OK);
     }
 }
