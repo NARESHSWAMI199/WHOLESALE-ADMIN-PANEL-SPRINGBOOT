@@ -14,7 +14,7 @@ import { host } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
 import { StoresCard } from 'src/sections/wholesale/stores-table';
-import { Divider } from 'antd';
+import { Divider, Pagination } from 'antd';
 import { ArrowRightIcon } from '@mui/x-date-pickers';
 import { useRouter } from 'next/router';
 import { ro } from 'date-fns/locale';
@@ -32,6 +32,7 @@ const Page = () => {
   const auth = useAuth()
   const router = useRouter()
   const {userSlug}  = router.query
+  const [totalPages,setTotalPages] = useState(0)
 
   const [error,setErrors] = useState("")
   const [page, setPage] = useState(0);
@@ -57,9 +58,10 @@ const Page = () => {
        }
        await axios.post(host+"/admin/store/all",data)
        .then(res => {
-          const response = res.data.content;
-          setTotalElements(res.data.totalElements)
-          setStores(response);
+          const response = res.data;
+          setTotalElements(response.totalElements)
+          setStores(response.content);
+          setTotalPages(response.totalPages)
        })
        .catch(err => {
          setFlag("error")
@@ -172,7 +174,7 @@ const Page = () => {
           } ) }
 
 
-      <CardActions sx={{ justifyContent: 'flex-end' }}>
+      {/* <CardActions sx={{ justifyContent: 'flex-end' }}>
         <Button
           onClick={getMore}
           color="inherit"
@@ -186,7 +188,10 @@ const Page = () => {
         >
           View more
         </Button>
-      </CardActions>
+      </CardActions> */}
+                <Box sx={{m:2,display:'flex',justifyContent:'center'}}>
+                    <Pagination  onChange={(page) => setData({...data,pageNumber : page-1})}  align="center" defaultCurrent={1} total={totalPages*10} />
+               </Box>
           </Stack>
         </Container>
 
