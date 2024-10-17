@@ -2,9 +2,7 @@ package com.sales.admin.services;
 
 
 import com.google.gson.Gson;
-import com.sales.dto.ItemDto;
-import com.sales.dto.SearchFilters;
-import com.sales.dto.StatusDto;
+import com.sales.dto.*;
 import com.sales.entities.*;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
@@ -244,6 +242,38 @@ public class ItemService extends RepoContainer{
     }
 
 
+    public ItemCategory saveItemCategory(CategoryDto categoryDto){
+        ItemCategory itemCategory = new ItemCategory();
+        itemCategory.setCategory(categoryDto.getCategory());
+        itemCategory.setIcon(categoryDto.getIcon());
+        return itemCategoryRepository.save(itemCategory);
+    }
+
+    public ItemSubCategory saveItemSubCategory(SubCategoryDto subCategoryDto){
+        ItemSubCategory itemSubCategory = new ItemSubCategory();
+        itemSubCategory.setCategoryId(subCategoryDto.getCategoryId());
+        itemSubCategory.setSubcategory(subCategoryDto.getSubcategory());
+        itemSubCategory.setIcon(subCategoryDto.getIcon());
+        return itemSubCategoryRepository.save(itemSubCategory);
+    }
+
+
+    public ItemCategory updateItemCategory(CategoryDto categoryDto){
+        ItemCategory itemCategory = new ItemCategory();
+        itemCategory.setId(categoryDto.getId());
+        itemCategory.setCategory(categoryDto.getCategory());
+        itemCategory.setIcon(categoryDto.getIcon());
+        return itemCategoryRepository.save(itemCategory);
+    }
+
+    public ItemSubCategory updateItemSubCategory(SubCategoryDto subCategoryDto){
+        ItemSubCategory itemSubCategory = new ItemSubCategory();
+        itemSubCategory.setId(subCategoryDto.getId());
+        itemSubCategory.setCategoryId(subCategoryDto.getCategoryId());
+        itemSubCategory.setSubcategory(subCategoryDto.getSubcategory());
+        itemSubCategory.setIcon(subCategoryDto.getIcon());
+        return itemSubCategoryRepository.save(itemSubCategory);
+    }
 
 
 

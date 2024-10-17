@@ -22,4 +22,8 @@ public class StoreCategory {
 
     @Column(name="category")
     String category;
+
+    @Column(name = "icon")
+    String icon;
+
 }
