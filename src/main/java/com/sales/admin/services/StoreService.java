@@ -1,9 +1,7 @@
 package com.sales.admin.services;
 
 import com.sales.dto.*;
-import com.sales.entities.Address;
-import com.sales.entities.Store;
-import com.sales.entities.User;
+import com.sales.entities.*;
 import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -228,6 +226,16 @@ public class StoreService extends RepoContainer{
             return storeHbRepository.updateStoreAvatar(slug,fileOriginalName);
         }
         return 0;
+    }
+
+
+
+    public List<ItemCategory> getAllStoreCategory() {
+        return itemCategoryRepository.findAll();
+    }
+
+    public List<ItemSubCategory> getAllStoreSubCategories(int categoryId) {
+        return itemSubCategoryRepository.getSubCategories(categoryId);
     }
 
 

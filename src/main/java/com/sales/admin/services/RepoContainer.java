@@ -59,6 +59,14 @@ public class RepoContainer {
     @Autowired
     protected ItemCategoryRepository itemCategoryRepository;
 
+    @Autowired
+    protected ItemSubCategoryRepository itemSubCategoryRepository;
+
+    @Autowired
+    protected StoreCategoryRepository storeCategoryRepository;
+
+    @Autowired
+    protected StoreSubCategoryRepository storeSubCategoryRepository;
 
     @Autowired
     protected StoreNotificationRepository storeNotificationRepository;

@@ -3,8 +3,7 @@ package com.sales.admin.controllers;
 import com.sales.dto.SearchFilters;
 import com.sales.dto.StatusDto;
 import com.sales.dto.StoreDto;
-import com.sales.entities.Store;
-import com.sales.entities.User;
+import com.sales.entities.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -21,6 +20,7 @@ import javax.transaction.Transactional;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -153,5 +153,20 @@ public class StoreController extends ServiceContainer{
         Path path = Paths.get(filePath +slug+"/"+ filename);
         Resource resource = new UrlResource(path.toUri());
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
+    }
+
+
+
+    @GetMapping("category")
+    public ResponseEntity<List<StoreCategory>> getAllStoreCategory() {
+        List<StoreCategory> itemCategories = itemService.getAllCategory();
+        return new ResponseEntity<>(itemCategories, HttpStatus.OK);
+    }
+
+
+    @GetMapping("subcategory/{categoryId}")
+    public ResponseEntity<List<StoreSubCategory>> getStoreSubCategory(@PathVariable(required = true) int categoryId) {
+        List<StoreSubCategory> itemCategories = itemService.getAllItemsSubCategories(categoryId);
+        return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
 }

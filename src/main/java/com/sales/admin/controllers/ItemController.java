@@ -3,10 +3,7 @@ package com.sales.admin.controllers;
 import com.sales.dto.ItemDto;
 import com.sales.dto.SearchFilters;
 import com.sales.dto.StatusDto;
-import com.sales.entities.Item;
-import com.sales.entities.ItemCategory;
-import com.sales.entities.Store;
-import com.sales.entities.User;
+import com.sales.entities.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -179,6 +176,13 @@ public class ItemController extends ServiceContainer {
     @GetMapping("category")
     public ResponseEntity<List<ItemCategory>> getAllCategory() {
         List<ItemCategory> itemCategories = itemService.getAllCategory();
+        return new ResponseEntity<>(itemCategories, HttpStatus.OK);
+    }
+
+
+    @GetMapping("subcategory/{categoryId}")
+    public ResponseEntity<List<ItemSubCategory>> getSubCategory(@PathVariable(required = true) int categoryId) {
+        List<ItemSubCategory> itemCategories = itemService.getAllItemsSubCategories(categoryId);
         return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
 

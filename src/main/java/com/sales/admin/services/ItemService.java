@@ -235,9 +235,14 @@ public class ItemService extends RepoContainer{
 
 
 
-    public List<ItemCategory> getAllCategory() {
-        return itemCategoryRepository.findAll();
+    public List<StoreCategory> getAllCategory() {
+        return storeCategoryRepository.findAll();
     }
+
+    public List<StoreSubCategory> getAllItemsSubCategories(int categoryId) {
+        return storeSubCategoryRepository.getSubCategories(categoryId);
+    }
+
 
 
 
