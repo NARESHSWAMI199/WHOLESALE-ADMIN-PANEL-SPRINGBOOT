@@ -229,15 +229,34 @@ public class StoreService extends RepoContainer{
     }
 
 
-
     public List<StoreCategory> getAllStoreCategory() {
         return storeCategoryRepository.findAll();
     }
+
 
     public List<StoreSubCategory> getAllStoreSubCategories(int categoryId) {
         return storeSubCategoryRepository.getSubCategories(categoryId);
     }
 
+
+    @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
+    public StoreCategory saveOrUpdateStoreCategory(CategoryDto categoryDto){
+        StoreCategory storeCategory = new StoreCategory();
+        storeCategory.setId(categoryDto.getId());
+        storeCategory.setCategory(categoryDto.getCategory());
+        storeCategory.setIcon(categoryDto.getIcon());
+        return storeCategoryRepository.save(storeCategory);
+    }
+
+    @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
+    public StoreSubCategory saveOrUpdateStoreSubCategory(SubCategoryDto subCategoryDto){
+        StoreSubCategory storeSubCategory = new StoreSubCategory();
+        storeSubCategory.setId(subCategoryDto.getId());
+        storeSubCategory.setCategoryId(subCategoryDto.getCategoryId());
+        storeSubCategory.setSubcategory(subCategoryDto.getSubcategory());
+        storeSubCategory.setIcon(subCategoryDto.getIcon());
+        return storeSubCategoryRepository.save(storeSubCategory);
+    }
 
 
 

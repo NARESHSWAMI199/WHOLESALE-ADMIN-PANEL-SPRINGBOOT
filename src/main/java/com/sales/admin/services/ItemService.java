@@ -4,6 +4,7 @@ package com.sales.admin.services;
 import com.google.gson.Gson;
 import com.sales.dto.*;
 import com.sales.entities.*;
+import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -242,23 +243,8 @@ public class ItemService extends RepoContainer{
     }
 
 
-    public ItemCategory saveItemCategory(CategoryDto categoryDto){
-        ItemCategory itemCategory = new ItemCategory();
-        itemCategory.setCategory(categoryDto.getCategory());
-        itemCategory.setIcon(categoryDto.getIcon());
-        return itemCategoryRepository.save(itemCategory);
-    }
-
-    public ItemSubCategory saveItemSubCategory(SubCategoryDto subCategoryDto){
-        ItemSubCategory itemSubCategory = new ItemSubCategory();
-        itemSubCategory.setCategoryId(subCategoryDto.getCategoryId());
-        itemSubCategory.setSubcategory(subCategoryDto.getSubcategory());
-        itemSubCategory.setIcon(subCategoryDto.getIcon());
-        return itemSubCategoryRepository.save(itemSubCategory);
-    }
-
-
-    public ItemCategory updateItemCategory(CategoryDto categoryDto){
+    @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
+    public ItemCategory saveOrUpdateItemCategory(CategoryDto categoryDto){
         ItemCategory itemCategory = new ItemCategory();
         itemCategory.setId(categoryDto.getId());
         itemCategory.setCategory(categoryDto.getCategory());
@@ -266,7 +252,8 @@ public class ItemService extends RepoContainer{
         return itemCategoryRepository.save(itemCategory);
     }
 
-    public ItemSubCategory updateItemSubCategory(SubCategoryDto subCategoryDto){
+    @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
+    public ItemSubCategory saveOrUpdateItemSubCategory(SubCategoryDto subCategoryDto){
         ItemSubCategory itemSubCategory = new ItemSubCategory();
         itemSubCategory.setId(subCategoryDto.getId());
         itemSubCategory.setCategoryId(subCategoryDto.getCategoryId());

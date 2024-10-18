@@ -1,9 +1,11 @@
 package com.sales.admin.controllers;
 
-import com.sales.dto.SearchFilters;
-import com.sales.dto.StatusDto;
-import com.sales.dto.StoreDto;
-import com.sales.entities.*;
+import com.sales.dto.*;
+import com.sales.entities.Store;
+import com.sales.entities.StoreCategory;
+import com.sales.entities.StoreSubCategory;
+import com.sales.entities.User;
+import com.sales.exceptions.MyException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -156,17 +158,54 @@ public class StoreController extends ServiceContainer{
     }
 
 
-
+    @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
     @GetMapping("category")
     public ResponseEntity<List<StoreCategory>> getAllStoreCategory() {
         List<StoreCategory> storeCategories = storeService.getAllStoreCategory();
         return new ResponseEntity<>(storeCategories, HttpStatus.OK);
     }
 
-
+    @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
     @GetMapping("subcategory/{categoryId}")
     public ResponseEntity<List<StoreSubCategory>> getStoreSubCategory(@PathVariable(required = true) int categoryId) {
         List<StoreSubCategory> storeSubCategories = storeService.getAllStoreSubCategories(categoryId);
         return new ResponseEntity<>(storeSubCategories, HttpStatus.OK);
     }
+
+
+
+    @PostMapping(value = {"category/add","category/update"})
+    public ResponseEntity<Map<String,Object>> saveOrUpdateItemCategory(@RequestBody CategoryDto categoryDto) {
+        Map<String,Object> result = new HashMap<>();
+        StoreCategory updatedStoreCategory = storeService.saveOrUpdateStoreCategory(categoryDto);
+        if(updatedStoreCategory != null) {
+            if(categoryDto.getId() != null) {
+                result.put("message", "Category successfully updated.");
+                result.put("status", 200);
+            }else {
+                result.put("message", "Category successfully inserted.");
+                result.put("status", 201);
+            }
+        }
+        return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
+    }
+
+
+    @PostMapping(value = {"subcategory/add","subcategory/update"})
+    public ResponseEntity<Map<String,Object>> saveOrUpdateItemSubCategory(@RequestBody SubCategoryDto subCategoryDto) {
+        Map<String,Object> result = new HashMap<>();
+        StoreSubCategory updatedStoreSubCategory = storeService.saveOrUpdateStoreSubCategory(subCategoryDto);
+        if(updatedStoreSubCategory != null) {
+            if(subCategoryDto.getId() != null) {
+                result.put("message", "Category successfully updated.");
+                result.put("status", 200);
+            }else {
+                result.put("message", "Category successfully inserted.");
+                result.put("status", 201);
+            }
+        }
+        return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
+    }
+
+
 }

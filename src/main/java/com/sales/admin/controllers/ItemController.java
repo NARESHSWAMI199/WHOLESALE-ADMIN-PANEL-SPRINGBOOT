@@ -1,8 +1,6 @@
 package com.sales.admin.controllers;
 
-import com.sales.dto.ItemDto;
-import com.sales.dto.SearchFilters;
-import com.sales.dto.StatusDto;
+import com.sales.dto.*;
 import com.sales.entities.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -185,5 +183,40 @@ public class ItemController extends ServiceContainer {
         List<ItemSubCategory> itemCategories = itemService.getAllItemsSubCategories(categoryId);
         return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
+
+
+    @PostMapping(value = {"category/add","category/update"})
+    public ResponseEntity<Map<String,Object>> saveOrUpdateItemCategory(@RequestBody CategoryDto categoryDto) {
+        Map<String,Object> result = new HashMap<>();
+        ItemCategory updatedItemCategory = itemService.saveOrUpdateItemCategory(categoryDto);
+        if(updatedItemCategory != null) {
+            if(categoryDto.getId() != null) {
+                result.put("message", "Category successfully updated.");
+                result.put("status", 200);
+            }else {
+                result.put("message", "Category successfully inserted.");
+                result.put("status", 201);
+            }
+        }
+        return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
+    }
+
+
+    @PostMapping(value = {"subcategory/add","subcategory/update"})
+    public ResponseEntity<Map<String,Object>> saveOrUpdateItemSubCategory(@RequestBody SubCategoryDto subCategoryDto) {
+        Map<String,Object> result = new HashMap<>();
+        ItemSubCategory updateItemSubCategory = itemService.saveOrUpdateItemSubCategory(subCategoryDto);
+        if(updateItemSubCategory != null) {
+            if(subCategoryDto.getId() != null) {
+                result.put("message", "Category successfully updated.");
+                result.put("status", 200);
+            }else {
+                result.put("message", "Category successfully inserted.");
+                result.put("status", 201);
+            }
+        }
+        return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
+    }
+
 
 }
