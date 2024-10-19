@@ -1,10 +1,7 @@
 package com.sales.admin.controllers;
 
 import com.sales.dto.*;
-import com.sales.entities.Store;
-import com.sales.entities.StoreCategory;
-import com.sales.entities.StoreSubCategory;
-import com.sales.entities.User;
+import com.sales.entities.*;
 import com.sales.exceptions.MyException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -165,6 +162,15 @@ public class StoreController extends ServiceContainer{
         return new ResponseEntity<>(storeCategories, HttpStatus.OK);
     }
 
+
+    @GetMapping("category/{categoryId}")
+    public ResponseEntity<StoreCategory> getAllCategory(@PathVariable Integer categoryId) {
+        StoreCategory storeCategory = storeService.getStoreCategoryById(categoryId);
+        return new ResponseEntity<>(storeCategory, HttpStatus.OK);
+    }
+
+
+
     @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
     @GetMapping("subcategory/{categoryId}")
     public ResponseEntity<List<StoreSubCategory>> getStoreSubCategory(@PathVariable(required = true) int categoryId) {
@@ -191,6 +197,23 @@ public class StoreController extends ServiceContainer{
     }
 
 
+    @GetMapping("category/delete/{categoryId}")
+    public ResponseEntity<Map<String,Object>> deleteItemCategoryById(HttpServletRequest request ,@PathVariable Integer categoryId) {
+        Map<String,Object> responseObj = new HashMap<>();
+        User user = (User) request.getAttribute("user");
+        int isUpdated = storeService.deleteStoreCategory(categoryId,user);
+        if (isUpdated > 0) {
+            responseObj.put("message", "Store category was successfully deleted.");
+            responseObj.put("status", 200);
+        } else {
+            responseObj.put("message", "There is nothing to delete.recheck you parameters");
+            responseObj.put("status", 400);
+        }
+        return new ResponseEntity<>(responseObj, HttpStatus.OK);
+    }
+
+
+
     @PostMapping(value = {"subcategory/add","subcategory/update"})
     public ResponseEntity<Map<String,Object>> saveOrUpdateItemSubCategory(@RequestBody SubCategoryDto subCategoryDto) {
         Map<String,Object> result = new HashMap<>();
@@ -206,6 +229,7 @@ public class StoreController extends ServiceContainer{
         }
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
+
 
 
 }

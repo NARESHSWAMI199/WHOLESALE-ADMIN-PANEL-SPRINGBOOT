@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -230,7 +231,8 @@ public class StoreService extends RepoContainer{
 
 
     public List<StoreCategory> getAllStoreCategory() {
-        return storeCategoryRepository.findAll();
+        Sort sort = Sort.by("id").descending();
+        return storeCategoryRepository.findAll(sort);
     }
 
 
@@ -242,20 +244,36 @@ public class StoreService extends RepoContainer{
     @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
     public StoreCategory saveOrUpdateStoreCategory(CategoryDto categoryDto){
         StoreCategory storeCategory = new StoreCategory();
+        if(categoryDto.getId() != null)
         storeCategory.setId(categoryDto.getId());
         storeCategory.setCategory(categoryDto.getCategory());
         storeCategory.setIcon(categoryDto.getIcon());
+        storeCategory.setIsDeleted("N");
         return storeCategoryRepository.save(storeCategory);
     }
 
     @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
     public StoreSubCategory saveOrUpdateStoreSubCategory(SubCategoryDto subCategoryDto){
         StoreSubCategory storeSubCategory = new StoreSubCategory();
+        if(subCategoryDto.getId() != null)
         storeSubCategory.setId(subCategoryDto.getId());
         storeSubCategory.setCategoryId(subCategoryDto.getCategoryId());
         storeSubCategory.setSubcategory(subCategoryDto.getSubcategory());
         storeSubCategory.setIcon(subCategoryDto.getIcon());
         return storeSubCategoryRepository.save(storeSubCategory);
+    }
+
+
+    public StoreCategory getStoreCategoryById(int categoryId) {
+        return storeCategoryRepository.findById(categoryId).get();
+    }
+
+
+    public int deleteStoreCategory(int categoryId,User user) {
+        if(user.getUserType().equals("SA")) {
+            return storeHbRepository.deleteStoreCategory(categoryId);
+        }
+        return 0;
     }
 
 

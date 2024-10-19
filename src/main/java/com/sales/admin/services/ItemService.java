@@ -235,8 +235,23 @@ public class ItemService extends RepoContainer{
 
 
     public List<ItemCategory> getAllCategory() {
-        return itemCategoryRepository.findAll();
+        Sort sort = Sort.by("id").descending();
+        return itemCategoryRepository.findAll(sort);
     }
+
+
+
+    public ItemCategory getItemCategoryById(int categoryId) {
+        return itemCategoryRepository.findById(categoryId).get();
+    }
+
+    public int deleteCategory(int categoryId,User user) {
+        if(user.getUserType().equals("SA")) {
+           return itemHbRepository.deleteItemCategory(categoryId);
+        }
+        return 0;
+    }
+
 
     public List<ItemSubCategory> getAllItemsSubCategories(int categoryId) {
         return itemSubCategoryRepository.getSubCategories(categoryId);
@@ -246,15 +261,18 @@ public class ItemService extends RepoContainer{
     @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
     public ItemCategory saveOrUpdateItemCategory(CategoryDto categoryDto){
         ItemCategory itemCategory = new ItemCategory();
+        if(categoryDto.getId() != null)
         itemCategory.setId(categoryDto.getId());
         itemCategory.setCategory(categoryDto.getCategory());
         itemCategory.setIcon(categoryDto.getIcon());
+        itemCategory.setIsDeleted("N");
         return itemCategoryRepository.save(itemCategory);
     }
 
     @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
     public ItemSubCategory saveOrUpdateItemSubCategory(SubCategoryDto subCategoryDto){
         ItemSubCategory itemSubCategory = new ItemSubCategory();
+        if(subCategoryDto.getId() != null)
         itemSubCategory.setId(subCategoryDto.getId());
         itemSubCategory.setCategoryId(subCategoryDto.getCategoryId());
         itemSubCategory.setSubcategory(subCategoryDto.getSubcategory());

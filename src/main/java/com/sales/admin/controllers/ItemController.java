@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -177,6 +178,31 @@ public class ItemController extends ServiceContainer {
         return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
 
+
+
+    @GetMapping("category/delete/{categoryId}")
+    public ResponseEntity<Map<String,Object>> deleteItemCategoryById(HttpServletRequest request ,@PathVariable Integer categoryId) {
+        Map<String,Object> responseObj = new HashMap<>();
+        User user = (User) request.getAttribute("user");
+        int isUpdated = itemService.deleteCategory(categoryId,user);
+        if (isUpdated > 0) {
+            responseObj.put("message", "Item category was successfully deleted.");
+            responseObj.put("status", 200);
+        } else {
+            responseObj.put("message", "There is nothing to delete.recheck you parameters");
+            responseObj.put("status", 400);
+        }
+        return new ResponseEntity<>(responseObj, HttpStatus.OK);
+    }
+
+
+
+
+    @GetMapping("category/{categoryId}")
+    public ResponseEntity<ItemCategory> getAllCategory(@PathVariable Integer categoryId) {
+        ItemCategory itemCategories = itemService.getItemCategoryById(categoryId);
+        return new ResponseEntity<>(itemCategories, HttpStatus.OK);
+    }
 
     @GetMapping("subcategory/{categoryId}")
     public ResponseEntity<List<ItemSubCategory>> getSubCategory(@PathVariable(required = true) int categoryId) {

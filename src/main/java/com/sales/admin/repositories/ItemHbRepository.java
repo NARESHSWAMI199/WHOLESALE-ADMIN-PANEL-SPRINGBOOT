@@ -143,5 +143,12 @@ public class ItemHbRepository{
     }
 
 
+    public int deleteItemCategory(int id){
+        String hqlString = "update ItemCategory set isDeleted='Y' where id=:id";
+        Query query = entityManager.createQuery(hqlString);
+        query.setParameter("id",id);
+        return query.executeUpdate();
+    }
+
 
 }
