@@ -162,7 +162,7 @@ return ( <>
         <Box sx={{ m: -1.5 }}>
 
         <div style={{marginLeft : '10px',marginTop: '10px'}}>
-          <ImageInput onChange={onSubmit} avtar={host+'/admin/store/image/'+values.avtar}/>
+          <ImageInput onChange={onSubmit}/>
         </div>
 
           <Grid

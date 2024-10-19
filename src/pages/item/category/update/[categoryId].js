@@ -22,17 +22,54 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { host } from "src/utils/util";
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import { useRouter } from "next/router";
+import { redirect } from "next/navigation";
 import ImageInput from "src/sections/image-input";
+import { ArrowButtons } from "src/layouts/arrow-button";
+import { tr } from "date-fns/locale";
 
+
+const createItem = () =>{    
+
+const router = useRouter()
+const {categoryId} = router.query
 /** WE CAN'T USE STATE FOR BASE 64 LARGE DATA STATES WILL NOT WORK FOR LARGE DATA*/
-let categoryIcon = null;
 
-const CreateCategory = () =>{    
+
 const [open,setOpen] = useState(false)
 const [message,setMessage] = useState("")
 const [flag,setFlag] = useState("success")
+
 const auth = useAuth()
 const [values,setValues] = useState({})
+
+
+
+
+useEffect(() => {
+    const getData = async () => {
+        axios.defaults.headers = {
+            Authorization: auth.token
+        }
+        await axios.get(host + "/admin/item/category/"+categoryId)
+            .then(res => {
+                const data = res.data;
+                categoryIcon = data.icon
+                setValues(data)
+            })
+            .catch(err => {
+                setMessage(!!err.response ? err.response.data.message : err.message)
+                setFlag('error')
+                setOpen(true)
+            })
+    }
+    getData();
+
+}, [])
+
+let categoryIcon = values.icon
 
   const handleChange = useCallback(
     (event) => {
@@ -64,19 +101,17 @@ const [values,setValues] = useState({})
    
 }
 
+  
+
+
   const handleSubmit = useCallback(
     (e) =>{
     e.preventDefault()
     const form = e.target;
     const formData = new FormData(form)
-    if(categoryIcon == null){
-      setMessage("Please select a valid image.")
-      setFlag("error")
-      setOpen(true)
-      return false
-    }
+    console.log(categoryIcon)
     let data = {
-        id : null,
+        id : categoryId,
         category : formData.get("category"),
         icon : categoryIcon
       }
@@ -89,8 +124,8 @@ const [values,setValues] = useState({})
       setMessage(res.data.message)
       setFlag("success")
       setOpen(true)
-      // form.reset();
-      // reset()
+      form.reset();
+      reset()
     }).catch(err=>{
         setMessage(!!err.response  ? err.response.data.message : err.message)
         setFlag("error")
@@ -119,15 +154,15 @@ return ( <>
 
 
 <Box
-            component="main"
-            sx={{
-                flexGrow: 1,
-                py: 8
-            }}
-        >
-            <Container maxWidth="xl">
-                <Stack spacing={3}>
-               
+  component="main"
+  sx={{
+      flexGrow: 1,
+      py: 8
+  }}
+  >
+<Container maxWidth="xl">
+    <Stack spacing={3}>
+    
 
 <Grid
     xs={12}
@@ -142,7 +177,7 @@ return ( <>
 <Card>
       <CardHeader
         // subheader="From here you can add a new item."
-        title="Create Item Category"
+        title="Create category"
       />
       <CardContent sx={{ pt: 4 }}>
         <Box sx={{ m: -1.5 }}>
@@ -153,10 +188,10 @@ return ( <>
           >
           <Grid
               xs={12}
-              md={2}
+              md={3}
             >
           <div>
-            <ImageInput onChange={onSubmit}/>
+            <ImageInput onChange={onSubmit} avtar = {values.icon}/>
           </div>
 
             </Grid>
@@ -174,6 +209,7 @@ return ( <>
                 onChange={handleChange}
                 required={true}
                 value={values.category}
+                InputLabelProps={{shrink :true}}
               />
               
 
@@ -210,10 +246,10 @@ return ( <>
 }
 
 
-CreateCategory.getLayout = (page) => (
+createItem.getLayout = (page) => (
 <DashboardLayout>
   {page}
 </DashboardLayout>
 );
 
-export default CreateCategory;
+export default createItem;

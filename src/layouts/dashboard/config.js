@@ -102,6 +102,30 @@ export const items = (user) =>{
       )
     },
 
+
+    {
+      title: 'Item Categories',
+      path: '/item/category/',
+      show : !!user ? user.userType == 'SA' : false,
+      icon: (
+        <SvgIcon fontSize="small">
+          <SecurityIcon />
+        </SvgIcon>
+      )
+    },
+
+
+    {
+      title: 'Store Categories',
+      path: '/store/category/',
+      show : !!user ? user.userType == 'SA' : false,
+      icon: (
+        <SvgIcon fontSize="small">
+          <SecurityIcon />
+        </SvgIcon>
+      )
+    },
+
     {
       title: 'Groups',
       path: '/groups',
