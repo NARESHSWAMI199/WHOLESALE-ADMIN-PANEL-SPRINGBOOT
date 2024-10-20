@@ -229,7 +229,7 @@ return ( <>
           <div  style={{marginLeft : 4}}>
           <Link
                 href={{
-                    pathname: '/store/category/create',
+                    pathname: '/item/category/create',
                   }}
                 >
             <Button

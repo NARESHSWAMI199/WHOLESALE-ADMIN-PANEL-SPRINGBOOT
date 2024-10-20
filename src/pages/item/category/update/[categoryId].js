@@ -190,10 +190,11 @@ return ( <>
               xs={12}
               md={3}
             >
-          <div>
-            <ImageInput onChange={onSubmit} avtar = {values.icon}/>
-          </div>
-
+          <Box sx={{
+            textAlign : 'center'
+          }}>
+            <ImageInput totalImage={2} onChange={onSubmit} avtar = {values.icon}/>
+          </Box>
             </Grid>
           {/* CATEGORY NAME */}
 

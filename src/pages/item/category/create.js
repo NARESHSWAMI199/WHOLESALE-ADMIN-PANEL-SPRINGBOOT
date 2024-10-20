@@ -153,11 +153,13 @@ return ( <>
           >
           <Grid
               xs={12}
-              md={2}
+              md={3}
             >
-          <div>
-            <ImageInput onChange={onSubmit}/>
-          </div>
+          <Box sx={{
+                    textAlign : 'center'
+                  }}>
+            <ImageInput totalImage={1} onChange={onSubmit}/>
+          </Box>
 
             </Grid>
           {/* CATEGORY NAME */}
