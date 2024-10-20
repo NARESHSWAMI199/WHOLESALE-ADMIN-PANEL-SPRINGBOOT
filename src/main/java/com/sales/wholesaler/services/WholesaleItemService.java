@@ -122,6 +122,8 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         itemDto.setStoreId(storeId);
         ItemCategory itemCategory = wholesaleItemCategoryRepository.findById(itemDto.getCategoryId()).get();
         itemDto.setItemCategory(itemCategory);
+        ItemSubCategory itemSubCategory = wholesaleItemSubCategoryRepository.findById(itemDto.getSubCategoryId()).get();
+        itemDto.setItemSubCategory(itemSubCategory);
         if (!Utils.isEmpty(itemDto.getSlug())) {
             Item item = findItemBySLug(itemDto.getSlug());
             if (item.getStatus().equals("D")) throw new MyException("You can't update a blocked item.");;
@@ -171,6 +173,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         item.setUpdatedBy(loggedUser.getId());
         item.setLabel(itemDto.getLabel());
         item.setItemCategory(itemDto.getItemCategory());
+        item.setItemSubCategory(itemDto.getItemSubCategory());
         item.setSlug(UUID.randomUUID().toString());
         String itemImage = saveItemImage(itemDto.getItemImage(), item.getSlug());
         if(itemImage != null){

@@ -36,6 +36,7 @@ public class WholesaleItemHbRepository {
                 "discount =:discount," +
                 "avtar =:avtar,"+
                 "itemCategory =:itemCategory,"+
+                "itemSubCategory =:itemSubCategory,"+
                 "updatedAt =:updatedAt," +
                 "updatedBy =:updatedBy " +
                 "where slug =:slug and wholesaleId =:wholesaleId";
@@ -46,6 +47,7 @@ public class WholesaleItemHbRepository {
         query.setParameter("discount" , itemDto.getDiscount());
         query.setParameter("avtar" , itemDto.getAvtar());
         query.setParameter("itemCategory" , itemDto.getItemCategory());
+        query.setParameter("itemSubCategory" , itemDto.getItemSubCategory());
         query.setParameter("updatedAt" , Utils.getCurrentMillis());
         query.setParameter("updatedBy" , loggedUser.getId());
         query.setParameter("slug",itemDto.getSlug());

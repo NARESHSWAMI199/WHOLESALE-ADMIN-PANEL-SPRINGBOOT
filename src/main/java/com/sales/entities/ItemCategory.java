@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "item_category")
@@ -22,6 +23,9 @@ public class ItemCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
 
+    @Column(name = "slug")
+    String slug = UUID.randomUUID().toString();
+
     @Column(name="category")
     String category;
 
@@ -29,5 +33,6 @@ public class ItemCategory {
     String icon;
 
     @Column(name = "is_deleted")
-    String isDeleted;
+    String isDeleted = "N";
+
 }

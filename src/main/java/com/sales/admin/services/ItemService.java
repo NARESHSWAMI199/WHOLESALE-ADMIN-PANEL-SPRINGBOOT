@@ -99,7 +99,9 @@ public class ItemService extends RepoContainer{
         if(itemDto.getPrice() < itemDto.getDiscount()) throw new Exception("Discount can't be greater then price.");
         Map<String, Object> responseObj = new HashMap<>();
         ItemCategory itemCategory = itemCategoryRepository.findById(itemDto.getCategoryId()).get();
+        ItemSubCategory itemSubCategory = itemSubCategoryRepository.findById(itemDto.getSubCategoryId()).get();
         itemDto.setItemCategory(itemCategory);
+        itemDto.setItemSubCategory(itemSubCategory);
         if (!Utils.isEmpty(itemDto.getSlug())) {
             int isUpdated = updateItem(itemDto, loggedUser);
             updateStoreImage(itemDto.getItemImage(),itemDto.getSlug());
@@ -145,6 +147,7 @@ public class ItemService extends RepoContainer{
         item.setSlug(UUID.randomUUID().toString());
         MultipartFile itemImage = itemDto.getItemImage();
         item.setItemCategory(itemDto.getItemCategory());
+        item.setItemSubCategory(itemDto.getItemSubCategory());
         if(itemImage !=null) {
             String fileOriginalName = itemImage.getOriginalFilename().replaceAll(" ", "_");
             if (!Utils.isValidImage(fileOriginalName)) throw new Exception("Not a valid file.");
@@ -245,9 +248,16 @@ public class ItemService extends RepoContainer{
         return itemCategoryRepository.findById(categoryId).get();
     }
 
-    public int deleteCategory(int categoryId,User user) {
+    public int deleteItemCategory(String slug,User user) {
         if(user.getUserType().equals("SA")) {
-           return itemHbRepository.deleteItemCategory(categoryId);
+           return itemHbRepository.deleteItemCategory(slug);
+        }
+        return 0;
+    }
+
+    public int deleteItemSubCategory(String slug,User user) {
+        if(user.getUserType().equals("SA")) {
+            return itemHbRepository.deleteItemSubCategory(slug);
         }
         return 0;
     }
@@ -265,7 +275,6 @@ public class ItemService extends RepoContainer{
         itemCategory.setId(categoryDto.getId());
         itemCategory.setCategory(categoryDto.getCategory());
         itemCategory.setIcon(categoryDto.getIcon());
-        itemCategory.setIsDeleted("N");
         return itemCategoryRepository.save(itemCategory);
     }
 

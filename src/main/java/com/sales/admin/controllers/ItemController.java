@@ -180,19 +180,19 @@ public class ItemController extends ServiceContainer {
 
 
 
-    @GetMapping("category/delete/{categoryId}")
-    public ResponseEntity<Map<String,Object>> deleteItemCategoryById(HttpServletRequest request ,@PathVariable Integer categoryId) {
+    @GetMapping("category/delete/{categorySlug}")
+    public ResponseEntity<Map<String,Object>> deleteItemCategoryById(HttpServletRequest request ,@PathVariable String categorySlug) {
         Map<String,Object> responseObj = new HashMap<>();
         User user = (User) request.getAttribute("user");
-        int isUpdated = itemService.deleteCategory(categoryId,user);
+        int isUpdated = itemService.deleteItemCategory(categorySlug,user);
         if (isUpdated > 0) {
-            responseObj.put("message", "Item category was successfully deleted.");
+            responseObj.put("message", "Item's category was successfully deleted.");
             responseObj.put("status", 200);
         } else {
             responseObj.put("message", "There is nothing to delete.recheck you parameters");
             responseObj.put("status", 400);
         }
-        return new ResponseEntity<>(responseObj, HttpStatus.OK);
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
 
@@ -209,6 +209,23 @@ public class ItemController extends ServiceContainer {
         List<ItemSubCategory> itemCategories = itemService.getAllItemsSubCategories(categoryId);
         return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
+
+
+    @GetMapping("subcategory/delete/{subcategorySlug}")
+    public ResponseEntity<Map<String,Object>> deleteItemSubCategoryById(HttpServletRequest request ,@PathVariable String subcategorySlug) {
+        Map<String,Object> responseObj = new HashMap<>();
+        User user = (User) request.getAttribute("user");
+        int isUpdated = itemService.deleteItemSubCategory(subcategorySlug,user);
+        if (isUpdated > 0) {
+            responseObj.put("message", "Item's subcategory was successfully deleted.");
+            responseObj.put("status", 200);
+        } else {
+            responseObj.put("message", "There is nothing to delete.recheck you parameters");
+            responseObj.put("status", 400);
+        }
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+    }
+
 
 
     @PostMapping(value = {"category/add","category/update"})

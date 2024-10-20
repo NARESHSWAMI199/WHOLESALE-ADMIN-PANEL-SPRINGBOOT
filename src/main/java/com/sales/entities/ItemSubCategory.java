@@ -5,8 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "item_subcategory")
@@ -14,10 +16,14 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Where(clause = "is_deleted !='Y'")
 public class ItemSubCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
+
+    @Column(name = "slug" )
+    String slug = UUID.randomUUID().toString();;
 
     @Column(name = "category_id")
     Integer categoryId;
@@ -27,6 +33,12 @@ public class ItemSubCategory {
 
     @Column(name = "icon")
     String icon;
+
+    @Column(name = "is_deleted")
+    String isDeleted = "N";
+
+
+
 
 
 }

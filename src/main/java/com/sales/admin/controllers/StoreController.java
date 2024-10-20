@@ -197,13 +197,13 @@ public class StoreController extends ServiceContainer{
     }
 
 
-    @GetMapping("category/delete/{categoryId}")
-    public ResponseEntity<Map<String,Object>> deleteItemCategoryById(HttpServletRequest request ,@PathVariable Integer categoryId) {
+    @GetMapping("category/delete/{categorySlug}")
+    public ResponseEntity<Map<String,Object>> deleteItemCategoryById(HttpServletRequest request ,@PathVariable String categorySlug) {
         Map<String,Object> responseObj = new HashMap<>();
         User user = (User) request.getAttribute("user");
-        int isUpdated = storeService.deleteStoreCategory(categoryId,user);
+        int isUpdated = storeService.deleteStoreCategory(categorySlug,user);
         if (isUpdated > 0) {
-            responseObj.put("message", "Store category was successfully deleted.");
+            responseObj.put("message", "Store's category was successfully deleted.");
             responseObj.put("status", 200);
         } else {
             responseObj.put("message", "There is nothing to delete.recheck you parameters");
@@ -211,6 +211,24 @@ public class StoreController extends ServiceContainer{
         }
         return new ResponseEntity<>(responseObj, HttpStatus.OK);
     }
+
+    @GetMapping("subcategory/delete/{subcategoryId}")
+    public ResponseEntity<Map<String,Object>> deleteItemSubCategoryById(HttpServletRequest request ,@PathVariable String subcategoryId) {
+        Map<String,Object> responseObj = new HashMap<>();
+        User user = (User) request.getAttribute("user");
+        int isUpdated = storeService.deleteStoreSubCategory(subcategoryId,user);
+        if (isUpdated > 0) {
+            responseObj.put("message", "Store's subcategory was successfully deleted.");
+            responseObj.put("status", 200);
+        } else {
+            responseObj.put("message", "There is nothing to delete.recheck you parameters");
+            responseObj.put("status", 400);
+        }
+        return new ResponseEntity<>(responseObj, HttpStatus.OK);
+    }
+
+
+
 
 
 

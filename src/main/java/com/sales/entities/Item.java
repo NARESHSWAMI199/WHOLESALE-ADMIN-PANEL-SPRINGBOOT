@@ -62,6 +62,11 @@ public class Item implements Serializable {
     @JoinColumn(name = "category", referencedColumnName = "id")
     ItemCategory itemCategory;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "subcategory", referencedColumnName = "id")
+    ItemSubCategory itemSubCategory;
+
+
 //    @ManyToOne
 //    @JoinColumn(name = "wholesale_id")
 //    Store wholesale;

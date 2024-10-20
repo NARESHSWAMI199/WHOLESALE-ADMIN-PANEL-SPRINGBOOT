@@ -248,7 +248,6 @@ public class StoreService extends RepoContainer{
         storeCategory.setId(categoryDto.getId());
         storeCategory.setCategory(categoryDto.getCategory());
         storeCategory.setIcon(categoryDto.getIcon());
-        storeCategory.setIsDeleted("N");
         return storeCategoryRepository.save(storeCategory);
     }
 
@@ -269,9 +268,16 @@ public class StoreService extends RepoContainer{
     }
 
 
-    public int deleteStoreCategory(int categoryId,User user) {
+    public int deleteStoreCategory(String slug,User user) {
         if(user.getUserType().equals("SA")) {
-            return storeHbRepository.deleteStoreCategory(categoryId);
+            return storeHbRepository.deleteStoreCategory(slug);
+        }
+        return 0;
+    }
+
+    public int deleteStoreSubCategory(String slug,User user) {
+        if(user.getUserType().equals("SA")) {
+            return storeHbRepository.deleteStoreSubCategory(slug);
         }
         return 0;
     }

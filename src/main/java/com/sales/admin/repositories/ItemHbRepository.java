@@ -28,6 +28,7 @@ public class ItemHbRepository{
                 "price =:price," +
                 "discount =:discount," +
                 "itemCategory =:itemCategory,"+
+                "itemSubCategory =:itemSubCategory,"+
                 "updatedAt =:updatedAt," +
                 "updatedBy =:updatedBy " +
                 "where slug =:slug ";
@@ -37,6 +38,7 @@ public class ItemHbRepository{
         query.setParameter("price" , itemDto.getPrice());
         query.setParameter("discount" , itemDto.getDiscount());
         query.setParameter("itemCategory" , itemDto.getItemCategory());
+        query.setParameter("itemSubCategory" , itemDto.getItemSubCategory());
         query.setParameter("updatedAt" , Utils.getCurrentMillis());
         query.setParameter("updatedBy" , loggedUser.getId());
         query.setParameter("slug",itemDto.getSlug());
@@ -143,12 +145,21 @@ public class ItemHbRepository{
     }
 
 
-    public int deleteItemCategory(int id){
-        String hqlString = "update ItemCategory set isDeleted='Y' where id=:id";
+    public int deleteItemCategory(String slug){
+        String hqlString = "update ItemCategory set isDeleted='Y' where slug=:slug";
         Query query = entityManager.createQuery(hqlString);
-        query.setParameter("id",id);
+        query.setParameter("slug",slug);
         return query.executeUpdate();
     }
+
+
+    public int deleteItemSubCategory(String slug){
+        String hqlString = "update ItemSubCategory set isDeleted='Y' where slug=:slug";
+        Query query = entityManager.createQuery(hqlString);
+        query.setParameter("slug",slug);
+        return query.executeUpdate();
+    }
+
 
 
 }
