@@ -13,6 +13,9 @@ import SecurityIcon from '@mui/icons-material/Security';
 import BadgeIcon from '@mui/icons-material/Badge';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { suId } from 'src/utils/util';
+import CategoryIcon from '@mui/icons-material/Category';
+
+
 export const items = (user) =>{
 
   return [
@@ -109,7 +112,7 @@ export const items = (user) =>{
       show : !!user ? user.userType == 'SA' : false,
       icon: (
         <SvgIcon fontSize="small">
-          <SecurityIcon />
+          <CategoryIcon />
         </SvgIcon>
       )
     },
@@ -121,7 +124,7 @@ export const items = (user) =>{
       show : !!user ? user.userType == 'SA' : false,
       icon: (
         <SvgIcon fontSize="small">
-          <SecurityIcon />
+          <StoreIcon />
         </SvgIcon>
       )
     },

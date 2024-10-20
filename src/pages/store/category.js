@@ -1,18 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
-import {  Alert, Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Snackbar, Stack, SvgIcon, Typography } from '@mui/material';
-import { useSelection } from 'src/hooks/use-selection';
+import {  Alert, Box, Button, Container, Snackbar, Stack, SvgIcon, Typography } from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { CustomersTable } from 'src/sections/customer/customers-table';
-import { BasicSearch, CustomersSearch } from 'src/sections/basic-search';
 import { applyPagination } from 'src/utils/apply-pagination';
 import axios, { all } from 'axios';
 import { host } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
-import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
-import { Card, InputAdornment, OutlinedInput } from '@mui/material';
-import { CustomerHeaders } from 'src/sections/customer/customers-header';
-import { GroupTable } from 'src/sections/groups/groups-table';
 import { BasicHeaders } from 'src/sections/basic-header';
 import Link from 'next/link';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
@@ -20,29 +13,7 @@ import { CategoryTable } from 'src/sections/category/categoryTable';
 
 
 
-
-
-
-const now = new Date();
-
-
-const useCustomers = (content,page,rowsPerPage) => {
-  return useMemo(
-    () => {
-      return applyPagination(content, page, rowsPerPage);
-    },
-    [page, rowsPerPage]
-  )
-};
-
-const useCustomerIds = (customers) => {
-  return useMemo(
-    () => {
-      return customers.map((customer) => customer.id);
-    },
-    [customers]
-  );
-};
+/** STORE CATEGORIES */
 
 
 const Page = () => {
@@ -82,11 +53,11 @@ const [categories,setCategories] = useState([])
 
 
 
-   const onDelete = (categoryId,rowIndex) => {
+   const onDelete = (categorySlug,rowIndex) => {
     axios.defaults.headers = {
       Authorization :  auth.token  
     }
-    axios.get(host+`/admin/store/category/delete/${categoryId}`)
+    axios.get(host+`/admin/store/category/delete/${categorySlug}`)
     .then(res => {
         setFlag("success")
         setMessage(res.data.message)
@@ -106,32 +77,6 @@ const [categories,setCategories] = useState([])
   const handleClose = () => {
     setOpen(false)
   };
-
-
-  const handlePageChange = useCallback(
-    (event, value) => {
-      setPage(value);
-      setData((perviouse) => ({...perviouse,pageNumber : value}))
-    },
-    []
-  );
-
-  const handleRowsPerPageChange = useCallback(
-    (event) => {
-      setRowsPerPage(event.target.value);
-      setData((perviouse) => ({...perviouse,size : event.target.value}))
-    },
-    []
-  );
-
-
-
-  const onSearch = (searchData) => {
-    setData({
-      ...data,
-      ...searchData,
-    })
-  } 
 
   return (
     <>

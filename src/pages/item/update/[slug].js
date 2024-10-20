@@ -24,13 +24,9 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { host, itemImage } from "src/utils/util";
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
 import { useRouter } from "next/router";
-import { redirect } from "next/navigation";
 import ImageInput from "src/sections/image-input";
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { ArrowButtons } from "src/layouts/arrow-button";
 
 
 const createItem = () => {
@@ -45,6 +41,8 @@ const createItem = () => {
     const auth = useAuth()
     const [values, setValues] = useState({})
     const [categories,setItemCategories] = useState([])
+    const [subcategories,setItemSubCategories] = useState([])
+  
 
     useEffect(() => {
         const getData = async () => {
@@ -54,7 +52,7 @@ const createItem = () => {
             await axios.get(host + "/admin/item/detail/"+slug,)
                 .then(res => {
                     const data = res.data.res;
-                    setValues({...data,category : data.itemCategory.id})
+                    setValues({...data,category : data.itemCategory.id, subcategory : data.itemSubCategory.id})
                 })
                 .catch(err => {
                     setMessage(!!err.response ? err.response.data.message : err.message)
@@ -88,6 +86,32 @@ const createItem = () => {
     }, [])
 
 
+
+
+
+    useEffect(() => {
+        const getSubcategory = async () => {
+            axios.defaults.headers = {
+                Authorization: auth.token
+            }
+            await axios.get(host + "/admin/item/subcategory/"+values.category)
+                .then(res => {
+                    const data = res.data;
+                    setItemSubCategories(data)
+                })
+                .catch(err => {
+                    setMessage(!!err.response ? err.response.data.message : err.message)
+                    setFlag('error')
+                    setOpen(true)
+                })
+        }
+        if(values.category !=undefined){
+            getSubcategory();
+        }
+    }, [values.category])
+
+
+
     const handleChange = useCallback(
         (event) => {
             setValues((prevState) => ({
@@ -113,6 +137,7 @@ const createItem = () => {
                 label: formData.get("itemLabel"),
                 description: formData.get("description"),
                 categoryId: formData.get("category"),
+                subCategoryId: formData.get("subcategory"),
                 itemImage : values.itemImage
             }
 
@@ -170,7 +195,6 @@ const createItem = () => {
                 autoComplete="off"
                 onSubmit={handleSubmit}
             >
-                <Card >
                     <Card>
                         <CardHeader
                             //subheader="From here you can add a new item."
@@ -178,10 +202,10 @@ const createItem = () => {
                         />
                         <CardContent sx={{ pt: 0 }}>
                             <Box sx={{ m: -1.5 }}>
-        
-                            <div style={{marginLeft : '10px',marginTop: '10px'}}>
-                                <ImageInput onChange={onSubmit} avtar={itemImage+values.slug+"/"+values.avtar}/>
-                            </div>
+ 
+                            <Box style={{marginLeft : '10px',marginTop: '10px'}}>
+                                <ImageInput onChange={onSubmit} avtar={values.slug !=undefined ? itemImage+values.slug+"/"+values.avtar : ''}/>
+                            </Box>
 
                                 <Grid
                                     container
@@ -246,28 +270,6 @@ const createItem = () => {
                                     </Grid>
 
 
-
-                                    <Grid
-                                        xs={12}
-                                        md={6}
-                                    >
-                                        <FormControl fullWidth>
-                                            <InputLabel id="itemLabel">Label</InputLabel>
-                                            <Select
-                                                labelId="itemLabel"
-                                                id="demo-simple-select"
-                                                name='itemLabel'
-                                                value={""+values.label}
-                                                label="Label"
-                                                onChange={handleChange}
-                                            >
-                                                <MenuItem value={"O"}>Old</MenuItem>
-                                                <MenuItem value={"N"}>New</MenuItem>
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-
-
                                     {/* Category */}
                                     <Grid
                                         xs={12}
@@ -292,6 +294,55 @@ const createItem = () => {
                                     </Grid>
 
 
+                                    {/* Subcategory */}
+                                    <Grid
+                                        xs={12}
+                                        md={6}
+                                    >
+                                        <FormControl fullWidth>
+                                            <InputLabel id="itemLabel">Subcategory</InputLabel>
+                                            <Select
+                                                labelId="itemLabel"
+                                                id="subcategory"
+                                                name='subcategory'
+                                                value={""+values.subcategory}
+                                                label="Subcategory"
+                                                onChange={handleChange}
+                                            >
+                                            {subcategories.map((subcategroyObj , i) => {
+                                                return ( <MenuItem key={i} value={subcategroyObj.id}>{subcategroyObj.subcategory}</MenuItem>
+                                                )})
+                                            }
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+
+
+
+
+                                    {/* Label */}
+                                    <Grid
+                                        xs={12}
+                                        md={6}
+                                    >
+                                        <FormControl fullWidth>
+                                            <InputLabel id="itemLabel">Label</InputLabel>
+                                            <Select
+                                                labelId="itemLabel"
+                                                id="demo-simple-select"
+                                                name='itemLabel'
+                                                value={""+values.label}
+                                                label="Label"
+                                                onChange={handleChange}
+                                            >
+                                                <MenuItem value={"O"}>Old</MenuItem>
+                                                <MenuItem value={"N"}>New</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+
+
+
                                     <Grid
                                         xs={12}
                                         md={6}
@@ -312,7 +363,7 @@ const createItem = () => {
                             </Box>
                         </CardContent>
                         <Divider />
-                    </Card>
+           
 
                     <CardActions sx={{ justifyContent: 'flex-end' }}>
                         <Button type="submit" variant="contained">

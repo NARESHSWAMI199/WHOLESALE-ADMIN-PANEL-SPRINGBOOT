@@ -1,12 +1,26 @@
-import { Box, Button, Card, CardActions, CardContent, CardHeader, Container, Divider, Grid, Stack, TextField } from '@mui/material';
-import React, { useCallback, useState } from 'react'
+import { Box, Button, Card, CardActions, CardContent, CardHeader, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid, Stack, SvgIcon, TextField, useMediaQuery } from '@mui/material';
+import React, { useCallback, useEffect, useState } from 'react'
 import ImageInput from '../image-input';
-
+import { CropSquareSharp, DeleteOutline } from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
+import { useTheme } from '@emotion/react';
 
 var categoryIcon = null;
 const SubcategoryCard = (props) => {
 
 const [values,setValues] = useState(!!props.subcategory ? props.subcategory : {})
+const [message,setMessage] = useState("")
+const [confirm,setConfirm] = useState(false)
+const [slug,setSlug] = useState(null)
+const [rowIndex,setRowIndex] = useState(-1)
+const [action,setAction] = useState('')
+const theme = useTheme();
+const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+useEffect(()=>{
+  if(!!props.subcategory)
+  setValues(props.subcategory)
+},[props.subcategory])
 
   const handleChange = useCallback(
     (event) => {
@@ -17,7 +31,18 @@ const [values,setValues] = useState(!!props.subcategory ? props.subcategory : {}
     },
     []
   );
+
+  const takeAction = (action) =>{
+    props.onDelete(slug)
+    setConfirm(false)
+  }
   
+  const handleClose =  () =>{
+    setConfirm(false)
+}
+const confirmBox = () => {
+  setConfirm(true)
+};
 
 
   const handleSubmit = useCallback(
@@ -51,14 +76,30 @@ const onSubmit = (image) =>{
   if(!!image)
   generateThumbnail(image.originFileObj)
 }
-return (<Card sx={{
+return (<>
+<Card sx={{
   width : '100%',
 }}>
     <form autoComplete="off" onSubmit={handleSubmit}>
-      <CardHeader
-          title="Add Subcategory"
-      />
-      <CardContent>
+      <Box sx={{display : 'flex', flexDirection : 'row', flex : 1}}>
+        <Box>
+          <CardHeader
+              title="Add Subcategory"
+          />
+        </Box>
+        <Box sx={{ml : 'auto', padding : 2, paddingTop : 4 }} 
+          onClick={(e)=>{
+            setSlug(values.slug)
+            setMessage("We are going to delete this subcategory. if you agree press agree otherwise press disagree.")
+            setAction("delete")
+            confirmBox()
+          }}>
+          <SvgIcon>
+            <CloseIcon/>
+          </SvgIcon>
+        </Box>
+        </Box>
+    <CardContent>
     <Box>
     <Grid xs={12} md={12} container spacing={3} style={{
       margin : 'auto'
@@ -71,7 +112,7 @@ return (<Card sx={{
             }}
             >
           <Box>
-              <ImageInput onChange={onSubmit} avtar = {values.icon}/>
+              <ImageInput onChange={onSubmit} avtar =  {values.icon }/>
           </Box>
         </Grid>
         <Grid
@@ -97,6 +138,32 @@ return (<Card sx={{
       </CardActions>
         </form>
     </Card>
+
+
+      <Dialog
+      fullScreen={fullScreen}
+      open={confirm}
+      onClose={handleClose}
+      aria-labelledby="responsive-dialog-title"
+      >
+      <DialogTitle id="responsive-dialog-title">
+        {"Are you sure ?"}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+        {message}
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button autoFocus onClick={handleClose}>
+          Disagree
+        </Button>
+        <Button onClick={()=>takeAction(action)} autoFocus>
+          Agree
+        </Button>
+      </DialogActions>
+      </Dialog>
+</>
   )
 }
 

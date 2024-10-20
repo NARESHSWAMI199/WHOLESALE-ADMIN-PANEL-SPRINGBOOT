@@ -296,6 +296,7 @@ const Page = () => {
             ...searchData,
         })
     }
+    
 
     return (
         <>

@@ -45,7 +45,7 @@ export const CategoryTable = (props) => {
   const [items,setItems] = useState(props.items)
   const [message,setMessage] = useState("")
   const [confirm,setConfirm] = useState(false)
-  const [categoryId,setCategoryId] = useState(null)
+  const [slug,setSlug] = useState(null)
   const [rowIndex,setRowIndex] = useState(-1)
   const [action,setAction] = useState('')
   const theme = useTheme();
@@ -61,7 +61,7 @@ export const CategoryTable = (props) => {
   };
 
   const takeAction = (action) =>{
-    props.onDelete(categoryId,rowIndex)
+    props.onDelete(slug,rowIndex)
     setConfirm(false)
   }
 
@@ -136,7 +136,7 @@ export const CategoryTable = (props) => {
                         color : 'Red'
                         
                         } }  titleAccess='delete' onClick={(e)=>{
-                          setCategoryId(category.id)
+                          setSlug(category.slug)
                           setRowIndex(index)
                           setMessage("We are going to delete this item category. if you agree press agree otherwise press disagree.")
                           setAction("delete")

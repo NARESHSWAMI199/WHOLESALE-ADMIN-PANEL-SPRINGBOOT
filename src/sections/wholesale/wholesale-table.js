@@ -169,6 +169,10 @@ export const ItemsTable = (props) => {
                 </TableCell>
 
                 <TableCell>
+                  Discount%
+                </TableCell>
+
+                <TableCell>
                   Price
                 </TableCell>
 
@@ -265,12 +269,27 @@ export const ItemsTable = (props) => {
                         direction="row"
                         spacing={2}
                       >
-                        {item.discount}
+                            <span>{item.discount} </span>
                       <CurrencyRupeeIcon sx={{fontSize:'15px',mt:'20px'}}/>
                       <DiscountIcon sx={{color:'red',fontSize:'20px',mt:'20px',px:'0px'}} />
 
                       </Stack>
                     </TableCell>
+
+                    <TableCell>
+                    <Stack
+                        alignItems="center"
+                        direction="row"
+                        spacing={2}
+                      >
+                         <span style={
+                          {
+                            color : 'green',
+                            fontWeight : 'bold'
+                          }}> {Math.floor((item.discount / item.price)*100 )+ "%"}</span>
+                      </Stack>
+                    </TableCell>
+
                     <TableCell>
                     <Stack
                         alignItems="center"

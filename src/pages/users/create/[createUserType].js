@@ -213,7 +213,7 @@ const createUser = () =>{
                // noValidate
                 onSubmit={handleSubmit}
               >
-            <Card>
+
             <Card sx={{mb:1}}>
                   <CardHeader
                     //subheader="From here you can add user."
@@ -378,10 +378,10 @@ const createUser = () =>{
                     </Box>
                   </CardContent>
                   <Divider />
-                </Card>
+              
 
               {userType =='W' && 
-                <Card>
+                <>
                   <CardHeader
                     subheader="From here you can add store."
                     title="Store Detail"
@@ -535,7 +535,7 @@ const createUser = () =>{
                     </Box>
                   </CardContent>
                   <Divider />
-                </Card>
+                </>
         }
                 <CardActions sx={{ justifyContent: 'flex-end' }}>
                     <Button type="submit" variant="contained">

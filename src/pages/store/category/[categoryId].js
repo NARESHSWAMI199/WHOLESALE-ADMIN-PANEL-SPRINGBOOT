@@ -7,17 +7,14 @@ import { Box,
   Divider,
   MenuItem,
   Select,
-  TextField,
   Unstable_Grid2 as Grid,
   InputLabel,
   FormControl,
   Snackbar,
-  Checkbox,
   Alert,
   Container,
   Stack,
   SvgIcon,
-  cardContentClasses
 } from "@mui/material";
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
@@ -30,7 +27,7 @@ import { Typography } from "antd";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import Link from "next/link";
 import SubcategoryCard from "src/sections/category/subcategory";
-import { margin, style, width } from "@mui/system";
+
 
 
 const createItem = () =>{    
@@ -46,22 +43,21 @@ const [flag,setFlag] = useState("success")
 
 const auth = useAuth()
 // const [values,setValues] = useState({})
-const [category,setCategory] = useState({})
 const [subcategories,setSubcategories] = useState([])
 const [subcategoryCard,setSubcategoriesCard] = useState();
-const [values,setValues] = useState([])
-
+const [values,setValues] = useState({category : categoryId})
+const [categories,setCategories] = useState([])
 
 
 useEffect(() => {
-  const getData = async () => {
+  const getAllCategories = async () => {
       axios.defaults.headers = {
           Authorization: auth.token
       }
-      await axios.get(host + "/admin/store/category/"+categoryId)
+      await axios.get(host + "/admin/store/category")
           .then(res => {
               const data = res.data;
-              setCategory(data)
+              setCategories(data)
           })
           .catch(err => {
               setMessage(!!err.response ? err.response.data.message : err.message)
@@ -69,9 +65,30 @@ useEffect(() => {
               setOpen(true)
           })
   }
-  getData();
+  getAllCategories();
 
 }, [])
+
+useEffect(() => {
+  const getCategory = async () => {
+      axios.defaults.headers = {
+          Authorization: auth.token
+      }
+      await axios.get(host + "/admin/store/category/"+values.category)
+          .then(res => {
+              const data = res.data;
+              setValues({...data, category : data.id})
+          })
+          .catch(err => {
+              setMessage(!!err.response ? err.response.data.message : err.message)
+              setFlag('error')
+              setOpen(true)
+          })
+  }
+  if(values.category !=undefined){
+    getCategory();
+  }
+}, [values.category])
 
 
 
@@ -80,11 +97,10 @@ useEffect(() => {
       axios.defaults.headers = {
           Authorization: auth.token
       }
-      await axios.get(host + "/admin/store/subcategory/"+categoryId)
+      await axios.get(host + "/admin/store/subcategory/"+values.category)
           .then(res => {
               const data = res.data;
               setSubcategories(data)
-              setValues(data)
           })
           .catch(err => {
               setMessage(!!err.response ? err.response.data.message : err.message)
@@ -92,9 +108,32 @@ useEffect(() => {
               setOpen(true)
           })
   }
-  getAllSubcategories();
+  if(values.category != undefined){
+    getAllSubcategories();
+  }
 
-}, [])
+}, [values.category])
+
+
+
+const onDelete = (subCategorySlug) => {
+  axios.defaults.headers = {
+    Authorization :  auth.token  
+  }
+  axios.get(host+`/admin/store/subcategory/delete/${subCategorySlug}`)
+  .then(res => {
+      setFlag("success")
+      setMessage(res.data.message)
+      setOpen(true)
+      setSubcategories((prevSubcategories) => prevSubcategories.filter((s) => s.slug !== subCategorySlug));
+  }).catch(err => {
+    console.log(err)
+    setFlag("error")
+    setMessage(!!err.response ? err.response.data.message : err.message)
+    setOpen(true)
+  } )
+
+}
 
 
 
@@ -123,7 +162,7 @@ const addSubCategory = () =>{
   }}
   
   >
-        <SubcategoryCard onSubmit={onSubmit} categoryId={categoryId} />
+        <SubcategoryCard onSubmit={onSubmit} categoryId={values.category} />
     </Grid>
   )
 }
@@ -170,6 +209,8 @@ return ( <>
   <Container maxWidth="xl">
       <Stack spacing={3}>
       <div style={{display : 'flex',justifyContent:'flex-end'}} >
+
+      <div>
           <Button
             startIcon={(
               <SvgIcon fontSize="small">
@@ -183,31 +224,66 @@ return ( <>
           </Button>
       </div>
 
+
+      <div  style={{marginLeft : 4}}>
+        <Link
+              href={{
+                  pathname: '/store/category/create',
+                }}
+              >
+          <Button
+            startIcon={(
+              <SvgIcon fontSize="small">
+                <PlusIcon />
+              </SvgIcon>
+            )}
+            variant="contained"
+          >
+            Add Category
+          </Button>
+          </Link>
+      </div>
+    </div>
  
 
-<Grid xs={12} md={6} lg={8}>
+<Grid xs={12} md={8} lg={8}>
   <Card>
       <CardHeader title="Add Store Category"/>
       <CardContent>
         <Box sx={{ m: -1.5 }}>
         <Grid container spacing={3}>
             <Grid xs={12} md={2}>
-                <Box>
-                  <ImageInput totalImage={0} avtar = {category.icon}/>
+                <Box sx={{
+                    textAlign : 'center'
+                   }}>
+                  <ImageInput totalImage={0} avtar = {values.icon}/>
                 </Box>
             </Grid>
 
-            <Grid xs={12} md={6}>
-              <TextField
-                sx={{mt:3}}
-                fullWidth
-                label="Category Name"
-                name="category"
-                onChange={handleChange}
-                required={true}
-                value={category.category}
-                InputLabelProps={{shrink :true}}
-              />
+              {/* Category */}
+              <Grid
+                xs={12}
+                md={8}
+                sx={{
+                  mt : 3
+                }}
+            >
+                <FormControl fullWidth>
+                    <InputLabel id="itemLabel">Category</InputLabel>
+                    <Select
+                        labelId="itemLabel"
+                        id="category"
+                        name='category'
+                        value={""+values.category}
+                        label="Category"
+                        onChange={handleChange}
+                    >
+                    {categories.map((categroyObj , i) => {
+                        return ( <MenuItem key={i} value={categroyObj.id}>{categroyObj.category}</MenuItem>
+                        )})
+                    }
+                    </Select>
+                </FormControl>
             </Grid>
           </Grid>
         </Box>
@@ -233,7 +309,7 @@ return ( <>
         textAlign :'center',
         alignItems : 'center'
       }}>
-         <SubcategoryCard onSubmit={onSubmit} categoryId={categoryId} subcategory = {subcategory} buttonLabel={"Update"}/>
+         <SubcategoryCard onSubmit={onSubmit} onDelete={onDelete} categoryId={values.category} subcategory = {subcategory} buttonLabel={"Update"}/>
     </Grid>
   })} 
 
