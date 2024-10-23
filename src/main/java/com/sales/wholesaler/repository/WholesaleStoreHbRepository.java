@@ -49,6 +49,8 @@ public class WholesaleStoreHbRepository {
                 "email=:email, "+
                 "avtar=:avtar, "+
                 "phone=:phone, "+
+                "storeCategory =:storeCategory,"+
+                "storeSubCategory =:storeSubCategory,"+
                 "description=:description, "+
                 "updatedAt=:updatedAt, "+
                 "updatedBy=:updatedBy "+
@@ -58,6 +60,8 @@ public class WholesaleStoreHbRepository {
         query.setParameter("name", storeDto.getStoreName());
         query.setParameter("email", storeDto.getStoreEmail());
         query.setParameter("phone", storeDto.getStorePhone());
+        query.setParameter("storeCategory", storeDto.getStoreCategory());
+        query.setParameter("storeSubCategory", storeDto.getStoreSubCategory());
         query.setParameter("avtar", storeDto.getStoreAvatar());
         query.setParameter("description", storeDto.getDescription());
         query.setParameter("updatedAt", Utils.getCurrentMillis());

@@ -1,5 +1,9 @@
 package com.sales.dto;
 
+import com.sales.entities.ItemCategory;
+import com.sales.entities.ItemSubCategory;
+import com.sales.entities.StoreCategory;
+import com.sales.entities.StoreSubCategory;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,4 +25,8 @@ public class StoreDto extends AddressDto {
     private String storeAvatar;
     private MultipartFile storePic;
     private List<Long> seenIds ;
+    private Integer categoryId = 0;
+    private Integer subCategoryId = 0;
+    private StoreCategory storeCategory;
+    private StoreSubCategory storeSubCategory;
 }

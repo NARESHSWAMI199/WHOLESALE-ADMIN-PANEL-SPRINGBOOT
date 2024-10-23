@@ -9,6 +9,7 @@ import com.sales.dto.ErrorDto;
 import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
+import com.sales.utils.Utils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -66,7 +67,7 @@ public class SalesInterceptor implements HandlerInterceptor {
 
             boolean isPermitted = false;
             for( String permission : permittedUrls) {
-                if(requestUrI.contains(permission)){
+                if(requestUrI.contains(permission) && !Utils.isEmpty(permission)){
                     isPermitted = true;
                     break;
                 }

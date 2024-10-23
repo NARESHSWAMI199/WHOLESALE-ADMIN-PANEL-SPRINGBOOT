@@ -27,7 +27,9 @@ public class GlobalException {
     @ExceptionHandler(value = {ObjectNotFoundException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ErrorDto resourceNotFoundException(ObjectNotFoundException ex, WebRequest request) {
-        ErrorDto message = new ErrorDto(ex.getMessage(),404);
+        String errorMessage = ex.getMessage();
+        errorMessage = errorMessage.substring(0,errorMessage.indexOf(";"));
+        ErrorDto message = new ErrorDto(errorMessage,404);
         logger.info(ex.getMessage());
         return message;
     }
@@ -36,7 +38,9 @@ public class GlobalException {
     @ExceptionHandler(value = {SQLIntegrityConstraintViolationException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorDto resourceNotFoundException(SQLIntegrityConstraintViolationException ex, WebRequest request) {
-        ErrorDto message = new ErrorDto(ex.getMessage(),500);
+        String errorMessage = ex.getMessage();
+        errorMessage = errorMessage.substring(0,errorMessage.indexOf(";"));
+        ErrorDto message = new ErrorDto(errorMessage,500);
         logger.info(ex.getMessage());
         return message;
     }
@@ -58,8 +62,9 @@ public class GlobalException {
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorDto dataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
         //String message = ex.getMessage().contains("constraint [null]") ? "Required parameters can't be null or a duplicate entry." : ex.getMessage();
-        String message = getCauseMessage(ex);
-        ErrorDto err = new ErrorDto(message,400);
+        String errorMessage = getCauseMessage(ex);;
+        errorMessage = errorMessage.substring(0,errorMessage.indexOf(";"));
+        ErrorDto err = new ErrorDto(errorMessage,400);
         logger.info(ex.getMessage());
         return err;
     }
@@ -79,7 +84,9 @@ public class GlobalException {
     @ExceptionHandler(value = {MyException.class})
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto myException(MyException ex, WebRequest request) {
-        ErrorDto message = new ErrorDto(ex.getMessage(),500);
+        String errorMessage = ex.getMessage();
+        errorMessage = errorMessage.substring(0,errorMessage.indexOf(";"));
+        ErrorDto message = new ErrorDto(errorMessage,500);
         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         logger.info(ex.getMessage());
         return message;
@@ -89,7 +96,9 @@ public class GlobalException {
     @ExceptionHandler(value = {UnexpectedRollbackException.class})
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto unexpectedRollbackException(UnexpectedRollbackException ex, WebRequest request) {
-        ErrorDto message = new ErrorDto(ex.getLocalizedMessage(),500);
+        String errorMessage = ex.getLocalizedMessage();
+        errorMessage = errorMessage.substring(0,errorMessage.indexOf(";"));
+        ErrorDto message = new ErrorDto(errorMessage,500);
         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         logger.info(ex.getMessage());
         return message;
@@ -101,9 +110,13 @@ public class GlobalException {
     public ErrorDto resourceNotFoundException(Exception ex, WebRequest request) {
         ErrorDto message = null;
         try{
-            message =new ErrorDto(getCauseMessage(ex),500);
+            String errorMessage = getCauseMessage(ex);
+            errorMessage = errorMessage.substring(0,errorMessage.indexOf(";"));
+            message =new ErrorDto(errorMessage,500);
         }catch (Exception e) {
-            message = new ErrorDto(ex.getMessage(), 500);
+            String errorMessage = ex.getMessage();
+            errorMessage = errorMessage.substring(0,errorMessage.indexOf(";"));
+            message = new ErrorDto(errorMessage, 500);
         }
         logger.info(ex.getMessage());
         return message;

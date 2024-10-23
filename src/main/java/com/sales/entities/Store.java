@@ -60,6 +60,18 @@ public class Store implements Serializable {
     @JoinColumn(name = "address")
     Address address;
 
+
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category", referencedColumnName = "id")
+    StoreCategory storeCategory;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "subcategory", referencedColumnName = "id")
+    StoreSubCategory storeSubCategory;
+
+
+
     public Store (User loggedUser) {
         this.createdAt = getCurrentMillis();
         this.createdBy = loggedUser.getId();

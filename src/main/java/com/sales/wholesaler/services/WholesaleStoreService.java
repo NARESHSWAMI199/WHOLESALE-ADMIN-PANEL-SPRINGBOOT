@@ -49,6 +49,15 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
     @Transactional(rollbackOn = {MyException.class , RuntimeException.class})
     public Map<String, Object> updateStoreBySlug(StoreDto storeDto,User loggedUser) throws IOException {
         Map<String, Object> responseObj = new HashMap<>();
+
+        try {
+            StoreCategory storeCategory = wholesaleCategoryRepository.findById(storeDto.getCategoryId()).get();
+            storeDto.setStoreCategory(storeCategory);
+            StoreSubCategory storeSubCategory = wholesaleSubCategoryRepository.findById(storeDto.getSubCategoryId()).get();
+            storeDto.setStoreSubCategory(storeSubCategory);
+        }catch (Exception e){
+            throw new MyException("Invalid arguments for category and subcategory");
+        }
         Store store = getStoreByUserId(loggedUser.getId());
         String slug = store.getSlug();
         storeDto.setStoreSlug(slug);
