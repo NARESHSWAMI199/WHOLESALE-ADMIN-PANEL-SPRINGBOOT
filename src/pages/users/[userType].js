@@ -17,20 +17,7 @@ import { CustomersTable } from 'src/sections/customer/customers-table';
 
 
 
-
-const now = new Date();
-
-
-const useadmins = (content,page,rowsPerPage) => {
-  return useMemo(
-    () => {
-      return applyPagination(content, page, rowsPerPage);
-    },
-    [page, rowsPerPage]
-  )
-};
-
-const useCustomerIds = (admins) => {
+const UseCustomerIds = (admins) => {
   return useMemo(
     () => {
       return admins.map((customer) => customer.id);
@@ -58,7 +45,7 @@ const Page = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [admins,setAdmins] = useState([])
-  const adminsIds = useCustomerIds(admins);
+  const adminsIds = UseCustomerIds(admins);
   const adminsSelection = useSelection(adminsIds);
   const [deleted,setDeleted] = useState(false);
   const [data,setData] = useState({

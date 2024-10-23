@@ -184,13 +184,16 @@ const handleClose = () => {
 
           {/* permissions */}
           <Grid container spacing={3}>
-                {Object.keys(permissions).map(element => {
-                return (<Grid xs={3}>
+                {Object.keys(permissions).map((element,index) => {
+                return (<Grid xs={3}
+                    key= {index}
+                >
                   <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
                     <FormLabel component="legend">{element}</FormLabel>
                     {<FormGroup>
-                      {permissions[element].map((item)=>{
+                      {permissions[element].map((item,i)=>{
                        return( <FormControlLabel
+                          key={i}
                           control={
                             <Checkbox checked={givenPermissions.includes(item.id)} onChange={handleChange} name={item.id} />
                           }

@@ -30,7 +30,7 @@ import SubcategoryCard from "src/sections/category/subcategory";
 
 
 
-const createItem = () =>{    
+const CreateCategoryItem = () =>{    
 
 const router = useRouter()
 const {categoryId} = router.query
@@ -307,7 +307,9 @@ return ( <>
     {subcategoryCard}
     
     {subcategories.map((subcategory , i)=>{
-      return <Grid xs={12} md={3} sx={{
+      return <Grid xs={12}
+        key={i}
+        md={3} sx={{
         display : 'flex',
         flexDirection : 'column',
         textAlign :'center',
@@ -338,10 +340,10 @@ return ( <>
 }
 
 
-createItem.getLayout = (page) => (
+CreateCategoryItem.getLayout = (page) => (
 <DashboardLayout>
 {page}
 </DashboardLayout>
 );
 
-export default createItem;
+export default CreateCategoryItem;

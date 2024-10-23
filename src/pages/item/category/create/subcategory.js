@@ -190,7 +190,8 @@ return ( <>
                     value={values.categoryId}
                 >
                     {categories.map((category,i)=>{
-                        return <MenuItem value={category.id}>{category.category}</MenuItem>
+                        return <MenuItem key={i} 
+                        value={category.id}>{category.category}</MenuItem>
                     })}
 
                 </Select>

@@ -31,7 +31,7 @@ import { ArrowButtons } from "src/layouts/arrow-button";
 import { tr } from "date-fns/locale";
 
 
-const createItem = () =>{    
+const UpdateItemCategory = () =>{    
 
 const router = useRouter()
 const {categoryId} = router.query
@@ -247,10 +247,10 @@ return ( <>
 }
 
 
-createItem.getLayout = (page) => (
+UpdateItemCategory.getLayout = (page) => (
 <DashboardLayout>
   {page}
 </DashboardLayout>
 );
 
-export default createItem;
+export default UpdateItemCategory;

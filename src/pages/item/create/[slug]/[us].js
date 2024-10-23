@@ -30,7 +30,7 @@ import ImageInput from "src/sections/image-input";
 import { ArrowButtons } from "src/layouts/arrow-button";
 
 
-const createItem = () =>{    
+const CreateItem = () =>{    
 
 const router = useRouter()
 const {slug,us} = router.query
@@ -385,10 +385,10 @@ return ( <>
 }
 
 
-createItem.getLayout = (page) => (
+CreateItem.getLayout = (page) => (
 <DashboardLayout>
   {page}
 </DashboardLayout>
 );
 
-export default createItem;
+export default CreateItem;

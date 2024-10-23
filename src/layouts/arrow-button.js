@@ -5,12 +5,15 @@ import { ArrowLeftIcon, ArrowRightIcon } from "@mui/x-date-pickers";
 
 export const ArrowButtons = () =>(
                    
-    <Grid container spacing={3} >
-    <Grid item variant='div'
+    <Grid container 
+          spacing={3} >
+    <Grid item 
+         variant='div'
          xs={6}
          md={6}
       >
-      <Box item variant='div' 
+      <Box item 
+          variant='div' 
           display={'flex'}
           justifyContent="center"
           alignItems="center"
@@ -32,7 +35,8 @@ export const ArrowButtons = () =>(
         xs={6}
         md={6}
           >
-      <Box item variant='div' 
+      <Box item 
+          variant='div' 
           display={'flex'}
           justifyContent="center"
           alignItems="center"

@@ -29,7 +29,7 @@ import { host, suId } from "src/utils/util";
 
 
 
-const createUser = () =>{    
+const Page = () =>{    
 
     const [open,setOpen] = useState(false)
     const [message,setMessage] = useState("")
@@ -563,10 +563,10 @@ const createUser = () =>{
 }
 
 
-createUser.getLayout = (page) => (
+Page.getLayout = (page) => (
     <DashboardLayout>
       {page}
     </DashboardLayout>
   );
 
-export default createUser;
+export default Page;

@@ -171,9 +171,9 @@ return ( <>
                 xs={12}
                 md={12}
                 >
-            <div>
+            <Box>
                 <ImageInput onChange={onSubmit} avtar = {values.icon}/>
-            </div>
+            </Box>
             </Grid>
                 
             <Grid
@@ -190,7 +190,9 @@ return ( <>
                     value={values.categoryId}
                 >
                     {categories.map((category,i)=>{
-                        return <MenuItem value={category.id}>{category.category}</MenuItem>
+                        return <MenuItem 
+                        key={i}
+                        value={category.id}>{category.category}</MenuItem>
                     })}
 
                 </Select>

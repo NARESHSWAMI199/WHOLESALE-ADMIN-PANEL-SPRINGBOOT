@@ -29,7 +29,7 @@ import ImageInput from "src/sections/image-input";
 import RefreshIcon from '@mui/icons-material/Refresh';
 
 
-const createItem = () => {
+const UpdateItem = () => {
 
     const router = useRouter()
     const { slug} = router.query
@@ -406,10 +406,10 @@ const createItem = () => {
 }
 
 
-createItem.getLayout = (page) => (
+UpdateItem.getLayout = (page) => (
     <DashboardLayout>
         {page}
     </DashboardLayout>
 );
 
-export default createItem;
+export default UpdateItem;
