@@ -1,9 +1,9 @@
 {
-  "name": "material-kit-react",
+  "name": "admin_pannel",
   "version": "3.0.0",
-  "author": "Devias",
+  "author": "Naresh",
   "licence": "MIT",
-  "homepage": "https://devias.io",
+  "homepage": "",
   "private": false,
   "scripts": {
     "dev": "next",
