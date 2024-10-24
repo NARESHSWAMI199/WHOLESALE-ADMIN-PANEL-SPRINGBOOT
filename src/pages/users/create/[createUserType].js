@@ -38,13 +38,15 @@ const Page = () =>{
     const user = auth.user
     const[cityList,setCityList] = useState([])
     const[stateList,setStateList] = useState([])
-    const [selectedState , setSelectedState] = useState(1)
     const router = useRouter()
     const { createUserType } = router.query
     const [userType,setUserType] = useState(createUserType)
     const [values,setValues] = useState({userType : userType})
     const [groups,setGroups] = useState([])
     const [assignGroup , setAssignGroup] = useState([])
+    const [categories,setItemCategories] = useState([])
+    const [subcategories,setItemSubCategories] = useState([])
+
     const [data,setData] = useState({
       pageNumber : 0,
       size : 1000000
@@ -90,23 +92,70 @@ const Page = () =>{
       axios.defaults.headers={
         Authorization : auth.token
       }
-      axios.get(host+`/admin/address/city/${selectedState}`)
+      axios.get(host+`/admin/address/city/${values.state}`)
       .then(res=>{
           setCityList(res.data)}
           )
       .catch(err=>console.log(err))
-    },[selectedState])
+    },[values.state])
 
 
 
 
-    const changeState = useCallback(
-          async (event) => {
-            let stateId =  event.target.value
-            setSelectedState(stateId)
-        },
-        []
-      );
+    // const changeState = useCallback(
+    //       async (event) => {
+    //         let stateId =  event.target.value
+    //         setSelectedState(stateId)
+    //     },
+    //     []
+    //   );
+
+
+
+
+      useEffect(() => {
+        const getData = async () => {
+            axios.defaults.headers = {
+                Authorization: auth.token
+            }
+            await axios.get(host + "/admin/store/category")
+                .then(res => {
+                    const data = res.data;
+                    setItemCategories(data)
+                })
+                .catch(err => {
+                    setMessage(!!err.response ? err.response.data.message : err.message)
+                    setFlag('error')
+                    setOpen(true)
+                })
+        }
+        getData();
+
+      }, [])
+
+
+      useEffect(() => {
+      const getSubcategory = async () => {
+          axios.defaults.headers = {
+              Authorization: auth.token
+          }
+          await axios.get(host + "/admin/store/subcategory/"+values.category)
+              .then(res => {
+                  const data = res.data;
+                  setItemSubCategories(data)
+              })
+              .catch(err => {
+                  setMessage(!!err.response ? err.response.data.message : err.message)
+                  setFlag('error')
+                  setOpen(true)
+              })
+      }
+      if(values.category !=undefined){
+          getSubcategory();
+      }
+      }, [values.category]) 
+
+
 
 
       const handleChange = useCallback(
@@ -143,6 +192,8 @@ const Page = () =>{
             city :  formData.get("city"),
             street :  formData.get("street"),
             zipCode :  formData.get("zipCode"),
+            categoryId: formData.get("category"),
+            subCategoryId: formData.get("subcategory"),
             storeName :  formData.get("storeName")
           }
         }
@@ -454,9 +505,9 @@ const Page = () =>{
                             labelId="stateLable"
                             id="demo-simple-select"
                             name='state'
-                            value={values.state}
+                            value={!!values.state ? values.state : ""}
                             label="State"
-                            onChange={changeState}
+                            onChange={handleChange}
                             required
                           >
                           {stateList.map((state,i)=>{
@@ -479,7 +530,7 @@ const Page = () =>{
                             labelId="cityLabel"
                             name='city'
                             label="City"
-                            value={values.city}
+                            value={!!values.city ? values.city : ""}
                             onChange={handleChange}
                             required
                           >
@@ -489,6 +540,61 @@ const Page = () =>{
                           </Select> 
                           </FormControl>
                         </Grid>
+
+
+
+
+                {/* Category */}
+                <Grid
+                      xs={12}
+                      md={6}
+                  >
+                      <FormControl fullWidth>
+                          <InputLabel id="itemLabel">Category</InputLabel>
+                          <Select
+                              labelId="itemLabel"
+                              id="category"
+                              name='category'
+                              value={values.category !=undefined ? ""+values.category : ""}
+                              label="Category"
+                              onChange={handleChange}
+                              required
+                          >
+                          {categories.map((categroyObj , i) => {
+                              return ( <MenuItem key={i} value={categroyObj.id}>{categroyObj.category}</MenuItem>
+                              )})
+                          }
+                          </Select>
+                      </FormControl>
+                  </Grid>
+
+                    {/* Subcategory */}
+                    <Grid
+                      xs={12}
+                      md={6}
+                  >
+                      <FormControl fullWidth>
+                          <InputLabel id="itemLabel">Subcategory</InputLabel>
+                          <Select
+                              labelId="itemLabel"
+                              id="subcategory"
+                              name='subcategory'
+                              value={values.subcategory !=undefined ? ""+values.subcategory : ""}
+                              label="Subcategory"
+                              onChange={handleChange}
+                              required
+                          >
+                          {subcategories.map((subcategroyObj , i) => {
+                              return ( <MenuItem key={i} value={subcategroyObj.id}>{subcategroyObj.subcategory}</MenuItem>
+                              )})
+                          }
+                          </Select>
+                      </FormControl>
+                  </Grid>
+
+
+
+
 
 
                         <Grid
@@ -528,6 +634,8 @@ const Page = () =>{
                             name="description"
                             onChange={handleChange}
                             required
+                            multiline
+                            rows={4}
                             value={values.description}
                           />
                         </Grid>

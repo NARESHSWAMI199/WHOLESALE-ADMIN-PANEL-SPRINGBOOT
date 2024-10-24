@@ -114,7 +114,9 @@ export const OverviewLatestUsers = (props) => {
       </Scrollbar>
       <Divider />
       <CardActions sx={{ justifyContent: 'flex-end' }}>
-        <Link href="/users">
+        <Link href={{
+          pathname :"/users"
+        }}>
         <Button
           color="inherit"
           endIcon={(

@@ -10,7 +10,6 @@ import {
   CardHeader,
   Divider,
   IconButton,
-  Link,
   List,
   ListItem,
   ListItemAvatar,
@@ -18,6 +17,7 @@ import {
   SvgIcon
 } from '@mui/material';
 import { storeImage, toTitleCase } from 'src/utils/util';
+import Link from 'next/link';
 
 export const OverviewLatestStores = (props) => {
   const { products = [], sx } = props;
@@ -79,7 +79,9 @@ export const OverviewLatestStores = (props) => {
       <Divider />
       <CardActions sx={{ justifyContent: 'flex-end' }}>
         <Link
-          href="/stores" >
+          href={{
+            pathname :"/stores" 
+          }}>
         <Button
           color="inherit"
           endIcon={(

@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { subDays, subHours } from 'date-fns';
-import { Box, Container, Unstable_Grid2 as Grid, Link } from '@mui/material';
+import { Box, Container, Unstable_Grid2 as Grid} from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import {OverviewUsers } from 'src/sections/overview/overview-users';
 import { OverviewLatestUsers } from 'src/sections/overview/overview-latest-orders';
@@ -12,6 +12,7 @@ import axios from 'axios';
 import { useAuth } from 'src/hooks/use-auth';
 import { host, suId } from 'src/utils/util';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 
 
@@ -177,7 +178,9 @@ useEffect( ()=>{
             sm={6}
             lg={!!user  &&  user.id != suId ? 3 : 4}
           >
-           <Link href="/users" sx={{textDecoration:'none'}} > <OverviewUsers
+           <Link href={{
+              pathname : "/users"
+            }} style={{textDecoration:'none'}} > <OverviewUsers
               title="USERS"
               sx={{ height: '100%' }}
               value={dashboardData.users}
@@ -190,9 +193,13 @@ useEffect( ()=>{
             sm={6}
             lg={!!user &&  user.id != suId ? 3 : 4}
           >
-          <Link sx={{
+          <Link style={{
             textDecoration:'none'
-           }} href="/customers" > <OverviewUsers
+           }} 
+            href={{
+              pathname : "/customers"
+            }}
+           > <OverviewUsers
                title="RETAILERS"
               sx={{ height: '100%' }}
               value={dashboardData.retailers}
@@ -205,9 +212,12 @@ useEffect( ()=>{
               sm={6}
               lg={!!user &&  user.id != suId ? 3 : 4}
             >
-            <Link sx={{
+            <Link style={{
               textDecoration:'none'
-            }} href="/wholesalers" >  <OverviewUsers
+            }}
+            href={{
+              pathname : "/wholesalers"
+            }}>  <OverviewUsers
                 title="WHOLESALERS"
                 sx={{ height: '100%' }}
                 value={dashboardData.wholesalers}
@@ -221,9 +231,12 @@ useEffect( ()=>{
             sm={6}
             lg={!!user  &&  user.id != suId ? 3 : 4}
           >
-          <Link sx={{
+          <Link style={{
             textDecoration:'none'
-           }} href="/staffs" >  <OverviewUsers
+           }}
+            href={{
+              pathname : "/wholesalers"
+            }} >  <OverviewUsers
               title='STAFFS'
               sx={{ height: '100%' }}
               value={dashboardData.staffs}
@@ -238,9 +251,12 @@ useEffect( ()=>{
             sm={6}
             lg={!!user &&  user.id != suId ? 3 : 4}
           >
-          <Link sx={{
+          <Link style={{
             textDecoration:'none'
-           }} href="/users/SA" >  <OverviewUsers
+           }} 
+           href={{
+            pathname :"/users/SA"
+          }} >  <OverviewUsers
               title='ADMINS'
               sx={{ height: '100%' }}
               value={dashboardData.admins}

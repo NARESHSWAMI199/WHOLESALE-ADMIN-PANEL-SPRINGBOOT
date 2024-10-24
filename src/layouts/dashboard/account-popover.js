@@ -50,7 +50,9 @@ export const AccountPopover = (props) => {
           variant="body2"
         >
           <Link sx={{textDecoration:'none',color:'black'}} 
-            href="/account"> 
+            href={{
+              pathname : "/account"
+            }}> 
           {!!user.username ? (user.username).toUpperCase() : ""}
           </Link>
      
