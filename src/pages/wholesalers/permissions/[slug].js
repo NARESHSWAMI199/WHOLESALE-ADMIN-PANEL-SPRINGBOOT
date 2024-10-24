@@ -22,7 +22,7 @@ const Page = ()=> {
   let permissionsIds = []
   const auth = useAuth();
   const router = useRouter()
-  const {userSlug} = router.query
+  const {slug} = router.query
 
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const Page = ()=> {
     }
 
     // Get all permmission 
-    axios.get(host + "/admin/auth/wholesale/permissions/"+userSlug)
+    axios.get(host + "/admin/auth/wholesale/permissions/"+slug)
       .then(res => {
         let allPermissions = res.data.allPermissions;
         setPermissions(allPermissions)
@@ -52,7 +52,7 @@ const Page = ()=> {
     event.preventDefault()
     let data = {
       userType : "W",
-      slug : userSlug,
+      slug : slug,
       storePermissions : givenPermissions
 
     }
