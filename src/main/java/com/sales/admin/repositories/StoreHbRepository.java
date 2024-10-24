@@ -51,6 +51,8 @@ public class StoreHbRepository {
                 "phone=:phone, "+
                 "rating=:rating, "+
               //  "avtar=:avtar, "+
+                "storeCategory =:storeCategory,"+
+                "storeSubCategory =:storeSubCategory,"+
                 "description=:description, "+
                 "updatedAt=:updatedAt, "+
                 "updatedBy=:updatedBy "+
@@ -62,6 +64,8 @@ public class StoreHbRepository {
         query.setParameter("phone", storeDto.getStorePhone());
         query.setParameter("rating", storeDto.getRating());
       //  query.setParameter("avtar", storeDto.getStoreAvatar());
+        query.setParameter("storeCategory", storeDto.getStoreCategory());
+        query.setParameter("storeSubCategory", storeDto.getStoreSubCategory());
         query.setParameter("description", storeDto.getDescription());
         query.setParameter("updatedAt", Utils.getCurrentMillis());
         query.setParameter("updatedBy", loggedUser.getId());

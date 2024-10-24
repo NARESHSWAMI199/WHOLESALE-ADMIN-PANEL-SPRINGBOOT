@@ -25,8 +25,8 @@ public class StoreDto extends AddressDto {
     private String storeAvatar;
     private MultipartFile storePic;
     private List<Long> seenIds ;
-    private Integer categoryId = 0;
-    private Integer subCategoryId = 0;
+    private Integer categoryId;
+    private Integer subCategoryId;
     private StoreCategory storeCategory;
     private StoreSubCategory storeSubCategory;
 }

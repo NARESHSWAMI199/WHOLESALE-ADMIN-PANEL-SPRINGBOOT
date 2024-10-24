@@ -125,6 +125,8 @@ public class UserService extends RepoContainer {
         storeDto.setState(userDto.getState());
         storeDto.setStorePhone(userDto.getStorePhone());
         storeDto.setStoreSlug(userDto.getStoreSlug());
+        storeDto.setSubCategoryId(userDto.getSubCategoryId());
+        storeDto.setCategoryId(userDto.getCategoryId());
         return storeDto;
     }
 

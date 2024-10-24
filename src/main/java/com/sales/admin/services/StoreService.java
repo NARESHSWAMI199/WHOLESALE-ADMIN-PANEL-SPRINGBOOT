@@ -100,6 +100,14 @@ public class StoreService extends RepoContainer{
                     responseObj.put("message", "successfully updated.");
                     responseObj.put("status", 200);
                 } else if (!Utils.isEmpty(storeDto.getStoreSlug())) {
+                    try {
+                        StoreCategory storeCategory = storeCategoryRepository.findById(storeDto.getCategoryId()).get();
+                        storeDto.setStoreCategory(storeCategory);
+                        StoreSubCategory storeSubCategory = storeSubCategoryRepository.findById(storeDto.getSubCategoryId()).get();
+                        storeDto.setStoreSubCategory(storeSubCategory);
+                    }catch (Exception e){
+                        throw new MyException("Invalid arguments for category and subcategory");
+                    }
                     Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid store's _ recheck your and store's _.");
                     updateStoreImage(storeDto.getStorePic(), storeDto.getStoreSlug());
                     int isUpdated = updateStore(storeDto, loggedUser);
@@ -113,6 +121,14 @@ public class StoreService extends RepoContainer{
                     return responseObj;
                 } else {
                     Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid store's _ recheck your and store's _.");
+                    try {
+                        StoreCategory storeCategory = storeCategoryRepository.findById(storeDto.getCategoryId()).get();
+                        storeDto.setStoreCategory(storeCategory);
+                        StoreSubCategory storeSubCategory = storeSubCategoryRepository.findById(storeDto.getSubCategoryId()).get();
+                        storeDto.setStoreSubCategory(storeSubCategory);
+                    }catch (Exception e){
+                        throw new MyException("Invalid arguments for category and subcategory");
+                    }
                     Store createdStore = createStore(storeDto, loggedUser);
                     if (createdStore.getId() > 0) {
                         responseObj.put("res", createdStore);
@@ -151,6 +167,10 @@ public class StoreService extends RepoContainer{
         store.setDescription(storeDto.getDescription());
         store.setPhone(storeDto.getStorePhone());
         store.setRating(storeDto.getRating());
+
+        store.setStoreCategory(storeDto.getStoreCategory());
+        store.setStoreSubCategory(storeDto.getStoreSubCategory());
+
         return storeRepository.save(store);
     }
 
