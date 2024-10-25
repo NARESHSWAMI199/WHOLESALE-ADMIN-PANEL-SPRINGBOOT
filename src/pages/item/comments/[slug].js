@@ -3,7 +3,7 @@ import Head from 'next/head';
 import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
 import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import {  Alert, Box, Button, Card, CardActions, CardContent, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Link, MenuItem, Rating, Snackbar, Stack, SvgIcon, Typography, useMediaQuery } from '@mui/material';
+import {  Alert, Box, Button, Card, CardActions, CardContent, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, MenuItem, Rating, Snackbar, Stack, SvgIcon, Typography, useMediaQuery } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { CustomersTable } from 'src/sections/customer/customers-table';
@@ -27,6 +27,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { OptionMenu } from 'src/layouts/option-menu';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { ArrowButtons } from 'src/layouts/arrow-button';
+import Link from 'next/link';
 
 
 const now = new Date();
@@ -257,7 +258,10 @@ useEffect( ()=>{
                   </Grid>
               <Grid xs={2} md={2}>
                   <Typography style={{float:'right'}}>
-                    <Link href={"/item/update/"+slug}
+                    <Link href = {{
+                        pathame : "/item/update/",
+                        query : {slug : slug}
+                    }}
                       style={{ textDecoration : 'none', color:'#6C737F'}}
                     >
                       <EditOutlined />
