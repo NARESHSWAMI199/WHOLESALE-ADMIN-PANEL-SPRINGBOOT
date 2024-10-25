@@ -99,7 +99,7 @@ public class ItemService extends RepoContainer{
         if(itemDto.getPrice() < itemDto.getDiscount()) throw new Exception("Discount can't be greater then price.");
         Map<String, Object> responseObj = new HashMap<>();
 
-        String itemName = Utils.isValidName( itemDto.getName(),"user");
+        String itemName = Utils.isValidName( itemDto.getName(),"item");
         itemDto.setName(itemName);
 
         ItemCategory itemCategory = itemCategoryRepository.findById(itemDto.getCategoryId()).get();

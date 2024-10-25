@@ -19,10 +19,6 @@ import java.util.regex.Pattern;
 @Component
 public class Utils {
 
-    private static final String NAME_PATTERN =
-            "^[A-Z](?=.{1,100}$)[A-Za-z_ ]*(?:\\h+[A-Z][A-Za-z]*)*$";
-
-
 
     public static Long getCurrentMillis(){
         long millis = new java.util.Date().getTime();
@@ -105,21 +101,33 @@ public class Utils {
 
 
 
-    private static final Pattern pattern = Pattern.compile(NAME_PATTERN);
+
 
     public static String isValidName(final String name,String flag) throws MyException {
+        String NAME_PATTERN =
+                "^[A-Z](?=.{1,100}$)[A-Za-z_& ]*(?:\\h+[A-Z][A-Za-z]*)*$";
+        if(flag.equalsIgnoreCase("user")){
+            /** item can hold more then 0 char and less then 28 and don't  support &*/
+            NAME_PATTERN = "^[A-Z](?=.{1,28}$)[A-Za-z_ ]*(?:\\h+[A-Z][A-Za-z]*)*$";
+        } else if (flag.equalsIgnoreCase("item")) {
+            /** item can hold more then 0 char and less then 200*/
+            NAME_PATTERN = "^[A-Z](?=.{1,200}$)[A-Za-z_ ]*(?:\\h+[A-Z][A-Za-z]*)*$";
+        }
+        Pattern pattern = Pattern.compile(NAME_PATTERN);
         Matcher matcher = pattern.matcher(name);
         System.out.println(matcher.matches());
         if(!matcher.matches()){
             String message ="";
+            String neededSyntax = "First latter must be in upper case, " +
+                    "and not a number and special symbols like : ^*$+?[]()| are not allowed.";
             if(flag.equals("user")){
                 message = "Not a valid username";
                 System.out.println(message);
-                throw  new MyException(message);
+                throw  new MyException(message + " "+neededSyntax  );
             }
             message = "Not a valid "+flag+" name.";
             System.out.println(message);
-            throw  new MyException(message);
+            throw  new MyException(message + " "+neededSyntax);
         }
         return name;
     }
