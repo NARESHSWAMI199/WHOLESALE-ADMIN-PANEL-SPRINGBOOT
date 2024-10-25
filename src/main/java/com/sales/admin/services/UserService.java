@@ -141,6 +141,9 @@ public class UserService extends RepoContainer {
         /** condition who can update a staff */
         Utils.canUpdateAStaff(userDto.getSlug(),userDto.getUserType(),loggedUser);
 
+        String username = Utils.isValidName( userDto.getUsername(),"user");
+        userDto.setUsername(username);
+
         if (!Utils.isEmpty(userDto.getSlug())) {
             int isUpdated = updateUser(userDto, loggedUser);
              Integer userId = userRepository.getUserIdBySlug(userDto.getSlug());

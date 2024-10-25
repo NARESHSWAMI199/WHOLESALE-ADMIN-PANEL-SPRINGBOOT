@@ -3,6 +3,8 @@ package com.sales.utils;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -11,10 +13,16 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+@Component
 public class Utils {
+
+    private static final String NAME_PATTERN =
+            "^[A-Z](?=.{1,100}$)[A-Za-z_ ]*(?:\\h+[A-Z][A-Za-z]*)*$";
+
+
 
     public static Long getCurrentMillis(){
         long millis = new java.util.Date().getTime();
@@ -92,6 +100,28 @@ public class Utils {
             !loggedUser.getSlug().equals(slug)) {
             throw new MyException("You don't have permissions to create or update a staff contact to administrator.");
         }
+    }
+
+
+
+
+    private static final Pattern pattern = Pattern.compile(NAME_PATTERN);
+
+    public static String isValidName(final String name,String flag) throws MyException {
+        Matcher matcher = pattern.matcher(name);
+        System.out.println(matcher.matches());
+        if(!matcher.matches()){
+            String message ="";
+            if(flag.equals("user")){
+                message = "Not a valid username";
+                System.out.println(message);
+                throw  new MyException(message);
+            }
+            message = "Not a valid "+flag+" name.";
+            System.out.println(message);
+            throw  new MyException(message);
+        }
+        return name;
     }
 
 }

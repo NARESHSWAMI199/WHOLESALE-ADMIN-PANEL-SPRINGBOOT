@@ -108,6 +108,8 @@ public class StoreService extends RepoContainer{
                     }catch (Exception e){
                         throw new MyException("Invalid arguments for category and subcategory");
                     }
+                    String storeName = Utils.isValidName(storeDto.getStoreName(),"Store");
+                    storeDto.setStoreName(storeName);
                     Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid store's _ recheck your and store's _.");
                     updateStoreImage(storeDto.getStorePic(), storeDto.getStoreSlug());
                     int isUpdated = updateStore(storeDto, loggedUser);
@@ -120,6 +122,8 @@ public class StoreService extends RepoContainer{
                     }
                     return responseObj;
                 } else {
+                    String storeName = Utils.isValidName(storeDto.getStoreName(),"Store");
+                    storeDto.setStoreName(storeName);
                     Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid store's _ recheck your and store's _.");
                     try {
                         StoreCategory storeCategory = storeCategoryRepository.findById(storeDto.getCategoryId()).get();
