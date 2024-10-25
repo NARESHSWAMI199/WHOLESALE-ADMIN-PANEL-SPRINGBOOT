@@ -456,7 +456,7 @@ return ( <>
               required
               multiline
               rows={4}
-              value={store.description}
+              value={!!store.description ? store.description : ""}
               InputLabelProps={{ shrink: true }}
             />
           </Grid>

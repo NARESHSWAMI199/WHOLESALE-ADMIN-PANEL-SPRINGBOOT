@@ -40,7 +40,9 @@ const ImageInput = (props) => {
     console.log(info)
     let files = info.fileList;
     setFileList(files);
-    props.onChange(files[files.length-1]);
+    if(!!files[files.length-1]) {
+      props.onChange(files[files.length-1]);
+    }
   }
   const uploadButton = (
     <button

@@ -227,7 +227,7 @@ export const CustomersTable = (props) => {
                           }}
                           style={{textDecoration : 'none'}}
                         >
-                        <Typography variant="subtitle2" sx={{color : "text.primary"}} >
+                        <Typography title="Edit Profile" variant="subtitle2" sx={{color : "text.primary"}} >
                           {toTitleCase(customer.username)}
                         </Typography>
                         </Link>
@@ -251,7 +251,7 @@ export const CustomersTable = (props) => {
                                   query: { userSlug: customer.slug },
                                 }}
                               >
-                        <Badge color="info" badgeContent={'Wholesaler'} />
+                        <Badge color="info" title="Detailed View Of Store" badgeContent={'Wholesaler'} />
                         </Link>
                         }
                         
@@ -327,7 +327,7 @@ export const CustomersTable = (props) => {
                                   marginX : '5px',
                                   color : '#111927'
                             }}
-                            titleAccess='Edit'
+                            titleAccess='Permissions'
                             />   
                       </Link>
                     }
