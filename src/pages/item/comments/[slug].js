@@ -259,7 +259,7 @@ useEffect( ()=>{
               <Grid xs={2} md={2}>
                   <Typography style={{float:'right'}}>
                     <Link href = {{
-                        pathame : "/item/update/[slug]",
+                        pathname : "/item/update/[slug]",
                         query : {slug : slug}
                     }}
                       style={{ textDecoration : 'none', color:'#6C737F'}}
