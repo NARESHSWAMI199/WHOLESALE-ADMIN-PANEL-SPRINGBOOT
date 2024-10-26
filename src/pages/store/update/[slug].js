@@ -320,13 +320,12 @@ return ( <>
             md={6}
           >      
           <FormControl fullWidth>
-          <InputLabel id="stateLabel">State</InputLabel>
+          <InputLabel style={{background :'white'}}  id="stateLabel">State</InputLabel>
             <Select
               labelId="stateLable"
               id="demo-simple-select"
               name='state'
               value={!!address ? address.state: 0}
-              label="State"
               onChange={changeState}
               required
               InputLabelProps={{ shrink: true }}
@@ -345,12 +344,11 @@ return ( <>
             md={6}
           >
           <FormControl fullWidth>
-            <InputLabel id="cityLabel">City</InputLabel>
+            <InputLabel style={{background :'white'}}  id="cityLabel">City</InputLabel>
             <Select
               fullWidth
               labelId="cityLabel"
               name='city'
-              label="City"
               value={!!address ? address.city : 0}
               onChange={changeCity}
               InputLabelProps={{ shrink: true }}
@@ -371,13 +369,12 @@ return ( <>
                       md={6}
                   >
                       <FormControl fullWidth>
-                          <InputLabel id="itemLabel">Category</InputLabel>
+                          <InputLabel style={{background :'white'}}  id="itemLabel">Category</InputLabel>
                           <Select
                               labelId="itemLabel"
                               id="category"
                               name='category'
                               value={store.category !=undefined ? ""+store.category : ""}
-                              label="Category"
                               onChange={handleChange}
                               required
                           >
@@ -395,13 +392,12 @@ return ( <>
                       md={6}
                   >
                       <FormControl fullWidth>
-                          <InputLabel id="itemLabel">Subcategory</InputLabel>
+                          <InputLabel style={{background :'white'}}  id="itemLabel">Subcategory</InputLabel>
                           <Select
                               labelId="itemLabel"
                               id="subcategory"
                               name='subcategory'
                               value={store.subcategory !=undefined ? ""+store.subcategory : ""}
-                              label="Subcategory"
                               onChange={handleChange}
                               required
                           >

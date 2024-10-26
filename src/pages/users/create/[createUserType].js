@@ -295,13 +295,12 @@ const Page = () =>{
                         md={6}
                       >
                         <FormControl fullWidth>
-                      <InputLabel id="userTypeLabel">User type</InputLabel>
+                      <InputLabel style={{background :'white'}}  id="userTypeLabel">User type</InputLabel>
                       <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         name='userType'
                         value={values.userType}
-                        label="User type"
                         onChange={(e)=>{
                           handleChange(e)
                           setUserType(e.target.value)
@@ -319,53 +318,6 @@ const Page = () =>{
                       </Select>
                       </FormControl>
                       </Grid>
-
-                        {/* address */}
-        {/* 
-                        <Grid
-                          xs={12}
-                          md={6}
-                        >      
-                        <FormControl fullWidth>
-                        <InputLabel id="stateLabel">State</InputLabel>
-                          <Select
-                            labelId="stateLable"
-                            id="demo-simple-select"
-                            name='state'
-                            value={values.state}
-                            label="State"
-                            onChange={changeState}
-                          >
-                          {stateList.map((state,i)=>{
-                              return (<MenuItem key={i+state.stateName} value={state.id}>{state.stateName}</MenuItem>)
-                          })}
-                  
-                          </Select>
-                      </FormControl>
-                        </Grid>
-
-
-                        <Grid
-                          xs={12}
-                          md={6}
-                        >
-                        <FormControl fullWidth>
-                          <InputLabel id="cityLabel">City</InputLabel>
-                          <Select
-                            fullWidth
-                            labelId="cityLabel"
-                            name='city'
-                            label="City"
-                            value={values.city}
-                            onChange={handleChange}
-                          >
-                          {cityList.map((city,i) => {
-                              return (<MenuItem key={i} value={city.id}>{city.cityName}</MenuItem>)
-                          })}
-                          </Select> 
-                          </FormControl>
-                        </Grid> */}
-
 
                         <Grid
                           xs={12}
@@ -500,13 +452,12 @@ const Page = () =>{
                           md={6}
                         >      
                         <FormControl fullWidth>
-                        <InputLabel id="stateLabel">State</InputLabel>
+                        <InputLabel style={{background :'white'}}  id="stateLabel">State</InputLabel>
                           <Select
                             labelId="stateLable"
                             id="demo-simple-select"
                             name='state'
                             value={!!values.state ? values.state : ""}
-                            label="State"
                             onChange={handleChange}
                             required
                           >
@@ -524,12 +475,11 @@ const Page = () =>{
                           md={6}
                         >
                         <FormControl fullWidth>
-                          <InputLabel id="cityLabel">City</InputLabel>
+                          <InputLabel style={{background :'white'}}  id="cityLabel">City</InputLabel>
                           <Select
                             fullWidth
                             labelId="cityLabel"
                             name='city'
-                            label="City"
                             value={!!values.city ? values.city : ""}
                             onChange={handleChange}
                             required
@@ -550,13 +500,12 @@ const Page = () =>{
                       md={6}
                   >
                       <FormControl fullWidth>
-                          <InputLabel id="itemLabel">Category</InputLabel>
+                          <InputLabel style={{background :'white'}}  id="itemLabel">Category</InputLabel>
                           <Select
                               labelId="itemLabel"
                               id="category"
                               name='category'
                               value={values.category !=undefined ? ""+values.category : ""}
-                              label="Category"
                               onChange={handleChange}
                               required
                           >
@@ -574,13 +523,12 @@ const Page = () =>{
                       md={6}
                   >
                       <FormControl fullWidth>
-                          <InputLabel id="itemLabel">Subcategory</InputLabel>
+                          <InputLabel style={{background :'white'}}  id="itemLabel">Subcategory</InputLabel>
                           <Select
                               labelId="itemLabel"
                               id="subcategory"
                               name='subcategory'
                               value={values.subcategory !=undefined ? ""+values.subcategory : ""}
-                              label="Subcategory"
                               onChange={handleChange}
                               required
                           >
