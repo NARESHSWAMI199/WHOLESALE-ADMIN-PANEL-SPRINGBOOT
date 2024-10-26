@@ -37,7 +37,7 @@ export const OverviewLatestUsers = (props) => {
     <Card sx={sx}>
       <CardHeader title="Latest Users" />
       <Scrollbar sx={{ flexGrow: 1 }}>
-        <Box sx={{ minWidth: 800 }}>
+        <Box>
           <Table>
             <TableHead>
               <TableRow>

@@ -3,8 +3,8 @@ import { subDays, subHours } from 'date-fns';
 import { Box, Container, Unstable_Grid2 as Grid} from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import {OverviewUsers } from 'src/sections/overview/overview-users';
-import { OverviewLatestUsers } from 'src/sections/overview/overview-latest-orders';
-import { OverviewLatestStores } from 'src/sections/overview/overview-latest-products';
+import { OverviewLatestUsers } from 'src/sections/overview/overview-latest-users';
+import { OverviewLatestStores } from 'src/sections/overview/overview-latest-stores';
 import { OverviewStores } from 'src/sections/overview/overview-sales';
 import { OverviewTraffic } from 'src/sections/overview/overview-traffic';
 import { useCallback, useEffect, useState } from 'react';
@@ -344,7 +344,7 @@ useEffect( ()=>{
           </Grid>
           <Grid
             xs={12}
-            md={12}
+            md={8}
             lg={8}
           >
             <OverviewLatestUsers
