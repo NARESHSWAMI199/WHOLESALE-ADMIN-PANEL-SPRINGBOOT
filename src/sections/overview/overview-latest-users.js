@@ -36,14 +36,11 @@ export const OverviewLatestUsers = (props) => {
   return (
     <Card sx={sx}>
       <CardHeader title="Latest Users" />
-      <Scrollbar sx={{ flexGrow: 1 }}>
+      {/* <Scrollbar sx={{ flexGrow: 1 }}> */}
         <Box>
           <Table>
             <TableHead>
               <TableRow>
-                {/* <TableCell>
-                  Order
-                </TableCell> */}
                 <TableCell>
                   Username
                 </TableCell>
@@ -67,11 +64,7 @@ export const OverviewLatestUsers = (props) => {
                     hover
                     key={user.slug}
                   >
-                    {/* <TableCell>
-                      {order.ref}
-                    </TableCell> */}
                     <TableCell>
-                      {/* {toTitleCase(user.username)} */}
                       <Stack
                         alignItems="center"
                         direction="row"
@@ -92,6 +85,7 @@ export const OverviewLatestUsers = (props) => {
                         </Typography>
                       </Stack>
                     </TableCell>
+
                     <TableCell>
                       {user.userType =="W" && "Wholesaler"}
                       {user.userType == "S" && "Staff"}
@@ -100,18 +94,20 @@ export const OverviewLatestUsers = (props) => {
                     <TableCell>
                       {createdAt}
                     </TableCell>
+
                     <TableCell>
                       <SeverityPill color={statusMap[user.status == "A" ? "success" : "error"]}>
                         {user.status == "A" ? "Active" : "Deactive"}
                       </SeverityPill>
                     </TableCell>
+
                   </TableRow>
                 );
               })}
             </TableBody>
           </Table>
         </Box>
-      </Scrollbar>
+      {/* </Scrollbar> */}
       <Divider />
       <CardActions sx={{ justifyContent: 'flex-end' }}>
         <Link href={{

@@ -160,23 +160,11 @@ export const GroupTable = (props) => {
 
   return ( <>
     <Card>
-      <Scrollbar>
         <Box sx={{ minWidth: 800 }}>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox">
-                  {/* <Checkbox
-                    checked={selectedAll}
-                    indeterminate={selectedSome}
-                    onChange={(event) => {
-                      if (event.target.checked) {
-                        onSelectAll?.();
-                      } else {
-                        onDeselectAll?.();
-                      }
-                    }}
-                  /> */}
                 </TableCell>
                 <TableCell>
                   Name
@@ -282,7 +270,6 @@ export const GroupTable = (props) => {
             </TableBody>
           </Table>
         </Box>
-      </Scrollbar>
       <TablePagination
         component="div"
         count={count}

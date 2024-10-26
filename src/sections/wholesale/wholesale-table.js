@@ -127,23 +127,11 @@ export const ItemsTable = (props) => {
 
   return ( <>
     <Card>
-      <Scrollbar>
         <Box sx={{ minWidth: 800 }}>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox">
-                  <Checkbox
-                    checked={selectedAll}
-                    indeterminate={selectedSome}
-                    onChange={(event) => {
-                      if (event.target.checked) {
-                        onSelectAll?.();
-                      } else {
-                        onDeselectAll?.();
-                      }
-                    }}
-                  />
                 </TableCell>
                 <TableCell>
                   Name
@@ -205,16 +193,6 @@ export const ItemsTable = (props) => {
                     selected={isSelected}
                   >
                     <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={isSelected}
-                        onChange={(event) => {
-                          if (event.target.checked) {
-                            onSelectOne?.(item.slug);
-                          } else {
-                            onDeselectOne?.(item.slug);
-                          }
-                        }}
-                      />
                     </TableCell>
                     <TableCell>
                       <Stack
@@ -415,7 +393,6 @@ export const ItemsTable = (props) => {
             </TableBody>
           </Table>
         </Box>
-      </Scrollbar>
       <TablePagination
         component="div"
         count={count}

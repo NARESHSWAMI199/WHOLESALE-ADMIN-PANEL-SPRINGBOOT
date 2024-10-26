@@ -134,23 +134,11 @@ export const CustomersTable = (props) => {
 
   return ( <>
     <Card>
-      <Scrollbar>
         <Box sx={{ minWidth: 800 }}>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox">
-                  {/* <Checkbox
-                    checked={selectedAll}
-                    indeterminate={selectedSome}
-                    onChange={(event) => {
-                      if (event.target.checked) {
-                        onSelectAll?.();
-                      } else {
-                        onDeselectAll?.();
-                      }
-                    }}
-                  /> */}
                 </TableCell>
                 <TableCell>
                   Name
@@ -195,16 +183,7 @@ export const CustomersTable = (props) => {
                     selected={isSelected}
                   >
                     <TableCell padding="checkbox">
-                      {/* <Checkbox
-                        checked={isSelected}
-                        onChange={(event) => {
-                          if (event.target.checked) {
-                            onSelectOne?.(customer.slug);
-                          } else {
-                            onDeselectOne?.(customer.slug);
-                          }
-                        }}
-                      /> */}
+          
                     </TableCell>
                     <TableCell>
                       <Stack
@@ -350,7 +329,6 @@ export const CustomersTable = (props) => {
             </TableBody>
           </Table>
         </Box>
-      </Scrollbar>
       <TablePagination
         component="div"
         count={count}
