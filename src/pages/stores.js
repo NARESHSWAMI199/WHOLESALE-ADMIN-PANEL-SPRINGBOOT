@@ -11,6 +11,7 @@ import { CustomerHeaders } from 'src/sections/customer/customers-header';
 import { StoresCard } from 'src/sections/wholesale/stores-table';
 import { Divider, Pagination } from 'antd';
 import { useRouter } from 'next/router';
+import Spinner from 'src/sections/spinner';
 
 
 
@@ -23,15 +24,12 @@ const Page = () => {
   const [flag, setFlag] = useState("warning")
 
   const auth = useAuth()
-  const router = useRouter()
-  const {userSlug}  = router.query
   const [totalPages,setTotalPages] = useState(0)
 
-  const [error,setErrors] = useState("")
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [stores,setStores] = useState([])
-  const[deleted , setDeleted] = useState(false)
+  const [showSpinner , setShowSpinner] = useState("block")
 
   
   const [data,setData] = useState({
@@ -55,11 +53,13 @@ const Page = () => {
           setTotalElements(response.totalElements)
           setStores(response.content);
           setTotalPages(response.totalPages)
+          setShowSpinner("none")
        })
        .catch(err => {
          setFlag("error")
          setMessage(!!err.response ? err.response.data.message : err.message)
          setOpen(true)
+         setShowSpinner("none")
        } )
      }
     getData();
@@ -159,14 +159,13 @@ const Page = () => {
           <Stack spacing={3}>
             <CustomerHeaders  headerTitle={"All Store"} userType="W" />
             <BasicSearch onSearch={onSearch} />
-          <Spinner show="block"/>
+          <Spinner show={showSpinner}/>
           {stores.map((store,i) =>{
              return(<StoresCard  key={i} 
               deleteStore={onDelete}
               store={store}  />)
           } ) }
 
-        <Spinner show="none"/>
       {/* <CardActions sx={{ justifyContent: 'flex-end' }}>
         <Button
           onClick={getMore}
