@@ -71,7 +71,6 @@ export const CategoryTable = (props) => {
 
   return ( <>
     <Card>
-      <Scrollbar>
         <Box sx={{ minWidth: 800 }}>
           <Table>
             <TableHead>
@@ -150,7 +149,6 @@ export const CategoryTable = (props) => {
             </TableBody>
           </Table>
         </Box>
-      </Scrollbar>
      
     </Card>
 
