@@ -108,7 +108,6 @@ const Page = () => {
       }
       updateStatusOnUi(status,slug)
       setOpen(true)
-      setStatus(status)
     }).catch(err => {
       console.log(err)
       setFlag("error")

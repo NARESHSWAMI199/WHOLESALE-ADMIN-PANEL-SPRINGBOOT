@@ -339,7 +339,7 @@ useEffect( ()=>{
           >
          <OverviewLatestStores
               products = {wholesales }
-              sx={{ height: '100%' }}
+              // sx={{ height: '100%' }}
             />
           </Grid>
           <Grid
@@ -349,7 +349,7 @@ useEffect( ()=>{
           >
             <OverviewLatestUsers
               users={users}
-              sx={{ height: '100%' }}
+              // sx={{ height: '100%' }}
             />
           </Grid>
         </Grid>

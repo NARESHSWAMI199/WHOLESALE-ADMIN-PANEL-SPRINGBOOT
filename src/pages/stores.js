@@ -1,23 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
-import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
-import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
-import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import {  Alert, Box, Button, CardActions, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Snackbar, Stack, SvgIcon, Typography, useMediaQuery } from '@mui/material';
+import {  Alert, Box,Container, Snackbar, Stack, SvgIcon, Typography, useMediaQuery } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { CustomersTable } from 'src/sections/customer/customers-table';
 import { BasicSearch, CustomersSearch } from 'src/sections/basic-search';
-import { applyPagination } from 'src/utils/apply-pagination';
 import axios from 'axios';
 import { host } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
 import { StoresCard } from 'src/sections/wholesale/stores-table';
 import { Divider, Pagination } from 'antd';
-import { ArrowRightIcon } from '@mui/x-date-pickers';
 import { useRouter } from 'next/router';
-import { ro } from 'date-fns/locale';
 
 
 
@@ -166,14 +159,14 @@ const Page = () => {
           <Stack spacing={3}>
             <CustomerHeaders  headerTitle={"All Store"} userType="W" />
             <BasicSearch onSearch={onSearch} />
-
+          <Spinner show="block"/>
           {stores.map((store,i) =>{
              return(<StoresCard  key={i} 
               deleteStore={onDelete}
               store={store}  />)
           } ) }
 
-
+        <Spinner show="none"/>
       {/* <CardActions sx={{ justifyContent: 'flex-end' }}>
         <Button
           onClick={getMore}
