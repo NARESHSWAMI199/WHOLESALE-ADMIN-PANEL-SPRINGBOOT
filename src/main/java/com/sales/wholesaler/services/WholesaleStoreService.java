@@ -49,7 +49,8 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
     @Transactional(rollbackOn = {MyException.class , RuntimeException.class})
     public Map<String, Object> updateStoreBySlug(StoreDto storeDto,User loggedUser) throws IOException {
         Map<String, Object> responseObj = new HashMap<>();
-
+        String storeName = Utils.isValidName( storeDto.getStoreName(),"store");
+        storeDto.setStoreName(storeName);
         try {
             StoreCategory storeCategory = wholesaleCategoryRepository.findById(storeDto.getCategoryId()).get();
             storeDto.setStoreCategory(storeCategory);

@@ -118,6 +118,8 @@ public class WholesaleItemService extends WholesaleRepoContainer {
     public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser) throws Exception {
         if(itemDto.getPrice() < itemDto.getDiscount()) throw new MyException("Discount can't be greater then price.");
         Map<String, Object> responseObj = new HashMap<>();
+        String itemName = Utils.isValidName( itemDto.getName(),"item");
+        itemDto.setName(itemName);
         Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(loggedUser.getId());
         itemDto.setStoreId(storeId);
         ItemCategory itemCategory = wholesaleItemCategoryRepository.findById(itemDto.getCategoryId()).get();

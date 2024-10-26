@@ -52,6 +52,9 @@ public class WholesaleUserService extends WholesaleRepoContainer {
     @Transactional
     public Map<String, Object> updateUserProfile(UserDto userDto, User loggedUser){
         Map<String, Object> responseObj = new HashMap<>();
+
+        String username = Utils.isValidName( userDto.getUsername(),"user");
+        userDto.setUsername(username);
         int isUpdated = updateUser(userDto, loggedUser);
         if (isUpdated > 0) {
             responseObj.put("message", "successfully updated.");
