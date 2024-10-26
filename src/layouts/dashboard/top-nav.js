@@ -78,9 +78,11 @@ export const TopNav = (props) => {
             </Tooltip> */}
             ADMIN PANNEL
           </Stack>
+          {window.screen.width > 600 ?
           <Box>
             <ArrowButtons/>
-          </Box>
+          </Box> :
+          ""}
           <Stack
             alignItems="center"
             direction="row"
