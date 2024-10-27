@@ -1,6 +1,6 @@
 import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
 import { SearchOutlined } from '@mui/icons-material';
-import { Button, Card, InputAdornment, MenuItem, OutlinedInput, Select, SvgIcon, TextField } from '@mui/material';
+import { Button, Card, Grid, InputAdornment, MenuItem, OutlinedInput, Select, SvgIcon, TextField } from '@mui/material';
 import { format } from 'date-fns';
 import { useCallback } from 'react';
 import KeyIcon from '@mui/icons-material/Key';
@@ -30,117 +30,142 @@ export const BasicSearch = (props) => {
 
  return (<Card sx={{ p: 2 }}>
     <form onSubmit={(e)=>{handleSubmit(e)}}>
-    <OutlinedInput
-      defaultValue=""
-      fullWidth
-      placeholder="Search"
-      name='searchKey'
-      startAdornment={(
-        <InputAdornment position="start" >
-          
-          <SvgIcon
-            color="action"
-            fontSize="small"
-          >
-            <MagnifyingGlassIcon />
-          </SvgIcon>
-        </InputAdornment>
-      )}
-      sx={{ maxWidth: 240 }}
-    />
-
-  { props.type !== "A" &&  props.type !== "item" &&
-   <OutlinedInput
+    <Grid container spacing={1}>
+      <Grid xs={12} md={2}>
+        <OutlinedInput
         defaultValue=""
         fullWidth
-        placeholder="Token Id"
-        name='slug'
+        placeholder="Search"
+        name='searchKey'
+        sx={{height:55}}
         startAdornment={(
           <InputAdornment position="start" >
             
-            <KeyIcon
+            <SvgIcon
               color="action"
               fontSize="small"
             >
               <MagnifyingGlassIcon />
-            </KeyIcon>
+            </SvgIcon>
           </InputAdornment>
         )}
-        sx={{ maxWidth: 240 }}
       />
- }
+      </Grid>
+   
+
+      { props.type !== "A" &&  props.type !== "item" &&
+        <Grid xs={12} md={2}>
+      <OutlinedInput
+            defaultValue=""
+            fullWidth
+            placeholder="Token Id"
+            name='slug'
+            sx={{height:55}}
+            startAdornment={(
+              <InputAdornment position="start" >
+                
+                <KeyIcon
+                  color="action"
+                  fontSize="small"
+                >
+                  <MagnifyingGlassIcon />
+                </KeyIcon>
+              </InputAdornment>
+            )}
+          />
+          </Grid>}
 
 
 
-          { props.type === "A" && <Select
-                sx={{minWidth:200}}
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                name='type'
-                defaultValue="A"
-                label="User type"
-              >
-                <MenuItem value={"A"}>All</MenuItem>
-                <MenuItem value={"S"}>Staff</MenuItem>
-                <MenuItem value={"W"}>Wholesaler</MenuItem>
-                <MenuItem value={'R'}>Retailer</MenuItem>
-              </Select>}
+        { props.type === "A" && 
+            <Grid xs={12} md={2}>
+            <Select
+              sx={{height:55}}
+              fullWidth
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              name='type'
+              defaultValue="A"
+              label="User type"
+            >
+              <MenuItem value={"A"}>All</MenuItem>
+              <MenuItem value={"S"}>Staff</MenuItem>
+              <MenuItem value={"W"}>Wholesaler</MenuItem>
+              <MenuItem value={'R'}>Retailer</MenuItem>
+            </Select>
+            </Grid>}
 
-             {props.type !== "G" && <Select
-                sx={{minWidth:200}}
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                name='status'
-                defaultValue="A"
-                label="Status"
-              >
-                <MenuItem value={"A"}>Active</MenuItem>
-                <MenuItem value={"D"}>Deactive</MenuItem>
-              </Select>}
+          {props.type !== "G" && 
+            <Grid xs={12} md={2}>
+          <Select
+            fullWidth
+            sx={{height:55}}
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            name='status'
+            defaultValue="A"
+            label="Status"
+          >
+            <MenuItem value={"A"}>Active</MenuItem>
+            <MenuItem value={"D"}>Deactive</MenuItem>
+          </Select>
+          </Grid>}
 
 
-              {props.type == "item" && <Select
-                sx={{minWidth:200}}
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                name='inStock'
-                defaultValue="Y"
-                label="Status"
-              >
-                <MenuItem value={"Y"}>In stock</MenuItem>
-                <MenuItem value={"N"}>Out of stock</MenuItem>
-              </Select>}
-      <TextField
-        sx={{minWidth:200}}
-        id="datetime-local"
-        label="From Date"
-        type="date"
-        name='fromDate'
-        defaultValue={previousDate}
-        InputLabelProps={{
-          shrink: true,
-        }}
-      />
+        {props.type == "item" &&   
+          <Grid xs={12} md={2}><Select
+          sx={{height:55}}
+          fullWidth
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          name='inStock'
+          defaultValue="Y"
+          label="Status"
+        >
+          <MenuItem value={"Y"}>In stock</MenuItem>
+          <MenuItem value={"N"}>Out of stock</MenuItem>
+        </Select></Grid>}
 
-      
-    <TextField
-        sx={{minWidth:200}}
-        id="datetime-local"
-        label="To Date"
-        type="date"
-        defaultValue={currentDate}
-        name='toDate'
-        InputLabelProps={{
-          shrink: true,
-        }}
-      />
+      <Grid xs={12} md={2}>      
+        <TextField
+          sx={{height:55}}
+          fullWidth
+          id="datetime-local"
+          label="From Date"
+          type="date"
+          name='fromDate'
+          defaultValue={previousDate}
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
+        </Grid>
 
-      <Button type='submit' sx={{mx:2}} startIcon={(
-                    <SvgIcon fontSize="small">
-                      <SearchOutlined />
-                    </SvgIcon>
-                  )}
-                  variant="contained"> Search </Button>
+      <Grid xs={12} md={2}>  
+        <TextField
+            sx={{height:55}}
+            fullWidth
+            id="datetime-local"
+            label="To Date"
+            type="date"
+            defaultValue={currentDate}
+            name='toDate'
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+      </Grid>
+      <Grid xs={12} md={2}>  
+      <Button type='submit' sx={{mx:2}}
+      startIcon={(
+            <SvgIcon fontSize="small">
+              <SearchOutlined />
+            </SvgIcon>
+          )}
+          variant="contained"> Search 
+      </Button>
+      </Grid>
+    </Grid>
     </form>
   </Card>
 )};

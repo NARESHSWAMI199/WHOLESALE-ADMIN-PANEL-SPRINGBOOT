@@ -160,7 +160,7 @@ export const GroupTable = (props) => {
 
   return ( <>
     <Card>
-        <Box sx={{ minWidth: 800 }}>
+        <Box sx={{ minWidth: 800 ,overflowX: 'auto'}}>
           <Table>
             <TableHead>
               <TableRow>

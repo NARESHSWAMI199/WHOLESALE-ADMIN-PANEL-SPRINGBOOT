@@ -71,7 +71,7 @@ export const CategoryTable = (props) => {
 
   return ( <>
     <Card>
-        <Box sx={{ minWidth: 800 }}>
+        <Box sx={{ minWidth: 800,overflowX: 'auto' }}>
           <Table>
             <TableHead>
               <TableRow>
