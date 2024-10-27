@@ -4,6 +4,7 @@ import { Button, Card, Grid, InputAdornment, MenuItem, OutlinedInput, Select, Sv
 import { format } from 'date-fns';
 import { useCallback } from 'react';
 import KeyIcon from '@mui/icons-material/Key';
+import { width } from '@mui/system';
 export const BasicSearch = (props) => {
 
   const previousDate = format(new Date().getTime()-(10 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd')
@@ -155,8 +156,9 @@ export const BasicSearch = (props) => {
             }}
           />
       </Grid>
-      <Grid xs={12} md={2}>  
-      <Button type='submit' sx={{mx:2}}
+      <Grid xs={12} md={1}>  
+      <Button type='submit'
+       sx={{height:55, width : '100%'}}
       startIcon={(
             <SvgIcon fontSize="small">
               <SearchOutlined />
