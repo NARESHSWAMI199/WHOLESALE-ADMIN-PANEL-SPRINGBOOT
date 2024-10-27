@@ -133,8 +133,8 @@ export const CustomersTable = (props) => {
 
 
   return ( <>
-    <Card>
-        <Box sx={{ minWidth: 800 , overflowX: 'auto'}}>
+    <Card sx={{overflowX: 'auto'}}>
+        <Box sx={{ minWidth: 800}}>
           <Table>
             <TableHead>
               <TableRow>

@@ -114,7 +114,7 @@ export const TopNav = (props) => {
               sx={{
                 cursor: 'pointer',
                 height: 40,
-                width: 40
+                width: 40 
               }}
               src={!!user ? userImage+user.slug+"/"+user.avatar : ""}
             />
