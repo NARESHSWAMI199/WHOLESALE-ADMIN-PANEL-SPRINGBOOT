@@ -348,7 +348,7 @@ useEffect( ()=>{
           >
             <OverviewLatestUsers
               users={users}
-              // sx={{ height: '100%' }}
+              sx={{ overflowX : 'auto' }}
             />
           </Grid>
         </Grid>
