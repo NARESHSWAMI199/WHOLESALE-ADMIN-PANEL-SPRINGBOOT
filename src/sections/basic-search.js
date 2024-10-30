@@ -51,7 +51,7 @@ export const BasicSearch = (props) => {
       status : 'A',
       type : 'A',
       fromDate : previousDate,
-      toDate : toDate
+      toDate : currentDate
     })
     props.onSearch();
   }
