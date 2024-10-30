@@ -48,6 +48,7 @@ const [categories,setCategories] = useState([])
 const [subcategories,setSubcategories] = useState([])
 const [subcategoryCard,setSubcategoriesCard] = useState();
 const [values,setValues] = useState({category : categoryId})
+const [hideSubCategory,setHideSubCategory] = useState(false)
 
 
 
@@ -134,7 +135,7 @@ const handleClose = useCallback(()=>{
 })
 
 const addSubCategory = () =>{
-
+  setHideSubCategory(false)
   setSubcategoriesCard(
   <Grid xs={12} md={3} sx={{
     display : 'flex',
@@ -144,7 +145,7 @@ const addSubCategory = () =>{
   }}
   
   >
-        <SubcategoryCard onSubmit={onSubmit} categoryId={values.category} />
+        <SubcategoryCard onDelete={onDelete} onSubmit={onSubmit} categoryId={values.category} />
     </Grid>
   )
 }
@@ -181,6 +182,9 @@ const reset = () =>{
 
 
 const onDelete = (subCategorySlug) => {
+  if(subCategorySlug == undefined || subCategorySlug == null){
+    setHideSubCategory(true)
+  }
   axios.defaults.headers = {
     Authorization :  auth.token  
   }
@@ -304,8 +308,8 @@ return ( <>
   </Grid>
 
     <Grid xs={12} md={12} container spacing={3} >
-    {subcategoryCard}
-    
+    {!hideSubCategory ?  subcategoryCard : ""}
+
     {subcategories.map((subcategory , i)=>{
       return <Grid xs={12}
         key={i}

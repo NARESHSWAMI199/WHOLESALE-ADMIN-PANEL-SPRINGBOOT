@@ -47,7 +47,7 @@ const [subcategories,setSubcategories] = useState([])
 const [subcategoryCard,setSubcategoriesCard] = useState();
 const [values,setValues] = useState({category : categoryId})
 const [categories,setCategories] = useState([])
-
+const [hideSubCategory,setHideSubCategory] = useState(false)
 
 useEffect(() => {
   const getAllCategories = async () => {
@@ -117,22 +117,25 @@ useEffect(() => {
 
 
 const onDelete = (subCategorySlug) => {
-  axios.defaults.headers = {
-    Authorization :  auth.token  
-  }
-  axios.get(host+`/admin/store/subcategory/delete/${subCategorySlug}`)
-  .then(res => {
-      setFlag("success")
-      setMessage(res.data.message)
+  if(subCategorySlug == undefined || subCategorySlug == null){
+    setHideSubCategory(true)
+  }else{
+    axios.defaults.headers = {
+      Authorization :  auth.token  
+    }
+    axios.get(host+`/admin/store/subcategory/delete/${subCategorySlug}`)
+    .then(res => {
+        setFlag("success")
+        setMessage(res.data.message)
+        setOpen(true)
+        setSubcategories((prevSubcategories) => prevSubcategories.filter((s) => s.slug !== subCategorySlug));
+    }).catch(err => {
+      console.log(err)
+      setFlag("error")
+      setMessage(!!err.response ? err.response.data.message : err.message)
       setOpen(true)
-      setSubcategories((prevSubcategories) => prevSubcategories.filter((s) => s.slug !== subCategorySlug));
-  }).catch(err => {
-    console.log(err)
-    setFlag("error")
-    setMessage(!!err.response ? err.response.data.message : err.message)
-    setOpen(true)
-  } )
-
+    } )
+  }
 }
 
 
@@ -152,7 +155,7 @@ const handleClose = useCallback(()=>{
 })
 
 const addSubCategory = () =>{
-
+  setHideSubCategory(false)
   setSubcategoriesCard(
   <Grid xs={12} md={3} sx={{
     display : 'flex',
@@ -162,7 +165,7 @@ const addSubCategory = () =>{
   }}
   
   >
-        <SubcategoryCard onSubmit={onSubmit} categoryId={values.category} />
+        <SubcategoryCard onDelete={onDelete} onSubmit={onSubmit} categoryId={values.category} />
     </Grid>
   )
 }
@@ -300,7 +303,7 @@ return ( <>
   </Grid>
 
     <Grid xs={12} md={12} container spacing={3} >
-    {subcategoryCard}
+    {!hideSubCategory ?  subcategoryCard : ""}
     
     {subcategories.map((subcategory , i)=>{
       return <Grid
