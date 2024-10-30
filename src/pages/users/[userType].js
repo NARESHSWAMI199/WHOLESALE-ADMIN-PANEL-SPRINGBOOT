@@ -161,12 +161,29 @@ const Page = () => {
   );
 
 
+  // const onSearch = (searchData) => {
+  //   setData({
+  //     ...data,
+  //     ...searchData,
+  //     userType : "W"
+  //   })
+  // } 
+
+
+  
   const onSearch = (searchData) => {
+    if(!!searchData){
     setData({
       ...data,
       ...searchData,
-      userType : "W"
     })
+  }else {
+    setData({
+      userType : userType,
+      pageNumber : page,
+      size : rowsPerPage
+    })
+  }
   } 
 
   return (
