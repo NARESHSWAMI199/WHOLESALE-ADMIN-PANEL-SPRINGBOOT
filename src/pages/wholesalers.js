@@ -12,6 +12,7 @@ import { useAuth } from 'src/hooks/use-auth';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
 import { ArrowButtons } from 'src/layouts/arrow-button';
 import { useRouter } from 'next/router';
+import { setDate } from 'date-fns';
 
 
 
@@ -171,11 +172,20 @@ const Page = () => {
 
 
   const onSearch = (searchData) => {
+    if(!!searchData){
     setData({
       ...data,
       ...searchData,
       userType : "W"
     })
+  }else {
+    setData({
+      slug : slug,
+      userType : "W",
+      pageNumber : page,
+      size : rowsPerPage
+    })
+  }
   } 
 
   return (

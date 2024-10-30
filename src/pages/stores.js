@@ -116,20 +116,20 @@ const Page = () => {
   );
 
 
-  const onSearch = useCallback (
-    (searchData) => {
+  const onSearch = (searchData) => {
+    if(!!searchData){
     setData({
       ...data,
-      ...searchData
+      ...searchData,
     })
-  },[] )
-
-  const getMore = () => {
+  }else {
     setData({
-      ...data,
-      size : stores.length +10,
+      pageNumber : page,
+      size : rowsPerPage
     })
   }
+  } 
+
 
   return (
     <>

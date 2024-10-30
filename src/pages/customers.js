@@ -174,14 +174,21 @@ const Page = () => {
     },
     []
   );
-
-
+  
   const onSearch = (searchData) => {
+    if(!!searchData){
     setData({
       ...data,
       ...searchData,
       userType : "R"
     })
+  }else {
+    setData({
+      userType : "R",
+      pageNumber : page,
+      size : rowsPerPage
+    })
+  }
   } 
 
   return (
