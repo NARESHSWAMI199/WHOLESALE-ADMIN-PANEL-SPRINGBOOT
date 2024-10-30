@@ -35,7 +35,7 @@ const [categories,setCategories] = useState([])
        axios.defaults.headers = {
          Authorization : auth.token
        }
-       await axios.get(host+"/admin/store/category")
+       await axios.post(host+"/admin/store/category",{})
        .then(res => {
           const data = res.data;
            setCategories(data);

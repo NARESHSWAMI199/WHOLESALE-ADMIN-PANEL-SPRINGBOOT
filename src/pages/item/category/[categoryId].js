@@ -57,7 +57,7 @@ useEffect(() => {
       axios.defaults.headers = {
           Authorization: auth.token
       }
-      await axios.get(host + "/admin/item/category")
+      await axios.post(host + "/admin/item/category",{})
           .then(res => {
               const data = res.data;
               setCategories(data)
@@ -102,7 +102,7 @@ useEffect(() => {
       axios.defaults.headers = {
           Authorization: auth.token
       }
-      await axios.get(host + "/admin/item/subcategory/"+values.category)
+      await axios.post(host + "/admin/item/subcategory",{categoryId : values.category})
           .then(res => {
               const data = res.data;
               setSubcategories(data)

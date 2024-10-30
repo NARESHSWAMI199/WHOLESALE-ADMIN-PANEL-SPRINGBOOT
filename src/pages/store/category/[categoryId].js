@@ -55,7 +55,7 @@ useEffect(() => {
       axios.defaults.headers = {
           Authorization: auth.token
       }
-      await axios.get(host + "/admin/store/category")
+      await axios.post(host + "/admin/store/category",{order :'asc' , orderBy : 'category'})
           .then(res => {
               const data = res.data;
               setCategories(data)
@@ -98,7 +98,7 @@ useEffect(() => {
       axios.defaults.headers = {
           Authorization: auth.token
       }
-      await axios.get(host + "/admin/store/subcategory/"+values.category)
+      await axios.post(host + "/admin/store/subcategory/",{categoryId : values.category})
           .then(res => {
               const data = res.data;
               setSubcategories(data)
