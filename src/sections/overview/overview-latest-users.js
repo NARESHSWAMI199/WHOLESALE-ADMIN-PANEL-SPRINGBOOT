@@ -69,15 +69,17 @@ export const OverviewLatestUsers = (props) => {
                         alignItems="center"
                         direction="row"
                         spacing={2}
-                        sx={{textDecoration : 'none'}}
+                       
                       >
                         <Link
                           href={{
                             pathname: '/account/[slug]',
                             query: { slug: user.slug },
                           }}
+                          style={{textDecoration : 'none'}} 
                         >
-                          <Avatar src={userImage+user.slug +"/"+user.avatar} >
+                          <Avatar 
+                          src={userImage+user.slug +"/"+user.avatar} >
                             {getInitials(user.username)}
                           </Avatar>
                         </Link>
