@@ -156,9 +156,9 @@ public class StoreController extends ServiceContainer{
 
 
     @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
-    @GetMapping("category")
-    public ResponseEntity<List<StoreCategory>> getAllStoreCategory() {
-        List<StoreCategory> storeCategories = storeService.getAllStoreCategory();
+    @PostMapping("category")
+    public ResponseEntity<List<StoreCategory>> getAllStoreCategory(@RequestBody SearchFilters searchFilters) {
+        List<StoreCategory> storeCategories = storeService.getAllStoreCategory(searchFilters);
         return new ResponseEntity<>(storeCategories, HttpStatus.OK);
     }
 
@@ -172,9 +172,9 @@ public class StoreController extends ServiceContainer{
 
 
     @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
-    @GetMapping("subcategory/{categoryId}")
-    public ResponseEntity<List<StoreSubCategory>> getStoreSubCategory(@PathVariable(required = true) int categoryId) {
-        List<StoreSubCategory> storeSubCategories = storeService.getAllStoreSubCategories(categoryId);
+    @PostMapping("subcategory")
+    public ResponseEntity<List<StoreSubCategory>> getStoreSubCategory(@RequestBody SearchFilters searchFilters) {
+        List<StoreSubCategory> storeSubCategories = storeService.getAllStoreSubCategories(searchFilters);
         return new ResponseEntity<>(storeSubCategories, HttpStatus.OK);
     }
 

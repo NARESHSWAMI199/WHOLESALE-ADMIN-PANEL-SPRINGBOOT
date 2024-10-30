@@ -241,8 +241,10 @@ public class ItemService extends RepoContainer{
 
 
 
-    public List<ItemCategory> getAllCategory() {
-        Sort sort = Sort.by("id").descending();
+    public List<ItemCategory> getAllCategory(SearchFilters searchFilters) {
+        Sort sort = searchFilters.getOrder().equals("asc") ?
+            Sort.by(searchFilters.getOrderBy()).ascending() :
+            Sort.by(searchFilters.getOrderBy()).descending() ;
         return itemCategoryRepository.findAll(sort);
     }
 
@@ -267,8 +269,10 @@ public class ItemService extends RepoContainer{
     }
 
 
-    public List<ItemSubCategory> getAllItemsSubCategories(int categoryId) {
-        return itemSubCategoryRepository.getSubCategories(categoryId);
+    public List<ItemSubCategory> getAllItemsSubCategories(SearchFilters searchFilters) {
+        Sort sort = Sort.by(searchFilters.getOrderBy());
+        sort  = searchFilters.getOrder().equals("asc") ? sort.ascending() : sort.descending();
+        return itemSubCategoryRepository.getSubCategories(searchFilters.getCategoryId(),sort);
     }
 
 

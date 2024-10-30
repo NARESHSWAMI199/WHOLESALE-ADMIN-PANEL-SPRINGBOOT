@@ -9,6 +9,7 @@ import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -143,7 +144,8 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
 
 
     public List<StoreCategory> getAllStoreCategory() {
-        return wholesaleCategoryRepository.findAll();
+        Sort sort = Sort.by("category").ascending();
+        return wholesaleCategoryRepository.findAll(sort);
     }
 
 

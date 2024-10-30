@@ -172,9 +172,9 @@ public class ItemController extends ServiceContainer {
     }
 
 
-    @GetMapping("category")
-    public ResponseEntity<List<ItemCategory>> getAllCategory() {
-        List<ItemCategory> itemCategories = itemService.getAllCategory();
+    @PostMapping("category")
+    public ResponseEntity<List<ItemCategory>> getAllCategory(@RequestBody  SearchFilters searchFilters) {
+        List<ItemCategory> itemCategories = itemService.getAllCategory(searchFilters);
         return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
 
@@ -204,9 +204,9 @@ public class ItemController extends ServiceContainer {
         return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
 
-    @GetMapping("subcategory/{categoryId}")
-    public ResponseEntity<List<ItemSubCategory>> getSubCategory(@PathVariable(required = true) int categoryId) {
-        List<ItemSubCategory> itemCategories = itemService.getAllItemsSubCategories(categoryId);
+    @PostMapping("subcategory")
+    public ResponseEntity<List<ItemSubCategory>> getSubCategory(@RequestBody SearchFilters searchFilters) {
+        List<ItemSubCategory> itemCategories = itemService.getAllItemsSubCategories(searchFilters);
         return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
 

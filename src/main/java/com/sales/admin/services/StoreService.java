@@ -254,14 +254,19 @@ public class StoreService extends RepoContainer{
     }
 
 
-    public List<StoreCategory> getAllStoreCategory() {
-        Sort sort = Sort.by("id").descending();
+    public List<StoreCategory> getAllStoreCategory(SearchFilters searchFilters) {
+        Sort sort = searchFilters.getOrder().equals("asc") ?
+                Sort.by(searchFilters.getOrderBy()).ascending() :
+                Sort.by(searchFilters.getOrderBy()).descending() ;
         return storeCategoryRepository.findAll(sort);
     }
 
 
-    public List<StoreSubCategory> getAllStoreSubCategories(int categoryId) {
-        return storeSubCategoryRepository.getSubCategories(categoryId);
+    public List<StoreSubCategory> getAllStoreSubCategories(SearchFilters searchFilters) {
+        Sort sort = searchFilters.getOrder().equals("asc") ?
+                Sort.by(searchFilters.getOrderBy()).ascending() :
+                Sort.by(searchFilters.getOrderBy()).descending() ;
+        return storeSubCategoryRepository.getSubCategories(searchFilters.getCategoryId(),sort);
     }
 
 

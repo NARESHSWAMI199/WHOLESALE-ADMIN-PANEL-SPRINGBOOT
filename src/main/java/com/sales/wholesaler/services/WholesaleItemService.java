@@ -238,7 +238,8 @@ public class WholesaleItemService extends WholesaleRepoContainer {
     }
 
     public List<ItemCategory> getAllCategory() {
-        return wholesaleItemCategoryRepository.findAll();
+        Sort sort = Sort.by("category").ascending();
+        return wholesaleItemCategoryRepository.findAll(sort);
     }
 
 
