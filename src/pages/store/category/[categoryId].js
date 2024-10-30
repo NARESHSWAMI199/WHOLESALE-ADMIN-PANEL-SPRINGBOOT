@@ -48,6 +48,7 @@ const [subcategoryCard,setSubcategoriesCard] = useState();
 const [values,setValues] = useState({category : categoryId})
 const [categories,setCategories] = useState([])
 const [hideSubCategory,setHideSubCategory] = useState(false)
+const [newSubCategroyAdded, setNewSubCategoryAdded] = useState(false)
 
 useEffect(() => {
   const getAllCategories = async () => {
@@ -111,8 +112,8 @@ useEffect(() => {
   if(values.category != undefined){
     getAllSubcategories();
   }
-
-}, [values.category])
+console.log(values.category)
+}, [values.category,newSubCategroyAdded])
 
 
 
@@ -156,6 +157,7 @@ const handleClose = useCallback(()=>{
 
 const addSubCategory = () =>{
   setHideSubCategory(false)
+  setNewSubCategoryAdded(false)
   setSubcategoriesCard(
   <Grid xs={12} md={3} sx={{
     display : 'flex',
@@ -171,7 +173,7 @@ const addSubCategory = () =>{
 }
 
 const onSubmit = (data) =>{
-  console.log(data)
+  // console.log(data)
   if(data.icon == null){
     setMessage("Please select a valid image.")
     setFlag("error")
@@ -186,7 +188,9 @@ const onSubmit = (data) =>{
     setMessage(res.data.message)
     setFlag("success")
     setOpen(true)
-    reset()
+    setNewSubCategoryAdded(true)
+    setSubcategoriesCard("")
+    // reset()
   }).catch(err=>{
       setMessage(!!err.response  ? err.response.data.message : err.message)
       setFlag("error")

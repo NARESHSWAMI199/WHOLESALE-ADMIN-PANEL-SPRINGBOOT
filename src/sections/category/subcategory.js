@@ -66,7 +66,6 @@ const generateThumbnail = (file) => {
     reader.onload = (event) => {
         const base64Data = event.target.result;
         categoryIcon = base64Data
-        console.log(categoryIcon)
     }
     reader.readAsDataURL(file);
     
