@@ -190,7 +190,6 @@ const onSubmit = (data) =>{
     setOpen(true)
     setNewSubCategoryAdded(true)
     setSubcategoriesCard("")
-    // reset()
   }).catch(err=>{
       setMessage(!!err.response  ? err.response.data.message : err.message)
       setFlag("error")
@@ -198,12 +197,6 @@ const onSubmit = (data) =>{
   })
 
 }
-
-
-const reset = () =>{
-  setValues({})
-}
-
 
 return ( <>
 <Box

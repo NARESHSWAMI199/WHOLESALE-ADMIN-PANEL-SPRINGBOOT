@@ -49,7 +49,7 @@ const [subcategories,setSubcategories] = useState([])
 const [subcategoryCard,setSubcategoriesCard] = useState();
 const [values,setValues] = useState({category : categoryId})
 const [hideSubCategory,setHideSubCategory] = useState(false)
-
+const [newSubCategroyAdded, setNewSubCategoryAdded] = useState(false)
 
 
 useEffect(() => {
@@ -116,7 +116,7 @@ useEffect(() => {
   if(values.category != undefined) {
     getAllSubcategories();
   }
-}, [values.category])
+}, [values.category,newSubCategroyAdded])
 
 
 
@@ -136,6 +136,7 @@ const handleClose = useCallback(()=>{
 
 const addSubCategory = () =>{
   setHideSubCategory(false)
+  setNewSubCategoryAdded(false)
   setSubcategoriesCard(
   <Grid xs={12} md={3} sx={{
     display : 'flex',
@@ -164,19 +165,14 @@ const onSubmit = (data) =>{
   axios.post(host+"/admin/item/subcategory/add",data)
   .then(res => {
     setMessage(res.data.message)
-    setFlag("success")
-    setOpen(true)
+    setNewSubCategoryAdded(true)
+    setSubcategoriesCard("")
   }).catch(err=>{
       setMessage(!!err.response  ? err.response.data.message : err.message)
       setFlag("error")
       setOpen(true)
   })
 
-}
-
-
-const reset = () =>{
-  setValues({})
 }
 
 
