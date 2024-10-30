@@ -27,6 +27,7 @@ import { Typography } from "antd";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import Link from "next/link";
 import SubcategoryCard from "src/sections/category/subcategory";
+import { number } from "prop-types";
 
 
 
@@ -47,8 +48,8 @@ const [subcategories,setSubcategories] = useState([])
 const [subcategoryCard,setSubcategoriesCard] = useState();
 const [values,setValues] = useState({category : categoryId})
 const [categories,setCategories] = useState([])
-const [hideSubCategory,setHideSubCategory] = useState(false)
 const [newSubCategroyAdded, setNewSubCategoryAdded] = useState(false)
+const [newCard,setNewCard] = useState(false)
 
 useEffect(() => {
   const getAllCategories = async () => {
@@ -119,7 +120,7 @@ console.log(values.category)
 
 const onDelete = (subCategorySlug) => {
   if(subCategorySlug == undefined || subCategorySlug == null){
-    setHideSubCategory(true)
+    setSubcategoriesCard("")
   }else{
     axios.defaults.headers = {
       Authorization :  auth.token  
@@ -155,19 +156,24 @@ const handleClose = useCallback(()=>{
       setOpen(false)
 })
 
-const addSubCategory = () =>{
-  setHideSubCategory(false)
-  setNewSubCategoryAdded(false)
+const addSubCategory = (isSubmitEvent) =>{
+  if(isSubmitEvent == undefined){
+    setNewSubCategoryAdded(false)
+  }
   setSubcategoriesCard(
   <Grid xs={12} md={3} sx={{
     display : 'flex',
     flexDirection : 'column',
     textAlign :'center',
-    alignItems : 'center',
+    alignItems : 'center'
   }}
   
   >
-        <SubcategoryCard onDelete={onDelete} onSubmit={onSubmit} categoryId={values.category} />
+        <SubcategoryCard 
+          onDelete={onDelete} 
+          onSubmit={onSubmit} 
+          categoryId={values.category}
+        />
     </Grid>
   )
 }
@@ -190,6 +196,12 @@ const onSubmit = (data) =>{
     setOpen(true)
     setNewSubCategoryAdded(true)
     setSubcategoriesCard("")
+    if(data.id == undefined || data.id == null){
+      setTimeout(()=>{
+        addSubCategory(',')
+      },100)
+     
+    } 
   }).catch(err=>{
       setMessage(!!err.response  ? err.response.data.message : err.message)
       setFlag("error")
@@ -290,7 +302,7 @@ return ( <>
       </CardContent>
       <Divider/>
       <CardActions sx={{ justifyContent: 'flex-end' }}>
-      <Link href={"/store/category/update/"+categoryId}>
+      <Link href={"/store/category/update/"+values.category}>
         <Button type="submit" variant="contained">
           Edit
         </Button>
@@ -300,7 +312,7 @@ return ( <>
   </Grid>
 
     <Grid xs={12} md={12} container spacing={3} >
-    {!hideSubCategory ?  subcategoryCard : ""}
+    {subcategoryCard}
     
     {subcategories.map((subcategory , i)=>{
       return <Grid

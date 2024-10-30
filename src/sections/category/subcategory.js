@@ -83,7 +83,7 @@ return (<>
       <Box sx={{display : 'flex', flexDirection : 'row', flex : 1}}>
         <Box>
           <CardHeader
-              title="Add Subcategory"
+              title= {props.buttonLabel ==null || props.buttonLabel == undefined ? "Add Subcategory" : "Edit Subcategory"}
           />
         </Box>
         <Box sx={{ml : 'auto', padding : 2, paddingTop : 4 }} 
