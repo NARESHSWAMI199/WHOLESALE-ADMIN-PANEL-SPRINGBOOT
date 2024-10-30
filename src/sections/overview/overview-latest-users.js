@@ -69,6 +69,7 @@ export const OverviewLatestUsers = (props) => {
                         alignItems="center"
                         direction="row"
                         spacing={2}
+                        sx={{textDecoration : 'none'}}
                       >
                         <Link
                           href={{
