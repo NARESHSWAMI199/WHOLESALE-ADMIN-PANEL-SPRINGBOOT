@@ -11,6 +11,22 @@ export const BasicSearch = (props) => {
   const currentDate = format(new Date().getTime()+(24 * 60 * 60 * 1000), 'yyyy-MM-dd')
 
 
+  
+
+    const [values,setValues] = useState({
+      inStock : 'Y',
+      status : 'A',
+      type : 'A',
+      fromDate : previousDate,
+      toDate : currentDate
+    })
+
+    const handleChange = (e) =>{
+      setValues({
+        ...values,
+        [e.target.name] : [e.target.value]
+      })
+    }
 
   const handleSubmit = (e)=>{
     e.preventDefault();
@@ -29,12 +45,25 @@ export const BasicSearch = (props) => {
   }
   
 
+  const resetFilters = (e) => {
+    /** reset default filters  */
+    setValues({  inStock : 'Y',
+      status : 'A',
+      type : 'A',
+      fromDate : previousDate,
+      toDate : toDate
+    })
+    props.onSearch();
+  }
+  
+
  return (<Card sx={{ p: 2 }}>
     <form onSubmit={(e)=>{handleSubmit(e)}}>
     <Grid container spacing={1}>
       <Grid xs={12} md={2}>
         <OutlinedInput
-        defaultValue=""
+         onChange={handleChange}
+        value={values.searchKey}
         fullWidth
         placeholder="Search"
         name='searchKey'
@@ -57,7 +86,8 @@ export const BasicSearch = (props) => {
       { props.type !== "A" &&  props.type !== "item" &&
         <Grid xs={12} md={2}>
       <OutlinedInput
-            defaultValue=""
+            onChange={handleChange}
+            value={values.slug}
             fullWidth
             placeholder="Token Id"
             name='slug'
@@ -86,7 +116,8 @@ export const BasicSearch = (props) => {
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               name='type'
-              defaultValue="A"
+              onChange={handleChange}
+              value={values.type}
               label="User type"
             >
               <MenuItem value={"A"}>All</MenuItem>
@@ -104,7 +135,8 @@ export const BasicSearch = (props) => {
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             name='status'
-            defaultValue="A"
+            onChange={handleChange}
+            value={values.status}
             label="Status"
           >
             <MenuItem value={"A"}>Active</MenuItem>
@@ -120,7 +152,8 @@ export const BasicSearch = (props) => {
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           name='inStock'
-          defaultValue="Y"
+          onChange={handleChange}
+          value={values.inStock}
           label="Status"
         >
           <MenuItem value={"Y"}>In stock</MenuItem>
@@ -135,7 +168,9 @@ export const BasicSearch = (props) => {
           label="From Date"
           type="date"
           name='fromDate'
-          defaultValue={previousDate}
+          onChange={handleChange}
+          value={values.fromDate}
+          // defaultValue={previousDate}
           InputLabelProps={{
             shrink: true,
           }}
@@ -149,14 +184,16 @@ export const BasicSearch = (props) => {
             id="datetime-local"
             label="To Date"
             type="date"
-            defaultValue={currentDate}
+            // defaultValue={currentDate}
+            onChange={handleChange}
+            value={values.toDate}
             name='toDate'
             InputLabelProps={{
               shrink: true,
             }}
           />
       </Grid>
-      <Grid xs={12} md={1}>  
+      <Grid xs={6} md={1}>  
       <Button type='submit'
        sx={{height:55, width : '100%'}}
       startIcon={(
@@ -167,6 +204,18 @@ export const BasicSearch = (props) => {
           variant="contained"> Search 
       </Button>
       </Grid>
+
+      <Grid xs={6} md={1}>
+        <Button type='reset' onClick={resetFilters} sx={{height : 54,width: '100%',background:'red',mx:1}} 
+          startIcon={(
+              <SvgIcon fontSize="small">
+                <RefreshOutlined />
+              </SvgIcon>
+            )}
+            variant="contained"> Reset 
+          </Button>
+        </Grid>
+
     </Grid>
     </form>
   </Card>
