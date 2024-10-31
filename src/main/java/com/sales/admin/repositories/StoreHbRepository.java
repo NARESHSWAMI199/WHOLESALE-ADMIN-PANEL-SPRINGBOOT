@@ -97,7 +97,6 @@ public class StoreHbRepository {
     }
 
 
-
     public int deleteStoreCategory(String slug){
         String hql = "Update StoreCategory set isDeleted='Y' where slug=:slug";
         Query query = entityManager.createQuery(hql);
@@ -113,6 +112,26 @@ public class StoreHbRepository {
         return query.executeUpdate();
     }
 
+    public int getStoreCategoryIdBySLug(String slug){
+        String hql = "select id from StoreCategory where slug=:slug ";
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("slug",slug);
+        return (int) query.getSingleResult();
+    }
+
+    public int switchCategoryToOther(int categoryId){
+        String sql = "Update store set category=0 , subcategory=0 where category=:categoryId";
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter("categoryId",categoryId);
+        return query.executeUpdate();
+    }
+
+    public int switchSubCategoryToOther(int subcategoryId){
+        String sql = "Update store set category=0 , subcategory=0 where subcategory=:subcategoryId";
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter("subcategoryId",subcategoryId);
+        return query.executeUpdate();
+    }
 
 
 }

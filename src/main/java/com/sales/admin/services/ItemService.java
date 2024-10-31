@@ -256,6 +256,8 @@ public class ItemService extends RepoContainer{
 
     public int deleteItemCategory(String slug,User user) {
         if(user.getUserType().equals("SA")) {
+            int categoryId = itemHbRepository.getItemCategoryIdBySLug(slug);
+            itemHbRepository.switchCategoryToOther(categoryId);
            return itemHbRepository.deleteItemCategory(slug);
         }
         return 0;
@@ -263,6 +265,8 @@ public class ItemService extends RepoContainer{
 
     public int deleteItemSubCategory(String slug,User user) {
         if(user.getUserType().equals("SA")) {
+            int subCategoryId = itemSubCategoryRepository.getItemSubCategoryIdBySlug(slug);
+            itemHbRepository.switchSubCategoryToOther(subCategoryId);
             return itemHbRepository.deleteItemSubCategory(slug);
         }
         return 0;
@@ -294,6 +298,7 @@ public class ItemService extends RepoContainer{
         itemSubCategory.setCategoryId(subCategoryDto.getCategoryId());
         itemSubCategory.setSubcategory(subCategoryDto.getSubcategory());
         itemSubCategory.setIcon(subCategoryDto.getIcon());
+        itemSubCategory.setUpdatedAt(Utils.getCurrentMillis());
         return itemSubCategoryRepository.save(itemSubCategory);
     }
 

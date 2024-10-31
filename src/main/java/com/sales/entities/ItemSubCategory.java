@@ -34,6 +34,9 @@ public class ItemSubCategory {
     @Column(name = "icon")
     String icon;
 
+    @Column(name = "updated_at")
+    Long updatedAt;
+
     @Column(name = "is_deleted")
     String isDeleted = "N";
 

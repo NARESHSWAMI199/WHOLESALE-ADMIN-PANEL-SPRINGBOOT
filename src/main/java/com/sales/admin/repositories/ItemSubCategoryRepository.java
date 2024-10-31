@@ -19,4 +19,8 @@ public interface ItemSubCategoryRepository extends JpaRepository<ItemSubCategory
     @Query(value = "from ItemSubCategory isc where isc.categoryId =:categoryId")
     List<ItemSubCategory> getSubCategories(@Param("categoryId") int categoryId, Sort sort);
 
+    @Query(value = "select id from ItemSubCategory ssc where ssc.slug =:slug")
+    Integer getItemSubCategoryIdBySlug(@Param("slug") String slug);
+
+
 }

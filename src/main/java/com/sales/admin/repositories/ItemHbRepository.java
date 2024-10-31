@@ -160,6 +160,27 @@ public class ItemHbRepository{
         return query.executeUpdate();
     }
 
+    public int getItemCategoryIdBySLug(String slug){
+        String hql = "select id from ItemCategory where slug=:slug ";
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("slug",slug);
+        return (int) query.getSingleResult();
+    }
+
+    public int switchCategoryToOther(int categoryId){
+        String sql = "Update item set category=0 , subcategory=0 where category=:categoryId";
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter("categoryId",categoryId);
+        return query.executeUpdate();
+    }
+
+    public int switchSubCategoryToOther(int subcategoryId){
+        String sql = "Update item set category=0 , subcategory=0 where subcategory=:subcategoryId";
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter("subcategoryId",subcategoryId);
+        return query.executeUpdate();
+    }
+
 
 
 }

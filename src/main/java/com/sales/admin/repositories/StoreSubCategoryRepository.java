@@ -18,4 +18,7 @@ public interface StoreSubCategoryRepository extends JpaRepository<StoreSubCatego
     @Query(value = "from StoreSubCategory ssc where ssc.categoryId =:categoryId")
     List<StoreSubCategory> getSubCategories(@Param("categoryId") int categoryId, Sort sort);
 
+    @Query(value = "select id from StoreSubCategory ssc where ssc.slug =:slug")
+    Integer getStoreSubCategoryIdBySlug(@Param("slug") String slug);
+
 }
