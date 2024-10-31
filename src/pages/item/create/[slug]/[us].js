@@ -61,7 +61,7 @@ const [subcategories,setItemSubCategories] = useState([])
         axios.defaults.headers = {
             Authorization: auth.token
         }
-        await axios.get(host + "/admin/item/category")
+        await axios.post(host + "/admin/item/category",{orderBy:'category',order :'asc'})
             .then(res => {
                 const data = res.data;
                 setItemCategories(data)
@@ -82,7 +82,7 @@ useEffect(() => {
       axios.defaults.headers = {
           Authorization: auth.token
       }
-      await axios.get(host + "/admin/item/subcategory/"+values.category)
+      await axios.post(host + "/admin/item/subcategory",{categoryId : values.category,orderBy:'subcategory',order :'asc'})
           .then(res => {
               const data = res.data;
               setItemSubCategories(data)
@@ -274,6 +274,7 @@ return ( <>
                         return ( <MenuItem key={i} value={categroyObj.id}>{categroyObj.category}</MenuItem>
                         )})
                     }
+                    <MenuItem value={0}>{"Other"}</MenuItem>
                     </Select>
                 </FormControl>
             </Grid>
@@ -297,6 +298,7 @@ return ( <>
               return ( <MenuItem key={i} value={subcategroyObj.id}>{subcategroyObj.subcategory}</MenuItem>
               )})
           }
+              <MenuItem value={0}>{"Other"}</MenuItem>
           </Select>
       </FormControl>
   </Grid>

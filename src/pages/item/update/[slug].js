@@ -70,7 +70,7 @@ const UpdateItem = () => {
             axios.defaults.headers = {
                 Authorization: auth.token
             }
-            await axios.get(host + "/admin/item/category")
+            await axios.post(host + "/admin/item/category",{orderBy : 'category',order : 'asc'})
                 .then(res => {
                     const data = res.data;
                     setItemCategories(data)
@@ -94,7 +94,7 @@ const UpdateItem = () => {
             axios.defaults.headers = {
                 Authorization: auth.token
             }
-            await axios.get(host + "/admin/item/subcategory/"+values.category)
+            await axios.post(host + "/admin/item/subcategory",{categoryId : values.category,orderBy:'subcategory',order :'asc'})
                 .then(res => {
                     const data = res.data;
                     setItemSubCategories(data)
@@ -288,6 +288,7 @@ const UpdateItem = () => {
                                                 return ( <MenuItem key={i} value={categroyObj.id}>{categroyObj.category}</MenuItem>
                                                 )})
                                             }
+                                            <MenuItem value={0}>{"Other"}</MenuItem>
                                             </Select>
                                         </FormControl>
                                     </Grid>
@@ -311,6 +312,7 @@ const UpdateItem = () => {
                                                 return ( <MenuItem key={i} value={subcategroyObj.id}>{subcategroyObj.subcategory}</MenuItem>
                                                 )})
                                             }
+                                             <MenuItem value={0}>{"Other"}</MenuItem>
                                             </Select>
                                         </FormControl>
                                     </Grid>
@@ -351,8 +353,8 @@ const UpdateItem = () => {
                                             onChange={handleChange}
                                             required={true}
                                             multiline
-                                            value={values.description}
-                                            rows={2}
+                                            value={!!values.description ? ""+values.description : ''}
+                                            rows={4}
                                             InputLabelProps={{ shrink: true }}
                                         />
                                     </Grid>
