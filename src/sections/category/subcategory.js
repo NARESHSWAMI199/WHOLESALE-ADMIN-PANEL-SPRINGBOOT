@@ -12,7 +12,6 @@ const [values,setValues] = useState(!!props.subcategory ? props.subcategory : {}
 const [message,setMessage] = useState("")
 const [confirm,setConfirm] = useState(false)
 const [slug,setSlug] = useState(null)
-const [rowIndex,setRowIndex] = useState(-1)
 const [action,setAction] = useState('')
 const theme = useTheme();
 const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -57,6 +56,7 @@ const confirmBox = () => {
         icon : categoryIcon !=null ? categoryIcon : values.icon
         }
         props.onSubmit(data)
+        categoryIcon = null
     })
 
 

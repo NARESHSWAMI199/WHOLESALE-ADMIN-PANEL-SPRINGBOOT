@@ -101,7 +101,7 @@ useEffect(() => {
       axios.defaults.headers = {
           Authorization: auth.token
       }
-      await axios.post(host + "/admin/item/subcategory",{categoryId : values.category})
+      await axios.post(host + "/admin/item/subcategory",{categoryId : values.category,orderBy : 'updatedAt'})
           .then(res => {
               const data = res.data;
               setSubcategories(data)
@@ -133,10 +133,7 @@ const handleClose = useCallback(()=>{
       setOpen(false)
 })
 
-const addSubCategory = (isSubmitEvent) =>{
-  if(isSubmitEvent == undefined){
-    setNewSubCategoryAdded(false)
-  }
+const addSubCategory = () =>{
   setSubcategoriesCard(
   <Grid xs={12} md={3} sx={{
     display : 'flex',
@@ -167,7 +164,7 @@ const onSubmit = (data) =>{
     setMessage(res.data.message)
     setFlag("success")
     setOpen(true)
-    setNewSubCategoryAdded(true)
+    setNewSubCategoryAdded(pre => pre ? false : true)
     setSubcategoriesCard("")
     if(data.id == undefined || data.id == null) {
       setTimeout(()=>{
