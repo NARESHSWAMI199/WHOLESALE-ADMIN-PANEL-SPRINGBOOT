@@ -90,159 +90,155 @@ export const StoresCard = (props) => {
 
 
 
-  return (<>
-  {!!store.user  &&
-    <Card sx={{ display: 'flex', paddingRight : 5 }}  
-    //style={{background : "linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5)), url('"+storeImage+store.avtar+"')" }} 
-    > 
-        {/* Wholesale image */}
-        <CardMedia
-            component="img"
-            sx={{ width: 300 }}
-            image= {storeImage+store.slug+"/"+store.avtar}
-            alt="Live from space store cover"
-      />
-      <Box sx={{ display: 'flex', flexDirection: 'column'}} >
-        <CardContent sx={{ flex: '1 0 auto', mx : '20px' }}>
-          <Typography component="div" variant="h5">
-            <Link title='Store Detail' style={{textDecoration : 'none' , color : 'black'}} href={"/store/"+ store.user.slug}>
-              {toTitleCase(store.storeName)}
-            </Link>
-          </Typography>
-          <Typography
-            variant="subtitle"
-            component="div"
-            sx={{ color: 'text.secondary',fontSize : 15, my:1 }}
-          >
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-            }}>
-              <AccessTimeIcon sx={{ mr: 1 , p:0.1 }} />
-              Created at : {createdAt}
-            </div>  
-   
-          </Typography>
-
-          <Typography
-            variant="subtitle"
-            component="div"
-            sx={{ color: 'text.secondary',fontSize : 15, my:1 }}
-          >
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-            }}>
-              <KeyIcon sx={{ mr: 1, padding: 0.2 }} />
-              <span style={{ color: "green" }}>{store.slug}</span>
-            </div>  
-          </Typography>
-
-
-
-          <Typography
-            variant="subtitle"
-            component="div"
-            sx={{ color: 'text.secondary',fontSize : 15, my:1}}
-          >
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-            }}>
-          
-              <PersonIcon sx={{ mr: 1 }} />
-              <Link style={{textDecoration : 'none' , color : '#6C737F'}} href={"/wholesalers/"+store.user.slug}>
-              <span title='Check user Detail' >{toTitleCase(store.user.username)}</span>
-              </Link>
-            </div> 
-          </Typography>
-
-
-          <Typography
-            variant="subtitle"
-            component="div"
-            sx={{ color: 'text.secondary',fontSize : 15, my:1 }}
-          >
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-            }}>
-              <LocalPhoneIcon sx={{padding : 0.3 , mr:1}}/>
-              <span> {store.phone}</span>
-            </div>  
-          </Typography>
-
-
-          <Typography
-            variant="subtitle"
-            component="div"
-            sx={{ color: 'text.secondary', fontSize: 15, my: 1 }}
-          >
-             <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              textDecoration : 'none'
-            }}>
-              <EmailOutlinedIcon sx={{ padding: 0.3, mr: 1 }}/>
-                 <Link href={"mailto:" + store.email} style={{ textDecoration: 'none' }}> {store.email}</Link>
-
-            </div>  
-          </Typography>
-
-
-
-
-          <Rating value={store.rating} sx={{my:1}}/>
-        </CardContent>
-      </Box>
-      <Box sx={{ display: 'flex', flexDirection: 'column', my : 4 , ml : 'auto'}}>
-
-        
-        { status !== 'A' ?
-        <Button  type='primary' variant="outlined" icon={<CheckCircleOutlined />} style={{background:'#5cb85c'}} onClick={(e)=> {
-                          setMessage("We are going to activate this store.")
-                          updateStatus(store.slug,"A")
-
-                        }} >
-            Active
-        </Button>
-        :
-        <Button  type='primary' variant="outlined" icon={<CheckCircleOutlined />} onClick={(e)=> {
-                          setMessage("We are going to deactivate this store.")
-                          updateStatus(store.slug,"D")
-                        }} style={{background:'#ffc107', color : "black"}}>
-            Deactive
-        </Button>
-      } 
-       <Link
-            href={{
-              pathname: '/store/update/[slug]',
-              query: { slug: store.slug },
-            }}
-          >
-          <Button type='primary'  style= {{marginTop : '5px',width:'110px'}}  icon={<EditFilled />} primary>
-              Edit
-          </Button>
-        </Link>
-        <Button type="primary" variant="outlined" style= {{marginTop : '5px'}} icon={<DeleteFilled />} danger 
-          onClick={(e) =>{
-            setSlug(store.slug)
-            setMessage(`Are you sure you want delete store ${store.name}`)
-            confirmBox()
-          }}
-
-        >
-            Delete
-        </Button>
-      </Box>
-    </Card>
-}
+  return (<>{!!store.user  &&
+  <Grid container sx={{boxShadow : 1 , borderRadius : 1}}>
       
+          <Grid xs={12} md={3}>
+            <CardMedia
+                component="img"
+                sx={{height : '100%'}}
+                image= {storeImage+store.slug+"/"+store.avtar}
+                alt="Live from space store cover"
+          />
+          </Grid>
+
+          <Grid xs={12} md={8} >
+              <CardContent sx={{ flex: '1 0 auto', mx : '20px' }}>
+                <Typography component="div" variant="h5">
+                  <Link title='Store Detail' style={{textDecoration : 'none' , color : 'black'}} href={"/store/"+ store.user.slug}>
+                    {toTitleCase(store.storeName)}
+                  </Link>
+                </Typography>
+                <Typography
+                  variant="subtitle"
+                  component="div"
+                  sx={{ color: 'text.secondary',fontSize : 15, my:1 }}
+                >
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                  }}>
+                    <AccessTimeIcon sx={{ mr: 1 , p:0.1 }} />
+                    Created at : {createdAt}
+                  </div>  
+        
+                </Typography>
+
+                <Typography
+                  variant="subtitle"
+                  component="div"
+                  sx={{ color: 'text.secondary',fontSize : 15, my:1 }}
+                >
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                  }}>
+                    <KeyIcon sx={{ mr: 1, padding: 0.2 }} />
+                    <span style={{ color: "green" }}>{store.slug}</span>
+                  </div>  
+                </Typography>
+
+
+
+                <Typography
+                  variant="subtitle"
+                  component="div"
+                  sx={{ color: 'text.secondary',fontSize : 15, my:1}}
+                >
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                  }}>
+                
+                    <PersonIcon sx={{ mr: 1 }} />
+                    <Link style={{textDecoration : 'none' , color : '#6C737F'}} href={"/wholesalers/"+store.user.slug}>
+                    <span title='Check user Detail' >{toTitleCase(store.user.username)}</span>
+                    </Link>
+                  </div> 
+                </Typography>
+
+
+                <Typography
+                  variant="subtitle"
+                  component="div"
+                  sx={{ color: 'text.secondary',fontSize : 15, my:1 }}
+                >
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                  }}>
+                    <LocalPhoneIcon sx={{padding : 0.3 , mr:1}}/>
+                    <span> {store.phone}</span>
+                  </div>  
+                </Typography>
+
+
+                <Typography
+                  variant="subtitle"
+                  component="div"
+                  sx={{ color: 'text.secondary', fontSize: 15, my: 1 }}
+                >
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    textDecoration : 'none'
+                  }}>
+                    <EmailOutlinedIcon sx={{ padding: 0.3, mr: 1 }}/>
+                      <Link href={"mailto:" + store.email} style={{ textDecoration: 'none' }}> {store.email}</Link>
+
+                  </div>  
+                </Typography>
+                <Rating value={store.rating} sx={{my:1}}/>
+              </CardContent>
+          </Grid>
+
+
+          <Grid xs={12} md={1} >
+              <Box sx={{ display: 'flex', flexDirection: 'column', height : '100%', justifyContent : 'center'}}>
+                { status !== 'A' ?
+                <Button  type='primary' variant="outlined" icon={<CheckCircleOutlined />} style={{background:'#5cb85c'}} onClick={(e)=> {
+                                  setMessage("We are going to activate this store.")
+                                  updateStatus(store.slug,"A")
+
+                                }} >
+                    Active
+                </Button>
+                :
+                <Button  type='primary' variant="outlined" icon={<CheckCircleOutlined />} onClick={(e)=> {
+                                  setMessage("We are going to deactivate this store.")
+                                  updateStatus(store.slug,"D")
+                                }} style={{background:'#ffc107', color : "black"}}>
+                    Deactive
+                </Button>
+              } 
+              <Link
+                    href={{
+                      pathname: '/store/update/[slug]',
+                      query: { slug: store.slug },
+                    }}
+                  >
+                  <Button type='primary'  style= {{marginTop : '5px',width:'100%'}}  icon={<EditFilled />} primary>
+                      Edit
+                  </Button>
+                </Link>
+                <Button type="primary" variant="outlined" style= {{marginTop : '5px'}} icon={<DeleteFilled />} danger 
+                  onClick={(e) =>{
+                    setSlug(store.slug)
+                    setMessage(`Are you sure you want delete store ${store.name}`)
+                    confirmBox()
+                  }}
+
+                >
+                    Delete
+                </Button>
+              </Box>
+          </Grid>
+
     <Dialog
       fullScreen={fullScreen}
       open={confrim}
@@ -270,17 +266,17 @@ export const StoresCard = (props) => {
 
 
 
-    <Snackbar anchorOrigin={{ vertical : 'top', horizontal : 'right' }}
-        open={open}
-        onClose={handleClose}
-        key={'top' + 'right'}
-      >
-     <Alert onClose={handleClose} severity={flag} sx={{ width: '100%' }}>
-        {message}
-    </Alert>
-    </Snackbar>
-
-</>
-
+      <Snackbar anchorOrigin={{ vertical : 'top', horizontal : 'right' }}
+          open={open}
+          onClose={handleClose}
+          key={'top' + 'right'}
+        >
+      <Alert onClose={handleClose} severity={flag} sx={{ width: '100%' }}>
+          {message}
+      </Alert>
+      </Snackbar>
+  
+    </Grid>
+}</>
   );
 }

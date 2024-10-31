@@ -278,19 +278,20 @@ return ( <>
                 }}
             >
                 <FormControl fullWidth>
-                    <InputLabel id="itemLabel">Category</InputLabel>
+                    <InputLabel  sx={{background : 'white'}} id="itemLabel">Category</InputLabel>
                     <Select
                         labelId="itemLabel"
                         id="category"
                         name='category'
                         value={""+values.category}
-                        label="Category"
                         onChange={handleChange}
                     >
                     {categories.map((categroyObj , i) => {
+                        if(categroyObj.id != 0)
                         return ( <MenuItem key={i} value={categroyObj.id}>{categroyObj.category}</MenuItem>
                         )})
                     }
+                    <MenuItem value={0}>{"Other"}</MenuItem>
                     </Select>
                 </FormControl>
             </Grid>

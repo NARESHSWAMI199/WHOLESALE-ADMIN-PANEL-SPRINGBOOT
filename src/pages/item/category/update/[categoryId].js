@@ -124,8 +124,6 @@ let categoryIcon = values.icon
       setMessage(res.data.message)
       setFlag("success")
       setOpen(true)
-      form.reset();
-      reset()
     }).catch(err=>{
         setMessage(!!err.response  ? err.response.data.message : err.message)
         setFlag("error")

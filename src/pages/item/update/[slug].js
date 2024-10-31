@@ -285,6 +285,7 @@ const UpdateItem = () => {
                                                 onChange={handleChange}
                                             >
                                             {categories.map((categroyObj , i) => {
+                                                if(categroyObj.id !=0)
                                                 return ( <MenuItem key={i} value={categroyObj.id}>{categroyObj.category}</MenuItem>
                                                 )})
                                             }
@@ -309,6 +310,7 @@ const UpdateItem = () => {
                                                 onChange={handleChange}
                                             >
                                             {subcategories.map((subcategroyObj , i) => {
+                                                if(subcategroyObj.id !=0)
                                                 return ( <MenuItem key={i} value={subcategroyObj.id}>{subcategroyObj.subcategory}</MenuItem>
                                                 )})
                                             }

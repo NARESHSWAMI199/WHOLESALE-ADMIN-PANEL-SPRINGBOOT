@@ -118,7 +118,7 @@ const Page = () =>{
             axios.defaults.headers = {
                 Authorization: auth.token
             }
-            await axios.get(host + "/admin/store/category")
+            await axios.post(host + "/admin/store/category",{orderBy : 'category', order : 'asc'})
                 .then(res => {
                     const data = res.data;
                     setItemCategories(data)
@@ -139,7 +139,7 @@ const Page = () =>{
           axios.defaults.headers = {
               Authorization: auth.token
           }
-          await axios.get(host + "/admin/store/subcategory/"+values.category)
+          await axios.post(host + "/admin/store/subcategory",{categoryId : values.category , orderBy : 'subcategory', order : 'asc'})
               .then(res => {
                   const data = res.data;
                   setItemSubCategories(data)
@@ -510,9 +510,11 @@ const Page = () =>{
                               required
                           >
                           {categories.map((categroyObj , i) => {
+                              if(categroyObj.id !=0)
                               return ( <MenuItem key={i} value={categroyObj.id}>{categroyObj.category}</MenuItem>
                               )})
                           }
+                          <MenuItem value={0}>{"Other"}</MenuItem>
                           </Select>
                       </FormControl>
                   </Grid>
@@ -533,9 +535,11 @@ const Page = () =>{
                               required
                           >
                           {subcategories.map((subcategroyObj , i) => {
+                              if(subcategroyObj.id !=0)
                               return ( <MenuItem key={i} value={subcategroyObj.id}>{subcategroyObj.subcategory}</MenuItem>
                               )})
                           }
+                          <MenuItem value={0}>{"Other"}</MenuItem>
                           </Select>
                       </FormControl>
                   </Grid>
