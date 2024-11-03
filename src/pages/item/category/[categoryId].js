@@ -27,6 +27,7 @@ import ImageInput from "src/sections/image-input";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import Link from "next/link";
 import SubcategoryCard from "src/sections/category/subcategory";
+import Spinner from "src/sections/spinner";
 
 
 
@@ -49,7 +50,7 @@ const [subcategories,setSubcategories] = useState([])
 const [subcategoryCard,setSubcategoriesCard] = useState();
 const [values,setValues] = useState({category : categoryId})
 const [newSubCategroyAdded, setNewSubCategoryAdded] = useState(false)
-
+const [showSpinner , setShowSpinner] = useState('block')
 
 useEffect(() => {
   const getAllCategories = async () => {
@@ -101,16 +102,20 @@ useEffect(() => {
       axios.defaults.headers = {
           Authorization: auth.token
       }
+      setShowSpinner('block')
       await axios.post(host + "/admin/item/subcategory",{categoryId : values.category,orderBy : 'updatedAt'})
           .then(res => {
               const data = res.data;
               setSubcategories(data)
+              setShowSpinner('none')
           })
           .catch(err => {
               setMessage(!!err.response ? err.response.data.message : err.message)
               setFlag('error')
               setOpen(true)
+              setShowSpinner('none')
           })
+          
   }
   if(values.category != undefined) {
     getAllSubcategories();
@@ -307,6 +312,9 @@ return ( <>
       </CardActions>
     </Card>
   </Grid>
+
+
+    <Spinner show={showSpinner}/>
 
     <Grid xs={12} md={12} container spacing={3} >
     {subcategoryCard}
