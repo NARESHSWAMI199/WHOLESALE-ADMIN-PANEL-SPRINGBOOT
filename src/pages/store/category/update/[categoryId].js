@@ -110,7 +110,7 @@ useEffect(() => {
     axios.defaults.headers = {
         Authorization : auth.token,
     }
-    axios.post(host+"/admin/item/category/add",data)
+    axios.post(host+"/admin/store/category/add",data)
     .then(res => {
       setMessage(res.data.message)
       setFlag("success")
@@ -165,7 +165,7 @@ return ( <>
   >
 <Card>
       <CardHeader
-        // subheader="From here you can add a new item."
+        // subheader="From here you can add a new store."
         title="Update category"
       />
       <CardContent sx={{ pt: 4 }}>
