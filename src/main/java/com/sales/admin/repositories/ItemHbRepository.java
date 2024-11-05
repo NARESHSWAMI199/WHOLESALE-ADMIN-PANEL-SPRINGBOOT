@@ -24,6 +24,8 @@ public class ItemHbRepository{
     public int updateItems(ItemDto itemDto, User loggedUser){
         String hqQuery = "update Item set " +
                 "name =:name," +
+                "capacity =:capacity," +
+                "measureUnit =:measureUnit," +
                 "description =:description," +
                 "price =:price," +
                 "discount =:discount," +
@@ -34,6 +36,8 @@ public class ItemHbRepository{
                 "where slug =:slug ";
         Query query = entityManager.createQuery(hqQuery);
         query.setParameter("name" , itemDto.getName());
+        query.setParameter("capacity" , itemDto.getCapacity());
+        query.setParameter("measureUnit" , itemDto.getMeasureUnit());
         query.setParameter("description" , itemDto.getDescription());
         query.setParameter("price" , itemDto.getPrice());
         query.setParameter("discount" , itemDto.getDiscount());

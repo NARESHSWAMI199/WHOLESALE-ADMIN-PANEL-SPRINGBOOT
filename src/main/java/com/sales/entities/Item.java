@@ -27,6 +27,12 @@ public class Item implements Serializable {
     @Column(name = "label")
     String label;
 
+    @Column(name = "capacity")
+    Float capacity;
+
+    @Column(name = "measure_unit")
+    String measureUnit;
+
     @Column(name = "price")
     float price;
     @Column(name = "discount")

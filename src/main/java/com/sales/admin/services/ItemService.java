@@ -148,6 +148,8 @@ public class ItemService extends RepoContainer{
         item.setCreatedBy(loggedUser.getId());
         item.setUpdatedBy(loggedUser.getId());
         item.setLabel(itemDto.getLabel());
+        item.setCapacity(itemDto.getCapacity());
+        item.setMeasureUnit(itemDto.getMeasureUnit());
         item.setSlug(UUID.randomUUID().toString());
         MultipartFile itemImage = itemDto.getItemImage();
         item.setItemCategory(itemDto.getItemCategory());
