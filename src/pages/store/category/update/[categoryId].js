@@ -1,36 +1,27 @@
-import { Box,
-    Button, 
-    Card,
-    CardActions,
-    CardContent,
-    CardHeader,
-    Divider,
-    MenuItem,
-    Select,
-    TextField,
-    Unstable_Grid2 as Grid,
-    InputLabel,
-    FormControl,
-    Snackbar,
-    Checkbox,
-    Alert,
-    Container,
-    Stack
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Container,
+  Divider,
+  Unstable_Grid2 as Grid,
+  Snackbar,
+  Stack,
+  TextField
 } from "@mui/material";
 import axios from "axios";
+import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { host } from "src/utils/util";
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
-import { useRouter } from "next/router";
-import { redirect } from "next/navigation";
 import ImageInput from "src/sections/image-input";
-import { ArrowButtons } from "src/layouts/arrow-button";
-import { tr } from "date-fns/locale";
+import { host } from "src/utils/util";
 
-
+let categoryIcon = null;
 const UpdateStoreCategory = () =>{    
 
 const router = useRouter()
@@ -69,7 +60,7 @@ useEffect(() => {
 
 }, [])
 
-let categoryIcon = values.icon
+
 
   const handleChange = useCallback(
     (event) => {
@@ -175,7 +166,7 @@ return ( <>
 <Card>
       <CardHeader
         // subheader="From here you can add a new item."
-        title="Create category"
+        title="Update category"
       />
       <CardContent sx={{ pt: 4 }}>
         <Box sx={{ m: -1.5 }}>

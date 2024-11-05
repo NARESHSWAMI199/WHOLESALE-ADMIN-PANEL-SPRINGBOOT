@@ -30,7 +30,7 @@ import ImageInput from "src/sections/image-input";
 import { ArrowButtons } from "src/layouts/arrow-button";
 import { tr } from "date-fns/locale";
 
-
+let categoryIcon = null;
 const UpdateItemCategory = () =>{    
 
 const router = useRouter()
@@ -68,8 +68,6 @@ useEffect(() => {
     getData();
 
 }, [])
-
-let categoryIcon = values.icon
 
   const handleChange = useCallback(
     (event) => {
