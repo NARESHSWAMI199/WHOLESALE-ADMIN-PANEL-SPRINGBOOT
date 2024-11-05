@@ -52,7 +52,7 @@ const UpdateItem = () => {
             await axios.get(host + "/admin/item/detail/"+slug,)
                 .then(res => {
                     const data = res.data.res;
-                    setValues({...data,category : data.itemCategory.id, subcategory : data.itemSubCategory.id})
+                    setValues({...data,category : data.itemCategory.id, subcategory : data.itemSubCategory.id , unit : data.itemSubCategory.unit})
                 })
                 .catch(err => {
                     setMessage(!!err.response ? err.response.data.message : err.message)
@@ -114,10 +114,25 @@ const UpdateItem = () => {
 
     const handleChange = useCallback(
         (event) => {
-            setValues((prevState) => ({
-                ...prevState,
-                [event.target.name]: event.target.value
-            }));
+            if ([event.target.name] == 'subcategory'){
+                console.log(subcategories)
+                for(let subcategory of subcategories){
+                    console.log(subcategory.id + " "+event.target.value )
+                    if(subcategory.id ==  event.target.value){
+                        alert(subcategory.id)
+                        setValues((prevState) => ({
+                            ...prevState,
+                            unit : subcategory.unit,
+                            [event.target.name]: event.target.valuez
+                        }));
+                    }
+                }
+            }else{
+                setValues((prevState) => ({
+                    ...prevState,
+                    [event.target.name]: event.target.value
+                }));
+            }
         },
         []
     );
@@ -138,6 +153,8 @@ const UpdateItem = () => {
                 description: formData.get("description"),
                 categoryId: formData.get("category"),
                 subCategoryId: formData.get("subcategory"),
+                capacity : formData.get('capacity'),
+                measureUnit : formData.get('measureUnit'),
                 itemImage : values.itemImage
             }
 
@@ -308,6 +325,7 @@ const UpdateItem = () => {
                                                 name='subcategory'
                                                 value={""+values.subcategory}
                                                 onChange={handleChange}
+                                                required
                                             >
                                             {subcategories.map((subcategroyObj , i) => {
                                                 if(subcategroyObj.id !=0)
@@ -319,7 +337,42 @@ const UpdateItem = () => {
                                         </FormControl>
                                     </Grid>
 
+                                    
+                                    {/* capacity */}
 
+                                    <Grid
+                                        xs={12}
+                                        md={6}
+                                    >
+                                        <TextField
+                                            fullWidth
+                                            label="Capacity/Weight"
+                                            name="capacity"
+                                            onChange={handleChange}
+                                            required={true}
+                                            type="number"
+                                            value={values.capacity}
+                                            InputLabelProps={{ shrink: true }}
+                                        />
+
+                                    </Grid>
+
+                                    {/* measureUnit */}
+
+                                    <Grid
+                                        xs={12}
+                                        md={6}
+                                    >
+                                        <TextField
+                                            fullWidth
+                                            label="Measurement Unit"
+                                            name="unit"
+                                            required={true}
+                                            InputLabelProps={{ shrink: true }}
+                                            value={values.unit}
+                                        />
+
+                                    </Grid>
 
 
                                     {/* Label */}

@@ -51,6 +51,23 @@ const [subcategoryCard,setSubcategoriesCard] = useState();
 const [values,setValues] = useState({category : categoryId})
 const [newSubCategroyAdded, setNewSubCategoryAdded] = useState(false)
 const [showSpinner , setShowSpinner] = useState('block')
+const [units,setUnits] = useState([])
+
+
+useEffect(()=>{
+  axios.defaults.headers = {
+    Authorization: auth.token
+  }
+  axios.get(host+"/admin/item/units")
+  .then(res => setUnits(res.data))
+  .catch(err => {
+    console.log(err)
+    setMessage(!!err.response  ? err.response.data.message : err.message)
+    setFlag("error")
+    setOpen(true)
+  })
+},[])
+
 
 useEffect(() => {
   const getAllCategories = async () => {
@@ -148,7 +165,7 @@ const addSubCategory = () =>{
   }}
   
   >
-        <SubcategoryCard onDelete={onDelete} onSubmit={onSubmit} categoryId={values.category} />
+        <SubcategoryCard onDelete={onDelete} onSubmit={onSubmit} categoryId={values.category} units={units}/>
     </Grid>
   )
 }
@@ -328,7 +345,7 @@ return ( <>
         textAlign :'center',
         alignItems : 'center'
       }}>
-         <SubcategoryCard onSubmit={onSubmit} onDelete={onDelete} categoryId={values.category} subcategory = {subcategory} buttonLabel={"Update"}/>
+         <SubcategoryCard onSubmit={onSubmit} onDelete={onDelete} categoryId={values.category} subcategory = {subcategory} buttonLabel={"Update"} units={units}/>
     </Grid>
   })} 
 

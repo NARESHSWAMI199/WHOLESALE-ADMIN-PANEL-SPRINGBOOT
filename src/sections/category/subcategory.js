@@ -1,9 +1,11 @@
-import { Box, Button, Card, CardActions, CardContent, CardHeader, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid, Stack, SvgIcon, TextField, useMediaQuery } from '@mui/material';
+import { Box, Button, Card, CardActions, CardContent, CardHeader, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormControl, Grid, InputLabel, MenuItem, Select, Stack, SvgIcon, TextField, useMediaQuery } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react'
 import ImageInput from '../image-input';
 import { CropSquareSharp, DeleteOutline } from '@mui/icons-material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTheme } from '@emotion/react';
+import { host } from 'src/utils/util';
+import axios from 'axios';
 
 var categoryIcon = null;
 const SubcategoryCard = (props) => {
@@ -15,6 +17,16 @@ const [slug,setSlug] = useState(null)
 const [action,setAction] = useState('')
 const theme = useTheme();
 const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+const [units,setUnits] = useState([])
+const [showUnits,setShowUnits] = useState(false)
+
+useEffect(()=>{
+  if(!!props.units){
+    setShowUnits(true)
+    setUnits(props.units)
+  }
+},[props.units])
+
 
 useEffect(()=>{
   if(!!props.subcategory)
@@ -53,6 +65,7 @@ const confirmBox = () => {
         id : values.id,
         categoryId :  props.categoryId,
         subcategory : formData.get("subcategory"),
+        unit : formData.get('unit'),
         icon : categoryIcon !=null ? categoryIcon : values.icon
         }
         props.onSubmit(data)
@@ -127,6 +140,33 @@ return (<>
                 value={values.subcategory }
             />
             </Grid>
+
+
+            {showUnits ? 
+              <Grid
+                xs={12}
+                md={12}
+                sx={{
+                  mt : 3
+                }}
+            >
+                <FormControl fullWidth>
+                    <InputLabel sx={{background : 'white'}} id="itemLabel">Unit</InputLabel>
+                    <Select
+                        labelId="itemLabel"
+                        id="unit"
+                        name='unit'
+                        value={""+values.unit}
+                        onChange={handleChange}
+                    >
+                    {units.map((unitObj , i) => {
+                        return ( <MenuItem key={i} value={unitObj.unit}>{unitObj.unit}</MenuItem>
+                      )})
+                    }
+                    </Select>
+                </FormControl>
+            </Grid> :''
+            }
         </Grid>
     </Box>
     </CardContent>
