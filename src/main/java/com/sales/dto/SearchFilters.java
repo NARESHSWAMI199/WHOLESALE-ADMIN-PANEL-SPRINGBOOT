@@ -20,4 +20,5 @@ public class SearchFilters extends ItemSearchFields {
     String slug="";
     int storeId;
     Integer categoryId;
+    Integer subCategoryId;
 }

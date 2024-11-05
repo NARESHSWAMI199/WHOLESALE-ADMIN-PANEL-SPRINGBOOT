@@ -304,6 +304,12 @@ public class ItemService extends RepoContainer{
         return itemSubCategoryRepository.save(itemSubCategory);
     }
 
+    public List<ItemMeasurementUnit> getALlMeasuringUnitsBySubcategory(SearchFilters searchFilters){
+        Sort sort = Sort.by(searchFilters.getOrderBy());
+        sort  = searchFilters.getOrder().equals("asc") ? sort.ascending() : sort.descending();
+        return itemMeasurementRepository.getALlMeasuringUnitBySubcategoryId(searchFilters.getSubCategoryId(),sort);
+    }
+
 
 
 

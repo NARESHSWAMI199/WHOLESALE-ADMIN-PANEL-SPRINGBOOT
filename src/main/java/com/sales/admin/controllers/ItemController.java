@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -260,6 +259,16 @@ public class ItemController extends ServiceContainer {
         }
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
+
+
+
+    @PostMapping(value = {"units"})
+    public ResponseEntity<List<ItemMeasurementUnit>> getALlMeasuringUnitsBySubcategory(@RequestBody SearchFilters searchFilters) {
+        List<ItemMeasurementUnit> itemMeasurementUnitList = itemService.getALlMeasuringUnitsBySubcategory(searchFilters);
+        return new ResponseEntity<>(itemMeasurementUnitList, HttpStatus.OK);
+    }
+
+
 
 
 }
