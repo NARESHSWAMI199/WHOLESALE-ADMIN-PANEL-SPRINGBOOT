@@ -3,7 +3,6 @@ package com.sales.utils;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
@@ -13,7 +12,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 @Component
@@ -69,7 +67,7 @@ public class Utils {
 
     public static boolean isValidImage(String image){
         String IMAGE_PATTERN =
-                "([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)";
+                "([^\\s]+(\\.(?i)(jpg|png|gif|bmp|jpeg|jfif|webp))$)";
         Pattern pattern =  Pattern.compile(IMAGE_PATTERN);
         Matcher matcher = pattern.matcher(image);
         return matcher.matches();
@@ -104,13 +102,13 @@ public class Utils {
 
 
     public static String isValidName(final String name,String flag) throws MyException {
-        String NAME_PATTERN =
+     /*   String NAME_PATTERN =
                 "^[A-Z](?=.{1,100}$)[A-Za-z_& ]*(?:\\h+[A-Z][A-Za-z]*)*$";
         if(flag.equalsIgnoreCase("user")){
-            /** item can hold more then 0 char and less then 28 and don't  support &*/
+            *//** item can hold more then 0 char and less then 28 and don't  support &*//*
             NAME_PATTERN = "^[A-Z](?=.{1,28}$)[A-Za-z_ ]*(?:\\h+[A-Z][A-Za-z]*)*$";
         } else if (flag.equalsIgnoreCase("item")) {
-            /** item can hold more then 0 char and less then 200*/
+            *//** item can hold more then 0 char and less then 200*//*
             NAME_PATTERN = "^[A-Z](?=.{1,200}$)[A-Za-z_ ]*(?:\\h+[A-Z][A-Za-z]*)*$";
         }
         Pattern pattern = Pattern.compile(NAME_PATTERN);
@@ -128,7 +126,7 @@ public class Utils {
             message = "Not a valid "+flag+" name.";
             System.out.println(message);
             throw  new MyException(message + " "+neededSyntax);
-        }
+        }*/
         return name;
     }
 
