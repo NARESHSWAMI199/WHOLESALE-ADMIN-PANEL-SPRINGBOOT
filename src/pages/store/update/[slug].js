@@ -1,32 +1,31 @@
-import { Box,
-  Button, 
+import RefreshIcon from '@mui/icons-material/Refresh';
+import {
+  Alert,
+  Box,
+  Button,
   Card,
   CardActions,
   CardContent,
   CardHeader,
+  Container,
   Divider,
-  MenuItem,
-  Select,
-  TextField,
+  FormControl,
   Unstable_Grid2 as Grid,
   InputLabel,
-  FormControl,
+  MenuItem,
+  Select,
   Snackbar,
-  Alert,
   Stack,
-  Container,
-  SvgIcon
+  SvgIcon,
+  TextField
 } from "@mui/material";
-import { Image, Upload } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "src/hooks/use-auth";
-import { ArrowButtons } from "src/layouts/arrow-button";
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import ImageInput from "src/sections/image-input";
 import { host, storeImage } from "src/utils/util";
-import RefreshIcon from '@mui/icons-material/Refresh';
 
 
 
@@ -155,6 +154,14 @@ if(store.category !=undefined){
 }
 }, [store.category]) 
 
+
+
+const handleChangeAddress = useCallback ((event) => {
+  setAddress((preState) =>({
+    ...preState,
+    [event.target.name]: event.target.value
+  }));
+},[])
 
 
 const handleChange = useCallback ((event) => {
@@ -287,7 +294,7 @@ return ( <>
               fullWidth
               label="Street Address"
               name="street"
-              onChange={handleChange}
+              onChange={handleChangeAddress}
               required
               value={!!address ? address.street :''}
               InputLabelProps={{shrink : true}}
@@ -305,7 +312,7 @@ return ( <>
               label="Zip Code"
               name="zipCode"
               type="number"
-              onChange={handleChange}
+              onChange={handleChangeAddress}
               required
               InputProps={{ maxLength: 6 }}
               value={!!address ? address.zipCode : ''}
