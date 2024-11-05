@@ -31,6 +31,9 @@ public class ItemSubCategory {
     @Column(name = "subcategory")
     String subcategory;
 
+    @Column(name = "unit")
+    String unit;
+
     @Column(name = "icon")
     String icon;
 

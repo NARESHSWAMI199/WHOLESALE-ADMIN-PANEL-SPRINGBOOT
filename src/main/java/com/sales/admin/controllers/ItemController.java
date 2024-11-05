@@ -262,9 +262,9 @@ public class ItemController extends ServiceContainer {
 
 
 
-    @PostMapping(value = {"units"})
-    public ResponseEntity<List<ItemMeasurementUnit>> getALlMeasuringUnitsBySubcategory(@RequestBody SearchFilters searchFilters) {
-        List<ItemMeasurementUnit> itemMeasurementUnitList = itemService.getALlMeasuringUnitsBySubcategory(searchFilters);
+    @GetMapping("units")
+    public ResponseEntity<List<MeasurementUnit>> getALlMeasuringUnitsBySubcategory() {
+        List<MeasurementUnit> itemMeasurementUnitList = itemService.getAllMeasurementUnit();
         return new ResponseEntity<>(itemMeasurementUnitList, HttpStatus.OK);
     }
 

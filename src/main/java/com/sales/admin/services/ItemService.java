@@ -149,7 +149,6 @@ public class ItemService extends RepoContainer{
         item.setUpdatedBy(loggedUser.getId());
         item.setLabel(itemDto.getLabel());
         item.setCapacity(itemDto.getCapacity());
-        item.setMeasureUnit(itemDto.getMeasureUnit());
         item.setSlug(UUID.randomUUID().toString());
         MultipartFile itemImage = itemDto.getItemImage();
         item.setItemCategory(itemDto.getItemCategory());
@@ -300,17 +299,16 @@ public class ItemService extends RepoContainer{
         itemSubCategory.setCategoryId(subCategoryDto.getCategoryId());
         itemSubCategory.setSubcategory(subCategoryDto.getSubcategory());
         itemSubCategory.setIcon(subCategoryDto.getIcon());
+        itemSubCategory.setUnit(subCategoryDto.getUnit());
         itemSubCategory.setUpdatedAt(Utils.getCurrentMillis());
         return itemSubCategoryRepository.save(itemSubCategory);
     }
 
-    public List<ItemMeasurementUnit> getALlMeasuringUnitsBySubcategory(SearchFilters searchFilters){
-        Sort sort = Sort.by(searchFilters.getOrderBy());
-        sort  = searchFilters.getOrder().equals("asc") ? sort.ascending() : sort.descending();
-        return itemMeasurementRepository.getALlMeasuringUnitBySubcategoryId(searchFilters.getSubCategoryId(),sort);
+
+    public List<MeasurementUnit> getAllMeasurementUnit() {
+        Sort sort = Sort.by("unit").ascending();
+        return measurementUnitRepository.findAll(sort);
     }
-
-
 
 
 }

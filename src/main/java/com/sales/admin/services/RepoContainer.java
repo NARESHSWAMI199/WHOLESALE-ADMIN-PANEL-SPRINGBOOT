@@ -31,7 +31,7 @@ public class RepoContainer {
     protected ItemHbRepository itemHbRepository;
 
     @Autowired
-    ItemMeasurementRepository itemMeasurementRepository;
+    MeasurementUnitRepository measurementUnitRepository;
     @Autowired
     protected StoreHbRepository storeHbRepository;
 

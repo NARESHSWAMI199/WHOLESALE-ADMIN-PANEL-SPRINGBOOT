@@ -11,4 +11,5 @@ public class SubCategoryDto {
     Integer categoryId;
     String subcategory;
     String icon;
+    String unit;
 }

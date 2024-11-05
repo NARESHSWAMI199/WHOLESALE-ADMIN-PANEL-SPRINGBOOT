@@ -22,7 +22,6 @@ public class ItemDto {
     private  String slug;
     private String label;
     private  Float capacity;
-    private String measureUnit;
     private String  avtar;
     private MultipartFile itemImage;
     private Integer storeId;
