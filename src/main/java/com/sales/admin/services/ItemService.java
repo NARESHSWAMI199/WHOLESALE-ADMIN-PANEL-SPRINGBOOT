@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import com.sales.dto.*;
 import com.sales.entities.*;
 import com.sales.exceptions.MyException;
+import com.sales.global.GlobalConstant;
+import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -227,15 +229,21 @@ public class ItemService extends RepoContainer{
 
 
     @Transactional
-    public int updateStoreImage(MultipartFile profileImage, String slug) throws Exception {
-        if(profileImage !=null) {
-            String fileOriginalName = profileImage.getOriginalFilename().replaceAll(" ", "_");
-            if (!Utils.isValidImage(fileOriginalName)) throw new Exception("Not a valid file.");
-            String dirPath = itemImagePath+slug+"/";
-            File dir = new File(dirPath);
-            if(!dir.exists()) dir.mkdirs();
-            profileImage.transferTo(new File(dirPath+fileOriginalName));
-            return itemHbRepository.updateItemImage(slug,fileOriginalName);
+    public int updateStoreImage(MultipartFile itemImage, String slug) throws Exception {
+        if(itemImage !=null) {
+            if (UploadImageValidator.isValidImage(itemImage, GlobalConstant.minWidth,
+                    GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
+                    GlobalConstant.allowedAspectRatios, GlobalConstant.allowedFormats)) {
+                    String fileOriginalName = itemImage.getOriginalFilename().replaceAll(" ", "_");
+                    String dirPath = itemImagePath+slug+"/";
+                    File dir = new File(dirPath);
+                    if(!dir.exists()) dir.mkdirs();
+                    File file = new File(dirPath+fileOriginalName);
+                    itemImage.transferTo(file);
+                return itemHbRepository.updateItemImage(slug,fileOriginalName);
+            } else {
+                throw new MyException("Image is not fit in accept ratio. please resize you image before upload.");
+            }
         }
         return 0;
     }

@@ -3,6 +3,8 @@ package com.sales.admin.services;
 import com.sales.dto.*;
 import com.sales.entities.*;
 import com.sales.exceptions.MyException;
+import com.sales.global.GlobalConstant;
+import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,8 +17,11 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.*;
@@ -240,15 +245,21 @@ public class StoreService extends RepoContainer{
 
 
     @Transactional
-    public int updateStoreImage(MultipartFile profileImage, String slug) throws MyException, IOException {
-        if(profileImage !=null ) {
-            String fileOriginalName = profileImage.getOriginalFilename().replaceAll(" ", "_");
-            if (!Utils.isValidImage(fileOriginalName)) throw new MyException("Not a valid file.");
-            String dirPath = storeImagePath+"/"+slug+"/";
-            File dir = new File(dirPath);
-            if(!dir.exists()) dir.mkdirs();
-            profileImage.transferTo(new File(dirPath+fileOriginalName));
-            return storeHbRepository.updateStoreAvatar(slug,fileOriginalName);
+    public int updateStoreImage(MultipartFile storeImage, String slug) throws MyException, IOException {
+        if(storeImage !=null ) {
+            if (UploadImageValidator.isValidImage(storeImage, GlobalConstant.minWidth,
+                GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
+                GlobalConstant.allowedAspectRatios, GlobalConstant.allowedFormats)) {
+                String fileOriginalName = storeImage.getOriginalFilename().replaceAll(" ", "_");
+                String dirPath = storeImagePath+"/"+slug+"/";
+                File dir = new File(dirPath);
+                if(!dir.exists()) dir.mkdirs();
+                File file = new File(dirPath+fileOriginalName);
+                storeImage.transferTo(file);
+                return storeHbRepository.updateStoreAvatar(slug,fileOriginalName);
+            } else {
+                throw new MyException("Image is not fit in accept ratio. please resize you image before upload.");
+            }
         }
         return 0;
     }
