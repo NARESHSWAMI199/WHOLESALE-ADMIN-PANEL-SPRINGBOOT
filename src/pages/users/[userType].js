@@ -210,7 +210,10 @@ const Page = () => {
           py: 8
         }}
       >
-        <Container maxWidth="xl">
+        <Box sx={{
+                    margin : '0 auto',
+                    width : '95%'
+                }}>
           <Stack spacing={3}>
         
           <CustomerHeaders  headerTitle={"Admins"} userType={userType} />
@@ -232,7 +235,7 @@ const Page = () => {
               onDelete = {onDelete}
             />
           </Stack>
-        </Container>
+        </Box>
       </Box>
     </>
   );
