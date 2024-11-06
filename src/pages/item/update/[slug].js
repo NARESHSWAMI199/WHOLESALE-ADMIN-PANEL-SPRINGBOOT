@@ -152,7 +152,7 @@ const UpdateItem = () => {
                 description: formData.get("description"),
                 categoryId: formData.get("category"),
                 subCategoryId: formData.get("subcategory"),
-                capacity : formData.get('capacity'),
+                capacity : !!values.unit ? formData.get('capacity') : 0 ,
                 measureUnit : formData.get('measureUnit'),
                 itemImage : values.itemImage
             }
@@ -338,7 +338,7 @@ const UpdateItem = () => {
 
                                     
                                     {/* capacity */}
-
+                            {!!values.unit ? 
                                     <Grid
                                         xs={12}
                                         md={6}
@@ -354,7 +354,8 @@ const UpdateItem = () => {
                                             InputLabelProps={{ shrink: true }}
                                         />
 
-                                    </Grid>
+                                    </Grid> : ''
+                            }
 
                                     {/* measureUnit */}
 

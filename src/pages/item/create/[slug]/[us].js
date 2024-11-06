@@ -130,7 +130,7 @@ useEffect(() => {
         description: formData.get("description"),
         categoryId: formData.get("category"),
         subCategoryId: formData.get("subcategory"),
-        capacity : formData.get('capacity'),
+        capacity : !!values.unit ? formData.get('capacity') : 0 ,
         wholesaleSlug : slug,
         itemImage : values.itemImage
       }
@@ -326,7 +326,7 @@ return ( <>
 
                                     
     {/* capacity */}
-
+    {!!values.unit ? 
     <Grid
         xs={12}
         md={6}
@@ -342,7 +342,8 @@ return ( <>
             InputLabelProps={{ shrink: true }}
         />
 
-    </Grid>
+    </Grid> : ''
+  }
 
 
       <Grid
