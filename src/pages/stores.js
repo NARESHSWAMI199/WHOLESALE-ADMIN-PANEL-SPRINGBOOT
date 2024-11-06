@@ -157,7 +157,7 @@ const Page = () => {
       >
         <Box sx={{
                     margin : '0 auto',
-                    width : '95%',
+                    width : '70%',
                     overflow : 'auto'
                 }}>
           <Stack spacing={3}>
@@ -170,21 +170,6 @@ const Page = () => {
               store={store}  />)
           } ) }
 
-      {/* <CardActions sx={{ justifyContent: 'flex-end' }}>
-        <Button
-          onClick={getMore}
-          color="inherit"
-          endIcon={(
-            <SvgIcon fontSize="small">
-              <ArrowRightIcon />
-            </SvgIcon>
-          )}
-          size="small"
-          variant="text"
-        >
-          View more
-        </Button>
-      </CardActions> */}
                 <Box sx={{m:2,display:'flex',justifyContent:'center'}}>
                     <Pagination  onChange={(page) => setData({...data,pageNumber : page-1})}  align="center" defaultCurrent={1} total={totalPages*10} />
                </Box>

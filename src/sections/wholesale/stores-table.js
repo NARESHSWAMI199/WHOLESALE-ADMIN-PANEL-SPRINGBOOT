@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Rating, Snackbar, SvgIcon, useMediaQuery } from '@mui/material';
-import { Button } from 'antd';
+import { Button, Image } from 'antd';
 import { CheckCircleOutlined, DeleteFilled, EditFilled } from '@ant-design/icons';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import EmailIcon from '@mui/icons-material/Email';
@@ -93,11 +93,19 @@ export const StoresCard = (props) => {
   return (<>{!!store.user  &&
   <Grid container sx={{boxShadow : 1 , borderRadius : 1}}>
       
-          <Grid xs={12} md={3}>
-            <CardMedia
+          <Grid xs={12} md={3}
+            sx={{
+              background : '#e6f4fc'
+            }}
+          >
+            <Image
                 component="img"
-                sx={{height : '100%'}}
-                image= {storeImage+store.slug+"/"+store.avtar}
+                style={{
+                  height : 300,
+                  width : 400,
+                  objectFit : 'contain',
+                }}
+                src= {storeImage+store.slug+"/"+store.avtar}
                 alt="Live from space store cover"
           />
           </Grid>
