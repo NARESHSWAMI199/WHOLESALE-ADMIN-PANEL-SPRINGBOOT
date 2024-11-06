@@ -44,15 +44,31 @@ const [values,setValues] = useState({})
 const [categories,setItemCategories] = useState([])
 const [subcategories,setItemSubCategories] = useState([])
 
-  const handleChange = useCallback(
-    (event) => {
-      setValues((prevState) => ({
-        ...prevState,
-        [event.target.name]: event.target.value
-      }));
-    },
-    []
-  );
+
+const handleChange = useCallback(
+  (event) => {
+      if ([event.target.name] == 'subcategory'){
+          for(let subcategory of subcategories){
+              console.log(subcategory.id + " "+event.target.value )
+              if(subcategory.id ==  event.target.value){
+                  setValues((prevState) => ({
+                      ...prevState,
+                      unit : subcategory.unit,
+                      [event.target.name]: event.target.value
+                  }));
+                  break
+              }
+          }
+      }else{
+          setValues((prevState) => ({
+              ...prevState,
+              [event.target.name]: event.target.value
+          }));
+      }
+  },
+  [subcategories]
+);
+
 
 
   
@@ -114,6 +130,7 @@ useEffect(() => {
         description: formData.get("description"),
         categoryId: formData.get("category"),
         subCategoryId: formData.get("subcategory"),
+        capacity : formData.get('capacity'),
         wholesaleSlug : slug,
         itemImage : values.itemImage
       }
@@ -304,6 +321,28 @@ return ( <>
           </Select>
       </FormControl>
   </Grid>
+
+
+
+                                    
+    {/* capacity */}
+
+    <Grid
+        xs={12}
+        md={6}
+    >
+        <TextField
+            fullWidth
+            label={"Capacity/Weight in "+values.unit}
+            name="capacity"
+            onChange={handleChange}
+            required={true}
+            type="number"
+            value={values.capacity}
+            InputLabelProps={{ shrink: true }}
+        />
+
+    </Grid>
 
 
       <Grid

@@ -141,7 +141,15 @@ export const ItemsTable = (props) => {
                 </TableCell>
 
                 <TableCell>
-                  label
+                  Label
+                </TableCell>
+
+                <TableCell>
+                  Subcategory
+                </TableCell>
+
+                <TableCell>
+                  Capacity/Weight
                 </TableCell>
 
                 <TableCell>
@@ -225,6 +233,15 @@ export const ItemsTable = (props) => {
                         {item.label === "O" && <Badge color="error" badgeContent={'Old'} />}
                         {item.label === "N" && <Badge color="success" badgeContent={'New'} />}
                     </TableCell>
+
+                    <TableCell align='center'>
+                        {toTitleCase(item.itemSubCategory.subcategory)}
+                    </TableCell>
+
+                    <TableCell align='center'>
+                        {item.capacity + " " +item.itemSubCategory.unit}
+                    </TableCell>
+
                     <TableCell>
                         <Rating name="read-only" value={item.rating} readOnly />
                     </TableCell>

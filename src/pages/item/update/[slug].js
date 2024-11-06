@@ -115,16 +115,15 @@ const UpdateItem = () => {
     const handleChange = useCallback(
         (event) => {
             if ([event.target.name] == 'subcategory'){
-                console.log(subcategories)
                 for(let subcategory of subcategories){
                     console.log(subcategory.id + " "+event.target.value )
                     if(subcategory.id ==  event.target.value){
-                        alert(subcategory.id)
                         setValues((prevState) => ({
                             ...prevState,
                             unit : subcategory.unit,
-                            [event.target.name]: event.target.valuez
+                            [event.target.name]: event.target.value
                         }));
+                        break
                     }
                 }
             }else{
@@ -134,7 +133,7 @@ const UpdateItem = () => {
                 }));
             }
         },
-        []
+        [subcategories]
     );
 
 
@@ -346,7 +345,7 @@ const UpdateItem = () => {
                                     >
                                         <TextField
                                             fullWidth
-                                            label="Capacity/Weight"
+                                            label={"Capacity/Weight in "+values.unit}
                                             name="capacity"
                                             onChange={handleChange}
                                             required={true}
@@ -359,7 +358,7 @@ const UpdateItem = () => {
 
                                     {/* measureUnit */}
 
-                                    <Grid
+                                    {/* <Grid
                                         xs={12}
                                         md={6}
                                     >
@@ -372,7 +371,7 @@ const UpdateItem = () => {
                                             value={values.unit}
                                         />
 
-                                    </Grid>
+                                    </Grid> */}
 
 
                                     {/* Label */}
