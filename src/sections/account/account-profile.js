@@ -17,6 +17,7 @@ import { host, userImage } from 'src/utils/util';
 import { useCallback, useEffect, useState } from 'react';
 import { getInitials } from 'src/utils/get-initials';
 import { Image } from 'antd';
+import { object } from 'prop-types';
 
 export const AccountProfile = (props) => {
   const user = props.user
@@ -96,7 +97,8 @@ export const AccountProfile = (props) => {
               <Avatar sx={{
                 height: 80,
                 mb: 2,
-                width: 80
+                width: 80,
+                objectFit :'contain'
               }} src={userImage+user.avatar} >
                 {getInitials(user.username)}
               </Avatar>

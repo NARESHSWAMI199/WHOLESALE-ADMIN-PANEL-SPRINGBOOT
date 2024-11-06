@@ -130,7 +130,7 @@ useEffect(() => {
         description: formData.get("description"),
         categoryId: formData.get("category"),
         subCategoryId: formData.get("subcategory"),
-        capacity : !!values.unit ? formData.get('capacity') : 0 ,
+        capacity : !!values.unit && values.unit != 'null' ? formData.get('capacity') : 0 ,
         wholesaleSlug : slug,
         itemImage : values.itemImage
       }
@@ -326,7 +326,7 @@ return ( <>
 
                                     
     {/* capacity */}
-    {!!values.unit ? 
+    {!!values.unit && values.unit != 'null' ?
     <Grid
         xs={12}
         md={6}

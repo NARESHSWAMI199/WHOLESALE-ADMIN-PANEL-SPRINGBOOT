@@ -239,7 +239,7 @@ export const ItemsTable = (props) => {
                     </TableCell>
 
                     <TableCell align='center'>
-                      {!!item.itemSubCategory.unit ? 
+                      {!!item.itemSubCategory.unit && item.itemSubCategory.unit != 'null' ? 
                         item.capacity + " " +item.itemSubCategory.unit : 'Not need to measure'
                       }
                     </TableCell>

@@ -7,7 +7,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Rating, Snackbar, SvgIcon, useMediaQuery } from '@mui/material';
 import { Button, Image } from 'antd';
-import { CheckCircleOutlined, DeleteFilled, EditFilled } from '@ant-design/icons';
+import { CheckCircleOutlined, DeleteFilled, EditFilled, EnterOutlined, EyeFilled, RightSquareFilled } from '@ant-design/icons';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import EmailIcon from '@mui/icons-material/Email';
 import { useState } from 'react';
@@ -93,16 +93,11 @@ export const StoresCard = (props) => {
   return (<>{!!store.user  &&
   <Grid container sx={{boxShadow : 1 , borderRadius : 1}}>
       
-          <Grid xs={12} md={3}
-            sx={{
-              background : '#e6f4fc'
-            }}
-          >
+          <Grid xs={12} md={3} >
             <Image
-                component="img"
                 style={{
                   height : 300,
-                  width : 400,
+                  width : 300,
                   objectFit : 'contain',
                 }}
                 src= {storeImage+store.slug+"/"+store.avtar}
@@ -232,6 +227,13 @@ export const StoresCard = (props) => {
                   >
                   <Button type='primary'  style= {{marginTop : '5px',width:'100%'}}  icon={<EditFilled />} primary>
                       Edit
+                  </Button>
+                </Link>
+
+
+                <Link title='Store Detail' style={{textDecoration : 'none' , color : 'black'}} href={"/store/"+ store.user.slug}>
+                <Button type='primary'  style= {{marginTop : '5px',width:'100%'}}  icon={<RightSquareFilled />} primary>
+                      Visit
                   </Button>
                 </Link>
                 <Button type="primary" variant="outlined" style= {{marginTop : '5px'}} icon={<DeleteFilled />} danger 

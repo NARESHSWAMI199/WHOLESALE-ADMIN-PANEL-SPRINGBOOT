@@ -15,7 +15,7 @@ const ImageInput = (props) => {
   const [fileList, setFileList] = useState([]);
   const [totalImage,setTotalImage] = useState(2)
   const accept = {
-    accept: '.png,.jpg,.jpeg,.webp,.jifi',
+    accept: '.png,.jpg,.jpeg,',
  };
   useEffect(()=>{
     if(!!props.totalImage || props.totalImage == 0){
