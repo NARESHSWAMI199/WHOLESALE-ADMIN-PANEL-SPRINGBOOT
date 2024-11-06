@@ -155,7 +155,11 @@ const Page = () => {
           py: 8,
         }}
       >
-        <Container  sx={{overflowX :'auto'}} maxWidth="xl">
+        <Box sx={{
+                    margin : '0 auto',
+                    width : '95%',
+                    overflow : 'auto'
+                }}>
           <Stack spacing={3}>
             <CustomerHeaders  headerTitle={"All Store"} userType="W" />
             <BasicSearch onSearch={onSearch} />
@@ -185,7 +189,7 @@ const Page = () => {
                     <Pagination  onChange={(page) => setData({...data,pageNumber : page-1})}  align="center" defaultCurrent={1} total={totalPages*10} />
                </Box>
           </Stack>
-        </Container>
+        </Box>
 
 
 

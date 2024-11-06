@@ -176,7 +176,10 @@ const Page = () => {
           py: 8
         }}
       >
-        <Container maxWidth="xl">
+          <Box sx={{
+                    margin : '0 auto',
+                    width : '95%'
+                }}>
           <Stack spacing={3}>
                    
           <Stack
@@ -221,7 +224,7 @@ const Page = () => {
               onDelete = {onDelete}
             />
           </Stack>
-        </Container>
+        </Box>
         
       </Box>
     </>
