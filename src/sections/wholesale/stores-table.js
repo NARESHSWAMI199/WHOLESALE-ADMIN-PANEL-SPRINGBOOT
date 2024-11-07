@@ -125,7 +125,12 @@ export const StoresCard = (props) => {
                 justifyContent : 'center' , 
                 textAlign : 'left'
               }} >
-              <CardContent sx={{ flex: '1 0 auto', mx : '20px' }}>
+              <CardContent sx={{ flex: '1 0 auto', mx : '20px' ,
+                display : 'flex',
+                flexDirection : 'column',
+                justifyContent : 'center',
+                textAlign : 'left' 
+                }}>
                 <Typography component="div" variant="h5">
                   <Link title='Store Detail' style={{textDecoration : 'none' , color : 'black'}} href={"/store/"+ store.user.slug}>
                     {toTitleCase(store.storeName)}
