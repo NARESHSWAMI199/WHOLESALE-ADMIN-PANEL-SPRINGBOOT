@@ -12,6 +12,7 @@ import { StoresCard } from 'src/sections/wholesale/stores-table';
 import { Divider, Pagination } from 'antd';
 import { useRouter } from 'next/router';
 import Spinner from 'src/sections/spinner';
+import styled from '@emotion/styled';
 
 
 
@@ -130,6 +131,16 @@ const Page = () => {
   }
   } 
 
+  /** Custom container */
+  const Container = styled.div`
+  max-width: 100%;
+  height: auto; 
+
+  @media (min-width: 768px) {
+    width: 95%;
+    margin : 0 auto;
+  }
+`;
 
   return (
     <>
@@ -155,26 +166,22 @@ const Page = () => {
           py: 8,
         }}
       >
-        <Box sx={{
-                    margin : '0 auto',
-                    width : '70%',
-                    overflow : 'auto'
-                }}>
-          <Stack spacing={3}>
-            <CustomerHeaders  headerTitle={"All Store"} userType="W" />
-            <BasicSearch onSearch={onSearch} />
-          <Spinner show={showSpinner}/>
-          {stores.map((store,i) =>{
-             return(<StoresCard  key={i} 
-              deleteStore={onDelete}
-              store={store}  />)
-          } ) }
+        <Container style={{padding : 10}}>
+            <Stack spacing={3}>
+              <CustomerHeaders  headerTitle={"All Store"} userType="W" />
+              <BasicSearch onSearch={onSearch} />
+            <Spinner show={showSpinner}/>
+            {stores.map((store,i) =>{
+              return(<StoresCard  key={i} 
+                deleteStore={onDelete}
+                store={store}  />)
+            } ) }
 
-                <Box sx={{m:2,display:'flex',justifyContent:'center'}}>
-                    <Pagination  onChange={(page) => setData({...data,pageNumber : page-1})}  align="center" defaultCurrent={1} total={totalPages*10} />
-               </Box>
-          </Stack>
-        </Box>
+                  <Box sx={{m:2,display:'flex',justifyContent:'center'}}>
+                      <Pagination  onChange={(page) => setData({...data,pageNumber : page-1})}  align="center" defaultCurrent={1} total={totalPages*10} />
+                </Box>
+            </Stack>
+        </Container>
 
 
 

@@ -21,6 +21,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import { useAuth } from 'src/hooks/use-auth';
 import { host, storeImage, toTitleCase } from 'src/utils/util';
+import styled from '@emotion/styled';
 
 
 export const StoresCard = (props) => {
@@ -88,24 +89,42 @@ export const StoresCard = (props) => {
   }
 
 
+  const ImageContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
+
+  const Image = styled.img`
+    max-width: 100%;
+    height: auto;
+    object-fit : cover;
+
+
+    @media (min-width: 768px) {
+      width: 360px;
+    }
+  `;
 
 
   return (<>{!!store.user  &&
   <Grid container sx={{boxShadow : 1 , borderRadius : 1}}>
       
-          <Grid xs={12} md={3} >
-            <Image
-                style={{
-                  height : 300,
-                  width : 300,
-                  objectFit : 'contain',
-                }}
-                src= {storeImage+store.slug+"/"+store.avtar}
-                alt="Live from space store cover"
-          />
+          <Grid xs={12} md={2} >
+          <ImageContainer>
+              <Image
+                  src= {storeImage+store.slug+"/"+store.avtar}
+                  alt="Live from space store cover"
+            />
+           </ImageContainer>
           </Grid>
 
-          <Grid xs={12} md={8} >
+          <Grid xs={12} md={8} sx={{
+                display : 'flex' , 
+                flexDirection: 'column', 
+                justifyContent : 'center' , 
+                textAlign : 'left'
+              }} >
               <CardContent sx={{ flex: '1 0 auto', mx : '20px' }}>
                 <Typography component="div" variant="h5">
                   <Link title='Store Detail' style={{textDecoration : 'none' , color : 'black'}} href={"/store/"+ store.user.slug}>
