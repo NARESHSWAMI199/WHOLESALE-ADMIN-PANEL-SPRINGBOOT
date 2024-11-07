@@ -93,12 +93,14 @@ export const StoresCard = (props) => {
     display: flex;
     justify-content: center;
     align-items: center;
+    border : 1px solid black;
 `;
 
   const Image = styled.img`
     max-width: 100%;
     height: auto;
     object-fit : cover;
+    
 
 
     @media (min-width: 768px) {
@@ -110,7 +112,13 @@ export const StoresCard = (props) => {
   return (<>{!!store.user  &&
   <Grid container sx={{boxShadow : 1 , borderRadius : 1}}>
       
-          <Grid xs={12} md={2} >
+          <Grid xs={12} md={2} 
+          sx={{
+            display : 'flex' , 
+            justifyContent : 'center' , 
+            alignItems : 'center'
+          }}
+          >
           <ImageContainer>
               <Image
                   src= {storeImage+store.slug+"/"+store.avtar}
