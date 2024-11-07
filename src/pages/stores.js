@@ -14,10 +14,6 @@ import { useRouter } from 'next/router';
 import Spinner from 'src/sections/spinner';
 import styled from '@emotion/styled';
 
-
-
-const now = new Date();
-
 const Page = () => {
 
   const [open,setOpen] = useState()
@@ -131,16 +127,18 @@ const Page = () => {
   }
   } 
 
-  /** Custom container */
-  const Container = styled.div`
-  max-width: 100%;
-  height: auto; 
-
-  @media (min-width: 768px) {
-    width: 95%;
-    margin : 0 auto;
-  }
-`;
+  /** don't want re-render again */
+  const Container = useMemo(()=>{
+    return styled.div`
+    max-width: 100%;
+    height: auto; 
+  
+    @media (min-width: 768px) {
+      width: 95%;
+      margin : 0 auto;
+    }
+  `;
+  },[])
 
   return (
     <>

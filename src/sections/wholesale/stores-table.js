@@ -22,6 +22,7 @@ import axios from 'axios';
 import { useAuth } from 'src/hooks/use-auth';
 import { host, storeImage, toTitleCase } from 'src/utils/util';
 import styled from '@emotion/styled';
+import { useMemo } from 'react';
 
 
 export const StoresCard = (props) => {
@@ -89,24 +90,25 @@ export const StoresCard = (props) => {
   }
 
 
-  const ImageContainer = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border : 1px solid black;
-`;
+  const ImageContainer =useMemo(()=>{
+    return styled.div`
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  `;
+  },[])
 
-  const Image = styled.img`
+  const Image = useMemo(()=>{ 
+    return styled.img`
     max-width: 100%;
     height: auto;
-    object-fit : cover;
-    
-
+    object-fit : cover; 
 
     @media (min-width: 768px) {
       width: 360px;
     }
   `;
+  },[])
 
 
   return (<>{!!store.user  &&
