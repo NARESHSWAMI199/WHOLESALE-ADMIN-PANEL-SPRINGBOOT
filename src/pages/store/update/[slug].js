@@ -205,12 +205,14 @@ const handleSubmit = useCallback(async (e) =>{
       form.reset();
       setStore({})
       setAddress({})
+      setOpen(true)
     }).catch(err=>{
         let errResponse = err.response
         setMessage(!!errResponse ? errResponse.data.message : err.message)
         setFlag("error")
+        setOpen(true)
     })
-    setOpen(true)
+
   })
 
 const handleClose = useCallback(()=>{

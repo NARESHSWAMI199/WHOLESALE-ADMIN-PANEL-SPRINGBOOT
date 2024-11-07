@@ -167,11 +167,13 @@ const UpdateItem = () => {
                     setFlag("success")
                     form.reset();
                     setValues({})
+                    setOpen(true)
                 }).catch(err => {
                     setMessage(!!err.response ? err.response.data.message : err.message)
                     setFlag("error")
+                    setOpen(true)
                 })
-            setOpen(true)
+
         })
 
     const handleClose = useCallback(() => {
