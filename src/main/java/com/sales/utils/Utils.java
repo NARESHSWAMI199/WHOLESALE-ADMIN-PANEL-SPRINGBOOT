@@ -102,14 +102,14 @@ public class Utils {
 
 
     public static String isValidName(final String name,String flag) throws MyException {
-     /*   String NAME_PATTERN =
-                "^[A-Z](?=.{1,100}$)[A-Za-z_& ]*(?:\\h+[A-Z][A-Za-z]*)*$";
+        String NAME_PATTERN =
+                "^[a-zA-Z](?=.{1,100}$)[A-Za-z_& ]*(?:\\h+[A-Z][A-Za-z]*)*$";
         if(flag.equalsIgnoreCase("user")){
-            *//** item can hold more then 0 char and less then 28 and don't  support &*//*
-            NAME_PATTERN = "^[A-Z](?=.{1,28}$)[A-Za-z_ ]*(?:\\h+[A-Z][A-Za-z]*)*$";
+            /* item can hold more then 0 char and less then 28 and don't  support &*/
+            //NAME_PATTERN = "^[A-Z](?=.{1,28}$)[A-Za-z_ ]*(?:\\h+[A-Z][A-Za-z]*)*$";
         } else if (flag.equalsIgnoreCase("item")) {
-            *//** item can hold more then 0 char and less then 200*//*
-            NAME_PATTERN = "^[A-Z](?=.{1,200}$)[A-Za-z_ ]*(?:\\h+[A-Z][A-Za-z]*)*$";
+            /* item can hold more then 0 char and less then 200 */
+            //NAME_PATTERN = "^[A-Z](?=.{1,200}$)[A-Za-z_ ]*(?:\\h+[A-Z][A-Za-z]*)*$";
         }
         Pattern pattern = Pattern.compile(NAME_PATTERN);
         Matcher matcher = pattern.matcher(name);
@@ -126,7 +126,7 @@ public class Utils {
             message = "Not a valid "+flag+" name.";
             System.out.println(message);
             throw  new MyException(message + " "+neededSyntax);
-        }*/
+        }
         return name;
     }
 
