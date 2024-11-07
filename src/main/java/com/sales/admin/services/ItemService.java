@@ -234,13 +234,20 @@ public class ItemService extends RepoContainer{
             if (UploadImageValidator.isValidImage(itemImage, GlobalConstant.minWidth,
                     GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
                     GlobalConstant.allowedAspectRatios, GlobalConstant.allowedFormats)) {
+
                     String fileOriginalName = itemImage.getOriginalFilename().replaceAll(" ", "_");
                     String dirPath = itemImagePath+slug+"/";
                     File dir = new File(dirPath);
                     if(!dir.exists()) dir.mkdirs();
-                    File file = new File(dirPath+fileOriginalName);
+                    String filePath = dirPath+fileOriginalName;
+                    File file = new File(filePath);
+
                     itemImage.transferTo(file);
-                return itemHbRepository.updateItemImage(slug,fileOriginalName);
+                    if (UploadImageValidator.hasWhiteBackground(new File(filePath))) {
+                        return itemHbRepository.updateItemImage(slug, fileOriginalName);
+                    }else{
+                        throw new MyException("Image must have a white background");
+                    }
             } else {
                 throw new MyException("Image is not fit in accept ratio. please resize you image before upload.");
             }
