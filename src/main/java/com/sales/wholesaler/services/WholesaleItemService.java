@@ -9,6 +9,8 @@ import com.sales.entities.ItemCategory;
 import com.sales.entities.ItemSubCategory;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
+import com.sales.global.GlobalConstant;
+import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -160,7 +162,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
     }
 
     @Transactional
-    public Item createItem (ItemDto itemDto, User loggedUser) throws IOException {
+    public Item createItem (ItemDto itemDto, User loggedUser) throws MyException, IOException {
         Item item = new Item();
         item.setWholesaleId(itemDto.getStoreId());
         item.setName(itemDto.getName());
@@ -174,6 +176,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         item.setCreatedBy(loggedUser.getId());
         item.setUpdatedBy(loggedUser.getId());
         item.setLabel(itemDto.getLabel());
+        item.setCapacity(itemDto.getCapacity());
         item.setItemCategory(itemDto.getItemCategory());
         item.setItemSubCategory(itemDto.getItemSubCategory());
         item.setSlug(UUID.randomUUID().toString());
@@ -186,16 +189,30 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         return wholesaleItemRepository.save(item);
     }
 
+
     @Transactional
-    public String saveItemImage(MultipartFile profileImage, String slug) throws MyException, IOException {
-        if(profileImage !=null) {
-            String fileOriginalName = profileImage.getOriginalFilename().replaceAll(" ", "_");
-            if (!Utils.isValidImage(fileOriginalName)) throw new MyException("Not a valid file.");
-            String dirPath = itemImagePath+slug+"/";
-            File dir = new File(dirPath);
-            if(!dir.exists()) dir.mkdirs();
-            profileImage.transferTo(new File(dirPath+fileOriginalName));
-            return fileOriginalName;
+    public String saveItemImage(MultipartFile itemImage, String slug) throws MyException, IOException {
+        if(itemImage !=null) {
+            if (UploadImageValidator.isValidImage(itemImage, GlobalConstant.minWidth,
+                    GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
+                    GlobalConstant.allowedAspectRatios, GlobalConstant.allowedFormats)) {
+
+                String fileOriginalName = itemImage.getOriginalFilename().replaceAll(" ", "_");
+                String dirPath = itemImagePath+slug+"/";
+                File dir = new File(dirPath);
+                if(!dir.exists()) dir.mkdirs();
+                String filePath = dirPath+fileOriginalName;
+                File file = new File(filePath);
+
+                itemImage.transferTo(file);
+                if (UploadImageValidator.hasWhiteBackground(new File(filePath))) {
+                    return fileOriginalName;
+                }else{
+                    throw new MyException("Image must have a white background");
+                }
+            } else {
+                throw new MyException("Image is not fit in accept ratio. please resize you image before upload.");
+            }
         }
         return null;
     }

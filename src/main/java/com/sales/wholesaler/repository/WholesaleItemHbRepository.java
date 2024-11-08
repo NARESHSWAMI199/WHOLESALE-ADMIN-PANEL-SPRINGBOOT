@@ -31,6 +31,7 @@ public class WholesaleItemHbRepository {
     public int updateItems(ItemDto itemDto, User loggedUser){
         String hqQuery = "update Item set " +
                 "name =:name," +
+                "capacity =:capacity," +
                 "description =:description," +
                 "price =:price," +
                 "discount =:discount," +
@@ -42,6 +43,7 @@ public class WholesaleItemHbRepository {
                 "where slug =:slug and wholesaleId =:wholesaleId";
         Query query = entityManager.createQuery(hqQuery);
         query.setParameter("name" , itemDto.getName());
+        query.setParameter("capacity" , itemDto.getCapacity());
         query.setParameter("description" , itemDto.getDescription());
         query.setParameter("price" , itemDto.getPrice());
         query.setParameter("discount" , itemDto.getDiscount());

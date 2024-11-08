@@ -5,6 +5,8 @@ import com.sales.dto.SearchFilters;
 import com.sales.dto.StoreDto;
 import com.sales.entities.*;
 import com.sales.exceptions.MyException;
+import com.sales.global.GlobalConstant;
+import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -114,15 +116,21 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
 
 
     @Transactional
-    public String saveStoreImage(MultipartFile profileImage, String slug) throws MyException, IOException {
-        if(profileImage !=null ) {
-            String fileOriginalName = profileImage.getOriginalFilename().replaceAll(" ", "_");
-            if (!Utils.isValidImage(fileOriginalName)) throw new MyException("Not a valid file.");
-            String dirPath = storeImagePath+"/"+slug+"/";
-            File dir = new File(dirPath);
-            if(!dir.exists()) dir.mkdirs();
-            profileImage.transferTo(new File(dirPath+fileOriginalName));
-            return fileOriginalName;
+    public String saveStoreImage(MultipartFile storeImage, String slug) throws MyException, IOException {
+        if(storeImage !=null ) {
+            if (UploadImageValidator.isValidImage(storeImage, GlobalConstant.minWidth,
+                    GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
+                    GlobalConstant.allowedAspectRatios, GlobalConstant.allowedFormats)) {
+                String fileOriginalName = storeImage.getOriginalFilename().replaceAll(" ", "_");
+                String dirPath = storeImagePath+"/"+slug+"/";
+                File dir = new File(dirPath);
+                if(!dir.exists()) dir.mkdirs();
+                File file = new File(dirPath+fileOriginalName);
+                storeImage.transferTo(file);
+                return fileOriginalName;
+            } else {
+                throw new MyException("Image is not fit in accept ratio. please resize you image before upload.");
+            }
         }
         return null;
     }
