@@ -7,7 +7,6 @@ import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
@@ -18,15 +17,7 @@ public class WholesaleItemHbRepository {
 
     @Autowired
     EntityManager entityManager;
-    int id;
-    @Column(name = "name")
-    String name;
-    @Column(name = "price")
-    float price;
-    @Column(name = "discount")
-    float discount;
-    @Column(name = "description")
-    String description;
+
 
     public int updateItems(ItemDto itemDto, User loggedUser){
         String hqQuery = "update Item set " +
