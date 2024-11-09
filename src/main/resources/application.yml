@@ -1,13 +1,13 @@
 
 server:
-  port : 8081
+  port : 8080
 
 
 spring:
   datasource:
     #      url : jdbc:mysql://10.11.13.49:3306/test
     url : jdbc:mysql://localhost:3306/test
-  # username : sales
+#    username : sales
     username : root
     password : password
     driver-class-name : com.mysql.cj.jdbc.Driver
@@ -46,3 +46,9 @@ item:
   #  get : src/main/resources/images/store/
   get: src/main/resources/images/items/
 
+removebg :
+  #  absolute : C:/Users/DATA/Documents/sales/sales-backend/src/main/resources/public/
+  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/removebg/
+  relative :
+  #  get : src/main/resources/public/
+  get : src/main/resources/images/removebg/
