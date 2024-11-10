@@ -1,7 +1,9 @@
 package com.sales.wholesaler.controller;
 
 import com.sales.entities.User;
+import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
+import com.sales.utils.UploadImageValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -41,7 +43,19 @@ public class RemoveBg {
         if (!filePath.exists()){
             filePath.mkdirs();
         }
+
         file.transferTo(filePath);
+
+       /* if (UploadImageValidator.isValidImage(file, 200,
+                200, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
+                GlobalConstant.allowedAspectRatios, GlobalConstant.allowedFormats)) {
+            file.transferTo(filePath);
+        }
+        else {
+            throw new MyException("Image is not fit in accept ratio. please resize you image before upload.");
+        }
+    */
+
 
         // Create a request body with the base64 image
         HttpHeaders headers = new HttpHeaders();
@@ -50,7 +64,7 @@ public class RemoveBg {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("input_path", filePath.getAbsolutePath());
         body.add("output_path", outputPath+user.getSlug()+"/");
-        body.add("output_filename","result_"+ file.getOriginalFilename());
+        body.add("output_filename","result_"+ file.getName());
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 
@@ -61,7 +75,7 @@ public class RemoveBg {
         // Extract the output path from the response
         String outputPathRes = responseEntity.getBody();
         Map<String,String> result = new HashMap<>();
-        result.put("downloadPath", outputPathRes);
+        result.put("downloadPath","/removebg/"+outputPathRes);
         filePath.delete();
         return new ResponseEntity<>(result, responseEntity.getStatusCode());
     }
