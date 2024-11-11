@@ -108,8 +108,7 @@ public class Utils {
             /* item can hold more then 0 char and less then 28 and don't  support &*/
             //NAME_PATTERN = "^[A-Z](?=.{1,28}$)[A-Za-z_ ]*(?:\\h+[A-Z][A-Za-z]*)*$";
         } else if (flag.equalsIgnoreCase("item")) {
-            /* item can hold more then 0 char and less then 200 */
-            //NAME_PATTERN = "^[A-Z](?=.{1,200}$)[A-Za-z_ ]*(?:\\h+[A-Z][A-Za-z]*)*$";
+            NAME_PATTERN = "^[a-zA-Z][a-zA-Z0-9\\s,().-]*$";
         }
         Pattern pattern = Pattern.compile(NAME_PATTERN);
         Matcher matcher = pattern.matcher(name);
