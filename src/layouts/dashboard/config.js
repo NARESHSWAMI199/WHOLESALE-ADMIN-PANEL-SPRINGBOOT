@@ -3,18 +3,15 @@ import CogIcon from '@heroicons/react/24/solid/CogIcon';
 import ShoppingBagIcon from '@heroicons/react/24/solid/ShoppingBagIcon';
 import UserIcon from '@heroicons/react/24/solid/UserIcon';
 import UsersIcon from '@heroicons/react/24/solid/UsersIcon';
-import { StoreOutlined } from '@mui/icons-material';
-import { SvgIcon } from '@mui/material';
-import StoreIcon from '@mui/icons-material/Store';
-import WorkspacePremium from '@mui/icons-material/WorkspacePremium';
-import { useAuth } from 'src/hooks/use-auth';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import BadgeIcon from '@mui/icons-material/Badge';
+import CategoryIcon from '@mui/icons-material/Category';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import SecurityIcon from '@mui/icons-material/Security';
-import BadgeIcon from '@mui/icons-material/Badge';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import StoreIcon from '@mui/icons-material/Store';
+import WallpaperIcon from '@mui/icons-material/Wallpaper';
+import { SvgIcon } from '@mui/material';
 import { suId } from 'src/utils/util';
-import CategoryIcon from '@mui/icons-material/Category';
-
 
 export const items = (user) =>{
 
@@ -105,6 +102,16 @@ export const items = (user) =>{
       )
     },
 
+    {
+      title: 'Remove Background',
+      path: '/removebg',
+      show : true,
+      icon: (
+        <SvgIcon fontSize="small">
+          <WallpaperIcon />
+        </SvgIcon>
+      )
+    },
 
     {
       title: 'Item Categories',
