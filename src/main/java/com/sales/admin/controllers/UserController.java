@@ -66,6 +66,39 @@ public class UserController extends ServiceContainer {
     }
 
 
+
+    @PostMapping("/login/otp")
+    public ResponseEntity<Map<String, Object>> findUserByOtp(@RequestBody UserDto userDetails) {
+        logger.info("====================== ADMIN LOGIN OTP PROCESS STARTED ======================");
+        Map<String, Object> responseObj = new HashMap<>();
+        User user = userService.findUserByOtpAndEmail(userDetails);
+        if (user == null) {
+            responseObj.put("message", "invalid credentials.");
+            responseObj.put("status", 401);
+            return new ResponseEntity<>(responseObj, HttpStatus.UNAUTHORIZED);
+        } else if (user.getStatus().equalsIgnoreCase("A")) {
+            responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
+            responseObj.put("message", "success");
+            responseObj.put("status", 200);
+            responseObj.put("user", user);
+            return new ResponseEntity<>(responseObj, HttpStatus.OK);
+        } else {
+            responseObj.put("message", "You are blocked by admin");
+            responseObj.put("status", 401);
+            return new ResponseEntity<>(responseObj, HttpStatus.OK);
+        }
+    }
+
+
+
+
+    @PostMapping("otp")
+    public ResponseEntity<Map<String,Object>> sendOtp(HttpServletRequest request, @RequestBody UserDto userDto){
+        return null;
+    }
+
+
+
     @Transactional
     @PostMapping(value = {"/add", "/update"})
     public ResponseEntity<Map<String, Object>> register(HttpServletRequest request, @RequestBody UserDto userDto) throws Exception {

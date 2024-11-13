@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository  extends JpaRepository<User, Integer> , JpaSpecificationExecutor {
 
-    @Query(value = "from User where email=:email and password=:password and (userType='S' or userType='A' or userType='SA') ")
+    @Query(value = "from User where email=:email and password=:password and (userType='S' or userType='SA') ")
     User findByEmailAndPassword(@Param("email") String email, @Param("password") String password);
 
 
@@ -22,6 +22,10 @@ public interface UserRepository  extends JpaRepository<User, Integer> , JpaSpeci
     Optional<User> findByWholesalerSLug(@Param("slug")String slug);
 
     User findUserBySlug(String slug);
+
+    @Query(value = "from User where email=:email and otp=:otp and (userType='S' or userType='SA') ")
+    User findUserByOtpAndEmail(@Param("email") String email, @Param("otp") String otp);
+
 
     @Query("select id from User where slug=:slug")
     Integer getUserIdBySlug(String slug);

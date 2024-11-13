@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +47,51 @@ public class UserService extends RepoContainer {
     public User findByEmailAndPassword(UserDto userDto) {
         return userRepository.findByEmailAndPassword(userDto.getEmail(), userDto.getPassword());
     }
+
+    public User findUserByOtpAndEmail(UserDto userDto) {
+        return userRepository.findUserByOtpAndEmail(userDto.getEmail(),userDto.getOtp());
+    }
+
+
+
+    public boolean sendOtp(UserDto userDto){
+        boolean sent = false;
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com"); // Replace with your mail server
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+
+        // email ID of Recipient.
+        String recipient = "naresh.s@xgenplus.com";
+
+        // email ID of Sender.
+        String sender = "nareshswami2334@gmail.com";
+
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication()
+            {
+                return new PasswordAuthentication(sender, "your google key");
+            }
+        });
+        try
+        {
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(sender));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
+            message.setSubject("This is Subject");
+            message.setText("This is a test mail");
+            Transport.send(message);
+            System.out.println("Mail successfully sent");
+        }
+        catch (MessagingException mex)
+        {
+            mex.printStackTrace();
+        }
+        return  sent;
+    }
+
+
 
     public Map<String, Integer> getUserCounts () {
         Map<String,Integer> responseObj = new HashMap<>();

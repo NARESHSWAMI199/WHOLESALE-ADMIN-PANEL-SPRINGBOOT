@@ -18,6 +18,7 @@ public class UserDto extends StoreDto {
     private String status;
     private String contact="";
     private String slug;
+    private String otp;
     private MultipartFile profileImage;
     Integer userId;
     List<Integer> groupList;

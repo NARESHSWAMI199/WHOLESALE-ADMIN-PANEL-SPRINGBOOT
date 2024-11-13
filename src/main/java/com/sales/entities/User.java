@@ -27,6 +27,8 @@ public class User {
     int id;
     @Column(name = "slug")
     String slug;
+    @Column(name = "otp")
+    String otp;
     @Column(name = "avtar")
     String avatar;
     @Column(name = "username")
