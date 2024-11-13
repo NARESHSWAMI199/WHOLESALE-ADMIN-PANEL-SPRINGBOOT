@@ -54,6 +54,46 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
+
+
+    @PostMapping("/login/otp")
+    public ResponseEntity<Map<String, Object>> findUserByOtp(@RequestBody UserDto userDetails) {
+        logger.info("====================== ADMIN LOGIN OTP PROCESS STARTED ======================");
+        Map<String, Object> responseObj = new HashMap<>();
+        User user = wholesaleUserService.findUserByOtpAndEmail(userDetails);
+        if (user == null) {
+            responseObj.put("message", "Wrong otp password.");
+            responseObj.put("status", 401);
+            return new ResponseEntity<>(responseObj, HttpStatus.UNAUTHORIZED);
+        } else if (user.getStatus().equalsIgnoreCase("A")) {
+            responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
+            responseObj.put("message", "success");
+            responseObj.put("status", 200);
+            responseObj.put("user", user);
+            wholesaleUserService.resetOtp(user.getEmail());
+            return new ResponseEntity<>(responseObj, HttpStatus.OK);
+        } else {
+            responseObj.put("message", "You are blocked by admin");
+            responseObj.put("status", 401);
+            return new ResponseEntity<>(responseObj, HttpStatus.OK);
+        }
+    }
+
+    @PostMapping("sendOtp")
+    public ResponseEntity<Map<String,Object>> sendOtp(HttpServletRequest request, @RequestBody UserDto userDto){
+        Map<String,Object> responseObj = new HashMap<>();
+        boolean sendOtp = wholesaleUserService.sendOtp(userDto);
+        if(sendOtp)  {
+            responseObj.put("status",200);
+            responseObj.put("message", "Otp sent successfully");
+        }else {
+            responseObj.put("status",400);
+            responseObj.put("message", "We facing some issue to send otp to this mail ->"+userDto.getEmail());
+        }
+        return  new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
+    }
+
+
     @Transactional
     @PostMapping(value = {"/update"})
     public ResponseEntity<Map<String, Object>> updateAuth(HttpServletRequest request, @RequestBody UserDto userDto) {

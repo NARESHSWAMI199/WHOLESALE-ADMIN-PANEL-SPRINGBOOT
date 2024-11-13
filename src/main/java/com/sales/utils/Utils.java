@@ -14,6 +14,8 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Random;
+
 @Component
 public class Utils {
 
@@ -128,5 +130,16 @@ public class Utils {
         }
         return name;
     }
+
+
+    public static int generateOTP(int length) {
+        Random random = new Random();
+        int otp = 0;
+        for (int i = 0; i < length; i++) {
+            otp = otp * 10 + random.nextInt(10);
+        }
+        return otp;
+    }
+
 
 }

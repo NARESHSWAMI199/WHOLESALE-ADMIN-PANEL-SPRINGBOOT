@@ -33,7 +33,12 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         String arr[] = {
                 "/admin/auth/login",
+                "/admin/auth/login/otp",
+                "/admin/auth/sendOtp",
+                "/admin/auth/register",
                 "/wholesale/auth/login",
+                "/wholesale/auth/login/otp",
+                "/wholesale/auth/sendOtp",
                 "/wholesale/auth/register",
                 "/v3/api-docs",
                 "/swagger-resources/**",

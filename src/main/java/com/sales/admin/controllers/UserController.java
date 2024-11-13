@@ -73,7 +73,7 @@ public class UserController extends ServiceContainer {
         Map<String, Object> responseObj = new HashMap<>();
         User user = userService.findUserByOtpAndEmail(userDetails);
         if (user == null) {
-            responseObj.put("message", "invalid credentials.");
+            responseObj.put("message", "Wrong otp password.");
             responseObj.put("status", 401);
             return new ResponseEntity<>(responseObj, HttpStatus.UNAUTHORIZED);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
@@ -81,6 +81,7 @@ public class UserController extends ServiceContainer {
             responseObj.put("message", "success");
             responseObj.put("status", 200);
             responseObj.put("user", user);
+            userService.resetOtp(user.getEmail());
             return new ResponseEntity<>(responseObj, HttpStatus.OK);
         } else {
             responseObj.put("message", "You are blocked by admin");
@@ -92,9 +93,18 @@ public class UserController extends ServiceContainer {
 
 
 
-    @PostMapping("otp")
+    @PostMapping("sendOtp")
     public ResponseEntity<Map<String,Object>> sendOtp(HttpServletRequest request, @RequestBody UserDto userDto){
-        return null;
+        Map<String,Object> responseObj = new HashMap<>();
+        boolean sendOtp = userService.sendOtp(userDto);
+        if(sendOtp)  {
+            responseObj.put("status",200);
+            responseObj.put("message", "Otp sent successfully");
+        }else {
+            responseObj.put("status",400);
+            responseObj.put("message", "We facing some issue to send otp to this mail ->"+userDto.getEmail());
+        }
+        return  new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
 

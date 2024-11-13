@@ -74,6 +74,9 @@ public class RepoContainer {
     @Autowired
     protected StoreNotificationRepository storeNotificationRepository;
 
+    @Autowired
+    protected SupportEmailsRepository supportEmailsRepository;
+
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?

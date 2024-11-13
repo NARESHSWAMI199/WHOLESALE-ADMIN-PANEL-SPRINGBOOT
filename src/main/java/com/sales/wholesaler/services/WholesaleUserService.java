@@ -4,6 +4,7 @@ package com.sales.wholesaler.services;
 import com.sales.dto.PasswordDto;
 import com.sales.dto.StoreDto;
 import com.sales.dto.UserDto;
+import com.sales.entities.SupportEmail;
 import com.sales.entities.User;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +12,24 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
+
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+
 
 @Service
 public class WholesaleUserService extends WholesaleRepoContainer {
@@ -35,6 +49,76 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         String password = param.get("password");
         return wholesaleUserRepository.findByEmailAndPassword(email,password);
     }
+
+    public User findUserByOtpAndEmail(UserDto userDto) {
+        return  wholesaleUserRepository.findUserByOtpAndEmail(userDto.getEmail(),userDto.getPassword());
+    }
+
+    public void resetOtp(String email){
+        wholesaleUserHbRepository.updateOtp(email,"");
+    }
+
+
+    public boolean sendOtp(UserDto userDto){
+        boolean sent = false;
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com"); // Replace with your mail server
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+
+        User user = wholesaleUserRepository.findUserByEmail(userDto.getEmail());
+        if (user == null) return  false;
+
+        String recipient = user.getEmail();
+
+        SupportEmail supportEmail =  wholesaleSupportEmailsRepository.findSupportEmailBySupportType("SUPPORT");
+        String sender = supportEmail.getEmail();
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication()
+            {
+                return new PasswordAuthentication(sender, supportEmail.getPasswordKey());
+            }
+        });
+        try
+        {
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(sender));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
+            String otp = String.valueOf(Utils.generateOTP(6));
+            String subject = "Subject: Otp-in to Receive Updates from Swami Sales";
+            message.setSubject(subject);
+            String body = "Dear "+user.getUsername()+",<br/>" +
+                    "<br/>" +
+                    "You recently requested a login otp for your Swami Sales account. <br/>" +
+                    "<br/>" +
+                    "Your one-time password (OTP) is: <b>"+otp+"</b><br/>" +
+                    "<br/>" +
+                    "Please use this OTP to verify your identity and complete the password reset process. <br/>" +
+                    "<br/>" +
+                    "<b>Important:</b><br/>" +
+                    "<br/>" +
+                    "* Do not share this OTP with anyone.<br/>" +
+                    "* If you did not request this OTP, please ignore this email.<br/>" +
+                    "<br/>" +
+                    "If you have any issues or require further assistance, please contact our customer support team at support@swamisales.com.\n" +
+                    "<br/>" +
+                    "Thank you,<br/>" +
+                    "The Swami Sales Team<br/>";
+            message.setContent(body, "text/html; charset=utf-8");
+            Transport.send(message);
+            wholesaleUserHbRepository.updateOtp(user.getEmail(),otp);
+            sent = true;
+        }
+        catch (MessagingException mex)
+        {
+            mex.printStackTrace();
+        }
+        return  sent;
+    }
+
+
+
 
 
     public StoreDto userDtoToStoreDto(UserDto userDto) {

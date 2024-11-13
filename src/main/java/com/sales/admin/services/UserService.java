@@ -4,6 +4,7 @@ package com.sales.admin.services;
 import com.sales.dto.*;
 import com.sales.entities.Store;
 import com.sales.entities.StorePermissions;
+import com.sales.entities.SupportEmail;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
@@ -49,9 +50,13 @@ public class UserService extends RepoContainer {
     }
 
     public User findUserByOtpAndEmail(UserDto userDto) {
-        return userRepository.findUserByOtpAndEmail(userDto.getEmail(),userDto.getOtp());
+        /** here password key has otp */
+        return  userRepository.findUserByOtpAndEmail(userDto.getEmail(),userDto.getPassword());
     }
 
+    public void resetOtp(String email){
+        userHbRepository.updateOtp(email,"");
+    }
 
 
     public boolean sendOtp(UserDto userDto){
@@ -61,17 +66,18 @@ public class UserService extends RepoContainer {
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
 
-        // email ID of Recipient.
-        String recipient = "naresh.s@xgenplus.com";
+        User user = userRepository.findUserByEmail(userDto.getEmail());
+        if (user == null) return  false;
 
-        // email ID of Sender.
-        String sender = "nareshswami2334@gmail.com";
+        String recipient = user.getEmail();
 
+        SupportEmail supportEmail =  supportEmailsRepository.findSupportEmailBySupportType("SUPPORT");
+        String sender = supportEmail.getEmail();
         Session session = Session.getInstance(props, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication()
             {
-                return new PasswordAuthentication(sender, "your google key");
+            return new PasswordAuthentication(sender, supportEmail.getPasswordKey());
             }
         });
         try
@@ -79,10 +85,30 @@ public class UserService extends RepoContainer {
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(sender));
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
-            message.setSubject("This is Subject");
-            message.setText("This is a test mail");
+            String otp = String.valueOf(Utils.generateOTP(6));
+            String subject = "Subject: Otp-in to Receive Updates from Swami Sales";
+            message.setSubject(subject);
+            String body = "Dear "+user.getUsername()+",<br/>" +
+                    "<br/>" +
+                    "You recently requested a login otp for your Swami Sales account. <br/>" +
+                    "<br/>" +
+                    "Your one-time password (OTP) is: <b>"+otp+"</b><br/>" +
+                    "<br/>" +
+                    "Please use this OTP to verify your identity and complete the password reset process. <br/>" +
+                    "<br/>" +
+                    "<b>Important:</b><br/>" +
+                    "<br/>" +
+                    "* Do not share this OTP with anyone.<br/>" +
+                    "* If you did not request this OTP, please ignore this email.<br/>" +
+                    "<br/>" +
+                    "If you have any issues or require further assistance, please contact our customer support team at support@swamisales.com.\n" +
+                    "<br/>" +
+                    "Thank you,<br/>" +
+                    "The Swami Sales Team<br/>";
+            message.setContent(body, "text/html; charset=utf-8");
             Transport.send(message);
-            System.out.println("Mail successfully sent");
+            userHbRepository.updateOtp(user.getEmail(),otp);
+            sent = true;
         }
         catch (MessagingException mex)
         {

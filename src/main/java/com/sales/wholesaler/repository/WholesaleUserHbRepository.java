@@ -63,5 +63,14 @@ public class WholesaleUserHbRepository {
         return query.executeUpdate();
     }
 
+    public void updateOtp(String email, String otp){
+        String hql = "Update User set otp=:otp where email=:email";
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("otp",otp);
+        query.setParameter("email",email);
+        query.executeUpdate();
+    }
+
+
 
 }

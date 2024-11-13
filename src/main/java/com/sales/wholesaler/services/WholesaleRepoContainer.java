@@ -62,6 +62,8 @@ public class WholesaleRepoContainer {
     @Autowired
     protected WholesaleHbPromotion wholesaleHbPromotion;
 
+    @Autowired
+    protected WholesaleSupportEmailsRepository wholesaleSupportEmailsRepository;
 
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());

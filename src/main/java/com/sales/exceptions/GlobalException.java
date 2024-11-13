@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MultipartException;
 
+import javax.mail.Message;
 import javax.transaction.Transactional;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.logging.Logger;
@@ -23,6 +25,17 @@ public class GlobalException {
 
     @Autowired
     Logger logger;
+
+
+    @Transactional
+    @ExceptionHandler(value = {MultipartException.class})
+    @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
+    public ErrorDto noMultipartException (MultipartException ex , WebRequest request){
+        logger.info(ex.getMessage());
+        return new ErrorDto("This is not a multipart request", 400);
+    }
+
+
     @Transactional
     @ExceptionHandler(value = {ObjectNotFoundException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
