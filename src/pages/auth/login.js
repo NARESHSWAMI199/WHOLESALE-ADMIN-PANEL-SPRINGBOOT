@@ -38,6 +38,7 @@ const Page = (props) => {
   const [showOtpInput,setShowOtpInput] = useState(false)
 
   const handleChange = (event) => {
+    if ([event.target.name] == 'email') setShowOtpInput(false)
     setValues((previous)=>({
       ...previous,
       [event.target.name] : event.target.value
@@ -46,7 +47,6 @@ const Page = (props) => {
 
 
   const sendOtp = () =>{
-      setShowOtpInput(false)
       if(!!values.email ){
       setShowSpinner(true)
       axios.post(host+"/admin/auth/sendOtp",{email : values.email})
@@ -58,7 +58,7 @@ const Page = (props) => {
         setShowSpinner(false)
       })
       .catch(err => {
-        setMessage(err.message)
+        setMessage(!!err.response ? err.response.data.message : err.message )
         setFlag("error")
         setOpen(true)
         setShowSpinner(false)
