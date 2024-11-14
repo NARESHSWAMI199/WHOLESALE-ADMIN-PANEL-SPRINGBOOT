@@ -26,6 +26,7 @@ public interface UserRepository  extends JpaRepository<User, Integer> , JpaSpeci
     @Query(value = "from User where email=:email and otp=:otp and (userType='S' or userType='SA') ")
     User findUserByOtpAndEmail(@Param("email") String email, @Param("otp") String otp);
 
+    @Query(value = "from User where email=:email and (userType='S' or userType='SA')   ")
     User findUserByEmail(@Param("email") String email);
 
     @Query("select id from User where slug=:slug")

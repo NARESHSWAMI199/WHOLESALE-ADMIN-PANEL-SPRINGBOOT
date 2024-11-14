@@ -49,7 +49,7 @@ public class GroupSpecifications {
 
     public static Specification<Group> notSuperAdmin(User loggedUser) {
         return (root, query, criteriaBuilder) -> {
-            if(loggedUser.getId() == 0) return  null;
+            if(loggedUser.getUserType().equals("SA")) return  null;
             return criteriaBuilder.notEqual(root.get(Group_.ID), 0);
         };
     }

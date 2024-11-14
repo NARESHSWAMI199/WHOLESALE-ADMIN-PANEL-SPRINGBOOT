@@ -20,7 +20,8 @@ public interface WholesaleUserRepository extends JpaRepository<User, Integer> , 
     @Query(value = "from User where slug=:slug and userType='W'")
     Optional<User> findByWholesalerSLug(@Param("slug")String slug);
 
-    User findUserByEmail(String email);
+    @Query(value = "from User where email=:email and userType='W' ")
+    User findUserByEmail(@Param("email") String email);
 
     @Query(value = "from User where email=:email and otp=:otp and userType='W' ")
     User findUserByOtpAndEmail(@Param("email") String email, @Param("otp") String otp);
