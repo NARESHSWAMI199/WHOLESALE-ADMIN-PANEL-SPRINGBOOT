@@ -2,6 +2,7 @@ package com.sales.admin.repositories;
 
 
 import com.sales.dto.GroupDto;
+import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,8 +85,8 @@ public class PermissionHbRepository {
 
 
 
-    public int assignGroupsToUser(int userId, List<Integer> groups) throws MyException {
-        if(groups.contains(GlobalConstant.suId)) groups.remove((Integer) GlobalConstant.suId);
+    public int assignGroupsToUser(int userId, List<Integer> groups, User loggedUser) throws MyException {
+        if(groups.contains(GlobalConstant.groupId) && loggedUser.getId() != GlobalConstant.suId) groups.remove((Integer) GlobalConstant.groupId);
         deleteUserGroups(userId);
         if(groups.isEmpty()) throw new MyException("Please provide at least one group.");
         String values = "";

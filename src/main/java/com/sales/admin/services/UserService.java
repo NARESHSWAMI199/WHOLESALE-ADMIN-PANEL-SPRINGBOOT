@@ -256,7 +256,7 @@ public class UserService extends RepoContainer {
 
         /** going to update user's groups ------------> only for staffs and super admin has group permissions */
         if ((userDto.getUserId() != loggedUser.getId()) && (userDto.getUserType().equals("SA") || userDto.getUserType().equals("S")) ) {
-            int isAssigned = permissionHbRepository.assignGroupsToUser(userDto.getUserId(), userDto.getGroupList());
+            int isAssigned = permissionHbRepository.assignGroupsToUser(userDto.getUserId(), userDto.getGroupList(),loggedUser);
             if (isAssigned < 1)
                 throw new MyException("Something went wrong during update user's groups. please contact to administrator.");
         }else if((userDto.getUserId() != loggedUser.getId()) && userDto.getUserType().equals("W")){

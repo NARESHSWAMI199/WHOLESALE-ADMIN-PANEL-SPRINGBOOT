@@ -120,9 +120,9 @@ public class GroupService extends RepoContainer {
         return permissionHbRepository.deleteGroupBySlug(slug,group.getId());
     }
 
-    public int assignGroupsToUser(UserPermissionsDto userPermissionsDto) throws Exception {
+    public int assignGroupsToUser(UserPermissionsDto userPermissionsDto,User loggedUser) throws Exception {
         int userId = userPermissionsDto.getUserId();
-        return permissionHbRepository.assignGroupsToUser(userId,userPermissionsDto.getGroupList());
+        return permissionHbRepository.assignGroupsToUser(userId,userPermissionsDto.getGroupList(),loggedUser);
     }
 
 
