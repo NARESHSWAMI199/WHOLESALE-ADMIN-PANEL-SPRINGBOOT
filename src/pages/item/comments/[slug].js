@@ -1,33 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import Head from 'next/head';
-import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
-import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
-import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import {  Alert, Box, Button, Card, CardActions, CardContent, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, MenuItem, Rating, Snackbar, Stack, SvgIcon, Typography, useMediaQuery } from '@mui/material';
-import { useSelection } from 'src/hooks/use-selection';
-import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { CustomersTable } from 'src/sections/customer/customers-table';
-import { BasicSearch, CustomersSearch } from 'src/sections/basic-search';
-import { applyPagination } from 'src/utils/apply-pagination';
-import axios from 'axios';
-import { host, itemImage, toTitleCase } from 'src/utils/util';
-import { useAuth } from 'src/hooks/use-auth';
-import { CustomerHeaders } from 'src/sections/customer/customers-header';
-import { StoresCard } from 'src/sections/wholesale/stores-table';
-import { Divider, Image } from 'antd';
-import { ArrowLeftIcon, ArrowRightIcon } from '@mui/x-date-pickers';
-import { useRouter } from 'next/router';
-import { CurrencyRupee, Discount, DiscountOutlined, EditOutlined, KeyOutlined } from '@mui/icons-material';
-import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { CurrencyRupee, Discount, EditOutlined } from '@mui/icons-material';
 import KeyIcon from '@mui/icons-material/Key';
-import PersonIcon from '@mui/icons-material/Person';
-import { format } from 'date-fns';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { OptionMenu } from 'src/layouts/option-menu';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { ArrowButtons } from 'src/layouts/arrow-button';
+import { Alert, Box, Button, Card, CardContent, Container, Grid, Rating, Snackbar, Typography } from '@mui/material';
+import { Carousel, Image } from 'antd';
+import axios from 'axios';
+import { format } from 'date-fns';
+import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { useAuth } from 'src/hooks/use-auth';
+import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
+import { OptionMenu } from 'src/layouts/option-menu';
+import { host, itemImage, toTitleCase } from 'src/utils/util';
 
 
 const now = new Date();
@@ -145,20 +130,35 @@ useEffect( ()=>{
       >
         <Container maxWidth="xl">
           <Card>
-            <CardContent sx={{mt:3}}>
+            <CardContent>
               {/* <BasicSearch onSearch={onSearch} /> */}
               <Grid container spacing={3}>
                   <Grid xs={12} md={3}> 
-                      <Image
-                          height="100%"
-                          width ='100%'
-                          max-width='300px'
-                          max-height='300px'
-                          src={itemImage+item.slug+"/"+item.avtar}
-                      />
+                    <Carousel style={{
+                      height : 400,
+                      background : '#303030'
+                    }}>
+                      {!!item.avtars && item.avtars.split(',').map(avtar =>{
+                       return (<Image
+                            width ={376}
+                            height={'auto'}
+                            max-width='300px'
+                            max-height='300px'
+                            src={itemImage+item.slug+"/"+avtar}
+                        />)
+                      })}
+                      </Carousel>
                   </Grid>
                   {/* item Detail */}
-                  <Grid item xs={12} md={7}>
+                    <Grid item xs={12} md={7} 
+                          style={{
+                            display : 'flex',
+                            flexDirection : 'column',
+                            justifyContent : 'center',
+                            // alignItems : 'center',
+                            textAlign : 'left'
+                          }}
+                      >
                           <Typography component="div" variant="h5">
                               {toTitleCase(item.name)}
                           </Typography>
@@ -256,18 +256,29 @@ useEffect( ()=>{
                                   </div>  
                           </Typography>
                   </Grid>
-              <Grid xs={2} md={2}>
-                  <Typography style={{float:'right'}}>
-                    <Link href = {{
-                        pathname : "/item/update/[slug]",
-                        query : {slug : slug}
-                    }}
-                      style={{ textDecoration : 'none', color:'#6C737F'}}
-                    >
-                      <EditOutlined />
-                    </Link>         
-                  </Typography>
-              </Grid>
+
+                 <Grid xs={2} md={2} 
+                  style={{
+                    display : "flex",
+                    justifyContent : 'flex-end',
+                    alignItems :'center'
+                  }}
+                 >
+                        <Link href = {{
+                            pathname : "/item/update/[slug]",
+                            query : {slug : slug}
+                        }}
+                          style={{ 
+                            textDecoration : 'none', 
+                            color:'#6C737F',
+                          }}
+                        >
+                          <Button variant='outlined' icon> <Typography>
+                            Edit
+                          </Typography> </Button>
+                      </Link>         
+                  </Grid>`
+
               </Grid>
             </CardContent>
           </Card>

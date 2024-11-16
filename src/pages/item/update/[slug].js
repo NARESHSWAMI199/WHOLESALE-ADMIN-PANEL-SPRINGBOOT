@@ -27,6 +27,7 @@ import { host, itemImage } from "src/utils/util";
 import { useRouter } from "next/router";
 import ImageInput from "src/sections/image-input";
 import RefreshIcon from '@mui/icons-material/Refresh';
+import MultipleImageInput from "src/sections/multipleImage-input";
 
 
 const UpdateItem = () => {
@@ -42,6 +43,10 @@ const UpdateItem = () => {
     const [values, setValues] = useState({})
     const [categories,setItemCategories] = useState([])
     const [subcategories,setItemSubCategories] = useState([])
+    const [avtars,setAvtars] = useState([])
+    const [newImages,setNewImages] = useState([])
+    /** This is a string becaouse don't get actual files again */
+    const [previousImages,setPreviousImages] = useState('')
   
 
     useEffect(() => {
@@ -63,6 +68,18 @@ const UpdateItem = () => {
         getData();
 
     }, [])
+
+    useEffect(()=>{
+        if(!!values.avtars){
+            console.log(values.avtars)
+            let avatarImages = values.avtars.split(',')
+            let avatarImagesUrls = []
+            for(let avtarImage of avatarImages){
+                avatarImagesUrls.push(values.slug !=undefined ? itemImage+values.slug+"/"+avtarImage : '')
+            }
+            setAvtars(avatarImagesUrls)
+        }   
+    },[values])
 
 
     useEffect(() => {
@@ -154,7 +171,8 @@ const UpdateItem = () => {
                 subCategoryId: formData.get("subcategory"),
                 capacity : !!values.unit && values.unit != 'null' ? formData.get('capacity') : 0 ,
                 measureUnit : formData.get('measureUnit'),
-                itemImage : values.itemImage
+                previousItemImages : previousImages,
+                newItemImages : newImages
             }
 
             axios.defaults.headers = {
@@ -168,6 +186,7 @@ const UpdateItem = () => {
                     form.reset();
                     setValues({})
                     setOpen(true)
+                    setAvtars([])
                 }).catch(err => {
                     setMessage(!!err.response ? err.response.data.message : err.message)
                     setFlag("error")
@@ -181,12 +200,20 @@ const UpdateItem = () => {
     })
 
 
-    const onSubmit = (image) =>{
-        console.log(image)
-        setValues((pervious)=>({
-          ...pervious,
-          itemImage : image.originFileObj
-        }))
+    const onSubmit = (images) =>{
+        console.log(images)
+
+        let previousImages = ''
+        let newImages = []
+        for(let image of images){
+            if(image.hasOwnProperty("oldImage")){
+                previousImages +=image.name + ","
+            }else{
+                newImages.push(image.originFileObj)
+            }
+        }
+        setPreviousImages(previousImages)
+        setNewImages(newImages)
       }
 
     return (<>
@@ -221,8 +248,10 @@ const UpdateItem = () => {
                         <CardContent sx={{ pt: 0 }}>
                             <Box sx={{ m: -1.5 }}>
  
-                            <Box style={{marginLeft : '10px',marginTop: '10px'}}>
-                                <ImageInput onChange={onSubmit} avtar={values.slug !=undefined ? itemImage+values.slug+"/"+values.avtar : ''}/>
+                            <Box sx={{
+                                my: 2
+                            }}>
+                                <MultipleImageInput totalImage={5} onChange={onSubmit} avtars={avtars.length > 0 && avtars}/>
                             </Box>
 
                                 <Grid

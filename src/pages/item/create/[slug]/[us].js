@@ -1,33 +1,32 @@
-import { Box,
-    Button, 
-    Card,
-    CardActions,
-    CardContent,
-    CardHeader,
-    Divider,
-    MenuItem,
-    Select,
-    TextField,
-    Unstable_Grid2 as Grid,
-    InputLabel,
-    FormControl,
-    Snackbar,
-    Checkbox,
-    Alert,
-    Container,
-    Stack
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Checkbox,
+  Container,
+  Divider,
+  FormControl,
+  Unstable_Grid2 as Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  Snackbar,
+  Stack,
+  TextField
 } from "@mui/material";
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
 import axios from "axios";
+import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "src/hooks/use-auth";
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
+import MultipleImageInput from "src/sections/multipleImage-input";
 import { host } from "src/utils/util";
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
-import { useRouter } from "next/router";
-import { redirect } from "next/navigation";
-import ImageInput from "src/sections/image-input";
-import { ArrowButtons } from "src/layouts/arrow-button";
 
 
 const CreateItem = () =>{    
@@ -43,7 +42,9 @@ const auth = useAuth()
 const [values,setValues] = useState({})
 const [categories,setItemCategories] = useState([])
 const [subcategories,setItemSubCategories] = useState([])
-
+const [newImages,setNewImages] = useState([])
+/** This is a string becaouse don't get actual files again */
+const [previousImages,setPreviousImages] = useState('')
 
 const handleChange = useCallback(
   (event) => {
@@ -132,7 +133,9 @@ useEffect(() => {
         subCategoryId: formData.get("subcategory"),
         capacity : !!values.unit && values.unit != 'null' ? formData.get('capacity') : 0 ,
         wholesaleSlug : slug,
-        itemImage : values.itemImage
+        // itemImage : values.itemImage
+        previousItemImages : previousImages,
+        newItemImages : newImages
       }
 
     axios.defaults.headers = {
@@ -163,13 +166,20 @@ const reset = () =>{
   setValues({})
 }
 
+const onSubmit = (images) =>{
+  console.log(images)
 
-const onSubmit = (image) =>{
-  console.log(image)
-  setValues((pervious)=>({
-    ...pervious,
-    itemImage : image.originFileObj
-  }))
+  let previousImages = ''
+  let newImages = []
+  for(let image of images){
+      if(image.hasOwnProperty("oldImage")){
+          previousImages +=image.name + ","
+      }else{
+          newImages.push(image.originFileObj)
+      }
+  }
+  setPreviousImages(previousImages)
+  setNewImages(newImages)
 }
 
 
@@ -206,9 +216,11 @@ return ( <>
       <CardContent sx={{ pt: 0 }}>
         <Box sx={{ m: -1.5 }}>
 
-        <div style={{marginLeft : '10px',marginTop: '10px'}}>
-          <ImageInput onChange={onSubmit}/>
-        </div>
+        <Box sx={{
+            my: 2
+        }}>
+             <MultipleImageInput totalImage={5} onChange={onSubmit} />
+        </Box>
 
           <Grid
             container
