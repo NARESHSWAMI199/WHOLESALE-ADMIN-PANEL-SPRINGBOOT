@@ -110,7 +110,8 @@ public class ItemService extends RepoContainer{
         itemDto.setItemSubCategory(itemSubCategory);
         if (!Utils.isEmpty(itemDto.getSlug())) {
             int isUpdated = updateItem(itemDto, loggedUser);
-            updateStoreImage(itemDto.getItemImage(),itemDto.getSlug());
+            /** @UpdatingImages*/
+            updateStoreImage(itemDto.getPreviousItemImages(),itemDto.getNewItemImages(),itemDto.getSlug(),"update");
             if (isUpdated > 0) {
                 responseObj.put("message", "successfully updated.");
                 responseObj.put("status", 201);
@@ -138,6 +139,7 @@ public class ItemService extends RepoContainer{
         Item item = new Item();
         Store store = storeRepository.findStoreBySlug(itemDto.getWholesaleSlug());
         if (store == null) throw new Exception("Not a valid store.");
+        String slug = UUID.randomUUID().toString();
         item.setWholesaleId(store.getId());
         item.setName(itemDto.getName());
         item.setPrice(itemDto.getPrice());
@@ -151,19 +153,10 @@ public class ItemService extends RepoContainer{
         item.setUpdatedBy(loggedUser.getId());
         item.setLabel(itemDto.getLabel());
         item.setCapacity(itemDto.getCapacity());
-        item.setSlug(UUID.randomUUID().toString());
-        MultipartFile itemImage = itemDto.getItemImage();
+        item.setSlug(slug);
         item.setItemCategory(itemDto.getItemCategory());
         item.setItemSubCategory(itemDto.getItemSubCategory());
-        if(itemImage !=null) {
-            String fileOriginalName = itemImage.getOriginalFilename().replaceAll(" ", "_");
-            if (!Utils.isValidImage(fileOriginalName)) throw new Exception("Not a valid file.");
-            String dirPath = itemImagePath+item.getSlug()+"/";
-            File dir = new File(dirPath);
-            if(!dir.exists()) dir.mkdirs();
-            itemImage.transferTo(new File(dirPath+ fileOriginalName));
-            item.setAvtar(fileOriginalName);
-        }
+        item.setAvtars(updateStoreImage("",itemDto.getNewItemImages(),slug,"create"));
         return itemRepository.save(item);
     }
 
@@ -228,14 +221,43 @@ public class ItemService extends RepoContainer{
 
 
 
+    public String updateStoreImage(String previousImages, List<MultipartFile> itemImages,String slug,String action) throws IOException {
+        String newImages = "";
+        int index = 0;
+        if(itemImages != null) {
+            for (MultipartFile multipartFile : itemImages) {
+                if (index == itemImages.size() - 1) {
+                    newImages += saveStoreImageName(multipartFile, slug);
+                } else {
+                    newImages += saveStoreImageName(multipartFile, slug) + ",";
+                }
+                index += 1;
+            }
+        }
+        String updatedImages = "";
+        if(!Utils.isEmpty(previousImages) && !Utils.isEmpty(newImages)) {
+            updatedImages =  previousImages+newImages;
+        }else if(Utils.isEmpty(previousImages)){
+            updatedImages = newImages;
+        }else {
+            /** because it's contains ',' at the end */
+            updatedImages = previousImages.substring(0,previousImages.length()-1);
+        }
+        if(Utils.isEmpty(updatedImages) && action.equalsIgnoreCase("update")){
+            itemHbRepository.updateItemImage(slug, updatedImages);
+        }
+        return updatedImages;
+    }
+
+
     @Transactional
-    public int updateStoreImage(MultipartFile itemImage, String slug) throws Exception {
+    public String saveStoreImageName(MultipartFile itemImage, String slug) throws IOException {
         if(itemImage !=null) {
             if (UploadImageValidator.isValidImage(itemImage, GlobalConstant.minWidth,
                     GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
                     GlobalConstant.allowedAspectRatios, GlobalConstant.allowedFormats)) {
 
-                    String fileOriginalName = itemImage.getOriginalFilename().replaceAll(" ", "_");
+                    String fileOriginalName = UUID.randomUUID()+itemImage.getOriginalFilename().replaceAll(" ", "_");
                     String dirPath = itemImagePath+slug+"/";
                     File dir = new File(dirPath);
                     if(!dir.exists()) dir.mkdirs();
@@ -244,7 +266,7 @@ public class ItemService extends RepoContainer{
 
                     itemImage.transferTo(file);
                     if (UploadImageValidator.hasWhiteBackground(new File(filePath))) {
-                        return itemHbRepository.updateItemImage(slug, fileOriginalName);
+                        return fileOriginalName;
                     }else{
                         throw new MyException("Image must have a white background");
                     }
@@ -252,7 +274,7 @@ public class ItemService extends RepoContainer{
                 throw new MyException("Image is not fit in accept ratio. please resize you image before upload.");
             }
         }
-        return 0;
+        throw new MyException("Something went wrong.Please contact to administrator");
     }
 
 

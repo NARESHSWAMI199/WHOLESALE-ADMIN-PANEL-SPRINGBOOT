@@ -31,7 +31,7 @@ public class UploadImageValidator {
                     if(width < minWidth || height < minHeight) {
                         throw new MyException("Your image file is too small.");
                     }else {
-                        throw new MyException("Your image file is too large.");
+                        throw new MyException("Your "+imageFile.getOriginalFilename()+" image file is too large.");
                     }
                 }
 

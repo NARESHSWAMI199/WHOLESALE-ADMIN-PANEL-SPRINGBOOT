@@ -135,7 +135,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
             if(itemImage != null){
                 itemDto.setAvtar(itemImage);
             }else{
-                itemDto.setAvtar(item.getAvtar());
+                itemDto.setAvtar(item.getAvtars());
             }
             int isUpdated = updateItem(itemDto, loggedUser);
 
@@ -182,9 +182,9 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         item.setSlug(UUID.randomUUID().toString());
         String itemImage = saveItemImage(itemDto.getItemImage(), item.getSlug());
         if(itemImage != null){
-            item.setAvtar(itemImage);
+            item.setAvtars(itemImage);
         }else{
-            item.setAvtar(itemDto.getAvtar());
+            item.setAvtars(itemDto.getAvtar());
         }
         return wholesaleItemRepository.save(item);
     }
