@@ -16,7 +16,7 @@ import java.util.List;
 @Repository
 public interface ItemSubCategoryRepository extends JpaRepository<ItemSubCategory,Integer>, JpaSpecificationExecutor<ItemSubCategory> {
 
-    @Query(value = "from ItemSubCategory isc where isc.categoryId =:categoryId")
+    @Query(value = "from ItemSubCategory isc where isc.categoryId =:categoryId or isc.categoryId='-1'")
     List<ItemSubCategory> getSubCategories(@Param("categoryId") int categoryId, Sort sort);
 
     @Query(value = "select id from ItemSubCategory ssc where ssc.slug =:slug")

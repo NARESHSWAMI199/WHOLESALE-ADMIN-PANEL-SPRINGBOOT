@@ -243,7 +243,7 @@ public class ItemService extends RepoContainer{
             /** because it's contains ',' at the end */
             updatedImages = previousImages.substring(0,previousImages.length()-1);
         }
-        if(Utils.isEmpty(updatedImages) && action.equalsIgnoreCase("update")){
+        if(!Utils.isEmpty(updatedImages) && action.equalsIgnoreCase("update")){
             itemHbRepository.updateItemImage(slug, updatedImages);
         }
         return updatedImages;
