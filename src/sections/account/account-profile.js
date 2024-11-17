@@ -27,7 +27,6 @@ export const AccountProfile = (props) => {
   const [flag , setFlag] = useState("info")
   const [open , setOpen] = useState(false)
 
-
   const uploadProfile = async (event) =>{
     let flagStatus = "info"
     let image  = event.target.files[0];
@@ -42,7 +41,7 @@ export const AccountProfile = (props) => {
     .then(res =>{
       flagStatus = "success"
       setMessage(res.data.message)
-      user.avatar = image.name
+      user.avatar = res.data.imageName
       handleUpdateLoggedUser()
     }).catch(err=>{
         flagStatus = "error"
