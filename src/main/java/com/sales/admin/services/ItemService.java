@@ -227,9 +227,9 @@ public class ItemService extends RepoContainer{
         if(itemImages != null) {
             for (MultipartFile multipartFile : itemImages) {
                 if (index == itemImages.size() - 1) {
-                    newImages += saveStoreImageName(multipartFile, slug);
+                    newImages += saveItemImageName(multipartFile, slug);
                 } else {
-                    newImages += saveStoreImageName(multipartFile, slug) + ",";
+                    newImages += saveItemImageName(multipartFile, slug) + ",";
                 }
                 index += 1;
             }
@@ -251,7 +251,7 @@ public class ItemService extends RepoContainer{
 
 
     @Transactional
-    public String saveStoreImageName(MultipartFile itemImage, String slug) throws IOException {
+    public String saveItemImageName(MultipartFile itemImage, String slug) throws IOException {
         if(itemImage !=null) {
             if (UploadImageValidator.isValidImage(itemImage, GlobalConstant.minWidth,
                     GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,

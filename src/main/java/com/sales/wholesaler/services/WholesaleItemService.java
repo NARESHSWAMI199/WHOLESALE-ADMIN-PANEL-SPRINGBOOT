@@ -131,11 +131,11 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         if (!Utils.isEmpty(itemDto.getSlug())) {
             Item item = findItemBySLug(itemDto.getSlug());
             if (item.getStatus().equals("D")) throw new MyException("You can't update a blocked item.");;
-            String itemImage = saveItemImage(itemDto.getItemImage(), itemDto.getSlug());
+            String itemImage =  updateStoreImage(itemDto.getPreviousItemImages(),itemDto.getNewItemImages(), item.getSlug());
             if(itemImage != null){
-                itemDto.setAvtar(itemImage);
+                itemDto.setAvtars(itemImage);
             }else{
-                itemDto.setAvtar(item.getAvtars());
+                itemDto.setAvtars(item.getAvtars());
             }
             int isUpdated = updateItem(itemDto, loggedUser);
 
@@ -180,24 +180,50 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         item.setItemCategory(itemDto.getItemCategory());
         item.setItemSubCategory(itemDto.getItemSubCategory());
         item.setSlug(UUID.randomUUID().toString());
-        String itemImage = saveItemImage(itemDto.getItemImage(), item.getSlug());
+        String itemImage = updateStoreImage("",itemDto.getNewItemImages(), item.getSlug());
         if(itemImage != null){
             item.setAvtars(itemImage);
         }else{
-            item.setAvtars(itemDto.getAvtar());
+            item.setAvtars(itemDto.getAvtars());
         }
         return wholesaleItemRepository.save(item);
     }
 
 
+    public String updateStoreImage(String previousImages, List<MultipartFile> itemImages,String slug) throws IOException {
+        String newImages = "";
+        int index = 0;
+        if(itemImages != null) {
+            for (MultipartFile multipartFile : itemImages) {
+                if (index == itemImages.size() - 1) {
+                    newImages += saveItemImageName(multipartFile, slug);
+                } else {
+                    newImages += saveItemImageName(multipartFile, slug) + ",";
+                }
+                index += 1;
+            }
+        }
+        String updatedImages = "";
+        if(!Utils.isEmpty(previousImages) && !Utils.isEmpty(newImages)) {
+            updatedImages =  previousImages+newImages;
+        }else if(Utils.isEmpty(previousImages)){
+            updatedImages = newImages;
+        }else {
+            /** because it's contains ',' at the end */
+            updatedImages = previousImages.substring(0,previousImages.length()-1);
+        }
+        return updatedImages;
+    }
+
+
     @Transactional
-    public String saveItemImage(MultipartFile itemImage, String slug) throws MyException, IOException {
+    public String saveItemImageName(MultipartFile itemImage, String slug) throws IOException {
         if(itemImage !=null) {
             if (UploadImageValidator.isValidImage(itemImage, GlobalConstant.minWidth,
                     GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
                     GlobalConstant.allowedAspectRatios, GlobalConstant.allowedFormats)) {
 
-                String fileOriginalName = itemImage.getOriginalFilename().replaceAll(" ", "_");
+                String fileOriginalName = UUID.randomUUID()+itemImage.getOriginalFilename().replaceAll(" ", "_");
                 String dirPath = itemImagePath+slug+"/";
                 File dir = new File(dirPath);
                 if(!dir.exists()) dir.mkdirs();
@@ -214,8 +240,10 @@ public class WholesaleItemService extends WholesaleRepoContainer {
                 throw new MyException("Image is not fit in accept ratio. please resize you image before upload.");
             }
         }
-        return null;
+        throw new MyException("Something went wrong.Please contact to administrator");
     }
+
+
 
 
     public int updateItem(ItemDto itemDto, User loggedUser) {
