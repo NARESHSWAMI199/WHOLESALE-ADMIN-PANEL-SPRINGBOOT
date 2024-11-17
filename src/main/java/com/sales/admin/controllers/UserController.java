@@ -189,12 +189,13 @@ public class UserController extends ServiceContainer {
     @Transactional
     @PostMapping("/update_profile/{slug}")
     public ResponseEntity<Map<String, Object>> updateProfileImage(HttpServletRequest request, @RequestPart MultipartFile profileImage, @PathVariable String slug ) {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         try {
             User logggedUser = (User) request.getAttribute("user");
-            int  isUpdated = userService.updateProfileImage(profileImage,slug,logggedUser);
-            if(isUpdated > 0) {
+            String  imageName = userService.updateProfileImage(profileImage,slug,logggedUser);
+            if(imageName!=null) {
                 responseObj.put("status" , 200);
+                responseObj.put("imageName",imageName);
                 responseObj.put("message" , "Profile image successfully updated");
             }else {
                 responseObj.put("status" , 400);

@@ -346,15 +346,18 @@ public class UserService extends RepoContainer {
 
 
 
-    public int updateProfileImage(MultipartFile profileImage,String slug,User loggedUser) throws IOException {
+    public String updateProfileImage(MultipartFile profileImage,String slug,User loggedUser) throws IOException {
         User user = userRepository.findUserBySlug(slug);
         Utils.canUpdateAStaff(slug,user.getUserType(),loggedUser);
-        if (!Utils.isValidImage(profileImage.getOriginalFilename())) return 0;
+        String imageName = UUID.randomUUID().toString().substring(0,5)+"_"+ Objects.requireNonNull(profileImage.getOriginalFilename()).replaceAll(" ","_");
+        if (!Utils.isValidImage(imageName)) return null;
         String dirPath = profilePath+slug+"/";
         File dir = new File(dirPath);
         if(!dir.exists()) dir.mkdirs();
-        profileImage.transferTo(new File(dirPath+profileImage.getOriginalFilename()));
-        return  userHbRepository.updateProfileImage(slug,profileImage.getOriginalFilename());
+        profileImage.transferTo(new File(dirPath+imageName));
+        int isUpdated =  userHbRepository.updateProfileImage(slug,imageName);
+        if(isUpdated > 0) return imageName;
+        return null;
     }
 
 
