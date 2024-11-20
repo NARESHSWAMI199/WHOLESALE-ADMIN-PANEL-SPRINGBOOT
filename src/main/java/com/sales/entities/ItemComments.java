@@ -35,6 +35,9 @@ public class ItemComments {
     @Column(name = "user_id")
     Integer userId;
 
+    @Column(name = "likes")
+    Long likes;
+
     @Column(name = "parent_id")
     Integer parentId;
 
