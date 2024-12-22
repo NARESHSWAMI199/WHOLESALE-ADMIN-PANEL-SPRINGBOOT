@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashfree Checkout Integration</title>
+    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+
+</head>
+<body>
+
+
+    <input type="hidden" id="mobile" th:value="${mobile}">
+    <input type="hidden" id="amount" th:value="${amount}">
+
+<script>
+    const cashfree = Cashfree({
+        mode: "sandbox",
+    });
+    const redirectPaymentPage = async () => {
+        let paymentSessionId = await requestForPaymentSessionId();
+        let checkoutOptions = {
+            paymentSessionId: paymentSessionId,
+            redirectTarget: "_self",
+        };
+
+        try {
+            let result =  await cashfree.checkout(checkoutOptions);
+            console.log(result);
+        }catch(err){
+            console.log(err);
+        }
+    }
+
+
+
+    const requestForPaymentSessionId = async () =>{
+        let mobile = document.getElementById("mobile").value;
+        let amount = document.getElementById("amount").value;
+        let data = JSON.stringify({
+            "amount" : amount,
+            "mobileNumber" : mobile
+        });
+        let paymentSessionId = null;
+        await fetch("http://localhost:8080/cashfree/sessionId",{
+            headers  : {
+                "Content-Type" : 'application/json;'
+            },
+            method : 'post',
+            body : data
+        }).then(res => res.json())
+        .then(data => {
+            paymentSessionId = data.res.paymentSessionId;
+        })
+        .catch(err => console.log(err));
+
+        return paymentSessionId;
+    }
+    redirectPaymentPage();
+
+
+</script>
+</body>
+</html>

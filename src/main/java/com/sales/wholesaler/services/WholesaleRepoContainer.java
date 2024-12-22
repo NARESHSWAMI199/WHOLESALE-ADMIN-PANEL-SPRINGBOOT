@@ -65,6 +65,13 @@ public class WholesaleRepoContainer {
     @Autowired
     protected WholesaleSupportEmailsRepository wholesaleSupportEmailsRepository;
 
+
+    @Autowired
+    protected PhonePeRepository phonePeRepository;
+
+    @Autowired
+    protected PhonePeHbRepository phonePeHbRepository;
+
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?

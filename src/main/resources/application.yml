@@ -3,6 +3,7 @@ server:
   port : 8080
 
 
+
 spring:
   datasource:
     #      url : jdbc:mysql://10.11.13.49:3306/test
@@ -17,12 +18,42 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  mvc :
+    view :
+      prefix : '/'
+      suffix : '.html'
+
+  servlet:
+      multipart.max-file-size: 10MB
+      multipart.max-request-size: 10MB
 
 default :
   password: saleispower
 
 jwt:
   secret : saleispower
+
+
+phonepe :
+  test:
+    key : 96434309-7796-489d-8924-ab56988a6076
+    mid : PGTESTPAYUAT86
+  prod :
+    mid : M22LJRRT3FAKQ
+    key : d021e28d-bc19-4fea-b622-41942867d395
+  env : PROD
+#  env : UAT
+
+
+cashfree :
+  test:
+    key : cfsk_ma_test_4101943cd010dd3f59d86a25d03df53a_cce9da94
+    mid : TEST10390991bf0adc9155492e36f12619909301
+  prod :
+    mid : M22LJRRT3FAKQ
+    key : d021e28d-bc19-4fea-b622-41942867d395
+  env : PROD
+#  env : UAT
 
 
 profile :

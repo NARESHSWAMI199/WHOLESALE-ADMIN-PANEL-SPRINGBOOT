@@ -147,9 +147,36 @@
 			<artifactId>jakarta.mail</artifactId>
 		</dependency>
 
+
+
+		<dependency>
+			<groupId>com.phonepe</groupId>
+			<artifactId>pg-sdk-java</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.cashfree.pg.java</groupId>
+			<artifactId>cashfree_pg</artifactId>
+			<version>4.2.4</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>4.10.0</version>
+		</dependency>
+
 	</dependencies>
 
 
+	<repositories>
+		<repository>
+			<id>io.cloudrepo</id>
+			<name>PhonePe JAVA SDK</name>
+			<url>https://phonepe.mycloudrepo.io/public/repositories/phonepe-pg-sdk-java</url>
+		</repository>
+	</repositories>
 
 	<build>
 		<plugins>
