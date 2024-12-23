@@ -10,14 +10,13 @@ import {
   Snackbar,
   Typography
 } from '@mui/material';
-import { useAuth } from 'src/hooks/use-auth';
+import { Image } from 'antd';
 import axios from 'axios';
 import { format } from 'date-fns';
-import { host, userImage } from 'src/utils/util';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useAuth } from 'src/hooks/use-auth';
 import { getInitials } from 'src/utils/get-initials';
-import { Image } from 'antd';
-import { object } from 'prop-types';
+import { host, userImage } from 'src/utils/util';
 
 export const AccountProfile = (props) => {
   const user = props.user
