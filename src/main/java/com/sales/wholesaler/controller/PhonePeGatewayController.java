@@ -9,6 +9,7 @@ import com.sales.entities.PhonePeTrans;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -20,10 +21,11 @@ import com.phonepe.sdk.pg.payments.v1.models.response.PgPayResponse;
 import javax.servlet.http.HttpServletRequest;
 
 
-@RestController
+@Controller
 @RequestMapping("pg")
 public class PhonePeGatewayController extends WholesaleServiceContainer {
 
+    @ResponseBody
     @PostMapping("pay")
     public ResponseEntity<Map<String,Object>> payViaPhonePe(@RequestBody PhonePeDto phonePeDto){
         Map<String,Object> result = new HashMap<>();
@@ -43,7 +45,7 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
             String redirectMode = "REDIRECT";
             PgPayRequest pgPayRequest = PgPayRequest.PayPagePayRequestBuilder()
                     .amount(amount)
-                    .merchantId(phonePeService.mid)
+                    .merchantId(phonePeService.mid) /* Make sure must change mid according env */
                     .merchantTransactionId(merchantTransactionId)
                     .callbackUrl(callbackUrl)
                     .merchantUserId(merchantUserId)
@@ -144,6 +146,12 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
     @RequestMapping("refund-notify")
     public ResponseEntity<Map<String,Object>> getNotificationCallback(@RequestBody Map<String,Object> body){
         return new ResponseEntity<>(body,HttpStatus.OK);
+    }
+
+
+    @GetMapping("phonepe")
+    public String phonePe(){
+        return "phonepe";
     }
 
 

@@ -1,0 +1,38 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h1>Hello click here </h1>
+<button onClick="handlePayment(1)">
+    click me
+<script>
+    const handlePayment = async (amount)=>{
+        let data = JSON.stringify({
+            "amount" : amount
+        })
+        await fetch("http://localhost:8080/pg/pay",{
+            headers  : {
+                "Content-Type" : 'application/json;'
+            },
+            method : 'post',
+            body : data
+        }).then(res => res.json())
+        .then(data => {
+            let url = data.url;
+            let anchor = document.createElement("a")
+            anchor.target ="_blank";
+            anchor.href= url
+            anchor.click()
+        })
+        .catch(err => console.log(err));
+    }
+
+</script>
+</body>
+</html>
