@@ -3,6 +3,7 @@ package com.sales.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "service_plans")
@@ -11,6 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Where(clause = "is_deleted != 'Y'" )
 public class ServicePlan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
