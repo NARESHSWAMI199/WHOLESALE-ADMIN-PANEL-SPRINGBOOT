@@ -11,23 +11,19 @@ import { redirect } from 'next/dist/server/api-utils'
 
 
 function Pricing() {
+    const [plans,setPlans] = useState([])
 
-    const amount = 99.00;
-    const router = useRouter()
-
-    const handlePayment = (e,amount)=>{
-        e.preventDefault()
-        axios.post(host+"/pg/pay" , {amount : amount})
+    useEffect(()=>{
+        axios(host+"/plans/all")
         .then(res => {
-            let url = res.data.url
-            console.log(url);
-          
+            setPlans(res.data)
         })
-        .catch(err => console.log(err))
-    }
+        .catch(err=>console.log(err))
+    },[])
 
-    const redirectForPayment = (amount) =>{
-        window.open(host+"/pg/pay/"+amount)
+
+    const redirectForPayment = (slug) =>{
+        window.open(host+"/pg/phonepe/"+slug)
     }
 
 
@@ -58,15 +54,15 @@ function Pricing() {
             </Grid>
 
 
-            {[1,2,3].map(i => {
+            {plans.map( (plan,i) => {
             return (
-                <Grid key={i} xs={12} md={4} sx={{
-                    px : 2,
+                <Grid key={i} xs={12} md={3} sx={{
+                    px : 2
                 }} >
                     <Box sx={{
                             borderRadius : 2,
                             background : 'white',
-                            height : 850,
+                            height : 550,
                             boxShadow : 6,
                             border : '4px solid #6366f1',
                             px : 3,
@@ -75,7 +71,7 @@ function Pricing() {
                            <Box >
                                  <Box sx={{mt : 2}}>
                                     <Typography variant='h3'>
-                                        {projectName} Trial
+                                        {plan.name}
                                     </Typography>
                                 </Box>   
                          
@@ -83,7 +79,7 @@ function Pricing() {
                                     <Box sx={{my : 3}}>
                                          
                                         <Typography variant='h6'>
-                                            ₹{amount} <span>/month</span>
+                                            ₹ {plan.price} <span> for {plan.months} month</span>
                                           
                                           </Typography>
 
@@ -93,7 +89,7 @@ function Pricing() {
                                                 textDecoration : 'none'
                                             }}
                                             href="/welcome"
-                                            > 1 Month Trial</Link>
+                                            > {plan.months} Months Plan</Link>
                                           </Typography>
                                     </Box>
 
@@ -108,11 +104,9 @@ function Pricing() {
                                             sx={{width : 200, my : 1}} 
                                             variant="outlined" 
                                             type='button' 
-                                            onClick={(e)=>redirectForPayment(amount)} 
+                                            onClick={(e)=>redirectForPayment(plan.slug)} 
                                             >Get Trial Plan
                                         </Button>
-                                        <a rel="prefetch" href={host+"/pg/pay/"+amount}>Hello</a>
-                           
                                     <Box sx={{my:1}}>
                                         <Typography variant='h6'>Advanced Features</Typography>                                    
                                         <Box sx={{ml : 2}}>
