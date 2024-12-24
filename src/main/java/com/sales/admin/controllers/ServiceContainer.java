@@ -32,6 +32,9 @@ public class ServiceContainer {
     @Autowired
     GroupService groupService;
 
+    @Autowired
+    ServicePlanService servicePlanService;
+
 
 
 }

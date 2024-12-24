@@ -49,7 +49,8 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                 "/cashfree/**",
                 "/swagger-ui/**",
                 "/v3/api-docs/**",
-                "/api-docs/**"
+                "/api-docs/**",
+                "/plans/**"
 
 
         };

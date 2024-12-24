@@ -10,11 +10,13 @@ import com.phonepe.sdk.pg.payments.v1.models.response.PayPageInstrumentResponse;
 import com.phonepe.sdk.pg.payments.v1.models.response.PgPayResponse;
 import com.sales.dto.PhonePeDto;
 import com.sales.entities.PhonePeTrans;
+import com.sales.entities.ServicePlan;
 import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Base64;
@@ -152,9 +154,15 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
     }
 
 
-    @GetMapping("phonepe")
-    public String phonePe(){
-        return "phonepe";
+    @GetMapping("phonepe/{slug}")
+    public String phonePe( @PathVariable String slug, Model model){
+        ServicePlan servicePlan = servicePlanService.findBySlug(slug);
+        if(servicePlan != null) {
+            model.addAttribute("amount", servicePlan.getPrice() - servicePlan.getDiscount());
+            return "phonepe";
+        }
+        return "error";
+
     }
 
 

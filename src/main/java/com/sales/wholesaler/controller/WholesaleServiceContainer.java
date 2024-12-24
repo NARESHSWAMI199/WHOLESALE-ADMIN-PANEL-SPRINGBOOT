@@ -1,6 +1,7 @@
 package com.sales.wholesaler.controller;
 
 import com.sales.admin.services.AddressService;
+import com.sales.admin.services.ServicePlanService;
 import com.sales.wholesaler.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,5 +35,8 @@ public class WholesaleServiceContainer {
 
     @Autowired
     protected  PhonePeService phonePeService;
+
+    @Autowired
+    protected ServicePlanService servicePlanService;
 
 }
