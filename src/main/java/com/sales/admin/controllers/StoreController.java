@@ -1,8 +1,13 @@
 package com.sales.admin.controllers;
 
 import com.sales.dto.*;
-import com.sales.entities.*;
+import com.sales.entities.Store;
+import com.sales.entities.StoreCategory;
+import com.sales.entities.StoreSubCategory;
+import com.sales.entities.User;
 import com.sales.exceptions.MyException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -14,8 +19,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;

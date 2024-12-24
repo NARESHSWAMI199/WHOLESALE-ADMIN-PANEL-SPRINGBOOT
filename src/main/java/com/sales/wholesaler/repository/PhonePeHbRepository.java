@@ -2,11 +2,11 @@ package com.sales.wholesaler.repository;
 
 
 import com.sales.entities.PhonePeTrans;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.persistence.*;
-import javax.transaction.Transactional;
 
 @Component
 @Transactional

@@ -1,6 +1,7 @@
 package com.sales.exceptions;
 
 import com.sales.dto.ErrorDto;
+import jakarta.transaction.Transactional;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -14,8 +15,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartException;
 
-import javax.mail.Message;
-import javax.transaction.Transactional;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.logging.Logger;
 

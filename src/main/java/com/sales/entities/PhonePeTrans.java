@@ -1,11 +1,8 @@
 package com.sales.entities;
 
 
-import com.sales.utils.Utils;
+import jakarta.persistence.*;
 import lombok.*;
-import org.slf4j.helpers.Util;
-
-import javax.persistence.*;
 
 @Entity
 @Table(name = "phonepe_trans")

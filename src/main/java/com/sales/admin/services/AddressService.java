@@ -5,9 +5,9 @@ import com.sales.entities.Address;
 import com.sales.entities.City;
 import com.sales.entities.State;
 import com.sales.entities.User;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 

@@ -8,6 +8,7 @@ import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +18,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -56,9 +56,7 @@ public class ItemService extends RepoContainer{
         int wholesaleId = searchFilters.getStoreId();
         Long fromDate = searchFilters.getFromDate();
         Long toDate = searchFilters.getToDate();
-        Store store = new Store();
-        store.setId(wholesaleId);
-        List<Item> itemsList =  itemRepository.getAllItemsWithFilters(store,fromDate,toDate);
+        List<Item> itemsList =  itemRepository.getAllItemsWithFilters(wholesaleId,fromDate,toDate);
         Map<String,List> result = new HashMap<>();
         for (Item item : itemsList){
             String items = new Gson().toJson(item);

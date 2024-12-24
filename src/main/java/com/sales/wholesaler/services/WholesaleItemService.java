@@ -12,6 +12,7 @@ import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +22,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.time.Month;

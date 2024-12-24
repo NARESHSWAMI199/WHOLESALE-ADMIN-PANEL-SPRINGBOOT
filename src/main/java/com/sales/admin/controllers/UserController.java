@@ -8,6 +8,8 @@ import com.sales.dto.UserSearchFilters;
 import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -20,8 +22,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;

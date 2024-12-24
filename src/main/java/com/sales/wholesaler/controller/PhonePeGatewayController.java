@@ -3,22 +3,24 @@ package com.sales.wholesaler.controller;
 
 import com.google.gson.Gson;
 import com.phonepe.sdk.pg.common.http.PhonePeException;
+import com.phonepe.sdk.pg.common.http.PhonePeResponse;
 import com.phonepe.sdk.pg.payments.v1.PhonePePaymentClient;
+import com.phonepe.sdk.pg.payments.v1.models.request.PgPayRequest;
+import com.phonepe.sdk.pg.payments.v1.models.response.PayPageInstrumentResponse;
+import com.phonepe.sdk.pg.payments.v1.models.response.PgPayResponse;
 import com.sales.dto.PhonePeDto;
 import com.sales.entities.PhonePeTrans;
+import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-
-import com.phonepe.sdk.pg.common.http.PhonePeResponse;
-import com.phonepe.sdk.pg.payments.v1.models.request.PgPayRequest;
-import com.phonepe.sdk.pg.payments.v1.models.response.PayPageInstrumentResponse;
-import com.phonepe.sdk.pg.payments.v1.models.response.PgPayResponse;
-import javax.servlet.http.HttpServletRequest;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 
 @Controller
@@ -43,9 +45,10 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
                 callbackUrl += "/"+phonePeTrans.getId();
             }
             String redirectMode = "REDIRECT";
+            String merchentId = phonePeService.phonePeEnv.equalsIgnoreCase("PROD") ? phonePeService.mid : phonePeService.testMid;
             PgPayRequest pgPayRequest = PgPayRequest.PayPagePayRequestBuilder()
                     .amount(amount)
-                    .merchantId(phonePeService.mid) /* Make sure must change mid according env */
+                    .merchantId(merchentId) /* Make sure must change mid according env */
                     .merchantTransactionId(merchantTransactionId)
                     .callbackUrl(callbackUrl)
                     .merchantUserId(merchantUserId)
@@ -70,7 +73,7 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
     }
 
     @RequestMapping("callback/{id}")
-    public ResponseEntity<Map<String,Object>>  phonePeCallbackResponse(HttpServletRequest request,@PathVariable Integer id,@RequestBody Map<String,Object> paramsBody){
+    public ResponseEntity<Map<String,Object>>  phonePeCallbackResponse(HttpServletRequest request, @PathVariable Integer id, @RequestBody Map<String,Object> paramsBody){
 
         Map<String,Object> result = new HashMap<>();
         try {

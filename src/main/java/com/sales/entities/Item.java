@@ -1,10 +1,13 @@
 package com.sales.entities;
 
 
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
 
@@ -12,8 +15,7 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-@Entity
+@Entity(name = "Item")
 @Table(name = "item")
 @Where(clause = "is_deleted != 'y'")
 public class Item implements Serializable {

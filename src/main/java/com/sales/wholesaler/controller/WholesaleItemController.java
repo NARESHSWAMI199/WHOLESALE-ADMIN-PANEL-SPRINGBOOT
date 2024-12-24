@@ -6,12 +6,12 @@ import com.sales.entities.Item;
 import com.sales.entities.ItemCategory;
 import com.sales.entities.ItemSubCategory;
 import com.sales.entities.User;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

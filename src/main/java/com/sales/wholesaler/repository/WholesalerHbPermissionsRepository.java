@@ -3,12 +3,12 @@ package com.sales.wholesaler.repository;
 
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Component

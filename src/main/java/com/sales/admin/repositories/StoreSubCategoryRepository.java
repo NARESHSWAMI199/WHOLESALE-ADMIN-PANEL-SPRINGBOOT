@@ -1,9 +1,6 @@
 package com.sales.admin.repositories;
 
 
-import com.sales.entities.ItemSubCategory;
-import com.sales.entities.Store;
-import com.sales.entities.StoreCategory;
 import com.sales.entities.StoreSubCategory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface StoreSubCategoryRepository extends JpaRepository<StoreSubCategory,Integer> {
-    @Query(value = "from StoreSubCategory ssc where ssc.categoryId =:categoryId or ssc.categoryId='-1'")
+    @Query(value = "from StoreSubCategory ssc where ssc.categoryId =:categoryId or ssc.categoryId=-1")
     List<StoreSubCategory> getSubCategories(@Param("categoryId") int categoryId, Sort sort);
 
     @Query(value = "select id from StoreSubCategory ssc where ssc.slug =:slug")

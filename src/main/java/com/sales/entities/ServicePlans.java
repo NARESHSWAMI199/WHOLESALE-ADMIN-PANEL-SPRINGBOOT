@@ -1,8 +1,7 @@
 package com.sales.entities;
 
+import jakarta.persistence.*;
 import org.hibernate.annotations.Where;
-
-import javax.persistence.*;
 
 
 @Entity

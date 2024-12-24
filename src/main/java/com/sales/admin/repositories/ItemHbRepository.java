@@ -4,12 +4,12 @@ package com.sales.admin.repositories;
 import com.sales.dto.ItemDto;
 import com.sales.entities.User;
 import com.sales.utils.Utils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;

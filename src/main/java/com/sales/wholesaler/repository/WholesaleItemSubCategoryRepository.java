@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface WholesaleItemSubCategoryRepository extends JpaRepository<ItemSubCategory,Integer> {
 
-    @Query(value = "from ItemSubCategory isc where isc.categoryId =:categoryId or isc.categoryId='-1' order by subcategory asc")
+    @Query(value = "from ItemSubCategory isc where isc.categoryId =:categoryId or isc.categoryId=-1 order by subcategory asc")
     List<ItemSubCategory> getSubCategories(@Param("categoryId") int categoryId);
 
 }

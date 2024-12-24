@@ -49,7 +49,11 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                 "/admin/store/image/**",
                 "/admin/item/image/**",
                 "/pg/**",
-                "/cashfree/**"
+                "/cashfree/**",
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/api-docs/**"
+
 
         };
         registry.addInterceptor(new SalesInterceptor(jwtToken,userRepository,permissionRepository,storePermissionsRepository))

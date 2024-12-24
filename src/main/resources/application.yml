@@ -57,29 +57,32 @@ cashfree :
 
 
 profile :
-#  absolute : C:/Users/DATA/Documents/sales/sales-backend/src/main/resources/public/
-  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/profiles/
-  relative :
-#  get : src/main/resources/public/
-  get : src/main/resources/images/profiles/
+#  absolute : /home/rohit/Documents/images/profiles/
+    absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/profiles/
+#  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/profiles/
+    relative :
+#  get :  /home/rohit/Documents/images/profiles/
+    get : src/main/resources/public/profiles/
 
 store :
-  #  absolute : C:/Users/DATA/Documents/sales/sales-backend/src/main/resources/public/
-  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/stores/
+#  absolute : /home/rohit/Documents/images/stores/
+  absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/stores/
+#  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/stores/
   relative :
-  get : src/main/resources/images/stores/
-#  get : src/main/resources/public/
+  get : src/main/resources/public/stores/
+#  get : /home/rohit/Documents/images/stores/
 
 item:
-  absolute: /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/items/
-  #    absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/store/
+#  absolute : /home/rohit/Documents/images/items/
+  #  absolute: /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/items/
+  absolute  : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/items/
   relative:
-  #  get : src/main/resources/images/store/
-  get: src/main/resources/images/items/
+#  get : /home/rohit/Documents/images/items/
+  get: src/main/resources/public/items/
 
 removebg :
-  #  absolute : C:/Users/DATA/Documents/sales/sales-backend/src/main/resources/public/
-  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/removebg/
+  absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/removebg/
+#  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/removebg/
   relative :
-  #  get : src/main/resources/public/
-  get : src/main/resources/images/removebg/
+  get : src/main/resources/public/removebg/
+#  get : src/main/resources/images/removebg/
