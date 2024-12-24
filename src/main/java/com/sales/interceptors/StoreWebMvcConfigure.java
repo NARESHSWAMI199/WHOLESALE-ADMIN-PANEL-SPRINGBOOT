@@ -15,6 +15,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebMvc
+
 public class StoreWebMvcConfigure implements WebMvcConfigurer {
 
     @Autowired

@@ -39,8 +39,7 @@ public class SalesInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-        System.out.println("request url : "+request.getRequestURI() + " token : "+token);
-      request.getHeaderNames().asIterator().forEachRemaining(e -> System.err.println(e) );
+        System.out.println("request url : "+request.getRequestURI());
         try {
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7, token.length());
