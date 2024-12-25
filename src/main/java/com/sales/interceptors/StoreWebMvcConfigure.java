@@ -52,9 +52,7 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                 "/swagger-ui/**",
                 "/v3/api-docs/**",
                 "/api-docs/**",
-                "/plans/**"
-
-
+                "/plans/**",
         };
         registry.addInterceptor(new SalesInterceptor(jwtToken,userRepository,permissionRepository,storePermissionsRepository))
                 .excludePathPatterns(Arrays.asList(arr));
