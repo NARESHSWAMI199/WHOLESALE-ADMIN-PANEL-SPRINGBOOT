@@ -6,6 +6,7 @@ import com.sales.admin.repositories.UserRepository;
 import com.sales.jwtUtils.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -59,6 +60,16 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                 .excludePathPatterns(Arrays.asList(arr));
     }
 
+
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:3000") // Replace with your React app's origin
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedHeaders("*") // Allow all headers, including your custom header
+                .allowCredentials(true);
+    }
 
 
 }
