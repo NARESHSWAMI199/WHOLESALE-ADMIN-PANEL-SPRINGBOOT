@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.Where;
 
 import java.io.Serializable;
@@ -17,7 +18,7 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Where(clause = "status='A'")
+@SQLRestriction("status='A'")
 public class City implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

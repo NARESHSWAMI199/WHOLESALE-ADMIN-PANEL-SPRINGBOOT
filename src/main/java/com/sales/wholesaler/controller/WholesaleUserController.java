@@ -178,6 +178,21 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
     }
 
+
+    @PostMapping(value = {"add","register"})
+    public ResponseEntity<Map<String,Object>> addNewUser(@RequestBody UserDto userDto){
+        Map<String,Object> result = new HashMap<>();
+        User insertedUser = wholesaleUserService.addNewUser(userDto);
+        if (insertedUser.getId() > 0) {
+            result.put("message", "User created successfully");
+            result.put("status", 200);
+        }else{
+            result.put("message", "Something went wrong during create this user.");
+            result.put("status", 400);
+        }
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+    }
+
 }
 
 

@@ -4,8 +4,10 @@ package com.sales.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.Where;
 
 import java.util.UUID;
@@ -19,7 +21,8 @@ import static com.sales.utils.Utils.getCurrentMillis;
 
 @Entity
 @Table(name = "user")
-@Where(clause = "is_deleted != 'Y' ")
+@SQLRestriction("is_deleted != 'Y' ")
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

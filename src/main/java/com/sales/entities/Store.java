@@ -1,10 +1,8 @@
 package com.sales.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.Where;
 
 import java.io.Serializable;
@@ -19,7 +17,8 @@ import static com.sales.utils.Utils.getCurrentMillis;
 
 @Entity
 @Table(name = "store")
-@Where(clause = "is_deleted != 'Y'")
+@SQLRestriction("is_deleted != 'Y'") /* Same as where clause */
+@Builder
 public class Store implements Serializable {
     
     @Id

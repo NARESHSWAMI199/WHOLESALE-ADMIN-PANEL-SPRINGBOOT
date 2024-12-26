@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartException;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.logging.Logger;
 
@@ -35,6 +36,13 @@ public class GlobalException {
     }
 
 
+    @ExceptionHandler(FileNotFoundException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public ErrorDto fileNotFound(FileNotFoundException e,WebRequest request) {
+        ErrorDto errorDto = new ErrorDto(e.getMessage(),400);
+        logger.info(e.getMessage());
+        return errorDto;
+    }
     @Transactional
     @ExceptionHandler(value = {ObjectNotFoundException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)

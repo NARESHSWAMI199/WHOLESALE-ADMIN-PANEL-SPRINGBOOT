@@ -6,6 +6,7 @@ import com.sales.dto.StoreDto;
 import com.sales.dto.UserDto;
 import com.sales.entities.SupportEmail;
 import com.sales.entities.User;
+import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,6 +173,26 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         return null;
     }
 
+
+
+    public User addNewUser(UserDto userDto) {
+        Map<String,Object> result = new HashMap<String,Object>();
+        if (!Utils.isValidEmail(userDto.getEmail())) throw new MyException("Not a valid email address.");
+        String username = Utils.isValidName(userDto.getUsername(),"user");
+        User user = User.builder()
+            .username(username)
+            .email(userDto.getEmail())
+            .password(userDto.getPassword())
+            .contact(userDto.getContact())
+            .slug(UUID.randomUUID().toString())
+            .status("A")
+            .isDeleted("N")
+            .userType("R") /* default user type is retailer we will update after store creation */
+            .createdAt(Utils.getCurrentMillis())
+            .updatedAt(Utils.getCurrentMillis())
+            .build();
+        return wholesaleUserRepository.save(user);
+    }
 
 
 }

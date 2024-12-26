@@ -117,8 +117,7 @@ public class Utils {
         System.out.println(matcher.matches());
         if(!matcher.matches()){
             String message ="";
-            String neededSyntax = "First latter must be in upper case, " +
-                    "and not a number and special symbols like : ^*$+?[]()| are not allowed.";
+            String neededSyntax = "Special symbols like : ^*$+?[]()| are not allowed.";
             if(flag.equals("user")){
                 message = "Not a valid username";
                 System.out.println(message);

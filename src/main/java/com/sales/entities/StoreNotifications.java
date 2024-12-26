@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.Where;
 
 @Entity
@@ -13,7 +14,7 @@ import org.hibernate.annotations.Where;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Where(clause = "is_deleted != 'Y' ")
+@SQLRestriction("is_deleted != 'Y' ")
 public class StoreNotifications {
 
     @Id

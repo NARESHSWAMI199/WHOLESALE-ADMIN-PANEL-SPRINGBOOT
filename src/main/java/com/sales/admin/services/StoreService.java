@@ -163,7 +163,7 @@ public class StoreService extends RepoContainer{
             throw new MyException("Must provide a store user");
         }
         Optional<User> storeOwner = userRepository.findByWholesalerSLug(storeDto.getUserSlug());
-        if (storeOwner == null)  throw new MyException("Make sure user is wholesaler.");
+        if (storeOwner.isEmpty())  throw new MyException("Make sure user is wholesaler.");
 
         store = new Store(loggedUser);
         store.setUser(storeOwner.get());

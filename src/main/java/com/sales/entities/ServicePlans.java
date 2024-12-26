@@ -1,12 +1,13 @@
 package com.sales.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.Where;
 
 
 @Entity
 @Table(name = "service_plans")
-@Where(clause = "is_deleted != 'Y' ")
+@SQLRestriction("is_deleted != 'Y' ")
 
 public class ServicePlans {
     @Id

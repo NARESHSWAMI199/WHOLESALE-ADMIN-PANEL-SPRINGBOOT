@@ -19,12 +19,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.sales.specifications.ItemCommentSpecifications.isUserId;
 import static com.sales.specifications.ItemCommentSpecifications.isWholesaleId;
+import static com.sales.utils.Utils.getCurrentMillis;
 
 @Service
 public class WholesaleStoreService extends WholesaleRepoContainer {
@@ -36,18 +35,6 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
 
     @Value("${store.relative}")
     String storeImageRelativePath;
-
-    public AddressDto getAddressObjFromStore(StoreDto storeDto){
-        AddressDto addressDto = new AddressDto();
-        addressDto.setStreet(storeDto.getStreet());
-        addressDto.setZipCode(storeDto.getZipCode());
-        addressDto.setCity(storeDto.getCity());
-        addressDto.setState(storeDto.getState());
-        addressDto.setLatitude(storeDto.getLatitude());
-        addressDto.setAltitude(storeDto.getAltitude());
-        return addressDto;
-    }
-
 
     @Transactional(rollbackOn = {MyException.class , RuntimeException.class})
     public Map<String, Object> updateStoreBySlug(StoreDto storeDto,User loggedUser) throws IOException {
@@ -121,7 +108,7 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
             if (UploadImageValidator.isValidImage(storeImage, GlobalConstant.minWidth,
                     GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
                     GlobalConstant.allowedAspectRatios, GlobalConstant.allowedFormats)) {
-                String fileOriginalName = storeImage.getOriginalFilename().replaceAll(" ", "_");
+                String fileOriginalName = Objects.requireNonNull(storeImage.getOriginalFilename()).replaceAll(" ", "_");
                 String dirPath = storeImagePath+"/"+slug+"/";
                 File dir = new File(dirPath);
                 if(!dir.exists()) dir.mkdirs();
@@ -136,12 +123,72 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
     }
 
 
+
+
+
+    @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
+    public Store createStore(StoreDto storeDto , User loggedUser) throws MyException {
+
+        /* Make user retailer to wholesaler */
+        int isUpdated  = wholesaleUserHbRepository.makeUserTypeWholesaler(loggedUser.getSlug());
+        if(isUpdated < 1) throw new MyException("Something went wrong during update user type. if you facing this issue contact with administrator");
+
+        /* inserting  address during create a wholesale */
+        AddressDto addressDto = getAddressObjFromStore(storeDto);
+        Address address =  insertAddress(addressDto,loggedUser);
+
+        Store store = new Store(loggedUser);
+        store.setUser(loggedUser);
+        store.setStoreName(storeDto.getStoreName());
+        store.setEmail(storeDto.getStoreEmail());
+        store.setAddress(address);
+        store.setDescription(storeDto.getDescription());
+        store.setPhone(storeDto.getStorePhone());
+        store.setRating(storeDto.getRating());
+        store.setStoreCategory(storeDto.getStoreCategory());
+        store.setStoreSubCategory(storeDto.getStoreSubCategory());
+        return wholesaleStoreRepository.save(store);
+    }
+
+
+    @Transactional
+    public Address insertAddress(AddressDto addressDto, User loggedUser){
+        Address address = Address.builder()
+            .slug(UUID.randomUUID().toString())
+            .street(addressDto.getStreet())
+            .zipCode(addressDto.getZipCode())
+            .city(addressDto.getCity())
+            .state(addressDto.getState())
+            .latitude(addressDto.getLatitude())
+            .altitude(addressDto.getAltitude())
+            .createdAt(getCurrentMillis())
+            .createdBy(loggedUser.getId())
+            .updatedAt(getCurrentMillis())
+            .updatedBy(loggedUser.getId())
+            .build();
+        return  addressRepository.save(address);
+    }
+
+
+    public AddressDto getAddressObjFromStore(StoreDto storeDto){
+        return  AddressDto.builder()
+            .addressSlug(storeDto.getAddressSlug())
+            .street(storeDto.getStreet())
+            .zipCode(storeDto.getZipCode())
+            .city(storeDto.getCity())
+            .state(storeDto.getState())
+            .latitude(storeDto.getLatitude())
+            .altitude(storeDto.getAltitude())
+            .build();
+    }
+
+
+
     public Page<StoreNotifications> getAllStoreNotification(SearchFilters filters,User loggedUser) {
         Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(loggedUser.getId());
         Specification<StoreNotifications> specification = Specification.where(isUserId(loggedUser.getId()).or(isWholesaleId(storeId)));
         Pageable pageable = getPageable(filters);
-        Page<StoreNotifications> storeNotifications = wholesaleNotificationRepository.findAll(specification,pageable);
-        return  storeNotifications;
+        return  wholesaleNotificationRepository.findAll(specification,pageable);
     }
 
     public void updateSeen(List<Long> seenIds) {

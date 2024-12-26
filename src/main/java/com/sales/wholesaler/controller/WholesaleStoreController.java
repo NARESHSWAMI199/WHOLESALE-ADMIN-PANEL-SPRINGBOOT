@@ -1,12 +1,12 @@
 package com.sales.wholesaler.controller;
 
 
+import com.sales.dto.AddressDto;
 import com.sales.dto.SearchFilters;
 import com.sales.dto.StoreDto;
-import com.sales.entities.StoreCategory;
-import com.sales.entities.StoreNotifications;
-import com.sales.entities.StoreSubCategory;
-import com.sales.entities.User;
+import com.sales.entities.*;
+import com.sales.exceptions.MyException;
+import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("wholesale/store")
@@ -26,7 +27,7 @@ public class WholesaleStoreController extends WholesaleServiceContainer{
 
     @Transactional
     @PostMapping(value = {"/update"})
-    public ResponseEntity<Map<String, Object>> updateAuth(HttpServletRequest request, @ModelAttribute StoreDto storeDto) {
+    public ResponseEntity<Map<String, Object>> updateStore(HttpServletRequest request, @ModelAttribute StoreDto storeDto) {
         Map<String,Object> responseObj = new HashMap<>();
         try {
             User logggedUser = (User) request.getAttribute("user");
@@ -39,7 +40,6 @@ public class WholesaleStoreController extends WholesaleServiceContainer{
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
 
     }
-
 
     @Transactional
     @PostMapping(value = {"notifications"})
@@ -70,6 +70,23 @@ public class WholesaleStoreController extends WholesaleServiceContainer{
     public ResponseEntity<List<StoreSubCategory>> getStoreSubCategory(@PathVariable(required = true) int categoryId) {
         List<StoreSubCategory> storeSubCategories = wholesaleStoreService.getAllStoreSubCategories(categoryId);
         return new ResponseEntity<>(storeSubCategories, HttpStatus.OK);
+    }
+
+
+    @PostMapping("add")
+    @Transactional
+    public ResponseEntity<Map<String,Object>> addNewStore(HttpServletRequest request,@RequestBody StoreDto storeDto) {
+        Map<String,Object> result = new HashMap<>();
+        User logggedUser = (User) request.getAttribute("user");
+        Store isInserted = wholesaleStoreService.createStore(storeDto,logggedUser);
+        if(isInserted.getId() > 0){
+            result.put("message","Store created successfully. Welcome in Swami Sales");
+            result.put("status",200);
+        }else{
+            result.put("message","Something went wrong");
+            result.put("status",400);
+        }
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
     }
 
 

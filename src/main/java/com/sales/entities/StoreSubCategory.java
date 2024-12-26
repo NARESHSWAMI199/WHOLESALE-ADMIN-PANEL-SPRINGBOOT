@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.Where;
 
 import java.util.UUID;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Where(clause = "is_deleted !='Y'")
+@SQLRestriction("is_deleted !='Y'")
 public class StoreSubCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -11,6 +11,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 
@@ -33,29 +34,28 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        String arr[] = {
-                "/admin/auth/login",
-                "/admin/auth/login/otp",
-                "/admin/auth/sendOtp",
-                "/admin/auth/register",
-                "/wholesale/auth/login",
-                "/wholesale/auth/login/otp",
-                "/wholesale/auth/sendOtp",
-                "/wholesale/auth/register",
-                "/webjars/**",
-                "/admin/auth/profile/**",
-                "/wholesale/auth/profile/**",
-                "/admin/store/image/**",
-                "/admin/item/image/**",
-                "/pg/**",
-                "/cashfree/**",
-                "/swagger-ui/**",
-                "/v3/api-docs/**",
-                "/api-docs/**",
-                "/plans/**",
-        };
         registry.addInterceptor(new SalesInterceptor(jwtToken,userRepository,permissionRepository,storePermissionsRepository))
-                .excludePathPatterns(Arrays.asList(arr));
+                .excludePathPatterns(Arrays.asList("/admin/auth/login",
+                    "/admin/auth/login/otp",
+                    "/admin/auth/sendOtp",
+                    "/admin/auth/register",
+                    "/wholesale/auth/login",
+                    "/wholesale/auth/register",
+                    "/wholesale/auth/login/otp",
+                    "/wholesale/auth/sendOtp",
+                    "/wholesale/auth/register",
+                    "/webjars/**",
+                    "/admin/auth/profile/**",
+                    "/wholesale/auth/profile/**",
+                    "/admin/store/image/**",
+                    "/admin/item/image/**",
+                    "/pg/**",
+                    "/cashfree/**",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/api-docs/**",
+                    "/plans/**"
+                ));
     }
 
 
