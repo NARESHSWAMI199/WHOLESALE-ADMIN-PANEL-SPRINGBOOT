@@ -3,6 +3,7 @@ package com.sales.wholesaler.services;
 
 import com.sales.dto.PhonePeDto;
 import com.sales.entities.PhonePeTrans;
+import com.sales.entities.User;
 import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -54,6 +55,7 @@ public class PhonePeService extends WholesaleRepoContainer {
     public PhonePeTrans savePhonePeTransaction(PhonePeDto phonePeDto){
         PhonePeTrans phonePeTrans = PhonePeTrans.builder()
                 .merchantTransactionId(phonePeDto.getMerchantTransactionId())
+                .userId(phonePeDto.getUserId())
                 .amount(phonePeDto.getAmount())
                 .status("P")
                 .createdAt(Utils.getCurrentMillis())

@@ -57,6 +57,8 @@ public class User {
     Integer createdBy;
     @Column(name = "updated_by")
     Integer updatedBy;
+    @Column(name = "active_plan")
+    Integer activePlan;
 
     public User (User loggedUser) {
         this.slug = UUID.randomUUID().toString();

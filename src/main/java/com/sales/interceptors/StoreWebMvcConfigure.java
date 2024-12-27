@@ -6,10 +6,7 @@ import com.sales.admin.repositories.UserRepository;
 import com.sales.jwtUtils.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +46,7 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                     "/wholesale/auth/profile/**",
                     "/admin/store/image/**",
                     "/admin/item/image/**",
-                    "/pg/**",
+                    "/pg/pay",
                     "/cashfree/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
@@ -67,6 +64,12 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*") // Allow all headers, including your custom header
                 .allowCredentials(true);
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry){
+        registry.addResourceHandler("/**")
+                .addResourceLocations("classpath:/static/");
     }
 
 

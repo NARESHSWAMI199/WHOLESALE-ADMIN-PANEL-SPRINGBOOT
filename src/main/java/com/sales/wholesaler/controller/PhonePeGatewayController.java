@@ -11,6 +11,7 @@ import com.phonepe.sdk.pg.payments.v1.models.response.PgPayResponse;
 import com.sales.dto.PhonePeDto;
 import com.sales.entities.PhonePeTrans;
 import com.sales.entities.ServicePlan;
+import com.sales.entities.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -26,22 +27,29 @@ import java.util.UUID;
 
 
 @Controller
-@RequestMapping("pg")
+@RequestMapping("pg/")
 public class PhonePeGatewayController extends WholesaleServiceContainer {
 
     @ResponseBody
-    @PostMapping("pay")
-    public ResponseEntity<Map<String,Object>> payViaPhonePe(@RequestBody PhonePeDto phonePeDto){
+    @GetMapping("pay/{slug}")
+    public ResponseEntity<Map<String,Object>> payViaPhonePe(HttpServletRequest request,@PathVariable String slug){
+        User logggedUser = (User) request.getAttribute("user");
+        ServicePlan servicePlan = servicePlanService.findBySlug(slug);
         Map<String,Object> result = new HashMap<>();
         try {
+            logger.info("user id  : "+logggedUser.getId());
             String merchantTransactionId = UUID.randomUUID().toString().substring(0, 34);
             logger.info("merchantTransactionId : "+merchantTransactionId);
-            long amount = phonePeDto.getAmount()*100; /* converting in rupees */
+            /* TODO : Must add Extra GST amount */
+            long amount = (servicePlan.getPrice()-servicePlan.getDiscount())*100; /* converting in rupees */
             String merchantUserId = UUID.randomUUID().toString().substring(0, 34);
             String callbackUrl = "http://localhost:8080/pg/callback";
             String redirectUrl = "http://localhost:8080/pg/home";
-            phonePeDto.setMerchantTransactionId(merchantTransactionId);
-            phonePeDto.setAmount(amount);
+            PhonePeDto phonePeDto = PhonePeDto.builder()
+                    .userId(logggedUser.getId())
+                    .merchantTransactionId(merchantTransactionId)
+                    .amount(amount)
+                    .build();
             PhonePeTrans phonePeTrans =  phonePeService.savePhonePeTransaction(phonePeDto);
             if(phonePeTrans !=null){
                 callbackUrl += "/"+phonePeTrans.getId();
@@ -152,19 +160,4 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
     public ResponseEntity<Map<String,Object>> getNotificationCallback(@RequestBody Map<String,Object> body){
         return new ResponseEntity<>(body,HttpStatus.OK);
     }
-
-
-    @GetMapping("phonepe/{slug}")
-    public String phonePe( @PathVariable String slug, Model model){
-        ServicePlan servicePlan = servicePlanService.findBySlug(slug);
-        if(servicePlan != null) {
-            model.addAttribute("amount", servicePlan.getPrice() - servicePlan.getDiscount());
-            return "phonepe";
-        }
-        return "error";
-
-    }
-
-
-
 }

@@ -13,4 +13,5 @@ public class PhonePeDto {
     String merchantTransactionId;
     String xVerify;
     String encodedResponse;
+    Integer userId;
 }

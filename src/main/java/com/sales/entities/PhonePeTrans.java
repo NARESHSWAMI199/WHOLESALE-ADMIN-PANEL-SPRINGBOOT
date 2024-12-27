@@ -17,6 +17,8 @@ public class PhonePeTrans {
     int id;
     @Column(name = "merchant_transaction_id",nullable = false)
     String merchantTransactionId;
+    @Column(name = "user_id")
+    Integer userId;
     @Column(name = "x_verify")
     String xVerify;
     @Column(name = "amount",nullable = false)
