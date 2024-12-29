@@ -5,6 +5,7 @@ import com.sales.admin.services.ServicePlanService;
 import com.sales.wholesaler.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.logging.Logger;
 
@@ -35,6 +36,9 @@ public class WholesaleServiceContainer {
 
     @Autowired
     protected  PhonePeService phonePeService;
+
+    @Autowired
+    protected WholesaleServicePlanService wholesaleServicePlanService;
 
     @Autowired
     protected ServicePlanService servicePlanService;
