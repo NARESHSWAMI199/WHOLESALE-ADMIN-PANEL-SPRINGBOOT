@@ -12,6 +12,7 @@ import com.sales.dto.PhonePeDto;
 import com.sales.entities.PhonePeTrans;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
+import com.sales.entities.UserPlans;
 import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -43,7 +44,7 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
             /* TODO : Must add Extra GST amount */
             long amount = (servicePlan.getPrice()-servicePlan.getDiscount())*100; /* converting in rupees */
             String merchantUserId = UUID.randomUUID().toString().substring(0, 34);
-            String callbackUrl = "http://localhost:8080/pg/callback";
+            String callbackUrl = "http://localhost:8080/pg/callback/"+servicePlan.getId() + "/"+logggedUser.getId();
             String redirectUrl = "http://localhost:8080/pg/home";
             PhonePeDto phonePeDto = PhonePeDto.builder()
                     .userId(logggedUser.getId())
@@ -82,8 +83,8 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
 
-    @RequestMapping("callback/{id}")
-    public ResponseEntity<Map<String,Object>>  phonePeCallbackResponse(HttpServletRequest request, @PathVariable Integer id, @RequestBody Map<String,Object> paramsBody){
+    @RequestMapping("callback/{servicePlanId}/{userId}/{id}")
+    public ResponseEntity<Map<String,Object>>  phonePeCallbackResponse(HttpServletRequest request,@PathVariable(name = "servicePlanId")Integer servicePlanId, @PathVariable(name = "userId") Integer userId , @PathVariable( name = "id") Integer id, @RequestBody Map<String,Object> paramsBody){
 
         Map<String,Object> result = new HashMap<>();
         try {
@@ -121,6 +122,7 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
                     .build();
 
             int isUpdated = phonePeService.updatePhonePeTransaction(phonePeTrans);
+            wholesaleServicePlanService.assignUserPlan(userId,servicePlanId);
             result.put("isUpdate", isUpdated > 0);
             result.put("data", new Gson().fromJson(decodedString,Map.class));
             result.put("status",200);

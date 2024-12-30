@@ -46,7 +46,7 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                     "/wholesale/auth/profile/**",
                     "/admin/store/image/**",
                     "/admin/item/image/**",
-                    "/pg/pay",
+                    "/pg/callback/**",
                     "/cashfree/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
