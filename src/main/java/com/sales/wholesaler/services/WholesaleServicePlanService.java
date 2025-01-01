@@ -10,10 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class WholesaleServicePlanService extends WholesaleRepoContainer {
@@ -57,12 +54,13 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
 
     public List<Map<String,Object>> getAllUserPlans(User loggedUser){
         List<Map<String, Object>> allUserPlansByUserId = wholesaleUserPlansRepository.getAllUserPlansByUserId(loggedUser.getId());
-        allUserPlansByUserId.forEach(plan -> {
-            /* we can direct update in plan, but we're facing Exception : A TupleBackedMap cannot be modified; */
-            Map<String,Object> updatePlan = new HashMap<>(plan);
-            updatePlan.put("status",isPlanActive((Integer) plan.get("userPlanId")));
-        });
-        return allUserPlansByUserId;
+        List<Map<String,Object>> result  = new ArrayList<>();
+        for (Map<String, Object> plan : allUserPlansByUserId) {/* we can direct update in plan, but we're facing Exception : A TupleBackedMap cannot be modified; */
+            Map<String, Object> updatePlan = new HashMap<>(plan);
+            updatePlan.put("status", isPlanActive((Integer) plan.get("userPlanId")));
+            result.add(updatePlan);
+        }
+        return result;
     }
 
 }
