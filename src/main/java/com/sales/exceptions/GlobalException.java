@@ -1,6 +1,7 @@
 package com.sales.exceptions;
 
 import com.sales.dto.ErrorDto;
+import com.sales.entities.User;
 import jakarta.transaction.Transactional;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,6 +105,19 @@ public class GlobalException {
     @ExceptionHandler(value = {MyException.class})
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto myException(MyException ex, WebRequest request) {
+        String errorMessage = ex.getMessage();
+        errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
+        ErrorDto message = new ErrorDto(errorMessage,500);
+        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        logger.info(ex.getMessage());
+        return message;
+    }
+
+
+    @Transactional
+    @ExceptionHandler(value = {UserException.class})
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+    public ErrorDto userException(MyException ex, WebRequest request) {
         String errorMessage = ex.getMessage();
         errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
         ErrorDto message = new ErrorDto(errorMessage,500);

@@ -109,6 +109,9 @@ public class WholesaleUserService extends WholesaleRepoContainer {
     }
 
 
+    public User findUserBySlug(String slug){
+        return   wholesaleUserRepository.findUserBySlug(slug);
+    }
 
 
 

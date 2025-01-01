@@ -4,11 +4,15 @@ import com.sales.admin.repositories.PermissionRepository;
 import com.sales.admin.repositories.StorePermissionsRepository;
 import com.sales.admin.repositories.UserRepository;
 import com.sales.jwtUtils.JwtToken;
+import com.sales.wholesaler.repository.WholesaleUserPlansRepository;
+import com.sales.wholesaler.services.WholesaleServicePlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 @Configuration
@@ -28,30 +32,43 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
     @Autowired
     StorePermissionsRepository storePermissionsRepository;
 
+    @Autowired
+    WholesaleServicePlanService wholesaleServicePlanService;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new SalesInterceptor(jwtToken,userRepository,permissionRepository,storePermissionsRepository))
-                .excludePathPatterns(Arrays.asList("/admin/auth/login",
-                    "/admin/auth/login/otp",
-                    "/admin/auth/sendOtp",
-                    "/admin/auth/register",
-                    "/wholesale/auth/login",
-                    "/wholesale/auth/register",
-                    "/wholesale/auth/login/otp",
-                    "/wholesale/auth/sendOtp",
-                    "/wholesale/auth/register",
-                    "/webjars/**",
-                    "/admin/auth/profile/**",
-                    "/wholesale/auth/profile/**",
-                    "/admin/store/image/**",
-                    "/admin/item/image/**",
-                    "/pg/callback/**",
-                    "/cashfree/**",
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**",
-                    "/api-docs/**",
-                    "/plans/**"
-                ));
+
+        /* Paths which no need to authenticate */
+        String [] unAuthorizePaths = {"/admin/auth/login",
+                "/admin/auth/login/otp",
+                "/admin/auth/sendOtp",
+                "/admin/auth/register",
+                "/wholesale/auth/login",
+                "/wholesale/auth/register",
+                "/wholesale/auth/login/otp",
+                "/wholesale/auth/sendOtp",
+                "/wholesale/auth/register",
+                "/webjars/**",
+                "/admin/auth/profile/**",
+                "/wholesale/auth/profile/**",
+                "/admin/store/image/**",
+                "/admin/item/image/**",
+                "/pg/callback/**",
+                "/cashfree/**",
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/api-docs/**",
+                "/plans/**"
+        };
+        /* Paths which need to be authenticated but don't need to check in Interceptor due to some different conditions */
+        String [] authorizedPaths = {
+            "/wholesale/plan/**"
+        };
+
+        List<String> excludingPaths = new ArrayList<>(List.of(unAuthorizePaths));
+        excludingPaths.addAll(Arrays.asList(authorizedPaths));
+        registry.addInterceptor(new SalesInterceptor(jwtToken,userRepository,permissionRepository,storePermissionsRepository,wholesaleServicePlanService))
+                .excludePathPatterns(excludingPaths);
     }
 
 

@@ -78,5 +78,14 @@ public class WholesaleUserHbRepository {
     }
 
 
+    public int updateUserActivePlan(Integer id,Integer userPlanId){
+        String hql = "update User set activePlan =:userPlanId where id=:id";
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("userPlanId",userPlanId);
+        query.setParameter("id",id);
+        return query.executeUpdate();
+    }
+
+
 
 }

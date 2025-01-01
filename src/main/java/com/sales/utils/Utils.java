@@ -1,8 +1,17 @@
 package com.sales.utils;
 
+import com.sales.admin.repositories.UserRepository;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
+import com.sales.exceptions.UserException;
 import com.sales.global.GlobalConstant;
+import com.sales.jwtUtils.JwtToken;
+import com.sales.wholesaler.repository.WholesaleUserRepository;
+import com.sales.wholesaler.services.WholesaleUserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
@@ -10,11 +19,9 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.Date;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Random;
 
 @Component
 public class Utils {
@@ -140,5 +147,27 @@ public class Utils {
         return otp;
     }
 
+
+    public static User getUserFromRequest(HttpServletRequest request, JwtToken jwtToken, WholesaleUserService userService){
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+        System.out.println("request url : "+request.getRequestURI());
+        try {
+            if (token != null && token.startsWith("Bearer ")) {
+                token = token.substring(7);
+                String slug = jwtToken.getSlugFromToken(token);
+                /* get user by slug. */
+                User user = userService.findUserBySlug(slug);
+                if (user.getIsDeleted().equals("Y")) {
+                    throw new UserException("User is not found.");
+                } else if (user.getStatus().equals("D")) {
+                    throw new UserException("User is not active.");
+                }
+                return user;
+            }
+            throw new UserException("Invalid authorization.");
+        }catch (Exception e){
+            throw new UserException(e.getMessage());
+        }
+    }
 
 }
