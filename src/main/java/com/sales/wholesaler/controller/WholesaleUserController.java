@@ -47,7 +47,6 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put("status", 200);
             responseObj.put("user", user);
             responseObj.put("store", store);
-            responseObj.put("planIsActive" , wholesaleServicePlanService.isPlanActive(user.getActivePlan()));
         } else {
             responseObj.put("message", "You are blocked by admin");
             responseObj.put("status", 401);

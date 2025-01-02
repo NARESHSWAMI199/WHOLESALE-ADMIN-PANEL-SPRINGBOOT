@@ -1,8 +1,6 @@
 package com.sales.wholesaler.controller;
 
 
-import com.sales.admin.controllers.ServiceContainer;
-import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;
@@ -36,9 +34,9 @@ public class WholesaleServicePlanController extends WholesaleServiceContainer {
 
     @GetMapping("is-active")
     public ResponseEntity<Map<String,Object>> isUserPlanActive(HttpServletRequest request){
-        User user = (User) request.getAttribute("user");
+        User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         Map<String,Object> result = new HashMap<>();
-        boolean planIsActive = wholesaleServicePlanService.isPlanActive(user.getActivePlan());
+        boolean planIsActive = wholesaleServicePlanService.isPlanActive(loggedUser.getActivePlan());
         result.put("planIsActive",planIsActive);
         result.put("status" , 200);
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));

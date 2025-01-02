@@ -4,10 +4,7 @@ package com.sales.wholesaler.services;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
 import com.sales.entities.UserPlans;
-import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
-import jakarta.transaction.Transactional;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -25,10 +22,14 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
 
     public boolean isPlanActive(Integer  userPlanId){
         if(userPlanId == null) return false;
-        UserPlans plan = wholesaleUserPlansRepository.findByPlanId(userPlanId);
-        long expiryDate = plan.getExpiryDate();
-        long currentDate =  Utils.getCurrentMillis();
-        return currentDate <= expiryDate;
+        Optional<UserPlans> plan = wholesaleUserPlansRepository.findById(userPlanId);
+        if (plan.isPresent()){
+            UserPlans userPlan = plan.get();
+            long expiryDate = userPlan.getExpiryDate();
+            long currentDate =  Utils.getCurrentMillis();
+            return currentDate <= expiryDate;
+        }
+        return false;
     }
 
 
@@ -48,7 +49,7 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
                 .createdBy(userId)
                 .build();
         UserPlans userPlan = wholesaleUserPlansRepository.save(userPlans);
-        wholesaleUserHbRepository.updateUserActivePlan(userPlan.getId(),userId);
+        wholesaleUserHbRepository.updateUserActivePlan(userId,userPlan.getId());
 
     }
 
