@@ -6,7 +6,6 @@ import com.sales.dto.StoreDto;
 import com.sales.dto.UserDto;
 import com.sales.entities.SupportEmail;
 import com.sales.entities.User;
-import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,8 +178,8 @@ public class WholesaleUserService extends WholesaleRepoContainer {
 
 
     public User addNewUser(UserDto userDto) {
-        Map<String,Object> result = new HashMap<String,Object>();
-        if (!Utils.isValidEmail(userDto.getEmail())) throw new MyException("Not a valid email address.");
+        /* '_' replaced by actual error message in mobileAndEmailValidation */
+        Utils.mobileAndEmailValidation(userDto.getEmail(), userDto.getContact(),"Not a valid _");
         String username = Utils.isValidName(userDto.getUsername(),"user");
         User user = User.builder()
             .username(username)

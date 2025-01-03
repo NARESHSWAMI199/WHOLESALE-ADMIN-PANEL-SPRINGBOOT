@@ -2,10 +2,8 @@ package com.sales.wholesaler.controller;
 
 
 import com.sales.entities.User;
-import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +20,7 @@ import java.util.Map;
 public class WholesaleServicePlanController extends WholesaleServiceContainer {
 
 
-    @Autowired
-    private  JwtToken jwtToken;
+
 
     @GetMapping("/all")
     public ResponseEntity<List<Map<String,Object>>> getAllPlans(HttpServletRequest request) {

@@ -4,7 +4,6 @@ import com.sales.admin.repositories.PermissionRepository;
 import com.sales.admin.repositories.StorePermissionsRepository;
 import com.sales.admin.repositories.UserRepository;
 import com.sales.jwtUtils.JwtToken;
-import com.sales.wholesaler.repository.WholesaleUserPlansRepository;
 import com.sales.wholesaler.services.WholesaleServicePlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -58,11 +57,14 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                 "/swagger-ui/**",
                 "/v3/api-docs/**",
                 "/api-docs/**",
-                "/plans/**"
+                "/plans/**",
+                "/wholesale/address/state",
+                "/wholesale/address/city/**",
+                "/wholesale/store/category/**"
         };
         /* Paths which need to be authenticated but don't need to check in Interceptor due to some different conditions */
         String [] authorizedPaths = {
-            "/wholesale/plan/**"
+            "/wholesale/plan/**", "/pg/pay/**"
         };
 
         List<String> excludingPaths = new ArrayList<>(List.of(unAuthorizePaths));

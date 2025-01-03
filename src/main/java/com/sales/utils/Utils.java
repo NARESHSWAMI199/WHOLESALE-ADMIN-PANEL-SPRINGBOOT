@@ -1,16 +1,12 @@
 package com.sales.utils;
 
-import com.sales.admin.repositories.UserRepository;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.exceptions.UserException;
 import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
-import com.sales.wholesaler.repository.WholesaleUserRepository;
 import com.sales.wholesaler.services.WholesaleUserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +15,9 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +30,7 @@ public class Utils {
         return millis;
     }
 
-    public static String mobileRegex = "^[789]\\d{9}$";
+    public static String mobileRegex = "^[6789]\\d{9}$";
 
     public static String getMillisToDate(Long millis){
         DateFormat format = new SimpleDateFormat("dd MMM yyyy HH:mm:ss:SSS Z");
@@ -89,6 +87,10 @@ public class Utils {
     public static boolean isValidEmail(String emailStr) {
         Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailStr);
         return matcher.matches();
+    }
+
+    public static boolean isValidPhoneNumber(String mobileNumber){
+        return mobileRegex.matches(mobileNumber);
     }
 
     public static void mobileAndEmailValidation(String email ,String contact,String errorMessage) throws MyException {

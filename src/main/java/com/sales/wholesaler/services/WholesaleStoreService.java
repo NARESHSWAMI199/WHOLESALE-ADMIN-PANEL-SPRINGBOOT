@@ -41,6 +41,11 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         Map<String, Object> responseObj = new HashMap<>();
         String storeName = Utils.isValidName( storeDto.getStoreName(),"store");
         storeDto.setStoreName(storeName);
+
+        /* '_' replaced by actual error message in mobileAndEmailValidation */
+        Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(),"Not a valid _");
+        storeDto.setStoreName(storeName);
+
         try {
             StoreCategory storeCategory = wholesaleCategoryRepository.findById(storeDto.getCategoryId()).get();
             storeDto.setStoreCategory(storeCategory);

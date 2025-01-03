@@ -12,13 +12,12 @@ import com.sales.dto.PhonePeDto;
 import com.sales.entities.PhonePeTrans;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
-import com.sales.entities.UserPlans;
+import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Base64;
@@ -34,22 +33,22 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
     @ResponseBody
     @GetMapping("pay/{slug}")
     public ResponseEntity<Map<String,Object>> payViaPhonePe(HttpServletRequest request,@PathVariable String slug){
-        User logggedUser = (User) request.getAttribute("user");
+        User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         ServicePlan servicePlan = servicePlanService.findBySlug(slug);
         Map<String,Object> result = new HashMap<>();
         try {
-            logger.info("user id  : "+logggedUser.getId());
+            logger.info("user id  : "+loggedUser.getId());
             String merchantTransactionId = UUID.randomUUID().toString().substring(0, 34);
             logger.info("merchantTransactionId : "+merchantTransactionId);
             /* TODO : Must add Extra GST amount */
             long amount = (servicePlan.getPrice()-servicePlan.getDiscount())*100; /* converting in rupees */
             String merchantUserId = UUID.randomUUID().toString().substring(0, 34);
-            String callbackUrl = "http://localhost:8080/pg/callback/"+servicePlan.getId() + "/"+logggedUser.getId();
+            String callbackUrl = "http://localhost:8080/pg/callback/"+servicePlan.getId() + "/"+loggedUser.getId();
             String redirectUrl = "http://localhost:8080/pg/home";
             PhonePeDto phonePeDto = PhonePeDto.builder()
-                    .userId(logggedUser.getId())
+                    .userId(loggedUser.getId())
                     .merchantTransactionId(merchantTransactionId)
-                    .amount(amount)
+                    .amount(servicePlan.getPrice())
                     .build();
             PhonePeTrans phonePeTrans =  phonePeService.savePhonePeTransaction(phonePeDto);
             if(phonePeTrans !=null){
@@ -151,11 +150,6 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
             e.printStackTrace();
         }
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
-    }
-
-    @GetMapping("home")
-    public String paymentRedirect(){
-        return "hello";
     }
 
     @RequestMapping("refund-notify")
