@@ -133,11 +133,6 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
 
     @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
     public Store createStore(StoreDto storeDto , User loggedUser) throws MyException {
-
-        /* Make user retailer to wholesaler */
-        int isUpdated  = wholesaleUserHbRepository.makeUserTypeWholesaler(loggedUser.getSlug());
-        if(isUpdated < 1) throw new MyException("Something went wrong during update user type. if you facing this issue contact with administrator");
-
         /* inserting  address during create a wholesale */
         AddressDto addressDto = getAddressObjFromStore(storeDto);
         Address address =  insertAddress(addressDto,loggedUser);

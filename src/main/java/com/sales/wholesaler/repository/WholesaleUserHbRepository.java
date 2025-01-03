@@ -71,7 +71,7 @@ public class WholesaleUserHbRepository {
     }
 
     public int makeUserTypeWholesaler(String slug){
-        String hql = "update User set userType ='S' where slug=:slug";
+        String hql = "update User set userType ='W' where slug=:slug";
         Query query = entityManager.createQuery(hql);
         query.setParameter("slug",slug);
         return query.executeUpdate();

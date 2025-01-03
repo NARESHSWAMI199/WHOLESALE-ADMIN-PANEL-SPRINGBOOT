@@ -189,7 +189,7 @@ public class WholesaleUserService extends WholesaleRepoContainer {
             .slug(UUID.randomUUID().toString())
             .status("A")
             .isDeleted("N")
-            .userType("W") /* default user type is retailer we will update after store creation */
+            .userType("W")
             .createdAt(Utils.getCurrentMillis())
             .updatedAt(Utils.getCurrentMillis())
             .build();

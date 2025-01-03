@@ -63,14 +63,16 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                 "/wholesale/store/category/**"
         };
         /* Paths which need to be authenticated but don't need to check in Interceptor due to some different conditions */
-        String [] authorizedPaths = {
-            "/wholesale/plan/**", "/pg/pay/**"
+  /*      String [] authorizedPaths = {
+            "/wholesale/plan/**",
+            "/pg/pay/**",
+            "/wholesale/store/add"
         };
 
         List<String> excludingPaths = new ArrayList<>(List.of(unAuthorizePaths));
-        excludingPaths.addAll(Arrays.asList(authorizedPaths));
+        excludingPaths.addAll(Arrays.asList(authorizedPaths));*/
         registry.addInterceptor(new SalesInterceptor(jwtToken,userRepository,permissionRepository,storePermissionsRepository,wholesaleServicePlanService))
-                .excludePathPatterns(excludingPaths);
+                .excludePathPatterns(List.of(unAuthorizePaths));
     }
 
 

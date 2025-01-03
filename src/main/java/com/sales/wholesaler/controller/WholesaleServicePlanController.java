@@ -24,14 +24,14 @@ public class WholesaleServicePlanController extends WholesaleServiceContainer {
 
     @GetMapping("/all")
     public ResponseEntity<List<Map<String,Object>>> getAllPlans(HttpServletRequest request) {
-        User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
+        User loggedUser = (User) request.getAttribute("user");
         List<Map<String,Object>> allUserPlans = wholesaleServicePlanService.getAllUserPlans(loggedUser);
         return new ResponseEntity<>(allUserPlans, HttpStatusCode.valueOf(200));
     }
 
     @GetMapping("is-active")
     public ResponseEntity<Map<String,Object>> isUserPlanActive(HttpServletRequest request){
-        User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
+        User loggedUser = (User) request.getAttribute("user");
         Map<String,Object> result = new HashMap<>();
         boolean planIsActive = wholesaleServicePlanService.isPlanActive(loggedUser.getActivePlan());
         result.put("planIsActive",planIsActive);

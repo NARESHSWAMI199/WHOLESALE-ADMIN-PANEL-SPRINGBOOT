@@ -66,10 +66,10 @@ public class SalesInterceptor implements HandlerInterceptor {
                 sendError(response,"User is not active.",401);
                 return false;
             }
-            else if (!wholesaleServicePlanService.isPlanActive(user.getActivePlan())){
+            /*else if (!wholesaleServicePlanService.isPlanActive(user.getActivePlan())){
                 sendError(response,"You don't have any active plan.",403);
                 return false;
-            }
+            }*/
 
             /*if user have list permission also has detail permission */
 

@@ -53,7 +53,7 @@ public class WholesaleStoreController extends WholesaleServiceContainer{
     @Transactional
     @PostMapping(value = {"update/notifications"})
     public ResponseEntity<String> getAllStoreNotification(HttpServletRequest request, @RequestBody StoreDto storeDto) {
-        User logggedUser = (User) request.getAttribute("user");
+        User loggedUser = (User) request.getAttribute("user");
         wholesaleStoreService.updateSeen(storeDto.getSeenIds());
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
@@ -77,8 +77,8 @@ public class WholesaleStoreController extends WholesaleServiceContainer{
     @Transactional
     public ResponseEntity<Map<String,Object>> addNewStore(HttpServletRequest request,@RequestBody StoreDto storeDto) {
         Map<String,Object> result = new HashMap<>();
-        User logggedUser = (User) request.getAttribute("user");
-        Store isInserted = wholesaleStoreService.createStore(storeDto,logggedUser);
+        User loggedUser = (User) request.getAttribute("user");
+        Store isInserted = wholesaleStoreService.createStore(storeDto,loggedUser);
         if(isInserted.getId() > 0){
             result.put("message","Store created successfully. Welcome in Swami Sales");
             result.put("status",200);
