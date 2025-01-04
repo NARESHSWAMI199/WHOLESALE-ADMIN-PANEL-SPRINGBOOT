@@ -7,6 +7,7 @@ import com.sales.entities.Store;
 import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
+import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,10 +115,10 @@ public class WholesaleUserController extends WholesaleServiceContainer {
     @GetMapping("/detail")
     public ResponseEntity<Map<String, Object>> getDetailUser(HttpServletRequest request) {
         Map<String,Object> responseObj = new HashMap<>();
-        User user = (User) request.getAttribute("user");
-        Store store = wholesaleStoreService.getStoreByUserSlug(user.getId());
+        User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
+        Store store = wholesaleStoreService.getStoreByUserSlug(loggedUser.getId());
         responseObj.put("store", store);
-        responseObj.put("user", user);
+        responseObj.put("user", loggedUser);
         responseObj.put("status", 200);
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }

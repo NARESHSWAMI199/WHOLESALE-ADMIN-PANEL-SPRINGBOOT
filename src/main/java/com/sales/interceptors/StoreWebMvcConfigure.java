@@ -60,13 +60,15 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                 "/plans/**",
                 "/wholesale/address/state",
                 "/wholesale/address/city/**",
-                "/wholesale/store/category/**"
+                "/wholesale/store/category/**",
+                "/wholesale/store/subcategory/**"
         };
         /* Paths which need to be authenticated but don't need to check in Interceptor due to some different conditions */
         String [] authorizedPaths = {
             "/wholesale/plan/**",
             "/pg/pay/**",
-            "/wholesale/store/add"
+            "/wholesale/store/add",
+            "/wholesale/auth/detail"
         };
 
         List<String> excludingPaths = new ArrayList<>(List.of(unAuthorizePaths));

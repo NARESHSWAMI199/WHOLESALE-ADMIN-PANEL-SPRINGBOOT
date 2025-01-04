@@ -137,6 +137,15 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         AddressDto addressDto = getAddressObjFromStore(storeDto);
         Address address =  insertAddress(addressDto,loggedUser);
 
+        try {
+            StoreCategory storeCategory = wholesaleCategoryRepository.findById(storeDto.getCategoryId()).get();
+            storeDto.setStoreCategory(storeCategory);
+            StoreSubCategory storeSubCategory = wholesaleSubCategoryRepository.findById(storeDto.getSubCategoryId()).get();
+            storeDto.setStoreSubCategory(storeSubCategory);
+        }catch (Exception e){
+            throw new MyException("Invalid arguments for category and subcategory");
+        }
+
         Store store = new Store(loggedUser);
         store.setUser(loggedUser);
         store.setStoreName(storeDto.getStoreName());

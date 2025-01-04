@@ -75,9 +75,9 @@ public class WholesaleStoreController extends WholesaleServiceContainer{
 
     @PostMapping("add")
     @Transactional
-    public ResponseEntity<Map<String,Object>> addNewStore(HttpServletRequest request,@RequestBody StoreDto storeDto) {
+    public ResponseEntity<Map<String,Object>> addNewStore(HttpServletRequest request,@ModelAttribute StoreDto storeDto) {
         Map<String,Object> result = new HashMap<>();
-        User loggedUser = (User) request.getAttribute("user");
+        User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         Store isInserted = wholesaleStoreService.createStore(storeDto,loggedUser);
         if(isInserted.getId() > 0){
             result.put("message","Store created successfully. Welcome in Swami Sales");
