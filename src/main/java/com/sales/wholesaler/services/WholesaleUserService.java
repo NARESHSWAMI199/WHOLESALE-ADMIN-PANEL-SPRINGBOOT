@@ -4,6 +4,7 @@ package com.sales.wholesaler.services;
 import com.sales.dto.PasswordDto;
 import com.sales.dto.StoreDto;
 import com.sales.dto.UserDto;
+import com.sales.entities.ServicePlan;
 import com.sales.entities.SupportEmail;
 import com.sales.entities.User;
 import com.sales.utils.Utils;
@@ -24,6 +25,8 @@ import java.util.*;
 @Service
 public class WholesaleUserService extends WholesaleRepoContainer {
 
+    @Autowired
+    WholesaleServicePlanService wholesaleServicePlanService;
 
     @Value("${profile.absolute}")
     String profilePath;
@@ -193,7 +196,11 @@ public class WholesaleUserService extends WholesaleRepoContainer {
             .createdAt(Utils.getCurrentMillis())
             .updatedAt(Utils.getCurrentMillis())
             .build();
-        return wholesaleUserRepository.save(user);
+        User insertedUser =  wholesaleUserRepository.save(user);
+        /* assigning a free plan to user */
+        ServicePlan defaultServicePlan = wholesaleServicePlanRepository.getDefaultServicePlan();
+        wholesaleServicePlanService.assignUserPlan(insertedUser.getId(),defaultServicePlan.getId());
+        return user;
     }
 
 

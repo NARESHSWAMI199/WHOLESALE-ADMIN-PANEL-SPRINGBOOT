@@ -64,4 +64,9 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
         return result;
     }
 
+
+    public ServicePlan getDefaultServicePlan() {
+        return wholesaleServicePlanRepository.getDefaultServicePlan();
+    }
+
 }

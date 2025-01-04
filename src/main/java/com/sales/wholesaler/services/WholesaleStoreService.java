@@ -133,10 +133,9 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
 
     @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
     public Store createStore(StoreDto storeDto , User loggedUser) throws MyException {
-        /* inserting  address during create a wholesale */
-        AddressDto addressDto = getAddressObjFromStore(storeDto);
-        Address address =  insertAddress(addressDto,loggedUser);
 
+        /* '_' replaced by actual error message in mobileAndEmailValidation */
+        Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(),"Not a valid _");
         try {
             StoreCategory storeCategory = wholesaleCategoryRepository.findById(storeDto.getCategoryId()).get();
             storeDto.setStoreCategory(storeCategory);
@@ -145,6 +144,11 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         }catch (Exception e){
             throw new MyException("Invalid arguments for category and subcategory");
         }
+
+
+        /* inserting  address during create a wholesale */
+        AddressDto addressDto = getAddressObjFromStore(storeDto);
+        Address address =  insertAddress(addressDto,loggedUser);
 
         Store store = new Store(loggedUser);
         store.setUser(loggedUser);
