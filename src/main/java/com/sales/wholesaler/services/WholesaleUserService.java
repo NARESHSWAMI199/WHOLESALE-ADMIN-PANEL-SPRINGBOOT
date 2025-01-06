@@ -199,7 +199,9 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         User insertedUser =  wholesaleUserRepository.save(user);
         /* assigning a free plan to user */
         ServicePlan defaultServicePlan = wholesaleServicePlanRepository.getDefaultServicePlan();
-        wholesaleServicePlanService.assignUserPlan(insertedUser.getId(),defaultServicePlan.getId());
+        if(defaultServicePlan != null) {
+            wholesaleServicePlanService.assignUserPlan(insertedUser.getId(), defaultServicePlan.getId());
+        }
         return user;
     }
 
