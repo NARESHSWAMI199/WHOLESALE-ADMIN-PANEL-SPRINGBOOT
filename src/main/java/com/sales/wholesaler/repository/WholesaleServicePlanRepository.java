@@ -12,7 +12,7 @@ public interface WholesaleServicePlanRepository extends JpaRepository<ServicePla
 
     ServicePlan findBySlug(@Param("slug") String slug);
 
-    @Query("from ServicePlan where months <= 1 and price = 0")
+    @Query("from ServicePlan where price = 0")
     ServicePlan getDefaultServicePlan();
 
 }
