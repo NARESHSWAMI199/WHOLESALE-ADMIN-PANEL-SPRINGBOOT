@@ -83,7 +83,7 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000") // Replace with your React app's origin
+                .allowedOrigins("http://localhost:3000","http://localhost:3001") // Replace with your React app's origin
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Add OPTIONS for preflight requests
                 .allowedHeaders("*", "Authorization") // Allow all headers and specifically 'Authorization'
                 .allowCredentials(true)
