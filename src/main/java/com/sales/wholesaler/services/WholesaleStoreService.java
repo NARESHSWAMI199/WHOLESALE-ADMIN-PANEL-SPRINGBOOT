@@ -44,7 +44,6 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
 
         /* '_' replaced by actual error message in mobileAndEmailValidation */
         Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(),"Not a valid _");
-        storeDto.setStoreName(storeName);
 
         try {
             StoreCategory storeCategory = wholesaleCategoryRepository.findById(storeDto.getCategoryId()).get();
@@ -57,7 +56,7 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         Store store = getStoreByUserId(loggedUser.getId());
         String slug = store.getSlug();
         storeDto.setStoreSlug(slug);
-        String imageName = saveStoreImage(storeDto.getStorePic(), slug);
+        String imageName = getStoreImagePath(storeDto.getStorePic(), slug);
         if(imageName !=null){
             storeDto.setStoreAvatar(imageName);
         }else{
@@ -108,7 +107,7 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
 
 
     @Transactional
-    public String saveStoreImage(MultipartFile storeImage, String slug) throws MyException, IOException {
+    public String getStoreImagePath(MultipartFile storeImage, String slug) throws MyException, IOException {
         if(storeImage !=null ) {
             if (UploadImageValidator.isValidImage(storeImage, GlobalConstant.minWidth,
                     GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
@@ -132,35 +131,44 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
 
 
     @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
-    public Store createStore(StoreDto storeDto , User loggedUser) throws MyException {
-
-        /* '_' replaced by actual error message in mobileAndEmailValidation */
-        Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(),"Not a valid _");
+    public Store createStore(StoreDto storeDto , User loggedUser) {
         try {
-            StoreCategory storeCategory = wholesaleCategoryRepository.findById(storeDto.getCategoryId()).get();
-            storeDto.setStoreCategory(storeCategory);
-            StoreSubCategory storeSubCategory = wholesaleSubCategoryRepository.findById(storeDto.getSubCategoryId()).get();
-            storeDto.setStoreSubCategory(storeSubCategory);
-        }catch (Exception e){
-            throw new MyException("Invalid arguments for category and subcategory");
+            /* '_' replaced by actual error message in mobileAndEmailValidation */
+            Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid _");
+            try {
+                StoreCategory storeCategory = wholesaleCategoryRepository.findById(storeDto.getCategoryId()).get();
+                storeDto.setStoreCategory(storeCategory);
+                StoreSubCategory storeSubCategory = wholesaleSubCategoryRepository.findById(storeDto.getSubCategoryId()).get();
+                storeDto.setStoreSubCategory(storeSubCategory);
+            } catch (Exception e) {
+                throw new MyException("Invalid arguments for category and subcategory");
+            }
+
+            /* inserting  address during create a wholesale */
+            AddressDto addressDto = getAddressObjFromStore(storeDto);
+            Address address = insertAddress(addressDto, loggedUser);
+
+            Store store = new Store(loggedUser);
+            store.setUser(loggedUser);
+            store.setStoreName(storeDto.getStoreName());
+            store.setEmail(storeDto.getStoreEmail());
+            store.setAddress(address);
+            store.setDescription(storeDto.getDescription());
+            store.setPhone(storeDto.getStorePhone());
+            store.setRating(storeDto.getRating());
+            store.setStoreCategory(storeDto.getStoreCategory());
+            store.setStoreSubCategory(storeDto.getStoreSubCategory());
+            Store insertedStore = wholesaleStoreRepository.save(store);
+            String imageName = getStoreImagePath(storeDto.getStorePic(), insertedStore.getSlug());
+            if (imageName != null) {
+                store.setAvtar(imageName); /** I know save function called before set this, but it will save automatically due to same transaction */
+            } else {
+                throw new MyException("Store image can't be blank.");
+            }
+            return insertedStore;
+        }catch (IOException e){
+            throw new MyException("Store image is not valid image.");
         }
-
-
-        /* inserting  address during create a wholesale */
-        AddressDto addressDto = getAddressObjFromStore(storeDto);
-        Address address =  insertAddress(addressDto,loggedUser);
-
-        Store store = new Store(loggedUser);
-        store.setUser(loggedUser);
-        store.setStoreName(storeDto.getStoreName());
-        store.setEmail(storeDto.getStoreEmail());
-        store.setAddress(address);
-        store.setDescription(storeDto.getDescription());
-        store.setPhone(storeDto.getStorePhone());
-        store.setRating(storeDto.getRating());
-        store.setStoreCategory(storeDto.getStoreCategory());
-        store.setStoreSubCategory(storeDto.getStoreSubCategory());
-        return wholesaleStoreRepository.save(store);
     }
 
 
