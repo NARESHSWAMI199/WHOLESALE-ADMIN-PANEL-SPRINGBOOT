@@ -41,14 +41,17 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         if (user == null) {
             responseObj.put("message", "invalid credentials.");
             responseObj.put("status", 401);
-        } else if (user.getStatus().equalsIgnoreCase("A")) {
+        }else if(!Utils.isEmpty(user.getOtp())) {
+            responseObj.put("message", "User exist but not verified. You can login via otp.");
+            responseObj.put("status", 401);
+        }else if (user.getStatus().equalsIgnoreCase("A")) {
             responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
             Store store = wholesaleStoreService.getStoreByUserId(user.getId());
             responseObj.put("message", "success");
-            responseObj.put("status", 200);
             responseObj.put("user", user);
             responseObj.put("store", store);
-        } else {
+            responseObj.put("status", 200);
+        }else {
             responseObj.put("message", "You are blocked by admin");
             responseObj.put("status", 401);
         }
@@ -58,27 +61,52 @@ public class WholesaleUserController extends WholesaleServiceContainer {
 
 
     @PostMapping("/login/otp")
-    public ResponseEntity<Map<String, Object>> findUserByOtp(@RequestBody UserDto userDetails) {
+    public ResponseEntity<Map<String, Object>> loginUserViaOtp (@RequestBody UserDto userDetails) {
         logger.info("====================== ADMIN LOGIN OTP PROCESS STARTED ======================");
         Map<String, Object> responseObj = new HashMap<>();
         User user = wholesaleUserService.findUserByOtpAndEmail(userDetails);
         if (user == null) {
             responseObj.put("message", "Wrong otp password.");
             responseObj.put("status", 401);
-            return new ResponseEntity<>(responseObj, HttpStatus.UNAUTHORIZED);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
             responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
+            Store store = wholesaleStoreService.getStoreByUserId(user.getId());
             responseObj.put("message", "success");
-            responseObj.put("status", 200);
             responseObj.put("user", user);
+            responseObj.put("store", store);
+            responseObj.put("status", 200);
             wholesaleUserService.resetOtp(user.getEmail());
-            return new ResponseEntity<>(responseObj, HttpStatus.OK);
         } else {
             responseObj.put("message", "You are blocked by admin");
             responseObj.put("status", 401);
-            return new ResponseEntity<>(responseObj, HttpStatus.OK);
         }
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
+
+
+    @PostMapping("validate-otp")
+    public ResponseEntity<Map<String, Object>> validateUserOtp(@RequestBody UserDto userDetails) {
+        logger.info("====================== OTP VALIDATION STARTED ======================");
+        Map<String, Object> responseObj = new HashMap<>();
+        User user = wholesaleUserService.findUserByOtpAndSlug(userDetails);
+        if (user == null) {
+            responseObj.put("message", "Wrong otp password.");
+            responseObj.put("status", 401);
+        } else if (user.getStatus().equalsIgnoreCase("A")) {
+            responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
+            responseObj.put("message", "success");
+            responseObj.put("user", user);
+            Store store = wholesaleStoreService.getStoreByUserId(user.getId());
+            responseObj.put("store", store);
+            responseObj.put("status", 200);
+            wholesaleUserService.resetOtp(user.getEmail());
+        } else {
+            responseObj.put("message", "You are blocked by admin");
+            responseObj.put("status", 401);
+        }
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+    }
+
 
     @PostMapping("sendOtp")
     public ResponseEntity<Map<String,Object>> sendOtp(HttpServletRequest request, @RequestBody UserDto userDto){
@@ -143,8 +171,6 @@ public class WholesaleUserController extends WholesaleServiceContainer {
 
 
 
-
-
     @Transactional
     @PostMapping("/update_profile/{slug}")
     public ResponseEntity<Map<String, Object>> updateProfileImage(HttpServletRequest request, @RequestPart MultipartFile profileImage, @PathVariable String slug ) {
@@ -185,6 +211,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         Map<String,Object> result = new HashMap<>();
         User insertedUser = wholesaleUserService.addNewUser(userDto);
         if (insertedUser.getId() > 0) {
+            result.put("user",insertedUser);
             result.put("message", "User created successfully");
             result.put("status", 200);
         }else{

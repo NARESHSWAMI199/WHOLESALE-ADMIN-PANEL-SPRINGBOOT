@@ -7,6 +7,7 @@ import com.sales.dto.UserDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.SupportEmail;
 import com.sales.entities.User;
+import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,10 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         String email = param.get("email");
         String password = param.get("password");
         return wholesaleUserRepository.findByEmailAndPassword(email,password);
+    }
+
+    public User findUserByOtpAndSlug(UserDto userDto) {
+        return wholesaleUserRepository.findUserByOtpAndSlug(userDto.getSlug(),userDto.getPassword());
     }
 
     public User findUserByOtpAndEmail(UserDto userDto) {
@@ -201,6 +206,10 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         ServicePlan defaultServicePlan = wholesaleServicePlanRepository.getDefaultServicePlan();
         if(defaultServicePlan != null) {
             wholesaleServicePlanService.assignUserPlan(insertedUser.getId(), defaultServicePlan.getId());
+        }
+        /** Sending a mail to user for email validation. */
+        if (!sendOtp(userDto)){
+            throw new MyException("User was created successfully. but we facing issue some issue during sending otp. Make sure your email address was correct.");
         }
         return user;
     }
