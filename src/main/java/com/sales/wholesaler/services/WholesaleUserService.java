@@ -63,8 +63,12 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         props.put("mail.smtp.host", "smtp.gmail.com"); // Replace with your mail server
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
-
-        User user = wholesaleUserRepository.findUserByEmail(userDto.getEmail());
+        User user = null;
+        if(userDto.getEmail() == null){
+            user = wholesaleUserRepository.findUserBySlug(userDto.getSlug());
+        }else{
+            user = wholesaleUserRepository.findUserByEmail(userDto.getEmail());
+        }
         if (user == null) return  false;
 
         String recipient = user.getEmail();
