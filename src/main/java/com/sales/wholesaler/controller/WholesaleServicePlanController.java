@@ -1,6 +1,7 @@
 package com.sales.wholesaler.controller;
 
 
+import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,9 +21,12 @@ import java.util.Map;
 public class WholesaleServicePlanController extends WholesaleServiceContainer {
 
 
-
-
     @GetMapping("/all")
+    public ResponseEntity<List<ServicePlan>> getAllPlans() {
+        return new ResponseEntity<>(wholesaleServicePlanService.getALlServicePlan(), HttpStatusCode.valueOf(200));
+    }
+
+    @GetMapping("/my-plans")
     public ResponseEntity<List<Map<String,Object>>> getAllPlans(HttpServletRequest request) {
         User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         List<Map<String,Object>> allUserPlans = wholesaleServicePlanService.getAllUserPlans(loggedUser);

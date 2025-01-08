@@ -13,7 +13,8 @@ import java.util.*;
 public class WholesaleServicePlanService extends WholesaleRepoContainer {
 
     public List<ServicePlan> getALlServicePlan(){
-        return wholesaleServicePlanRepository.findAll();
+        return wholesaleServicePlanRepository.findAll().stream().filter(servicePlan -> servicePlan.getPrice() > 0).toList();
+
     }
 
     public ServicePlan findBySlug(String slug){
