@@ -1,7 +1,7 @@
 package com.sales.wholesaler.controller;
 
 import com.sales.dto.ItemDto;
-import com.sales.dto.SearchFilters;
+import com.sales.dto.ItemSearchFields;
 import com.sales.entities.Item;
 import com.sales.entities.ItemCategory;
 import com.sales.entities.ItemSubCategory;
@@ -20,7 +20,7 @@ import java.util.Map;
 @RequestMapping(value = {"wholesale/item"})
 public class WholesaleItemController extends WholesaleServiceContainer {
     @PostMapping("/all")
-    public ResponseEntity<Page<Item>> getAllItem(HttpServletRequest request,@RequestBody SearchFilters searchFilters) {
+    public ResponseEntity<Page<Item>> getAllItem(HttpServletRequest request,@RequestBody ItemSearchFields searchFilters) {
         User logggedUser = (User) request.getAttribute("user");
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(logggedUser.getId());
         Page<Item> alItems = wholesaleItemService.getAllItems(searchFilters,storeId);

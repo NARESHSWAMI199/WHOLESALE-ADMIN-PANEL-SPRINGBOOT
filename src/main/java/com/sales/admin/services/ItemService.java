@@ -35,7 +35,7 @@ public class ItemService extends RepoContainer{
     String itemImageRelativePath;
 
 
-    public Page<Item> getAllItems(SearchFilters searchFilters) {
+    public Page<Item> getAllItems(ItemSearchFields searchFilters) {
         Sort sort = searchFilters.getOrder().equalsIgnoreCase("asc") ?
                 Sort.by(searchFilters.getOrderBy()).ascending() :
                 Sort.by(searchFilters.getOrderBy()).descending();

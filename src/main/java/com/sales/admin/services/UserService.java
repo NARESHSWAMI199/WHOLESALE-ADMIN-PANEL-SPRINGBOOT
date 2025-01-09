@@ -54,6 +54,11 @@ public class UserService extends RepoContainer {
         return  userRepository.findUserByOtpAndEmail(userDto.getEmail(),userDto.getPassword());
     }
 
+
+    public Integer getUserIdBySlug(String slug){
+        return userRepository.getUserIdBySlug(slug);
+    }
+
     public void resetOtp(String email){
         userHbRepository.updateOtp(email,"");
     }

@@ -43,6 +43,7 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
         calendar.add(Calendar.MONTH, months);
         long expiryDate = calendar.getTimeInMillis();
         UserPlans userPlans = UserPlans.builder()
+                .slug(UUID.randomUUID().toString())
                 .userId(userId)
                 .planId(servicePlanId)
                 .createdAt(currentMillis)

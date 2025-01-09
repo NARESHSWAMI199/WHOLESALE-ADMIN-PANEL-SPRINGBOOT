@@ -23,7 +23,7 @@ import java.util.Map;
 @RequestMapping(value = {"admin/item"})
 public class ItemController extends ServiceContainer {
     @PostMapping("/all")
-    public ResponseEntity<Page<Item>> getAllItem(@RequestBody SearchFilters searchFilters) {
+    public ResponseEntity<Page<Item>> getAllItem(@RequestBody ItemSearchFields searchFilters) {
         Page<Item> alItems = itemService.getAllItems(searchFilters);
         return new ResponseEntity<>(alItems, HttpStatus.OK);
     }

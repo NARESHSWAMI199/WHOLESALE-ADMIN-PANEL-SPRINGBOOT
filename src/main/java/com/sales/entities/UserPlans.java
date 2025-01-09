@@ -3,7 +3,6 @@ package com.sales.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
 @Table(name = "user_plans")
@@ -16,6 +15,8 @@ public class UserPlans{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
+    @Column(name = "slug")
+    String slug;
     @Column(name = "user_id")
     Integer userId;
     @Column(name = "plan_id")

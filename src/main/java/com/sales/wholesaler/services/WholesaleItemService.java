@@ -3,7 +3,7 @@ package com.sales.wholesaler.services;
 
 import com.sales.dto.GraphDto;
 import com.sales.dto.ItemDto;
-import com.sales.dto.SearchFilters;
+import com.sales.dto.ItemSearchFields;
 import com.sales.entities.Item;
 import com.sales.entities.ItemCategory;
 import com.sales.entities.ItemSubCategory;
@@ -40,7 +40,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
     String itemImageRelativePath;
 
 
-    public Page<Item> getAllItems(SearchFilters searchFilters,Integer storeId) {
+    public Page<Item> getAllItems(ItemSearchFields searchFilters, Integer storeId) {
         Sort sort = searchFilters.getOrder().equalsIgnoreCase("asc") ?
                 Sort.by(searchFilters.getOrderBy()).ascending() :
                 Sort.by(searchFilters.getOrderBy()).descending();

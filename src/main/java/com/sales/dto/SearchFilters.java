@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SearchFilters extends ItemSearchFields {
+public class SearchFilters {
     String searchKey ="";
     String name = "";
     String status;

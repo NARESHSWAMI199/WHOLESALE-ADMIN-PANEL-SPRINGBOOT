@@ -4,7 +4,6 @@ package com.sales.admin.services;
 import com.sales.admin.repositories.*;
 import com.sales.dto.SearchFilters;
 import com.sales.utils.WriteExcel;
-import com.sales.wholesaler.repository.WholesaleServicePlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -81,6 +80,10 @@ public class RepoContainer {
 
     @Autowired
     protected ServicePlanRepository servicePlanRepository;
+
+
+    @Autowired
+    protected UserPlansRepository userPlansRepository;
 
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
