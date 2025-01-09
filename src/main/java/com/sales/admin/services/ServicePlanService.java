@@ -5,11 +5,13 @@ import com.sales.dto.UserPlanDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.UserPlans;
 import com.sales.utils.Utils;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 import static com.sales.specifications.PlansSpecifications.*;
 
@@ -36,24 +38,19 @@ public class ServicePlanService extends  RepoContainer {
         return false;
     }
 
-    public List<Map<String,Object>> getAllUserPlans(Integer userId , UserPlanDto searchFilters){
+    public Page<UserPlans> getAllUserPlans(Integer userId , UserPlanDto searchFilters){
         Specification<UserPlans> specification = Specification.where(
                 hasSlug(searchFilters.getSlug())
                 .and(greaterThanOrEqualCreatedFromDate(searchFilters.getCreatedFromDate()))
                 .and(lessThanOrEqualToCreatedToDate(searchFilters.getCreatedToDate()))
                 .and(greaterThanOrEqualExpiredFromDate(searchFilters.getExpiredFromDate()))
                 .and(lessThanOrEqualToExpiredToDate(searchFilters.getExpiredToDate()))
+                .and(isStatus(searchFilters.getStatus()))
+                .and(isUserId(userId))
         );
         Pageable pageable = getPageable(searchFilters);
-        List<Map<String, Object>> allUserPlansByUserId = userPlansRepository.getAllUserPlansByUserId(userId,specification,pageable);
-        List<Map<String,Object>> result  = new ArrayList<>();
-        for (Map<String, Object> plan : allUserPlansByUserId) {/* we can direct update in plan, but we're facing Exception : A TupleBackedMap cannot be modified; */
-            Map<String, Object> updatePlan = new HashMap<>(plan);
-            updatePlan.put("status", isPlanActive((Integer) plan.get("userPlanId")));
-            result.add(updatePlan);
-        }
-
-        return result;
+        Page<UserPlans> allUserPlans = userPlansRepository.findAll(specification, pageable);
+        return allUserPlans;
     }
 
 }

@@ -1,16 +1,17 @@
 package com.sales.wholesaler.controller;
 
 
+import com.sales.dto.UserPlanDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
+import com.sales.entities.UserPlans;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,10 +27,10 @@ public class WholesaleServicePlanController extends WholesaleServiceContainer {
         return new ResponseEntity<>(wholesaleServicePlanService.getALlServicePlan(), HttpStatusCode.valueOf(200));
     }
 
-    @GetMapping("/my-plans")
-    public ResponseEntity<List<Map<String,Object>>> getAllPlans(HttpServletRequest request) {
+    @PostMapping("/my-plans")
+    public ResponseEntity<Page<UserPlans>> getAllPlans(HttpServletRequest request, @RequestBody UserPlanDto searchFilters) {
         User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
-        List<Map<String,Object>> allUserPlans = wholesaleServicePlanService.getAllUserPlans(loggedUser);
+        Page<UserPlans> allUserPlans = wholesaleServicePlanService.getAllUserPlans(loggedUser, searchFilters);
         return new ResponseEntity<>(allUserPlans, HttpStatusCode.valueOf(200));
     }
 

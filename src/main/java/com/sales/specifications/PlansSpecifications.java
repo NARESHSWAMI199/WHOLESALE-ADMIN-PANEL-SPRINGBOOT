@@ -73,4 +73,11 @@ public class PlansSpecifications {
         };
     }
 
+    public static Specification<UserPlans> isUserId(Integer userId){
+        return (root, query, criteriaBuilder) -> {
+            if (userId == null) return null;
+            return criteriaBuilder.equal(root.get(UserPlans_.USER_ID), userId);
+        };
+    }
+
 }

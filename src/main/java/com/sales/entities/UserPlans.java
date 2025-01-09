@@ -19,8 +19,9 @@ public class UserPlans{
     String slug;
     @Column(name = "user_id")
     Integer userId;
-    @Column(name = "plan_id")
-    Integer planId;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "plan_id", referencedColumnName = "id")
+    ServicePlan servicePlan;
     @Column(name = "created_at")
     Long createdAt;
     @Column(name = "expiry_date")

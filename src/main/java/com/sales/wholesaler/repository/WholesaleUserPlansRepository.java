@@ -4,18 +4,13 @@ package com.sales.wholesaler.repository;
 import com.sales.entities.UserPlans;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Map;
 
 @Repository
 public interface WholesaleUserPlansRepository extends JpaRepository<UserPlans,Integer>, JpaSpecificationExecutor<UserPlans> {
 
-
-   UserPlans findByPlanId(Integer planId);
    UserPlans findByUserId(Integer userId);
+   /*
    @Query(value = "select " +
            "sp.name as name, " +
            "sp.price as price, " +
@@ -26,6 +21,7 @@ public interface WholesaleUserPlansRepository extends JpaRepository<UserPlans,In
            "up.expiryDate as expiryDate " +
            "from ServicePlan sp INNER JOIN UserPlans up ON up.planId = sp.id where up.userId = :userId order by up.id desc")
    List<Map<String,Object>> getAllUserPlansByUserId(Integer userId);
+    */
 
 
 }
