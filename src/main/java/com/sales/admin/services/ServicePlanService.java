@@ -1,8 +1,10 @@
 package com.sales.admin.services;
 
 
+import com.sales.dto.ServicePlanDto;
 import com.sales.dto.UserPlanDto;
 import com.sales.entities.ServicePlan;
+import com.sales.entities.User;
 import com.sales.entities.UserPlans;
 import com.sales.utils.Utils;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.sales.specifications.PlansSpecifications.*;
 
@@ -51,6 +54,25 @@ public class ServicePlanService extends  RepoContainer {
         Pageable pageable = getPageable(searchFilters);
         Page<UserPlans> allUserPlans = userPlansRepository.findAll(specification, pageable);
         return allUserPlans;
+    }
+
+
+    public ServicePlan insertServicePlan(User loggedUser, ServicePlanDto servicePlanDto){
+        ServicePlan servicePlan = ServicePlan.builder()
+                .name(servicePlanDto.getPlanName())
+                .price(servicePlanDto.getPrice())
+                .discount(servicePlanDto.getDiscount())
+                .months(servicePlanDto.getMonths())
+                .description(servicePlanDto.getDescription())
+                .createdBy(loggedUser.getId())
+                .updatedBy(loggedUser.getId())
+                .slug(UUID.randomUUID().toString())
+                .status("A")
+                .createdAt(Utils.getCurrentMillis())
+                .updatedAt(Utils.getCurrentMillis())
+                .isDeleted("N")
+                .build();
+        return servicePlanRepository.save(servicePlan);
     }
 
 }

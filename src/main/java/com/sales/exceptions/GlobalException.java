@@ -149,7 +149,7 @@ public class GlobalException {
             message =new ErrorDto(errorMessage,500);
         }catch (Exception e) {
             String errorMessage = ex.getMessage();
-            errorMessage = errorMessage.substring(0,errorMessage.indexOf(";"));
+            errorMessage = errorMessage.contains(";") ? errorMessage.substring(0,errorMessage.indexOf(";")) : errorMessage;
             message = new ErrorDto(errorMessage, 500);
         }
         logger.info(ex.getMessage());

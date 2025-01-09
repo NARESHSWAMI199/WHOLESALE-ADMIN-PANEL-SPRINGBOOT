@@ -39,7 +39,7 @@ public class ServicePlan {
     @Column(name = "created_at",nullable = false)
     Long createdAt;
     @Column(name = "created_by",nullable = false)
-    Long createdBy;
+    Integer createdBy;
     @Column(name = "updated_at",nullable = false)
     Long updatedAt;
     @Column(name = "updated_by",nullable = false)

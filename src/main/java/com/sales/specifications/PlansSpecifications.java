@@ -60,9 +60,9 @@ public class PlansSpecifications {
             if (status == null){
                 return null;
             } else if (status.equals("A")) {
-                return criteriaBuilder.greaterThanOrEqualTo(root.get(UserPlans_.createdAt),root.get(UserPlans_.expiryDate));
+                return criteriaBuilder.lessThanOrEqualTo(root.get(UserPlans_.createdAt),root.get(UserPlans_.expiryDate));
             }
-            return criteriaBuilder.lessThan(root.get(UserPlans_.createdAt),root.get(UserPlans_.expiryDate));
+            return criteriaBuilder.greaterThan(root.get(UserPlans_.createdAt),root.get(UserPlans_.expiryDate));
         };
     }
 
