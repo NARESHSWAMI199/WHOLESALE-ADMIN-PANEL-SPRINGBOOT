@@ -1,8 +1,9 @@
 import { Alert, Box, Snackbar, Stack } from '@mui/material';
 import axios from 'axios';
+import { pl } from 'date-fns/locale';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { BasicHeaders } from 'src/sections/basic-header';
@@ -16,8 +17,16 @@ const Page = () => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
   const router = useRouter();
-  const { slug } = router.query;
+  const { userSlug } = router.query;
   const auth = useAuth();
+  const [page, setPage] = useState(0);  
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [data, setData] = useState({
+      userType : 'W',
+      pageNumber : page,
+      size : rowsPerPage
+  });
+  const [totalElements , setTotalElements] = useState(0)
 
   useEffect(() => {
     axios.defaults.headers = {
@@ -26,10 +35,11 @@ const Page = () => {
 
     // Get all permission
     axios
-      .post(host + '/admin/plans/user-plans/' + slug,{})
+      .post(host + '/admin/plans/user-plans/' + userSlug,data)
       .then((res) => {
         let plansList = res.data.content;
         setPlans(plansList);
+        setTotalElements(res.data.totalElements)
       })
       .catch((err) => {
         setFlag('error');
@@ -37,7 +47,24 @@ const Page = () => {
         setOpen(true);
       });
     // end here.
-  }, [slug, auth.token]);
+  }, [userSlug,data,page,rowsPerPage]);
+
+
+  const handlePageChange = useCallback(
+    (event,value) => {
+      setPage(value);
+      setData({...data, pageNumber : value})
+    },
+    []
+  );
+
+  const handleRowsPerPageChange = useCallback(
+    (event) => {
+      setRowsPerPage(event.target.value);
+    },
+    []
+  );
+
 
   const handleClose = () => {
     setOpen(false);
@@ -52,7 +79,6 @@ const Page = () => {
     })
   }else {
     setData({
-      slug : slug,
       userType : "W",
       pageNumber : page,
       size : rowsPerPage
@@ -72,7 +98,7 @@ const Page = () => {
         </Alert>
       </Snackbar>
       <Head>
-        <title>Wholesaler | Swami Sales</title>
+        <title>Plans</title>
       </Head>
       <Box
         component="main"
@@ -89,8 +115,15 @@ const Page = () => {
         >
           <Stack spacing={3}>
             <BasicHeaders headerTitle={'Plans'} userType="W" />
-            <PlanSearch onSearch={onSearch} />
-            <PlanTable plans={plans} />
+            <PlanSearch onSearch={onSearch}/>
+            <PlanTable
+              count={totalElements}
+              plans={plans}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handleRowsPerPageChange}
+              page={page}
+              rowsPerPage={rowsPerPage}
+            />
           </Stack>
         </Box>
       </Box>

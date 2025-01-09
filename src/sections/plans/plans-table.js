@@ -115,6 +115,7 @@ export const PlanTable = (props) => {
                 <TableCell padding="checkbox"></TableCell>
                 <TableCell>Plan Name</TableCell>
                 <TableCell>Token</TableCell>
+                <TableCell>Months</TableCell>
                 <TableCell>Plan Price</TableCell>
                 <TableCell>Discount</TableCell>
                 <TableCell>Discount%</TableCell>
@@ -154,6 +155,13 @@ export const PlanTable = (props) => {
                         <></>
                       )}
                       <CopyOutlined onClick={() => { handleCopyClick(plan.slug) }} />
+                    </TableCell>
+
+                    {/* Months */}
+                    <TableCell>
+                      <Typography variant="subtitle2">
+                        {plan.servicePlan?.months}
+                      </Typography>
                     </TableCell>
 
                     {/* plan price */}

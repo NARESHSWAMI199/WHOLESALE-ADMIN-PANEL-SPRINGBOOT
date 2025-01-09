@@ -1,14 +1,11 @@
-import PropTypes from 'prop-types';
-import { format } from 'date-fns';
-import DeleteIcon from '@mui/icons-material/Delete';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Avatar,
   Badge,
   Box,
   Card,
-  Checkbox,
   Stack,
   Table,
   TableBody,
@@ -18,6 +15,8 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
+import { format } from 'date-fns';
+import PropTypes from 'prop-types';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -25,19 +24,19 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-import { Scrollbar } from 'src/components/scrollbar';
-import { getInitials } from 'src/utils/get-initials';
-import React, {useEffect, useState } from 'react';
-import Link from 'next/link';
-import EditIcon from '@mui/icons-material/Edit';
-import { host, toTitleCase, userImage } from 'src/utils/util';
-import { Image } from 'antd';
-import { useAuth } from 'src/hooks/use-auth';
 import { CopyOutlined } from '@ant-design/icons';
+import { AccountBalanceWalletOutlined } from '@mui/icons-material';
 import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
+import EditIcon from '@mui/icons-material/Edit';
+import { Image } from 'antd';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useAuth } from 'src/hooks/use-auth';
+import { getInitials } from 'src/utils/get-initials';
+import { toTitleCase, userImage } from 'src/utils/util';
 
 export const CustomersTable = (props) => {
   const {
@@ -296,6 +295,7 @@ export const CustomersTable = (props) => {
                             />   
                       </Link>
                     {customer.userType == "W" &&
+                    <>
                       <Link
                             href={{
                               pathname: '/wholesalers/permissions/[slug]',
@@ -309,7 +309,22 @@ export const CustomersTable = (props) => {
                             titleAccess='Permissions'
                             />   
                       </Link>
-                    }
+
+                      <Link
+                        href={{
+                          pathname: '/wholesalers/plans/[userSlug]',
+                          query: { userSlug: customer.slug },
+                        }}
+                        >
+                          <AccountBalanceWalletOutlined sx = {{
+                              marginX : '5px',
+                              color : '#111927'
+                        }}
+                        titleAccess='Plans'
+                        />   
+                      </Link>
+                      </>         
+                      }
                       <DeleteIcon sx={ {
                         marginX : '5px',
                         color : 'Red'

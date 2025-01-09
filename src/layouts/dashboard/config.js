@@ -12,6 +12,7 @@ import StoreIcon from '@mui/icons-material/Store';
 import WallpaperIcon from '@mui/icons-material/Wallpaper';
 import { SvgIcon } from '@mui/material';
 import { suId } from 'src/utils/util';
+import AddCardIcon from '@mui/icons-material/AddCard';
 
 export const items = (user) =>{
 
@@ -136,6 +137,18 @@ export const items = (user) =>{
       )
     },
 
+
+    {
+      title: 'Add Service Plans',
+      path: '/plan',
+      show : true,
+      icon: (
+        <SvgIcon fontSize="small">
+          <AddCardIcon />
+        </SvgIcon>
+      )
+    },
+
     {
       title: 'Groups',
       path: '/groups',
@@ -156,8 +169,7 @@ export const items = (user) =>{
           <CogIcon />
         </SvgIcon>
       )
-    },
-  
+    }
   
     // {
     //   title: 'Login',

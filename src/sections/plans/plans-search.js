@@ -2,6 +2,7 @@ import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
 import { RefreshOutlined, SearchOutlined } from '@mui/icons-material';
 import KeyIcon from '@mui/icons-material/Key';
 import { Button, Card, Grid, InputAdornment, MenuItem, OutlinedInput, Select, SvgIcon, TextField } from '@mui/material';
+import exp from 'constants';
 import { format } from 'date-fns';
 import { useState } from 'react';
 export const PlanSearch = (props) => {
@@ -13,17 +14,15 @@ export const PlanSearch = (props) => {
   
 
     const [values,setValues] = useState({
-      inStock : 'Y',
       status : 'A',
-      type : 'A',
-      fromDate : previousDate,
-      toDate : currentDate
+      createdFromDate : previousDate,
+      createdToDate : currentDate,
     })
 
     const handleChange = (e) =>{
       setValues({
         ...values,
-        [e.target.name] : [e.target.value]
+        [e.target.name] : e.target.value
       })
     }
 
@@ -32,13 +31,13 @@ export const PlanSearch = (props) => {
     const form = e.target;
     const formData = new FormData(form)
     const data = {
-      searchKey : formData.get("searchKey"),
-      fromDate : new Date(formData.get("fromDate")).getTime(),
-      toDate : new Date(formData.get("toDate")).getTime(),
-      slug : formData.get("slug"),
-      status :  formData.get("status"),
-      userType : formData.get("type") !== "A" ? formData.get("type") : null,
-      inStock :  formData.get("inStock")
+      searchKey : values.searchKey,
+      createdFromDate : new Date(values.createdFromDate).getTime(),
+      createdToDate : new Date(values.createdToDate).getTime(),
+      expiredFromDate : new Date(values.expiredFromDate).getTime(),
+      expiredToDate : new Date(values.expiredToDate).getTime(),
+      slug : values.slug?.trim(),
+      status :  values.status,
     }
     props.onSearch(data);
   }
@@ -46,11 +45,10 @@ export const PlanSearch = (props) => {
 
   const resetFilters = (e) => {
     /** reset default filters  */
-    setValues({  inStock : 'Y',
+    setValues({
       status : 'A',
-      type : 'A',
-      fromDate : previousDate,
-      toDate : currentDate
+      createdFromDate : previousDate,
+      createdToDate : currentDate
     })
     props.onSearch();
   }
@@ -107,8 +105,9 @@ export const PlanSearch = (props) => {
           label="Created From Date"
           type="date"
           name='createdFromDate'
+          format="dd-MM-yyyy"
           onChange={handleChange}
-          value={values.fromDate}
+          value={values.createdFromDate}
           // defaultValue={previousDate}
           InputLabelProps={{
             shrink: true,
@@ -123,10 +122,11 @@ export const PlanSearch = (props) => {
             id="datetime-local"
             label="Created To Date"
             type="date"
+            name='createdToDate'
+            format="dd-MM-yyyy"
             // defaultValue={currentDate}
             onChange={handleChange}
-            value={values.toDate}
-            name='createdToDate'
+            value={values.createdToDate}
             InputLabelProps={{
               shrink: true,
             }}
@@ -144,8 +144,9 @@ export const PlanSearch = (props) => {
           label="Expried From Date"
           type="date"
           name='expiredFromDate'
+          format="dd-MM-yyyy"
           onChange={handleChange}
-          value={values.fromDate}
+          value={values.expiredFromDate}
           // defaultValue={previousDate}
           InputLabelProps={{
             shrink: true,
@@ -162,7 +163,7 @@ export const PlanSearch = (props) => {
             type="date"
             // defaultValue={currentDate}
             onChange={handleChange}
-            value={values.toDate}
+            value={values.expiredToDate}
             name='expiredToDate'
             InputLabelProps={{
               shrink: true,

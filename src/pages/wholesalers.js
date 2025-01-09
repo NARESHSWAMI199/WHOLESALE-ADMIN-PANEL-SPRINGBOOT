@@ -1,35 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Alert, Box, Snackbar, Stack } from '@mui/material';
+import axios from 'axios';
 import Head from 'next/head';
-import {  Alert, Box, Container, Snackbar, Stack, SvgIcon, Typography } from '@mui/material';
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useAuth } from 'src/hooks/use-auth';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { CustomersTable } from 'src/sections/customer/customers-table';
-import { BasicSearch, CustomersSearch } from 'src/sections/basic-search';
-import { applyPagination } from 'src/utils/apply-pagination';
-import axios from 'axios';
-import { host } from 'src/utils/util';
-import { useAuth } from 'src/hooks/use-auth';
+import { BasicSearch } from 'src/sections/basic-search';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
-import { ArrowButtons } from 'src/layouts/arrow-button';
-import { useRouter } from 'next/router';
-import { setDate } from 'date-fns';
-
-
-
-
-
+import { CustomersTable } from 'src/sections/customer/customers-table';
+import { applyPagination } from 'src/utils/apply-pagination';
+import { host } from 'src/utils/util';
 
 const now = new Date();
-
-
-const useCustomers = (content,page,rowsPerPage) => {
-  return useMemo(
-    () => {
-      return applyPagination(content, page, rowsPerPage);
-    },
-    [page, rowsPerPage]
-  )
-};
 
 const useCustomerIds = (customers) => {
   return useMemo(
