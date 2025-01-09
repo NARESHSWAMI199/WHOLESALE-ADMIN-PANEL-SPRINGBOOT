@@ -1,11 +1,10 @@
 import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
-import { SearchOutlined,RefreshOutlined } from '@mui/icons-material';
+import { RefreshOutlined, SearchOutlined } from '@mui/icons-material';
+import KeyIcon from '@mui/icons-material/Key';
 import { Button, Card, Grid, InputAdornment, MenuItem, OutlinedInput, Select, SvgIcon, TextField } from '@mui/material';
 import { format } from 'date-fns';
-import { useCallback, useState } from 'react';
-import KeyIcon from '@mui/icons-material/Key';
-import { width } from '@mui/system';
-export const BasicSearch = (props) => {
+import { useState } from 'react';
+export const PlanSearch = (props) => {
 
   const previousDate = format(new Date().getTime()-(10 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd')
   const currentDate = format(new Date().getTime()+(24 * 60 * 60 * 1000), 'yyyy-MM-dd')
@@ -60,31 +59,7 @@ export const BasicSearch = (props) => {
  return (<Card sx={{ p: 2 }}>
     <form onSubmit={(e)=>{handleSubmit(e)}}>
     <Grid container spacing={1}>
-      <Grid item xs={12} md={2}>
-        <OutlinedInput
-         onChange={handleChange}
-        value={values.searchKey}
-        fullWidth
-        placeholder="Search"
-        name='searchKey'
-        sx={{height:55}}
-        startAdornment={(
-          <InputAdornment position="start" >
-            
-            <SvgIcon
-              color="action"
-              fontSize="small"
-            >
-              <MagnifyingGlassIcon />
-            </SvgIcon>
-          </InputAdornment>
-        )}
-      />
-      </Grid>
-   
-
-      { props.type !== "A" &&  props.type !== "item" &&
-        <Grid item xs={12} md={2}>
+    <Grid item xs={12} md={2}>
       <OutlinedInput
             onChange={handleChange}
             value={values.slug}
@@ -104,31 +79,10 @@ export const BasicSearch = (props) => {
               </InputAdornment>
             )}
           />
-          </Grid>}
+          </Grid>
 
 
-
-        { props.type === "A" && 
-            <Grid item xs={12} md={2}>
-            <Select
-              sx={{height:55}}
-              fullWidth
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              name='type'
-              onChange={handleChange}
-              value={values.type}
-              label="User type"
-            >
-              <MenuItem value={"A"}>All</MenuItem>
-              <MenuItem value={"S"}>Staff</MenuItem>
-              <MenuItem value={"W"}>Wholesaler</MenuItem>
-              <MenuItem value={'R'}>Retailer</MenuItem>
-            </Select>
-            </Grid>}
-
-          {props.type !== "G" && 
-            <Grid item xs={12} md={2}>
+        <Grid item xs={12} md={2}>
           <Select
             fullWidth
             sx={{height:55}}
@@ -140,34 +94,19 @@ export const BasicSearch = (props) => {
             label="Status"
           >
             <MenuItem value={"A"}>Active</MenuItem>
-            <MenuItem value={"D"}>Deactive</MenuItem>
+            <MenuItem value={"D"}>Expired</MenuItem>
           </Select>
-          </Grid>}
+          </Grid>
 
-
-        {props.type == "item" &&   
-          <Grid item xs={12} md={2}><Select
-          sx={{height:55}}
-          fullWidth
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          name='inStock'
-          onChange={handleChange}
-          value={values.inStock}
-          label="Status"
-        >
-          <MenuItem value={"Y"}>In stock</MenuItem>
-          <MenuItem value={"N"}>Out of stock</MenuItem>
-        </Select></Grid>}
 
       <Grid item xs={12} md={2}>      
         <TextField
           sx={{height:55}}
           fullWidth
           id="datetime-local"
-          label="From Date"
+          label="Created From Date"
           type="date"
-          name='fromDate'
+          name='createdFromDate'
           onChange={handleChange}
           value={values.fromDate}
           // defaultValue={previousDate}
@@ -182,17 +121,57 @@ export const BasicSearch = (props) => {
             sx={{height:55}}
             fullWidth
             id="datetime-local"
-            label="To Date"
+            label="Created To Date"
             type="date"
             // defaultValue={currentDate}
             onChange={handleChange}
             value={values.toDate}
-            name='toDate'
+            name='createdToDate'
             InputLabelProps={{
               shrink: true,
             }}
           />
       </Grid>
+
+
+
+
+      <Grid item xs={12} md={2}>      
+        <TextField
+          sx={{height:55}}
+          fullWidth
+          id="datetime-local"
+          label="Expried From Date"
+          type="date"
+          name='expiredFromDate'
+          onChange={handleChange}
+          value={values.fromDate}
+          // defaultValue={previousDate}
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
+        </Grid>
+
+      <Grid item xs={12} md={2}>  
+        <TextField
+            sx={{height:55}}
+            fullWidth
+            id="datetime-local"
+            label="Expried To Date"
+            type="date"
+            // defaultValue={currentDate}
+            onChange={handleChange}
+            value={values.toDate}
+            name='expiredToDate'
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+      </Grid>
+
+
+
       <Grid item xs={6} md={1}>  
         <Button type='submit'
           sx={{height:55, width : '100%'}}
