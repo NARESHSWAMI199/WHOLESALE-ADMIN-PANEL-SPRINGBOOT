@@ -1,15 +1,14 @@
+import { Alert, Box, Snackbar, Stack } from '@mui/material';
+import axios from 'axios';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import axios from 'axios';
-import { host } from 'src/utils/util';
-import { PlanTable } from 'src/sections/plans/plans-table';
-import { Alert, Box, Snackbar, Stack } from '@mui/material';
-import Head from 'next/head';
 import { BasicHeaders } from 'src/sections/basic-header';
-import { BasicSearch } from 'src/sections/basic-search';
 import { PlanSearch } from 'src/sections/plans/plans-search';
+import { PlanTable } from 'src/sections/plans/plans-table';
+import { host } from 'src/utils/util';
 
 const Page = () => {
   const [plans, setPlans] = useState([]);
@@ -27,10 +26,10 @@ const Page = () => {
 
     // Get all permission
     axios
-      .get(host + '/admin/plans/user-plans/' + slug)
+      .post(host + '/admin/plans/user-plans/' + slug,{})
       .then((res) => {
-        let response = res.data;
-        setPlans(response);
+        let plansList = res.data.content;
+        setPlans(plansList);
       })
       .catch((err) => {
         setFlag('error');

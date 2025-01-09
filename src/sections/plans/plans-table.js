@@ -137,7 +137,7 @@ export const PlanTable = (props) => {
                     {/* plan name */}
                     <TableCell>
                       <Typography variant="subtitle2">
-                        {toTitleCase(plan.name)}
+                        {toTitleCase(plan.servicePlan?.name)}
                       </Typography>
                     </TableCell>
 
@@ -159,7 +159,7 @@ export const PlanTable = (props) => {
                     {/* plan price */}
                     <TableCell>
                       <Stack alignItems="center" direction="row" spacing={2}>
-                        {plan.price}
+                        {plan.servicePlan?.price}
                         <CurrencyRupeeIcon sx={{ fontSize: '15px', mt: '20px' }} />
                       </Stack>
                     </TableCell>
@@ -167,7 +167,7 @@ export const PlanTable = (props) => {
                     {/* discount */}
                     <TableCell>
                       <Stack alignItems="center" direction="row" spacing={2}>
-                        <span>{plan.discount} </span>
+                        <span>{plan.servicePlan?.discount} </span>
                         <CurrencyRupeeIcon sx={{ fontSize: '15px', mt: '20px' }} />
                         <DiscountIcon sx={{ color: 'red', fontSize: '20px', mt: '20px', px: '0px' }} />
                       </Stack>
@@ -191,7 +191,7 @@ export const PlanTable = (props) => {
                     {/* paid price */}
                     <TableCell>
                       <Stack alignItems="center" direction="row" spacing={2}>
-                        {plan.price - plan.discount}
+                        {plan.servicePlan?.price - plan.servicePlan?.discount}
                         <CurrencyRupeeIcon sx={{ fontSize: '15px', mt: '20px' }} />
                       </Stack>
                     </TableCell>
@@ -204,7 +204,7 @@ export const PlanTable = (props) => {
                     
                     {/* status */}
                     <TableCell align={'center'}>
-                      {plans.createdAt <= plan.expiryDate ? (
+                      {plan.createdAt <= plan.expiryDate ? (
                         <Badge color="success" badgeContent={'Active'} />
                       ) : (
                         <Badge color="error" badgeContent={'Expired'} />
@@ -214,10 +214,10 @@ export const PlanTable = (props) => {
                         {/* paid status */}
                         <TableCell align='center'>
                     {/* <Stack alignItems="center" direction="row" spacing={2}> */}
-                      {plan.price < 1 && (
+                      {plan.servicePlan?.price < 1 && (
                         <Badge color="error" badgeContent={'Free'} />
                       )}
-                      {plan.price > 0 && (
+                      {plan.servicePlan?.price > 0 && (
                         <Badge color="success" badgeContent={'Paid'} />
                       )}
                       {/* </Stack> */}
