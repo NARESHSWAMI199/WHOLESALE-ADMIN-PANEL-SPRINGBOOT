@@ -64,7 +64,8 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                 "/wholesale/store/subcategory/**",
                 "/wholesale/auth/validate-otp",
                 "/wholesale/plan/all",
-                "/admin/auth/profile/**"
+                "/admin/auth/profile/**",
+                "/index"
         };
         /* Paths which need to be authenticated but don't need to check in Interceptor due to some different conditions */
         String [] authorizedPaths = {
