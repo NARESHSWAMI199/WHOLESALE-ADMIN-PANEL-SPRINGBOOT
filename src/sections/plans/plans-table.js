@@ -1,23 +1,23 @@
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import DiscountIcon from '@mui/icons-material/Discount';
 import {
-    Badge,
-    Box,
-    Card,
-    Stack,
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TablePagination,
-    TableRow,
-    Typography,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle
+  Badge,
+  Box,
+  Card,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Typography,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle
 } from '@mui/material';
 import { format } from 'date-fns';
 import PropTypes from 'prop-types';
@@ -30,7 +30,7 @@ import { toTitleCase } from 'src/utils/util';
 export const PlanTable = (props) => {
   const {
     count = 0,
-    onPageChange = () => {},
+    onPageChange = () => { },
     onRowsPerPageChange,
     page = 0,
     rowsPerPage = 0,
@@ -191,7 +191,7 @@ export const PlanTable = (props) => {
                           }}
                         >
 
-                          {plan.price > 0 ? Math.floor((plan.discount / plan.price) * 100) : 0 + '%'}
+                          {plan.servicePlan?.price > 0 ? Math.floor((plan.servicePlan?.discount / plan.servicePlan?.price) * 100) : 0 + '%'}
                         </span>
                       </Stack>
                     </TableCell>
@@ -209,7 +209,7 @@ export const PlanTable = (props) => {
 
                     {/* expiry date */}
                     <TableCell>{expiryDate}</TableCell>
-                    
+
                     {/* status */}
                     <TableCell align={'center'}>
                       {plan.createdAt <= plan.expiryDate ? (
@@ -219,9 +219,9 @@ export const PlanTable = (props) => {
                       )}
                     </TableCell>
 
-                        {/* paid status */}
-                        <TableCell align='center'>
-                    {/* <Stack alignItems="center" direction="row" spacing={2}> */}
+                    {/* paid status */}
+                    <TableCell align='center'>
+                      {/* <Stack alignItems="center" direction="row" spacing={2}> */}
                       {plan.servicePlan?.price < 1 && (
                         <Badge color="error" badgeContent={'Free'} />
                       )}
@@ -231,7 +231,7 @@ export const PlanTable = (props) => {
                       {/* </Stack> */}
                     </TableCell>
                   </TableRow>
-                  
+
                 );
               })}
             </TableBody>

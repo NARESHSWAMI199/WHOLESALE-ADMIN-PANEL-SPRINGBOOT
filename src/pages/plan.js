@@ -173,8 +173,6 @@ useEffect(()=>{
     (e) =>{
     e.preventDefault()
     const form = e.target;
-    const formData = new FormData(form)
-
     let data = {
         planName : values.planname,
         price :  values.price,

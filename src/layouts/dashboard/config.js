@@ -13,6 +13,8 @@ import WallpaperIcon from '@mui/icons-material/Wallpaper';
 import { SvgIcon } from '@mui/material';
 import { suId } from 'src/utils/util';
 import AddCardIcon from '@mui/icons-material/AddCard';
+import SellIcon from '@mui/icons-material/Sell';
+import { AccountBalanceWalletOutlined } from '@mui/icons-material';
 
 export const items = (user) =>{
 
@@ -102,6 +104,52 @@ export const items = (user) =>{
         </SvgIcon>
       )
     },
+    {
+      title: 'Service Plans',
+      path: '/serviceplans',
+      show : true,
+      icon: (
+        <SvgIcon fontSize="small">
+          <AccountBalanceWalletOutlined />
+        </SvgIcon>
+      )
+    },
+
+    {
+      title: 'Add Service Plans',
+      path: '/plan',
+      show : true,
+      icon: (
+        <SvgIcon fontSize="small">
+          <AddCardIcon />
+        </SvgIcon>
+      )
+    },
+
+
+
+
+    {
+      title: 'Sold Plans',
+      path: '/wholesalers/plans/all',
+      show : !!user ? user.userType == 'SA' : false,
+      icon: (
+        <SvgIcon fontSize="small">
+          <SellIcon />
+        </SvgIcon>
+      )
+    },
+
+    {
+      title: 'Groups',
+      path: '/groups',
+      show : !!user ? user.userType == 'SA' : false,
+      icon: (
+        <SvgIcon fontSize="small">
+          <SecurityIcon />
+        </SvgIcon>
+      )
+    },
 
     {
       title: 'Remove Background',
@@ -136,30 +184,6 @@ export const items = (user) =>{
         </SvgIcon>
       )
     },
-
-
-    {
-      title: 'Add Service Plans',
-      path: '/plan',
-      show : true,
-      icon: (
-        <SvgIcon fontSize="small">
-          <AddCardIcon />
-        </SvgIcon>
-      )
-    },
-
-    {
-      title: 'Groups',
-      path: '/groups',
-      show : !!user ? user.userType == 'SA' : false,
-      icon: (
-        <SvgIcon fontSize="small">
-          <SecurityIcon />
-        </SvgIcon>
-      )
-    },
-  
     {
       title: 'Settings',
       path: '/settings',
@@ -169,8 +193,7 @@ export const items = (user) =>{
           <CogIcon />
         </SvgIcon>
       )
-    }
-  
+    },
     // {
     //   title: 'Login',
     //   path: '/auth/login',

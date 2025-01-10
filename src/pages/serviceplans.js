@@ -1,27 +1,23 @@
 import { Alert, Box, Snackbar, Stack } from '@mui/material';
 import axios from 'axios';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { BasicHeaders } from 'src/sections/basic-header';
 import { PlanSearch } from 'src/sections/plans/plans-search';
-import { PlanTable } from 'src/sections/plans/plans-table';
+import {ServicePlansTable} from 'src/sections/services/service-plans-table';
 import { host } from 'src/utils/util';
 
 const Page = () => {
-  const [plans, setPlans] = useState([]);
+  const [servicePlans, setServicePlans] = useState([]);
   const [flag, setFlag] = useState('warning');
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
-  const router = useRouter();
-  const { userSlug } = router.query;
   const auth = useAuth();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [data, setData] = useState({
-    userType: 'W',
     pageNumber: page,
     size: rowsPerPage
   });
@@ -34,10 +30,10 @@ const Page = () => {
 
     // Get all permission
     axios
-      .post(host + '/admin/plans/user-plans/' + userSlug, data)
+      .post(host + '/admin/plans/service-plans',data)
       .then((res) => {
         let plansList = res.data.content;
-        setPlans(plansList);
+        setServicePlans(plansList);
         setTotalElements(res.data.totalElements)
       })
       .catch((err) => {
@@ -46,7 +42,7 @@ const Page = () => {
         setOpen(true);
       });
     // end here.
-  }, [userSlug, data, page, rowsPerPage]);
+  }, [data, page, rowsPerPage]);
 
 
   const handlePageChange = useCallback(
@@ -74,11 +70,9 @@ const Page = () => {
       setData({
         ...data,
         ...searchData,
-        userType: "W"
       })
     } else {
       setData({
-        userType: "W",
         pageNumber: page,
         size: rowsPerPage
       })
@@ -113,11 +107,11 @@ const Page = () => {
           }}
         >
           <Stack spacing={3}>
-            <BasicHeaders headerTitle={'Plans'} userType="W" />
+            <BasicHeaders headerTitle={'Service Plans'} userType="W" />
             <PlanSearch onSearch={onSearch} />
-            <PlanTable
+            <ServicePlansTable
               count={totalElements}
-              plans={plans}
+              servicePlans={servicePlans}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
               page={page}
