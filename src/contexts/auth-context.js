@@ -162,7 +162,7 @@ export const AuthProvider = (props) => {
 
         setTimeout(() => {
           signOut()
-        }, 5 * 60 * 60)
+        }, 5 * 60 * 60* 1000)
       })
       .catch(err => {
         const errorMessage = (!!err.response) ? err.response.data.message : err.message;
