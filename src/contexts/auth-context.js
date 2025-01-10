@@ -20,8 +20,8 @@ let authToken = () => {
 let getUser = () => {
   try {
     let user = window.sessionStorage.getItem('user');
-     user = !!user ? JSON.parse(user) : null;
-     return user
+    user = !!user ? JSON.parse(user) : null;
+    return user
   } catch (err) {
     console.error(err);
   }
@@ -29,7 +29,7 @@ let getUser = () => {
 
 
 const initialState = {
-  token : authToken(),
+  token: authToken(),
   isAuthenticated: false,
   isLoading: true,
   user: getUser()
@@ -59,7 +59,7 @@ const handlers = {
     const user = action.payload;
     return {
       ...state,
-      token : action.token,
+      token: action.token,
       isAuthenticated: true,
       user
     };
@@ -71,7 +71,7 @@ const handlers = {
       user: null
     };
   },
-  [HANDLERS.UPDATE_USER]: (state,action) => {
+  [HANDLERS.UPDATE_USER]: (state, action) => {
     const user = action.payload;
     return {
       ...state,
@@ -136,55 +136,55 @@ export const AuthProvider = (props) => {
 
 
 
-  const signIn = async (email, password,method) => {
+  const signIn = async (email, password, method) => {
 
-      let baseUrl = host+"/admin/auth/login"
-      if(method == 'OTP'){
-        baseUrl =  host+"/admin/auth/login/otp"
-      }
-      
-      await axios.post(baseUrl , {
-          email : email,
-          password : password
-      })
-      .then (res => {
+    let baseUrl = host + "/admin/auth/login"
+    if (method == 'OTP') {
+      baseUrl = host + "/admin/auth/login/otp"
+    }
+
+    await axios.post(baseUrl, {
+      email: email,
+      password: password
+    })
+      .then(res => {
         const token = res.data.token
         window.sessionStorage.setItem('authenticated', 'true');
         window.sessionStorage.setItem('token', token);
         const user = res.data.user
-        window.sessionStorage.setItem("user",JSON.stringify(user))
+        window.sessionStorage.setItem("user", JSON.stringify(user))
 
         dispatch({
           type: HANDLERS.SIGN_IN,
           token: token,
-          payload : user
+          payload: user
         });
       })
-      .catch (err =>{ 
-          const errorMessage = (!!err.response) ? err.response.data.message : err.message;
-          console.log(errorMessage)
-          throw new Error(errorMessage)
+      .catch(err => {
+        const errorMessage = (!!err.response) ? err.response.data.message : err.message;
+        console.log(errorMessage)
+        throw new Error(errorMessage)
       })
   };
 
-    const updateUserDetail = async (slug) => {
-      axios.defaults.headers = {
-        Authorization : initialState.token
-      }
-      await axios.get(host+"/admin/auth/detail/"+slug)
-      .then (res => {
+  const updateUserDetail = async (slug) => {
+    axios.defaults.headers = {
+      Authorization: initialState.token
+    }
+    await axios.get(host + "/admin/auth/detail/" + slug)
+      .then(res => {
         const user = res.data.res
-        window.sessionStorage.setItem("user",JSON.stringify(user))
+        window.sessionStorage.setItem("user", JSON.stringify(user))
 
         dispatch({
           type: HANDLERS.UPDATE_USER,
-          payload : user
+          payload: user
         });
       })
-      .catch (err =>{ 
-          const errorMessage = (!!err.response) ? err.response.data.message : err.message;
-          console.log(errorMessage)
-          //throw new Error(errorMessage)
+      .catch(err => {
+        const errorMessage = (!!err.response) ? err.response.data.message : err.message;
+        console.log(errorMessage)
+        //throw new Error(errorMessage)
       })
   };
 
@@ -197,6 +197,7 @@ export const AuthProvider = (props) => {
   const signOut = () => {
     window.sessionStorage.removeItem('authenticated');
     window.sessionStorage.removeItem('user');
+    window.sessionStorage.removeItem('token');
     dispatch({
       type: HANDLERS.SIGN_OUT
     });
@@ -233,3 +234,8 @@ AuthProvider.propTypes = {
 export const AuthConsumer = AuthContext.Consumer;
 
 export const useAuthContext = () => useContext(AuthContext);
+
+
+setTimeout(()=>{
+  signOut();
+}, 5 * 60 * 60)
