@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -24,17 +23,17 @@ public class ServicePlanController extends ServiceContainer {
 
 
 
-    @PostMapping("user-plans/{slug}")
-    public ResponseEntity< Page<UserPlans>> getUserPlans(@PathVariable String slug, @RequestBody UserPlanDto searchFilters){
+    @PostMapping(value = {"user-plans/{slug}","user-plans"})
+    public ResponseEntity< Page<UserPlans>> getUserPlans(@PathVariable(required = false) String slug, @RequestBody UserPlanDto searchFilters){
         Integer userId = userService.getUserIdBySlug(slug);
         Page<UserPlans> allUserPlans = servicePlanService.getAllUserPlans(userId, searchFilters);
         return new ResponseEntity<>(allUserPlans,HttpStatus.OK);
     }
 
 
-    @GetMapping("service-plans")
-    public ResponseEntity<List<ServicePlan>> getAllPlans() {
-        return new ResponseEntity<>(servicePlanService.getALlServicePlan(), HttpStatusCode.valueOf(200));
+    @PostMapping("service-plans")
+    public ResponseEntity<Page<ServicePlan>> getAllPlans(@RequestBody ServicePlanDto servicePlanDto) {
+        return new ResponseEntity<>(servicePlanService.getALlServicePlan(servicePlanDto), HttpStatusCode.valueOf(200));
     }
 
     @PostMapping("add")

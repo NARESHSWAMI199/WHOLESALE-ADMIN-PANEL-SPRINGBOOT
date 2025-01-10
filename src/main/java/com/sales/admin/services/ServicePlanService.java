@@ -6,13 +6,13 @@ import com.sales.dto.UserPlanDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
 import com.sales.entities.UserPlans;
+import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,8 +21,9 @@ import static com.sales.specifications.PlansSpecifications.*;
 @Service
 public class ServicePlanService extends  RepoContainer {
 
-    public List<ServicePlan> getALlServicePlan(){
-        return servicePlanRepository.findAll();
+    public Page<ServicePlan> getALlServicePlan(ServicePlanDto servicePlanDto){
+        Pageable pageable = getPageable(servicePlanDto);
+        return servicePlanRepository.findAll(pageable);
     }
 
     public ServicePlan findBySlug(String slug){
@@ -58,6 +59,10 @@ public class ServicePlanService extends  RepoContainer {
 
 
     public ServicePlan insertServicePlan(User loggedUser, ServicePlanDto servicePlanDto){
+
+        if(servicePlanDto.getPrice() < 0) throw new MyException("Price can't be less than 0.");
+        if(servicePlanDto.getDiscount() < 0 || servicePlanDto.getDiscount() > servicePlanDto.getPrice()) throw new MyException("Discount can't be greater than price and can't be less than 0.");
+
         ServicePlan servicePlan = ServicePlan.builder()
                 .name(servicePlanDto.getPlanName())
                 .price(servicePlanDto.getPrice())
