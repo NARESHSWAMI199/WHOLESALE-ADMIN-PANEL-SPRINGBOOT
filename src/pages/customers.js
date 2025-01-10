@@ -3,7 +3,7 @@ import Head from 'next/head';
 import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
 import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import {  Alert, Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Snackbar, Stack, SvgIcon, Typography } from '@mui/material';
+import { Alert, Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Snackbar, Stack, SvgIcon, Typography } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { CustomersTable } from 'src/sections/customer/customers-table';
@@ -26,7 +26,7 @@ import { ArrowButtons } from 'src/layouts/arrow-button';
 const now = new Date();
 
 
-const useCustomers = (content,page,rowsPerPage) => {
+const useCustomers = (content, page, rowsPerPage) => {
   return useMemo(
     () => {
       return applyPagination(content, page, rowsPerPage);
@@ -50,108 +50,108 @@ const Page = () => {
 
   /** snackbar varibatles */
 
-  const [open,setOpen] = useState()
+  const [open, setOpen] = useState()
   const [message, setMessage] = useState("")
   const [flag, setFlag] = useState("warning")
 
 
   const auth = useAuth()
-  const [error,setErrors] = useState("")
+  const [error, setErrors] = useState("")
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [customers,setCustomers] = useState([])
+  const [customers, setCustomers] = useState([])
   const customersIds = useCustomerIds(customers);
   const customersSelection = useSelection(customersIds);
-  const [deleted,setDeleted] = useState(false);
-  const [data,setData] = useState({
-    userType : "R",
-    pageNumber : page,
-    size : rowsPerPage
+  const [deleted, setDeleted] = useState(false);
+  const [data, setData] = useState({
+    userType: "R",
+    pageNumber: page,
+    size: rowsPerPage
   })
 
-  const [totalElements , setTotalElements] = useState(0)
+  const [totalElements, setTotalElements] = useState(0)
 
-  useEffect( ()=>{
+  useEffect(() => {
     const getData = async () => {
-       axios.defaults.headers = {
-         Authorization : auth.token
-       }
-       await axios.post(host+"/admin/auth/R/all",data)
-       .then(res => {
+      axios.defaults.headers = {
+        Authorization: auth.token
+      }
+      await axios.post(host + "/admin/auth/R/all", data)
+        .then(res => {
           const data = res.data.content;
-           setTotalElements(res.data.totalElements)
-           setCustomers(data);
-       })
-       .catch(err => {
-         setErrors(err.message)
-         setFlag("error")
-         setMessage(!!err.response ? err.response.data.message : err.message)
-         setOpen(true)
-       } )
-     }
+          setTotalElements(res.data.totalElements)
+          setCustomers(data);
+        })
+        .catch(err => {
+          setErrors(err.message)
+          setFlag("error")
+          setMessage(!!err.response ? err.response.data.message : err.message)
+          setOpen(true)
+        })
+    }
     getData();
 
-   },[data])
+  }, [data])
 
 
-  const updateStatusOnUi = (status,slug) =>{
+  const updateStatusOnUi = (status, slug) => {
     setCustomers((items) => {
       items.filter((_, index) => {
-        if(_.slug === slug) return _.status = status
+        if (_.slug === slug) return _.status = status
         return _;
       })
       return items
     });
   }
 
-  const onStatusChange = (slug,status) => {
+  const onStatusChange = (slug, status) => {
     axios.defaults.headers = {
-      Authorization :  auth.token  
+      Authorization: auth.token
     }
-    axios.post(host+`/admin/auth/status`,{
-      slug : slug,
-      status : status
+    axios.post(host + `/admin/auth/status`, {
+      slug: slug,
+      status: status
     })
-    .then(res => {
-      if (status === "A") {
-        setFlag("success")
-        setMessage("Successfully activated.")
-      }else {
-        setFlag("warning")
-        setMessage("Successfully deactivated.")
-      }
-      updateStatusOnUi(status,slug)
-      setOpen(true)
-    }).catch(err => {
-      console.log(err)
-      setFlag("error")
-      setMessage(!!err.response ? err.response.data.message : err.message)
-      setOpen(true)
-    } )
+      .then(res => {
+        if (status === "A") {
+          setFlag("success")
+          setMessage("Successfully activated.")
+        } else {
+          setFlag("warning")
+          setMessage("Successfully deactivated.")
+        }
+        updateStatusOnUi(status, slug)
+        setOpen(true)
+      }).catch(err => {
+        console.log(err)
+        setFlag("error")
+        setMessage(!!err.response ? err.response.data.message : err.message)
+        setOpen(true)
+      })
   }
-  
 
 
-  
+
+
   const onDelete = (slug) => {
     axios.defaults.headers = {
-      Authorization :  auth.token  
+      Authorization: auth.token
     }
-    axios.get(host+`/admin/auth/delete/${slug}`)
-    .then(res => {
+    axios.get(host + `/admin/auth/delete/${slug}`)
+      .then(res => {
         setFlag("success")
         setMessage(res.data.message)
         setDeleted(true)
         setOpen(true)
-        setCustomers((items) =>items.filter((item) => item.slug !== slug));
-    }).catch(err => {
-      console.log(err)
-      setFlag("error")
-      setMessage(!!err.response ? err.response.data.message : err.message)
-      setOpen(true)
-    } )
+        setCustomers((items) => items.filter((item) => item.slug !== slug));
+      }).catch(err => {
+        console.log(err)
+        setFlag("error")
+        setMessage(!!err.response ? err.response.data.message : err.message)
+        setOpen(true)
+      })
   }
-  
+
 
   /** for snackbar close */
   const handleClose = () => {
@@ -162,7 +162,7 @@ const Page = () => {
   const handlePageChange = useCallback(
     (event, value) => {
       setPage(value);
-      setData((perviouse) => ({...perviouse,pageNumber : value}))
+      setData((perviouse) => ({ ...perviouse, pageNumber: value }))
     },
     []
   );
@@ -170,39 +170,39 @@ const Page = () => {
   const handleRowsPerPageChange = useCallback(
     (event) => {
       setRowsPerPage(event.target.value);
-      setData((perviouse) => ({...perviouse,size : event.target.value}))
+      setData((perviouse) => ({ ...perviouse, size: event.target.value }))
     },
     []
   );
-  
+
   const onSearch = (searchData) => {
-    if(!!searchData){
-    setData({
-      ...data,
-      ...searchData,
-      userType : "R"
-    })
-  }else {
-    setData({
-      userType : "R",
-      pageNumber : page,
-      size : rowsPerPage
-    })
+    if (!!searchData) {
+      setData({
+        ...data,
+        ...searchData,
+        userType: "R"
+      })
+    } else {
+      setData({
+        userType: "R",
+        pageNumber: page,
+        size: rowsPerPage
+      })
+    }
   }
-  } 
 
   return (
     <>
 
-    <Snackbar anchorOrigin={{ vertical : 'top', horizontal : 'right' }}
+      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         open={open}
         onClose={handleClose}
         key={'top' + 'right'}
       >
-     <Alert onClose={handleClose} severity={flag} sx={{ width: '100%' }}>
-        {message}
-    </Alert>
-    </Snackbar>
+        <Alert onClose={handleClose} severity={flag} sx={{ width: '100%' }}>
+          {message}
+        </Alert>
+      </Snackbar>
       <Head>
         <title>
           Retailer | Swami Sales
@@ -215,13 +215,13 @@ const Page = () => {
           py: 8
         }}
       >
-          <Box sx={{
-                    margin : '0 auto',
-                    width : '95%'
-                }}>
+        <Box sx={{
+          margin: '0 auto',
+          width: '95%'
+        }}>
           <Stack spacing={3}>
-          <CustomerHeaders  headerTitle={"Retailer"} userType="R"/>
-          <BasicSearch onSearch={onSearch} />
+            <CustomerHeaders headerTitle={"Retailer"} userType="R" />
+            <BasicSearch onSearch={onSearch} />
 
             <CustomersTable
               count={totalElements}
@@ -235,8 +235,8 @@ const Page = () => {
               page={page}
               rowsPerPage={rowsPerPage}
               selected={customersSelection.selected}
-              onStatusChange = {onStatusChange}
-              onDelete = {onDelete}
+              onStatusChange={onStatusChange}
+              onDelete={onDelete}
             />
           </Stack>
         </Box>

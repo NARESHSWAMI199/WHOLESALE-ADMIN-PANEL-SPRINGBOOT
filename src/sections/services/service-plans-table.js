@@ -1,9 +1,9 @@
-import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
-import DiscountIcon from '@mui/icons-material/Discount';
 import { CopyOutlined } from '@ant-design/icons';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DiscountIcon from '@mui/icons-material/Discount';
 import EditIcon from '@mui/icons-material/Edit';
 import {
     Badge,
@@ -52,12 +52,6 @@ export const ServicePlansTable = (props) =>{
     const [isCopied, setIsCopied] = useState(false);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-    const auth = useAuth();
-    const user = auth.user;
-
-    const changeStatus = (slug, status) => {
-        props.onStatusChange(slug, status);
-    };
 
     useEffect(() => {
         setServicePlans(props.servicePlans)
@@ -75,7 +69,7 @@ export const ServicePlansTable = (props) =>{
         if (action === 'delete') {
             props.onDelete(slug);
         } else if (action === 'status') {
-            changeStatus(slug, status);
+            props.onStatusChange(slug, status);
         }
         setConfirm(false);
     };
@@ -186,7 +180,7 @@ export const ServicePlansTable = (props) =>{
                                                         fontWeight: 'bold',
                                                     }}
                                                 >
-                                                    {plan.price > 0 ? Math.floor((plan.discount / plan.price) * 100) : 0 + '%'}
+                                                    {(plan.price > 0 ? Math.floor((plan.discount / plan.price) * 100) : 0) + '%'}
                                                 </span>
                                             </Stack>
                                         </TableCell>
@@ -202,7 +196,7 @@ export const ServicePlansTable = (props) =>{
                                         <TableCell>
                                             {plan.status !== 'A' ? (
                                                 <CancelIcon sx={{ marginX: '2px', color: 'Red' }} titleAccess='activate' onClick={() => {
-                                                    setMessage("We are going to activate this user.");
+                                                    setMessage("We are going to activate this service plan.");
                                                     setSlug(plan.slug);
                                                     setStatus('A');
                                                     setAction('status');
@@ -210,7 +204,7 @@ export const ServicePlansTable = (props) =>{
                                                 }} />
                                             ) : (
                                                 <CheckCircleIcon sx={{ marginX: '2px', color: 'Green' }} titleAccess='deactivate' onClick={() => {
-                                                    setMessage("We are going to deactivate this user.");
+                                                    setMessage("We are going to deactivate this service plan.");
                                                     setSlug(plan.slug);
                                                     setStatus('D');
                                                     setAction('status');
@@ -220,14 +214,14 @@ export const ServicePlansTable = (props) =>{
                                         </TableCell>
                                         <TableCell>{createdAt}</TableCell>
                                         <TableCell>
-                                            <Link href={{}}>
+                                            {/* <Link href={{}}>
                                                 <EditIcon sx={{ marginX: '5px', color: '#111927' }} titleAccess='Edit' />
-                                            </Link>
+                                            </Link> */}
 
                                             <DeleteIcon sx={{ marginX: '5px', color: 'Red' }} titleAccess='delete' onClick={() => {
                                                 setSlug(plan.slug);
                                                 setRowIndex(index);
-                                                setMessage("We are going to delete this plan. If you agree press agree otherwise press disagree.");
+                                                setMessage("We are going to delete this service plan. If you agree press agree otherwise press disagree.");
                                                 setAction("delete");
                                                 confirmBox();
                                             }} />
