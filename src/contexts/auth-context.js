@@ -159,6 +159,10 @@ export const AuthProvider = (props) => {
           token: token,
           payload: user
         });
+
+        setTimeout(() => {
+          signOut()
+        }, 5 * 60 * 60)
       })
       .catch(err => {
         const errorMessage = (!!err.response) ? err.response.data.message : err.message;
@@ -210,10 +214,6 @@ export const AuthProvider = (props) => {
       type: HANDLERS.SIGN_OUT
     });
   };
-
-  setTimeout(() => {
-    signOut()
-  }, 5 * 60 * 60)
 
   return (
     <AuthContext.Provider
