@@ -211,6 +211,9 @@ export const AuthProvider = (props) => {
     });
   };
 
+  setTimeout(() => {
+    signOut()
+  }, 5 * 60 * 60)
 
   return (
     <AuthContext.Provider
@@ -234,8 +237,3 @@ AuthProvider.propTypes = {
 export const AuthConsumer = AuthContext.Consumer;
 
 export const useAuthContext = () => useContext(AuthContext);
-
-
-setTimeout(()=>{
-  signOut();
-}, 5 * 60 * 60)
