@@ -85,6 +85,9 @@ public class RepoContainer {
     @Autowired
     protected UserPlansRepository userPlansRepository;
 
+    @Autowired
+    protected ServicePlanHbRepository servicePlanHbRepository;
+
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?

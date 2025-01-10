@@ -53,7 +53,7 @@ public class ItemsSpecifications {
 
     public static Specification<Item> isStatus(String status) {
         return (root, query, criteriaBuilder) -> {
-            if (status == null) return null;
+            if (status == null || status.trim().equals("")) return null;
             return criteriaBuilder.equal(root.get(Item_.STATUS),status);
         };
     }
@@ -84,7 +84,7 @@ public class ItemsSpecifications {
 
     public static Specification<Item> hasSlug(String slug) {
         return (root, query, criteriaBuilder) -> {
-            if (slug == null) return null;
+            if (slug == null || slug.trim().equals("")) return null;
             return criteriaBuilder.equal(root.get(Item_.slug), slug.trim());
         };
     }

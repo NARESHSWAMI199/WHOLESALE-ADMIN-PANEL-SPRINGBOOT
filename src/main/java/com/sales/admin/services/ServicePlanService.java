@@ -7,23 +7,32 @@ import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
 import com.sales.entities.UserPlans;
 import com.sales.exceptions.MyException;
+import com.sales.specifications.PlansSpecifications;
+import com.sales.specifications.ServicePlanSpecification;
 import com.sales.utils.Utils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
-import static com.sales.specifications.PlansSpecifications.*;
 
 @Service
 public class ServicePlanService extends  RepoContainer {
 
     public Page<ServicePlan> getALlServicePlan(ServicePlanDto servicePlanDto){
+        Specification specification = Specification.where(
+                ServicePlanSpecification.containsName(servicePlanDto.getName())
+                        .and(ServicePlanSpecification.hasSlug(servicePlanDto.getSlug()))
+                        .and(ServicePlanSpecification.isStatus(servicePlanDto.getStatus()))
+                        .and(ServicePlanSpecification.greaterThanOrEqualFromDate(servicePlanDto.getFromDate()))
+                        .and(ServicePlanSpecification.lessThanOrEqualToToDate(servicePlanDto.getToDate()))
+        );
         Pageable pageable = getPageable(servicePlanDto);
-        return servicePlanRepository.findAll(pageable);
+        return servicePlanRepository.findAll(specification,pageable);
     }
 
     public ServicePlan findBySlug(String slug){
@@ -44,13 +53,13 @@ public class ServicePlanService extends  RepoContainer {
 
     public Page<UserPlans> getAllUserPlans(Integer userId , UserPlanDto searchFilters){
         Specification<UserPlans> specification = Specification.where(
-                hasSlug(searchFilters.getSlug())
-                .and(greaterThanOrEqualCreatedFromDate(searchFilters.getCreatedFromDate()))
-                .and(lessThanOrEqualToCreatedToDate(searchFilters.getCreatedToDate()))
-                .and(greaterThanOrEqualExpiredFromDate(searchFilters.getExpiredFromDate()))
-                .and(lessThanOrEqualToExpiredToDate(searchFilters.getExpiredToDate()))
-                .and(isStatus(searchFilters.getStatus()))
-                .and(isUserId(userId))
+                PlansSpecifications.hasSlug(searchFilters.getSlug())
+                .and(PlansSpecifications.greaterThanOrEqualCreatedFromDate(searchFilters.getCreatedFromDate()))
+                .and(PlansSpecifications.lessThanOrEqualToCreatedToDate(searchFilters.getCreatedToDate()))
+                .and(PlansSpecifications.greaterThanOrEqualExpiredFromDate(searchFilters.getExpiredFromDate()))
+                .and(PlansSpecifications.lessThanOrEqualToExpiredToDate(searchFilters.getExpiredToDate()))
+                .and(PlansSpecifications.isStatus(searchFilters.getStatus()))
+                .and(PlansSpecifications.isUserId(userId))
         );
         Pageable pageable = getPageable(searchFilters);
         Page<UserPlans> allUserPlans = userPlansRepository.findAll(specification, pageable);
@@ -79,5 +88,38 @@ public class ServicePlanService extends  RepoContainer {
                 .build();
         return servicePlanRepository.save(servicePlan);
     }
+
+    public Map<String,Object> updateServicePlanStatus(String status,String slug, User loggedUser){
+        Map<String,Object> result = new HashMap<>();
+        if(!loggedUser.getUserType().equals("SA")) throw new MyException("You don't have permission to perform this action.");
+        int isUpdated = servicePlanHbRepository.updateServicePlansStatus(status, slug, loggedUser);
+        if(isUpdated > 0){
+            if(status.equals("A")){
+                result.put("message","Successfully Activated.");
+            }else{
+                result.put("message","Successfully Deactivated.");
+            }
+            result.put("status", 201);
+        }else{
+            result.put("message","Something went wrong.");
+            result.put("status",400);
+        }
+        return result;
+    }
+
+    public Map<String,Object> deletedServicePlan(String slug, User loggedUser){
+        Map<String,Object> result = new HashMap<>();
+        if(!loggedUser.getUserType().equals("SA")) throw new MyException("You don't have permission to perform this action.");
+        int isUpdated = servicePlanHbRepository.deleteServicePlan(slug, loggedUser);
+        if(isUpdated > 0){
+            result.put("message","Service plan successfully deleted.");
+            result.put("status", 201);
+        }else{
+            result.put("message","Something went wrong.");
+            result.put("status",400);
+        }
+        return result;
+    }
+
 
 }

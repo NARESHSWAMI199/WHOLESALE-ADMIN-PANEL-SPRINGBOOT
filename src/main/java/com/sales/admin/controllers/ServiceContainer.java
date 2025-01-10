@@ -27,14 +27,13 @@ public class ServiceContainer {
     Logger logger;
 
     @Autowired
-    ReadExcel readExcel;
+    protected  ReadExcel readExcel;
 
     @Autowired
-    GroupService groupService;
+    protected  GroupService groupService;
 
     @Autowired
-    ServicePlanService servicePlanService;
-
+    protected ServicePlanService servicePlanService;
 
 
 }

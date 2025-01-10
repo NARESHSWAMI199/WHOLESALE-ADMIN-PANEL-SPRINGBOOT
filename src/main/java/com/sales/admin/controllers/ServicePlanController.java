@@ -2,6 +2,7 @@ package com.sales.admin.controllers;
 
 
 import com.sales.dto.ServicePlanDto;
+import com.sales.dto.StatusDto;
 import com.sales.dto.UserPlanDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
@@ -51,5 +52,20 @@ public class ServicePlanController extends ServiceContainer {
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
     }
 
+
+    @PostMapping("status")
+    public ResponseEntity<Map<String,Object>> updateStatus(HttpServletRequest request, @RequestBody StatusDto statusDto) {
+        User loggedUser = (User) request.getAttribute("user");
+        Map<String, Object> result = servicePlanService.updateServicePlanStatus(statusDto.getStatus(), statusDto.getSlug(), loggedUser);
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+    }
+
+
+    @GetMapping("delete/{slug}")
+    public ResponseEntity<Map<String,Object>> deleteStatus(@PathVariable String slug, HttpServletRequest request) {
+        User loggedUser = (User) request.getAttribute("user");
+        Map<String, Object> result = servicePlanService.deletedServicePlan(slug,loggedUser);
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+    }
 
 }
