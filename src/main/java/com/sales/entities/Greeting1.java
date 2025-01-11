@@ -1,14 +1,14 @@
 package com.sales.entities;
 
 
-public class Greeting {
+public class Greeting1 {
 
     private String content;
 
-    public Greeting() {
+    public Greeting1() {
     }
 
-    public Greeting(String content) {
+    public Greeting1(String content) {
         this.content = content;
     }
 

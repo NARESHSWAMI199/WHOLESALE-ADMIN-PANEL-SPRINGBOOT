@@ -1,15 +1,13 @@
 package com.sales.entities;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@Builder
+//@Getter
+//@Setter
+//@AllArgsConstructor
+//@Builder
+@Data
 public class HelloMessage {
 
     private String message;

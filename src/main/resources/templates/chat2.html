@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -51,7 +52,7 @@
 </div>
 
 <script>
-    document.cookie = 'X-Username=naresh; path=/'
+    document.cookie = 'X-Username=rakesh; path=/'
     const stompClient = new StompJs.Client({
     brokerURL: 'ws://localhost:8080/chat'
 });
@@ -59,8 +60,7 @@
 stompClient.onConnect = (frame) => {
     setConnected(true);
     console.log('Connected: ' + frame);
-    stompClient.subscribe('/user/naresh/queue/private', (greeting) => {
-        alert("called")
+    stompClient.subscribe('/user/rakesh/queue/private', (greeting) => {
         showGreeting(JSON.parse(greeting.body).message);
     });
 };
@@ -98,7 +98,7 @@ function disconnect() {
 
 function sendMessage() {
     stompClient.publish({
-        destination: "/app/chat/private/rakesh",
+        destination: "/app/chat/private/naresh",
         body: JSON.stringify({'message': $("#name").val()})
     });
 }
