@@ -51,8 +51,8 @@
 </div>
 
 <script>
-    document.cookie = 'X-Username=naresh; path=/'
-    const stompClient = new StompJs.Client({
+document.cookie = 'X-Username=naresh; path=/'
+const stompClient = new StompJs.Client({
     brokerURL: 'ws://localhost:8080/chat'
 });
 
@@ -60,7 +60,6 @@ stompClient.onConnect = (frame) => {
     setConnected(true);
     console.log('Connected: ' + frame);
     stompClient.subscribe('/user/naresh/queue/private', (greeting) => {
-        alert("called")
         showGreeting(JSON.parse(greeting.body).message);
     });
 };
@@ -104,15 +103,22 @@ function sendMessage() {
 }
 
 function joinPrivate() {
+    let message = $("#name").val();
     stompClient.publish({
         destination: "/app/add-private",
-        body: JSON.stringify({'message': $("#name").val()})
+        body: JSON.stringify({'message': message })
     });
+    showSenderMessage(message);
 }
 
 function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
+    $("#greetings").append("<tr style='background : red; color : white; float : right'><td>" + message + "</td></tr>");
 }
+
+function showSenderMessage(message) {
+    $("#greetings").append("<tr style='background : green; color ; white'><td>" + message + "</td></tr>");
+}
+
 
 $(function () {
     $("form").on('submit', (e) => e.preventDefault());

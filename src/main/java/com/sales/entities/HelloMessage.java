@@ -13,4 +13,5 @@ public class HelloMessage {
     private String message;
     private String sender;
     private String type;
+    private String sessionId;
 }
