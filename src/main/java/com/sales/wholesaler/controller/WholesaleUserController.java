@@ -139,14 +139,20 @@ public class WholesaleUserController extends WholesaleServiceContainer {
 
     }
 
-
-    @GetMapping("/detail")
-    public ResponseEntity<Map<String, Object>> getDetailUser(HttpServletRequest request) {
+    @GetMapping(value = {"/detail","/detail/{slug}"})
+    public ResponseEntity<Map<String, Object>> getDetailUser(@PathVariable(required = false) String slug, HttpServletRequest request) {
         Map<String,Object> responseObj = new HashMap<>();
-        User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
-        Store store = wholesaleStoreService.getStoreByUserSlug(loggedUser.getId());
-        responseObj.put("store", store);
-        responseObj.put("user", loggedUser);
+        User user = null;
+        if(slug == null){
+            user = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
+        }else {
+            user = wholesaleUserService.findUserBySlug(slug);
+        }
+        if(slug == null){
+            Store store = wholesaleStoreService.getStoreByUserSlug(user.getId());
+            responseObj.put("store", store);
+        }
+        responseObj.put("user", user);
         responseObj.put("status", 200);
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }

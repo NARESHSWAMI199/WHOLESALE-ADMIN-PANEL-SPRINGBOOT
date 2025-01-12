@@ -8,10 +8,11 @@ import lombok.*;
 //@AllArgsConstructor
 //@Builder
 @Data
-public class HelloMessage {
+public class Message {
 
     private String message;
     private String sender;
     private String type;
     private String sessionId;
+    private Long time;
 }

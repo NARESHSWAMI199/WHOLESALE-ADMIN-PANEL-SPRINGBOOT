@@ -1,7 +1,9 @@
 package com.sales.admin.controllers;
 
 import com.sales.entities.Greeting1;
-import com.sales.entities.HelloMessage;
+import com.sales.entities.Message;
+import com.sales.exceptions.MyException;
+import com.sales.utils.Utils;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -22,13 +24,12 @@ public class ChatController {
     private final Map<String, String> userSessions = new HashMap<>();
 
     public ChatController(SimpMessagingTemplate messagingTemplate) {
-        System.err.println("the constructor : "+messagingTemplate);
         this.messagingTemplate = messagingTemplate;
     }
 
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
-    public HelloMessage sendMessage(HelloMessage message, SimpMessageHeaderAccessor headerAccessor) {
+    public Message sendMessage(Message message, SimpMessageHeaderAccessor headerAccessor) {
         // Get the sender's username
         String sender = (String) headerAccessor.getSessionAttributes().get("username");
         // Set the sender in the message
@@ -38,7 +39,7 @@ public class ChatController {
 
     @MessageMapping("/chat.addUser")
     @SendTo("/topic/public")
-    public HelloMessage addUser(HelloMessage message, SimpMessageHeaderAccessor headerAccessor) {
+    public Message addUser(Message message, SimpMessageHeaderAccessor headerAccessor) {
         // Get the sender's username
         String sender = (String) headerAccessor.getSessionAttributes().get("username");
 
@@ -54,7 +55,7 @@ public class ChatController {
 
     @MessageMapping("/chat.removeUser")
     @SendTo("/topic/public")
-    public HelloMessage removeUser(HelloMessage message, SimpMessageHeaderAccessor headerAccessor) {
+    public Message removeUser(Message message, SimpMessageHeaderAccessor headerAccessor) {
         // Get the sender's username
         String sender = (String) headerAccessor.getSessionAttributes().get("username");
 
@@ -80,45 +81,12 @@ public class ChatController {
 
 
     @MessageMapping("/chat/private/{recipient}")
-    public void sendPrivateMessage(@DestinationVariable String recipient, HelloMessage message, SimpMessageHeaderAccessor headerAccessor) {
+    public void sendPrivateMessage(@DestinationVariable String recipient, Message message, SimpMessageHeaderAccessor headerAccessor) {
         String sender = (String) headerAccessor.getSessionAttributes().get("username");
-        String chatKey = getChatKey(sender, recipient);
-
-        for (String key : privateChatSessions.keySet()) {
-            System.out.println(key + " " + privateChatSessions.get(key));
-        }
-        String recipientSessionId = privateChatSessions.get(recipient);
-        System.err.println("Sender : "+sender + " Receiver : "+recipient + " recipientSessionId : "+recipientSessionId + " message : "+ message);
-        if (recipientSessionId != null) {
-            try{
-                message.setSender(sender);
-                messagingTemplate.convertAndSendToUser(recipient, "/queue/private", message);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
-        } else {
-            // Handle the case where the recipient is not connected or the chat doesn't exist
-        }
-    }
-
-
-
-    @MessageMapping("/add-private")
-    @SendTo("/user/queue/private")
-    public HelloMessage addPrivateUser(HelloMessage message, SimpMessageHeaderAccessor headerAccessor) {
-        // Get the sender's username
-        String sender = (String) headerAccessor.getSessionAttributes().get("username");
-//        String chatKey = getChatKey(sender, recipient);
-        // Store the session ID associated with the username
-
-        String sessionId = headerAccessor.getSessionId();
-        privateChatSessions.put(sender, sessionId);
-        message.setType("JOIN");
-        System.err.println("Sender : "+sender);
+        if (recipient == null) throw new MyException("Please provide a valid recipient");
         message.setSender(sender);
-
-        return message;
+        /* you need to subscribe like  /user/{userId}/queue/private */
+        messagingTemplate.convertAndSendToUser(recipient, "/queue/private", message);
     }
 
 }
