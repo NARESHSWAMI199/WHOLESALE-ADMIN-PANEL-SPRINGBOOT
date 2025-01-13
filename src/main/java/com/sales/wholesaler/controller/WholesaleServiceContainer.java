@@ -21,7 +21,7 @@ public class WholesaleServiceContainer {
     protected WholesaleItemService wholesaleItemService;
 
     @Autowired
-    Logger logger;
+    protected Logger logger;
 
     @Autowired
     protected AddressService addressService;

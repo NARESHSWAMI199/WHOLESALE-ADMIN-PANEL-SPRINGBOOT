@@ -5,6 +5,8 @@ import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
 import com.sales.wholesaler.controller.WholesaleServiceContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -19,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Controller
 public class ChatController extends WholesaleServiceContainer {
 
+    private static final Logger log = LoggerFactory.getLogger(ChatController.class);
     private final SimpMessagingTemplate messagingTemplate;
     private final Map<String, String> userSessions = new HashMap<>();
 
@@ -95,24 +98,34 @@ public class ChatController extends WholesaleServiceContainer {
     @MessageMapping("/chat/connect/{slug}")
     public void userConnected(@DestinationVariable String slug) {
         System.err.println("Connected");
-        User user = wholesaleUserService.findUserBySlug(slug);
-        user.setOnline(true);
-        wholesaleUserService.updateLastSeen(user);
-        GlobalConstant.onlineUsers.put(slug, user);
+        try{
+            User user = wholesaleUserService.findUserBySlug(slug);
+            if(user == null) throw new MyException("Not valid user to connect for chat.");
+            user.setOnline(true);
+            wholesaleUserService.updateLastSeen(user);
+            GlobalConstant.onlineUsers.put(slug, user);
+        }catch (Exception e){
+            logger.info(e.getMessage());
+        }
+
     }
 
 
 
 
     @MessageMapping("/chat/deactivate/{slug}")
-    public void deactiveUser(@DestinationVariable String slug) {
+    public void disconnectUser(@DestinationVariable String slug) {
         System.err.println("Disconnected");
-        User user = GlobalConstant.onlineUsers.get(slug);
-        if (user != null) {
+        try{
+            User user = GlobalConstant.onlineUsers.get(slug);
+            if(user == null) throw new MyException("Not valid user to connect for chat.");
             user.setOnline(false);
             wholesaleUserService.updateLastSeen(user);
             GlobalConstant.onlineUsers.put(slug, user);
+        }catch (Exception e){
+            logger.info(e.getMessage());
         }
+
     }
 
     @MessageMapping("/chat/{slug}/userStatus")
