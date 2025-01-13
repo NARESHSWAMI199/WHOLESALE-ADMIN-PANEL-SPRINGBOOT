@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.Where;
 
 import java.util.UUID;
 
@@ -59,6 +58,12 @@ public class User {
     Integer updatedBy;
     @Column(name = "active_plan")
     Integer activePlan;
+
+    @Column(name = "last_seen")
+    Long lastSeen;
+
+    @Transient
+    public boolean isOnline =false;
 
     public User (User loggedUser) {
         this.slug = UUID.randomUUID().toString();

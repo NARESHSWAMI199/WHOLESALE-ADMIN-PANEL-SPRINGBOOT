@@ -1,7 +1,7 @@
 package com.sales.entities;
 
 
-import lombok.*;
+import lombok.Data;
 
 //@Getter
 //@Setter
@@ -15,4 +15,5 @@ public class Message {
     private String type;
     private String sessionId;
     private Long time;
+    private Long lastSeen;
 }

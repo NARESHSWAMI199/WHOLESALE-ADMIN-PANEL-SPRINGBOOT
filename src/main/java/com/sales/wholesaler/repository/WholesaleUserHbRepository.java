@@ -87,5 +87,14 @@ public class WholesaleUserHbRepository {
     }
 
 
+    public int updatedUserLastSeen(String slug){
+        String hql = "update User set lastSeen=:lastSeen where slug=:slug";
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("lastSeen",Utils.getCurrentMillis());
+        query.setParameter("slug",slug);
+        return query.executeUpdate();
+    }
+
+
 
 }

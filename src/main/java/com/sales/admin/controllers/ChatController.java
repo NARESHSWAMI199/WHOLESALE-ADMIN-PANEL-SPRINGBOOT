@@ -1,24 +1,23 @@
 package com.sales.admin.controllers;
 
-import com.sales.entities.Greeting1;
 import com.sales.entities.Message;
+import com.sales.entities.User;
 import com.sales.exceptions.MyException;
-import com.sales.utils.Utils;
+import com.sales.global.GlobalConstant;
+import com.sales.wholesaler.controller.WholesaleServiceContainer;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.util.HtmlUtils;
 
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
-public class ChatController {
+public class ChatController extends WholesaleServiceContainer {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final Map<String, String> userSessions = new HashMap<>();
@@ -71,8 +70,9 @@ public class ChatController {
     // ... other message handling methods (e.g., private messages) ...
 
 
-
- /** TODO : private chat */
+    /**
+     * TODO : private chat
+     */
     private final Map<String, String> privateChatSessions = new ConcurrentHashMap<>();
 
     private String getChatKey(String user1, String user2) {
@@ -89,4 +89,33 @@ public class ChatController {
         messagingTemplate.convertAndSendToUser(recipient, "/queue/private", message);
     }
 
+
+
+
+    @MessageMapping("/chat/connect/{slug}")
+    public void userConnected(@DestinationVariable String slug) {
+        System.err.println("Connected");
+        User user = wholesaleUserService.findUserBySlug(slug);
+        user.setOnline(true);
+        wholesaleUserService.updateLastSeen(user);
+        GlobalConstant.onlineUsers.put(slug, user);
+    }
+
+    @MessageMapping("/chat/deactivate/{slug}")
+    public void deactiveUser(@DestinationVariable String slug) {
+        System.err.println("Disconnected");
+        User user = GlobalConstant.onlineUsers.get(slug);
+        if (user != null) {
+            user.setOnline(false);
+            wholesaleUserService.updateLastSeen(user);
+            GlobalConstant.onlineUsers.put(slug, user);
+        }
+    }
+
+    @MessageMapping("/chat/{slug}/userStatus")
+    @SendTo("/topic/status")
+    public User getUserStatus(@DestinationVariable String slug) {
+        System.err.println("Status checking." + slug);
+        return GlobalConstant.onlineUsers.get(slug);
+    }
 }

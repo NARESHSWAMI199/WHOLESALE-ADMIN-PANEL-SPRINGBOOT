@@ -38,7 +38,7 @@ public class SalesHandshakeInterceptor implements HandshakeInterceptor {
         // Implement your logic here to extract username from the request
         // For example, from a custom header:
 
-        request.getHeaders().forEach((key, value) -> System.out.println(key + " : " + value));
+//        request.getHeaders().forEach((key, value) -> System.out.println(key + " : " + value));
         String cookieString = request.getHeaders().getFirst("cookie");
         if (cookieString != null) {
             String[] cookies = cookieString.split("; ");

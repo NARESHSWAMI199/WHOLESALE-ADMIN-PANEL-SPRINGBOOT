@@ -219,4 +219,9 @@ public class WholesaleUserService extends WholesaleRepoContainer {
     }
 
 
+
+    public int updateLastSeen(User loggedUser) {
+       return wholesaleUserHbRepository.updatedUserLastSeen(loggedUser.getSlug());
+    }
+
 }

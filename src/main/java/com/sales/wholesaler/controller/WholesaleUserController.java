@@ -228,6 +228,25 @@ public class WholesaleUserController extends WholesaleServiceContainer {
     }
 
 
+    @GetMapping("last-seen")
+    public ResponseEntity<Map<String,Object>> updateUserLastSeen(HttpServletRequest request){
+        Map<String,Object> result = new HashMap<>();
+        User loggedUser = (User)request.getAttribute("user");
+        int isUpdated = wholesaleUserService.updateLastSeen(loggedUser);
+        loggedUser.setOnline(false);
+        wholesaleUserService.updateLastSeen(loggedUser);
+        GlobalConstant.onlineUsers.put(loggedUser.getSlug(), loggedUser);
+        if(isUpdated > 0){
+            result.put("message", "User's last seen successfully updated.");
+            result.put("status", 201);
+        }else{
+            result.put("message","Something went wrong during updating last seen of user");
+            result.put("status",500);
+        }
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+
+    }
+
 
 
 
