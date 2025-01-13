@@ -101,6 +101,9 @@ public class ChatController extends WholesaleServiceContainer {
         GlobalConstant.onlineUsers.put(slug, user);
     }
 
+
+
+
     @MessageMapping("/chat/deactivate/{slug}")
     public void deactiveUser(@DestinationVariable String slug) {
         System.err.println("Disconnected");
