@@ -11,8 +11,8 @@ import lombok.Data;
 public class Message {
 
     private String message;
-    private String sender;
-    private String receiver;
+    private String senderKey;
+    private String receiverKey;
     private String type;
     private String sessionId;
     private Long time;

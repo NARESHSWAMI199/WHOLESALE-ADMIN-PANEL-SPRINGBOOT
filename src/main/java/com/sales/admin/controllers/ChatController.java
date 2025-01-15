@@ -1,5 +1,6 @@
 package com.sales.admin.controllers;
 
+import com.sales.entities.Chat;
 import com.sales.entities.Message;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
@@ -7,26 +8,40 @@ import com.sales.global.GlobalConstant;
 import com.sales.wholesaler.controller.WholesaleServiceContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Controller
+@RestController
 public class ChatController extends WholesaleServiceContainer {
 
     private static final Logger log = LoggerFactory.getLogger(ChatController.class);
     private final SimpMessagingTemplate messagingTemplate;
-    private final Map<String, String> userSessions = new HashMap<>();
 
     public ChatController(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
+    }
+
+
+
+    @PostMapping("/chats/all")
+    public ResponseEntity<List<Chat>> getALlUsers(@RequestBody Message message){
+        List<Chat> allChats = chatService.getAllChatBySenderAndReceiverKey(message);
+        return new ResponseEntity<>(allChats, HttpStatus.valueOf(200));
     }
 
     @MessageMapping("/chat.sendMessage")
@@ -35,51 +50,8 @@ public class ChatController extends WholesaleServiceContainer {
         // Get the sender's username
         String sender = (String) headerAccessor.getSessionAttributes().get("username");
         // Set the sender in the message
-        message.setSender(sender);
+        message.setSenderKey(sender);
         return message;
-    }
-
-    @MessageMapping("/chat.addUser")
-    @SendTo("/topic/public")
-    public Message addUser(Message message, SimpMessageHeaderAccessor headerAccessor) {
-        // Get the sender's username
-        String sender = (String) headerAccessor.getSessionAttributes().get("username");
-
-        // Store the session ID associated with the username
-        String sessionId = headerAccessor.getSessionId();
-        userSessions.put(sender, sessionId);
-
-        message.setType("JOIN");
-        message.setSender(sender);
-
-        return message;
-    }
-
-    @MessageMapping("/chat.removeUser")
-    @SendTo("/topic/public")
-    public Message removeUser(Message message, SimpMessageHeaderAccessor headerAccessor) {
-        // Get the sender's username
-        String sender = (String) headerAccessor.getSessionAttributes().get("username");
-
-        // Remove the session ID from the map
-        userSessions.remove(sender);
-
-        message.setType("LEAVE");
-        message.setSender(sender);
-
-        return message;
-    }
-
-    // ... other message handling methods (e.g., private messages) ...
-
-
-    /**
-     * TODO : private chat
-     */
-    private final Map<String, String> privateChatSessions = new ConcurrentHashMap<>();
-
-    private String getChatKey(String user1, String user2) {
-        return user1.compareTo(user2) < 0 ? user1 + "_" + user2 : user2 + "_" + user1;
     }
 
 
@@ -88,8 +60,11 @@ public class ChatController extends WholesaleServiceContainer {
         String sender = (String) headerAccessor.getSessionAttributes().get("username");
         if (recipient == null) throw new MyException("Please provide a valid recipient");
         System.err.println("Here : "+recipient);
-        message.setSender(sender);
-        message.setReceiver(recipient);
+        message.setSenderKey(sender);
+        message.setReceiverKey(recipient);
+        String slug = sender.split("_")[0];
+        User user = wholesaleUserService.findUserBySlug(slug);
+        chatService.saveMessage(user,message);
         /* you need to subscribe like  /user/{userId}/queue/private */
         messagingTemplate.convertAndSendToUser(recipient, "/queue/private", message);
     }
