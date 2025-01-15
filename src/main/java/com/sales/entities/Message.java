@@ -12,6 +12,7 @@ public class Message {
 
     private String message;
     private String sender;
+    private String receiver;
     private String type;
     private String sessionId;
     private Long time;

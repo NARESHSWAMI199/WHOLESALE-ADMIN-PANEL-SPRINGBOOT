@@ -87,7 +87,9 @@ public class ChatController extends WholesaleServiceContainer {
     public void sendPrivateMessage(@DestinationVariable String recipient, Message message, SimpMessageHeaderAccessor headerAccessor) {
         String sender = (String) headerAccessor.getSessionAttributes().get("username");
         if (recipient == null) throw new MyException("Please provide a valid recipient");
+        System.err.println("Here : "+recipient);
         message.setSender(sender);
+        message.setReceiver(recipient);
         /* you need to subscribe like  /user/{userId}/queue/private */
         messagingTemplate.convertAndSendToUser(recipient, "/queue/private", message);
     }
