@@ -19,9 +19,9 @@ public class Chat {
     @Column(name = "user_id")
     Integer userId;
     @Column(name = "receiver_key")
-    String receiverKey;
+    String receiver;
     @Column(name = "sender_key")
-    String senderKey;
+    String sender;
     @Column(name = "message", nullable = false)
     String message;
     @Column(name = "created_at")

@@ -15,16 +15,11 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 public class ChatController extends WholesaleServiceContainer {
@@ -50,7 +45,7 @@ public class ChatController extends WholesaleServiceContainer {
         // Get the sender's username
         String sender = (String) headerAccessor.getSessionAttributes().get("username");
         // Set the sender in the message
-        message.setSenderKey(sender);
+        message.setSender(sender);
         return message;
     }
 
@@ -58,13 +53,13 @@ public class ChatController extends WholesaleServiceContainer {
     @MessageMapping("/chat/private/{recipient}")
     public void sendPrivateMessage(@DestinationVariable String recipient, Message message, SimpMessageHeaderAccessor headerAccessor) {
         String sender = (String) headerAccessor.getSessionAttributes().get("username");
-        if (recipient == null) throw new MyException("Please provide a valid recipient");
         System.err.println("Here : "+recipient);
-        message.setSenderKey(sender);
-        message.setReceiverKey(recipient);
-        String slug = sender.split("_")[0];
-        User user = wholesaleUserService.findUserBySlug(slug);
-        chatService.saveMessage(user,message);
+        message.setSender(sender);
+        message.setReceiver(recipient);
+//        String slug = sender.split("_")[0];
+//        User user = wholesaleUserService.findUserBySlug(slug);
+        chatService.saveMessage(message);
+        if (recipient == null) throw new MyException("Please provide a valid recipient");
         /* you need to subscribe like  /user/{userId}/queue/private */
         messagingTemplate.convertAndSendToUser(recipient, "/queue/private", message);
     }
@@ -73,9 +68,10 @@ public class ChatController extends WholesaleServiceContainer {
 
 
     @MessageMapping("/chat/connect/{slug}")
-    public void userConnected(@DestinationVariable String slug) {
+    public void userConnected(@DestinationVariable String slug, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
         System.err.println("Connected");
         try{
+            String sender = simpMessageHeaderAccessor.getSessionAttributes().get("username").toString();
             User user = wholesaleUserService.findUserBySlug(slug);
             if(user == null) throw new MyException("Not valid user to connect for chat.");
             user.setOnline(true);
@@ -109,6 +105,6 @@ public class ChatController extends WholesaleServiceContainer {
     @SendTo("/topic/status")
     public User getUserStatus(@DestinationVariable String slug) {
         System.err.println("Status checking." + slug);
-        return GlobalConstant.onlineUsers.get(slug);
+        return GlobalConstant.onlineUsers.getOrDefault(slug,new User());
     }
 }
