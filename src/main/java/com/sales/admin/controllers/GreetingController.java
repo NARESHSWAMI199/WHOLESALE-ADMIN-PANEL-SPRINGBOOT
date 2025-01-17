@@ -1,7 +1,7 @@
 package com.sales.admin.controllers;
 
+import com.sales.dto.Message;
 import com.sales.entities.Greeting1;
-import com.sales.entities.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;

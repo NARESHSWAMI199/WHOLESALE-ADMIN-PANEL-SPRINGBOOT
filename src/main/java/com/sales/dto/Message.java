@@ -1,4 +1,4 @@
-package com.sales.entities;
+package com.sales.dto;
 
 
 import lombok.Data;
@@ -17,4 +17,5 @@ public class Message {
     private String sessionId;
     private Long time;
     private Long lastSeen;
+    private Boolean seen;
 }

@@ -30,4 +30,6 @@ public class Chat {
     Long updatedAt;
     @Column(name = "is_deleted")
     String isDeleted;
+    @Column(name = "seen")
+    Boolean seen;
 }

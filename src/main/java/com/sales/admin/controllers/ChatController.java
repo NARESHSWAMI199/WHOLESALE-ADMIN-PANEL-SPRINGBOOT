@@ -1,7 +1,7 @@
 package com.sales.admin.controllers;
 
+import com.sales.dto.Message;
 import com.sales.entities.Chat;
-import com.sales.entities.Message;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
@@ -15,9 +15,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -56,8 +54,6 @@ public class ChatController extends WholesaleServiceContainer {
         System.err.println("Here : "+recipient);
         message.setSender(sender);
         message.setReceiver(recipient);
-//        String slug = sender.split("_")[0];
-//        User user = wholesaleUserService.findUserBySlug(slug);
         chatService.saveMessage(message);
         if (recipient == null) throw new MyException("Please provide a valid recipient");
         /* you need to subscribe like  /user/{userId}/queue/private */
@@ -102,9 +98,19 @@ public class ChatController extends WholesaleServiceContainer {
     }
 
     @MessageMapping("/chat/{slug}/userStatus")
-    @SendTo("/topic/status")
-    public User getUserStatus(@DestinationVariable String slug) {
+    public void getUserStatus(@DestinationVariable String slug, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
         System.err.println("Status checking." + slug);
-        return GlobalConstant.onlineUsers.getOrDefault(slug,new User());
+        String sender = (String) simpMessageHeaderAccessor.getSessionAttributes().get("username");
+        /* you need to subscribe like  /user/{userId}/queue/private/status */
+        messagingTemplate.convertAndSendToUser(sender, "/queue/private/status",GlobalConstant.onlineUsers.getOrDefault(slug,new User()));
     }
+
+
+
+    @GetMapping("/chat/status/{slug}")
+    public ResponseEntity<User> getUserStatus(@PathVariable String slug){
+        User user = GlobalConstant.onlineUsers.getOrDefault(slug, new User());
+        return new ResponseEntity<>(user,HttpStatus.valueOf(200));
+    }
+
 }

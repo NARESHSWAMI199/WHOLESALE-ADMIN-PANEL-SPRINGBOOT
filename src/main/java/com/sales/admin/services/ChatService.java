@@ -1,7 +1,7 @@
 package com.sales.admin.services;
 
+import com.sales.dto.Message;
 import com.sales.entities.Chat;
-import com.sales.entities.Message;
 import com.sales.utils.Utils;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +18,7 @@ public class ChatService extends RepoContainer {
             .createdAt(Utils.getCurrentMillis())
             .message(message.getMessage())
             .isDeleted("N")
+            .seen(false)
             .build();
         return chatRepository.save(chat);
     }
