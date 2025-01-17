@@ -65,6 +65,9 @@ public class User {
     @Transient
     public boolean isOnline =false;
 
+    @Transient
+    public Integer chatNotification = 0;
+
     public User (User loggedUser) {
         this.slug = UUID.randomUUID().toString();
         this.createdAt = getCurrentMillis();
