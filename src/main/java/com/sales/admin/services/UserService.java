@@ -2,10 +2,8 @@ package com.sales.admin.services;
 
 
 import com.sales.dto.*;
+import com.sales.entities.*;
 import com.sales.entities.Store;
-import com.sales.entities.StorePermissions;
-import com.sales.entities.SupportEmail;
-import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;

@@ -66,7 +66,8 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                 "/wholesale/plan/all",
                 "/admin/auth/profile/**",
                 "/index",
-                "/chat2"
+                "/chat2",
+                "/admin/auth/contact/**"
         };
         /* Paths which need to be authenticated but don't need to check in Interceptor due to some different conditions */
         String [] authorizedPaths = {

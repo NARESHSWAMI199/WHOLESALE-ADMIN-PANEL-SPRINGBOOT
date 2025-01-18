@@ -1,10 +1,7 @@
 package com.sales.admin.controllers;
 
 
-import com.sales.dto.PasswordDto;
-import com.sales.dto.StatusDto;
-import com.sales.dto.UserDto;
-import com.sales.dto.UserSearchFilters;
+import com.sales.dto.*;
 import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
@@ -27,6 +24,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("admin/auth")
@@ -263,9 +261,6 @@ public class UserController extends ServiceContainer {
         Map<String,Object> response= userService.updateWholesalerPermissions(userDto,loggedUser);
         return new ResponseEntity<>(response, HttpStatus.valueOf((Integer) response.get("status")));
     }
-
-
-
 
 
 }

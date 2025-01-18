@@ -8,7 +8,7 @@ import lombok.Data;
 //@AllArgsConstructor
 //@Builder
 @Data
-public class Message {
+public class MessageDto {
 
     private String message;
     private String sender;

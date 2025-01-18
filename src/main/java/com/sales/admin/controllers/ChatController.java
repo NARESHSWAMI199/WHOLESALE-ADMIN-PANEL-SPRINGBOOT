@@ -1,11 +1,12 @@
 package com.sales.admin.controllers;
 
-import com.sales.dto.Message;
+import com.sales.dto.MessageDto;
 import com.sales.entities.Chat;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
 import com.sales.wholesaler.controller.WholesaleServiceContainer;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,9 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ChatController extends WholesaleServiceContainer {
@@ -32,14 +35,16 @@ public class ChatController extends WholesaleServiceContainer {
 
 
     @PostMapping("/chats/all")
-    public ResponseEntity<List<Chat>> getALlUsers(@RequestBody Message message){
+    public ResponseEntity<List<Chat>> getALlUsers(@RequestBody MessageDto message , HttpServletRequest request){
+        User loggedUser = (User) request.getAttribute("user");
+        message.setSender(loggedUser.getSlug());
         List<Chat> allChats = chatService.getAllChatBySenderAndReceiverKey(message);
         return new ResponseEntity<>(allChats, HttpStatus.valueOf(200));
     }
 
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
-    public Message sendMessage(Message message, SimpMessageHeaderAccessor headerAccessor) {
+    public MessageDto sendMessage(MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
         // Get the sender's username
         String sender = (String) headerAccessor.getSessionAttributes().get("username");
         // Set the sender in the message
@@ -49,7 +54,7 @@ public class ChatController extends WholesaleServiceContainer {
 
 
     @MessageMapping("/chat/private/{recipient}")
-    public void sendPrivateMessage(@DestinationVariable String recipient, Message message, SimpMessageHeaderAccessor headerAccessor) {
+    public void sendPrivateMessage(@DestinationVariable String recipient, MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
         String sender = (String) headerAccessor.getSessionAttributes().get("username");
         System.err.println("Here : "+recipient);
         message.setSender(sender);
@@ -57,7 +62,7 @@ public class ChatController extends WholesaleServiceContainer {
         chatService.saveMessage(message);
         if (recipient == null) throw new MyException("Please provide a valid recipient");
         /* you need to subscribe like  /user/{userId}/queue/private */
-        messagingTemplate.convertAndSendToUser(recipient, "/queue/private", message);
+        messagingTemplate.convertAndSendToUser(recipient, "/queue/private",message);
     }
 
 
@@ -111,6 +116,24 @@ public class ChatController extends WholesaleServiceContainer {
     public ResponseEntity<User> getUserStatus(@PathVariable String slug){
         User user = GlobalConstant.onlineUsers.getOrDefault(slug, new User());
         return new ResponseEntity<>(user,HttpStatus.valueOf(200));
+    }
+
+
+
+    @PostMapping("/chat/seen")
+    public ResponseEntity<Map<String,Object>> getUserStatus(@RequestBody MessageDto message, HttpServletRequest request){
+        Map<String,Object> result = new HashMap<>();
+        User  loggedUser = (User) request.getAttribute("user");
+        message.setReceiver(loggedUser.getSlug());
+        boolean updated = wholesaleUserService.updateSeenMessages(message);
+        if(updated){
+            result.put("message","Message successfully updated.");
+            result.put("status", 201);
+        }else{
+            result.put("message","Something went wrong during updating all message seen.");
+            result.put("status",  400);
+        }
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
     }
 
 }

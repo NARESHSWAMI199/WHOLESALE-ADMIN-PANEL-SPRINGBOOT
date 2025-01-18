@@ -35,5 +35,8 @@ public class ServiceContainer {
     @Autowired
     protected ServicePlanService servicePlanService;
 
+    @Autowired
+    protected ContactsService contactService;
+
 
 }

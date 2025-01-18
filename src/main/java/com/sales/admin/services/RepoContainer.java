@@ -92,6 +92,10 @@ public class RepoContainer {
     @Autowired
     protected ChatRepository chatRepository;
 
+    @Autowired
+    protected ContactRepository contactRepository;
+
+
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?

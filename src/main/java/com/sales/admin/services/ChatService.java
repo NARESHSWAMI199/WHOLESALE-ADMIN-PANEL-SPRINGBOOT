@@ -1,6 +1,6 @@
 package com.sales.admin.services;
 
-import com.sales.dto.Message;
+import com.sales.dto.MessageDto;
 import com.sales.entities.Chat;
 import com.sales.utils.Utils;
 import org.springframework.stereotype.Service;
@@ -10,7 +10,7 @@ import java.util.List;
 @Service
 public class ChatService extends RepoContainer {
 
-    public Chat saveMessage(Message message) {
+    public Chat saveMessage(MessageDto message) {
         Chat chat = Chat.builder()
 //            .userId(loggedUser.getId())
             .sender(message.getSender())
@@ -24,7 +24,7 @@ public class ChatService extends RepoContainer {
     }
 
 
-    public List<Chat> getAllChatBySenderAndReceiverKey(Message message){
+    public List<Chat> getAllChatBySenderAndReceiverKey(MessageDto message){
         return chatRepository.getChatBySenderKeyOrReceiverKey(message.getSender(),message.getReceiver());
     }
 

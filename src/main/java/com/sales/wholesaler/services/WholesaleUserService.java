@@ -1,6 +1,7 @@
 package com.sales.wholesaler.services;
 
 
+import com.sales.dto.MessageDto;
 import com.sales.dto.PasswordDto;
 import com.sales.dto.StoreDto;
 import com.sales.dto.UserDto;
@@ -222,6 +223,10 @@ public class WholesaleUserService extends WholesaleRepoContainer {
 
     public int updateLastSeen(User loggedUser) {
        return wholesaleUserHbRepository.updatedUserLastSeen(loggedUser.getSlug());
+    }
+
+    public boolean updateSeenMessages(MessageDto message){
+        return wholesaleUserHbRepository.updateSeenMessage(message);
     }
 
 }

@@ -1,6 +1,6 @@
 package com.sales.wholesaler.repository;
 
-
+import com.sales.dto.MessageDto;
 import com.sales.dto.UserDto;
 import com.sales.entities.User;
 import com.sales.utils.Utils;
@@ -9,6 +9,8 @@ import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @Transactional
@@ -93,6 +95,14 @@ public class WholesaleUserHbRepository {
         query.setParameter("lastSeen",Utils.getCurrentMillis());
         query.setParameter("slug",slug);
         return query.executeUpdate();
+    }
+
+    public boolean updateSeenMessage(MessageDto message){
+        String hql = "update Chat set seen=true where sender =:sender and receiver = :receiver";
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("sender",message.getSender());
+        query.setParameter("receiver",message.getReceiver());
+        return query.executeUpdate() > 0;
     }
 
 
