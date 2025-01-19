@@ -38,5 +38,8 @@ public class ServiceContainer {
     @Autowired
     protected ContactsService contactService;
 
+    @Autowired
+    protected  ChatUserService chatUserService;
+
 
 }

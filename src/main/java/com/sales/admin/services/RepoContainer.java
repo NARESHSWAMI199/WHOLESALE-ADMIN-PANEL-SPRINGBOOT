@@ -95,6 +95,9 @@ public class RepoContainer {
     @Autowired
     protected ContactRepository contactRepository;
 
+    @Autowired
+    protected ChatUserRepository chatUserRepository;
+
 
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
