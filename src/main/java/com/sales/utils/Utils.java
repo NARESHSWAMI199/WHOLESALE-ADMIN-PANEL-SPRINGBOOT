@@ -38,6 +38,13 @@ public class Utils {
         return format.format(date);
     }
 
+    public static String getStringDateOnly(Long millis){
+        if(millis == null) return  "null";
+        DateFormat format = new SimpleDateFormat("dd MMM yyyy");
+        Date date = new Date(millis);
+        return format.format(date);
+    }
+
 
     public static boolean isEmpty(String string){
         return (string ==null || string.trim().equals(""));

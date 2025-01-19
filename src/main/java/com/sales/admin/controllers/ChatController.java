@@ -35,11 +35,11 @@ public class ChatController extends WholesaleServiceContainer {
 
 
     @PostMapping("/chats/all")
-    public ResponseEntity<List<Chat>> getALlUsers(@RequestBody MessageDto message , HttpServletRequest request){
+    public ResponseEntity<Map<String, List<Chat>>> getALlUsers(@RequestBody MessageDto message , HttpServletRequest request){
         User loggedUser = (User) request.getAttribute("user");
         message.setSender(loggedUser.getSlug());
-        List<Chat> allChats = chatService.getAllChatBySenderAndReceiverKey(message);
-        return new ResponseEntity<>(allChats, HttpStatus.valueOf(200));
+        Map<String, List<Chat>> formatedChatList = chatService.getAllChatBySenderAndReceiverKey(message);
+        return new ResponseEntity<>(formatedChatList, HttpStatus.valueOf(200));
     }
 
     @MessageMapping("/chat.sendMessage")

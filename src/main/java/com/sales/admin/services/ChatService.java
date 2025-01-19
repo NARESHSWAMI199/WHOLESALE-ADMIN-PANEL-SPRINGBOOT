@@ -5,7 +5,7 @@ import com.sales.entities.Chat;
 import com.sales.utils.Utils;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ChatService extends RepoContainer {
@@ -24,8 +24,25 @@ public class ChatService extends RepoContainer {
     }
 
 
-    public List<Chat> getAllChatBySenderAndReceiverKey(MessageDto message){
-        return chatRepository.getChatBySenderKeyOrReceiverKey(message.getSender(),message.getReceiver());
+    public Map<String,List<Chat>> getAllChatBySenderAndReceiverKey(MessageDto message){
+        List<Chat> chatList = chatRepository.getChatBySenderKeyOrReceiverKey(message.getSender(), message.getReceiver());
+        Map<String,List<Chat>> formatedData = new TreeMap<>();
+
+        for(Chat chat : chatList){
+            String createAtDate = Utils.getStringDateOnly(chat.getCreatedAt());
+            List<Chat> chats;
+            if(formatedData.containsKey(createAtDate)){
+                chats = formatedData.get(createAtDate);
+            }else{
+                chats = new ArrayList<>();
+            }
+            chats.add(chat);
+            formatedData.put(createAtDate,chats);
+        }
+
+        return formatedData;
+
+
     }
 
 }
