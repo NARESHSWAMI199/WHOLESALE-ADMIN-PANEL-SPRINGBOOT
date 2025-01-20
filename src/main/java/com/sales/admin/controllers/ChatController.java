@@ -17,6 +17,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,8 @@ public class ChatController extends WholesaleServiceContainer {
         this.messagingTemplate = messagingTemplate;
     }
 
+
+    /** @Note : Make sure all @MessageMappings 's prefix is /app/ */
 
 
     @PostMapping("/chats/all")
@@ -59,10 +62,11 @@ public class ChatController extends WholesaleServiceContainer {
         System.err.println("Here : "+recipient);
         message.setSender(sender);
         message.setReceiver(recipient);
+        message.setMessage(HtmlUtils.htmlEscape(message.getMessage()));
         chatService.saveMessage(message);
         if (recipient == null) throw new MyException("Please provide a valid recipient");
         /* you need to subscribe like  /user/{userId}/queue/private */
-        messagingTemplate.convertAndSendToUser(recipient, "/queue/private",message);
+        messagingTemplate.convertAndSendToUser(recipient, "/queue/private", message);
     }
 
 
@@ -99,8 +103,18 @@ public class ChatController extends WholesaleServiceContainer {
         }catch (Exception e){
             logger.info(e.getMessage());
         }
-
     }
+
+
+
+    @MessageMapping("/chats/was-seen/{recipient}")
+    public void isReceiverSeen(@DestinationVariable("recipient") String recipient){
+        if (recipient == null) throw new MyException("Please provide a valid recipient");
+        System.err.println("Seen Called.....");
+        /* you need to subscribe like  /user/{userId}/queue/private/chat/seen */
+        messagingTemplate.convertAndSendToUser(recipient, "/queue/private/chat/seen",true);
+    }
+
 
     @MessageMapping("/chat/{slug}/userStatus")
     public void getUserStatus(@DestinationVariable String slug, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
