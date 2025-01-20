@@ -56,6 +56,8 @@ public class ChatService extends RepoContainer {
     public boolean saveAllImages(MessageDto messageDto, User loggedUser){
         boolean result = false;
         String folderPath = chatAbsolutePath + loggedUser.getSlug() +"_"+ messageDto.getReceiver() + File.separator;
+        File directory = new File(folderPath);
+        if(!directory.exists()) directory.mkdirs();
         try {
             for(MultipartFile multipartFile : messageDto.getImages()){
                 String originalFilename = multipartFile.getOriginalFilename();
