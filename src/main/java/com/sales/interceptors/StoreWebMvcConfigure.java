@@ -67,7 +67,7 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                 "/admin/auth/profile/**",
                 "/index",
                 "/chat2",
-                "/admin/auth/contact/**"
+                "/chat/images/**"
         };
         /* Paths which need to be authenticated but don't need to check in Interceptor due to some different conditions */
         String [] authorizedPaths = {

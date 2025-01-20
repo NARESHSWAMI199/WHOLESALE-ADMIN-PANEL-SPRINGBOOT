@@ -9,7 +9,11 @@ import com.sales.wholesaler.controller.WholesaleServiceContainer;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -17,8 +21,13 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.HtmlUtils;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,6 +157,40 @@ public class ChatController extends WholesaleServiceContainer {
             result.put("status",  400);
         }
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+    }
+
+
+    /** Upload images and other files with chat */
+    @PostMapping("/chat/upload")
+    public ResponseEntity<Map<String,Object>> uploadImages(@ModelAttribute MessageDto message ,HttpServletRequest request){
+        Map<String,Object> result = new HashMap<>();
+        User loggedUser = (User) request.getAttribute("user");
+        String recipient = message.getReceiver();
+        if (recipient == null) throw new MyException("Please provide a valid recipient");
+        boolean saveAllImages = chatService.saveAllImages(message, loggedUser);
+        if(saveAllImages){
+            result.put("message","All images successfully sent.");
+            result.put("status" , 200);
+        }else{
+            result.put("message","Something went wrong during save images.");
+            result.put("status" , 400);
+        }
+        /* you need to subscribe like  /user/{userId}/queue/private */
+        // Send a private message to recipient
+        messagingTemplate.convertAndSendToUser(recipient, "/queue/private", message);
+        return new ResponseEntity<>(result,HttpStatus.valueOf(200));
+    }
+
+    @Value("${chat.get}")
+    String filePath;
+
+    @GetMapping("/chat/images/{sender}/{receiver}/{filename}")
+    public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename
+            , @PathVariable String sender,
+    @PathVariable String receiver) throws Exception {
+        Path path = Paths.get(filePath +sender+"_"+receiver+File.separator+ filename);
+        Resource resource = new UrlResource(path.toUri());
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
     }
 
 }
