@@ -22,7 +22,6 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.HtmlUtils;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -76,7 +75,7 @@ public class ChatController extends WholesaleServiceContainer {
         System.err.println("Here : "+recipient);
         message.setSender(sender);
         message.setReceiver(recipient);
-        message.setMessage(HtmlUtils.htmlEscape(message.getMessage()));
+        //message.setMessage(HtmlUtils.htmlEscape(message.getMessage()));
         chatService.saveMessage(message,null);
         if (recipient == null) throw new MyException("Please provide a valid recipient");
         /* you need to subscribe like  /user/{userId}/queue/private */
@@ -107,7 +106,7 @@ public class ChatController extends WholesaleServiceContainer {
         message.setImagesUrls(imageUrls);
         message.setSender(loggedUser.getSlug());
         message.setReceiver(recipient);
-        message.setMessage(HtmlUtils.htmlEscape(message.getMessage()));
+        //message.setMessage(HtmlUtils.htmlEscape(message.getMessage()));
         String imagesNamesString = "";
         for(int i =0; i < allImagesName.size(); i++){
             imagesNamesString += allImagesName.get(i);
