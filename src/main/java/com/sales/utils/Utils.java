@@ -179,4 +179,21 @@ public class Utils {
         }
     }
 
+
+    public static String getHostUrl(HttpServletRequest request) {
+        String scheme = request.getScheme(); // http or https
+        String serverName = request.getServerName();
+        int serverPort = request.getServerPort();
+
+        String hostUrl = scheme + "://" + serverName;
+
+        // Append port if it's not the default port for the scheme
+        if (("http".equals(scheme) && serverPort != 80)
+                || ("https".equals(scheme) && serverPort != 443)) {
+            hostUrl += ":" + serverPort;
+        }
+
+        return hostUrl;
+    }
+
 }

@@ -4,6 +4,8 @@ package com.sales.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 
 @Entity
 @Table(name = "chats")
@@ -32,4 +34,8 @@ public class Chat {
     String isDeleted;
     @Column(name = "seen")
     Boolean seen;
+    @Column(name = "images")
+    String images;
+    @Transient
+    List<String> imagesUrls;
 }

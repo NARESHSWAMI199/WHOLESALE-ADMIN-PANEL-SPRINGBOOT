@@ -5,12 +5,14 @@ import com.sales.entities.Chat;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ChatService extends RepoContainer {
@@ -18,13 +20,14 @@ public class ChatService extends RepoContainer {
     @Value("${chat.absolute}")
     String chatAbsolutePath;
 
-    public Chat saveMessage(MessageDto message) {
+    public Chat saveMessage(MessageDto message,String commaSeparatedImagesName) {
         Chat chat = Chat.builder()
 //            .userId(loggedUser.getId())
             .sender(message.getSender())
             .receiver(message.getReceiver())
             .createdAt(Utils.getCurrentMillis())
             .message(message.getMessage())
+            .images(commaSeparatedImagesName)
             .isDeleted("N")
             .seen(false)
             .build();
@@ -32,7 +35,7 @@ public class ChatService extends RepoContainer {
     }
 
 
-    public Map<String,List<Chat>> getAllChatBySenderAndReceiverKey(MessageDto message){
+    public Map<String,List<Chat>> getAllChatBySenderAndReceiverKey(MessageDto message, HttpServletRequest request){
         List<Chat> chatList = chatRepository.getChatBySenderKeyOrReceiverKey(message.getSender(), message.getReceiver());
         Map<String,List<Chat>> formatedData = new TreeMap<>();
 
@@ -44,6 +47,12 @@ public class ChatService extends RepoContainer {
             }else{
                 chats = new ArrayList<>();
             }
+            String images = chat.getImages();
+            if(images != null) {
+                String[] imagesList = images.split(",", -1);
+                List<String> list = Arrays.stream(imagesList).map(name -> Utils.getHostUrl(request) + "/chat/images/" + chat.getSender() + "/" + chat.getReceiver() + "/" + name).collect(Collectors.toList());
+                chat.setImagesUrls(list);
+            }
             chats.add(chat);
             formatedData.put(createAtDate,chats);
         }
@@ -53,24 +62,24 @@ public class ChatService extends RepoContainer {
     }
 
 
-    public boolean saveAllImages(MessageDto messageDto, User loggedUser){
-        boolean result = false;
+    public List<String> saveAllImages(MessageDto messageDto, User loggedUser){
+        List<String> imagesNames = new ArrayList<>();
         String folderPath = chatAbsolutePath + loggedUser.getSlug() +"_"+ messageDto.getReceiver() + File.separator;
         File directory = new File(folderPath);
         if(!directory.exists()) directory.mkdirs();
         try {
             for(MultipartFile multipartFile : messageDto.getImages()){
-                String originalFilename = multipartFile.getOriginalFilename();
+                String originalFilename = multipartFile.getOriginalFilename().replaceAll(" ","_");
                 boolean validImage = Utils.isValidImage(originalFilename);
                 if(!validImage) throw new MyException("Not valid images.");
                 multipartFile.transferTo(new File( folderPath+ originalFilename));
-                result = true;
+                imagesNames.add(originalFilename);
             }
         }catch (Exception e){
             new File(folderPath).delete();
             throw new MyException(e.getMessage());
         }
-        return result;
+        return imagesNames;
     }
 
 }

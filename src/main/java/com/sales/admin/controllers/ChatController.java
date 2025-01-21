@@ -5,6 +5,7 @@ import com.sales.entities.Chat;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
+import com.sales.utils.Utils;
 import com.sales.wholesaler.controller.WholesaleServiceContainer;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -21,16 +22,15 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.HtmlUtils;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 public class ChatController extends WholesaleServiceContainer {
@@ -50,7 +50,7 @@ public class ChatController extends WholesaleServiceContainer {
     public ResponseEntity<Map<String, List<Chat>>> getALlUsers(@RequestBody MessageDto message , HttpServletRequest request){
         User loggedUser = (User) request.getAttribute("user");
         message.setSender(loggedUser.getSlug());
-        Map<String, List<Chat>> formatedChatList = chatService.getAllChatBySenderAndReceiverKey(message);
+        Map<String, List<Chat>> formatedChatList = chatService.getAllChatBySenderAndReceiverKey(message,request);
         return new ResponseEntity<>(formatedChatList, HttpStatus.valueOf(200));
     }
 
@@ -65,6 +65,11 @@ public class ChatController extends WholesaleServiceContainer {
     }
 
 
+    /** Here we are using two for receiving and sending chats
+     * @sendPrivateMessage : Using for just only text because websocket are faster compare to api
+     * @uploadImages : Using api for upload images because we are facing some issue share files or images with websocket
+     * */
+
     @MessageMapping("/chat/private/{recipient}")
     public void sendPrivateMessage(@DestinationVariable String recipient, MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
         String sender = (String) headerAccessor.getSessionAttributes().get("username");
@@ -72,10 +77,51 @@ public class ChatController extends WholesaleServiceContainer {
         message.setSender(sender);
         message.setReceiver(recipient);
         message.setMessage(HtmlUtils.htmlEscape(message.getMessage()));
-        chatService.saveMessage(message);
+        chatService.saveMessage(message,null);
         if (recipient == null) throw new MyException("Please provide a valid recipient");
         /* you need to subscribe like  /user/{userId}/queue/private */
         messagingTemplate.convertAndSendToUser(recipient, "/queue/private", message);
+    }
+
+
+
+    /** Upload images and other files with chat */
+    @PostMapping("/chat/upload")
+    public ResponseEntity<Map<String,Object>> uploadImages(@ModelAttribute MessageDto message ,HttpServletRequest request){
+        Map<String,Object> result = new HashMap<>();
+        User loggedUser = (User) request.getAttribute("user");
+        String recipient = message.getReceiver();
+        if (recipient == null) throw new MyException("Please provide a valid recipient");
+        List<String> allImagesName = chatService.saveAllImages(message, loggedUser);
+        if(allImagesName.size() == message.getImages().size()){
+            result.put("message","All images successfully sent.");
+            result.put("status" , 200);
+        }else{
+            result.put("message","Something went wrong during save images.");
+            result.put("status" , 400);
+        }
+
+        /** ------------------------------- sending message and saving message ------------------------------- */
+        message.setImages(null);
+        List<String> imageUrls = allImagesName.stream().map(name -> Utils.getHostUrl(request)+"/chat/images/" + loggedUser.getSlug() + "/" + message.getReceiver() + "/" + name).collect(Collectors.toList());
+        message.setImagesUrls(imageUrls);
+        message.setSender(loggedUser.getSlug());
+        message.setReceiver(recipient);
+        message.setMessage(HtmlUtils.htmlEscape(message.getMessage()));
+        String imagesNamesString = "";
+        for(int i =0; i < allImagesName.size(); i++){
+            imagesNamesString += allImagesName.get(i);
+            if(i < (allImagesName.size()-1)){
+                imagesNamesString +=',';
+            }
+        }
+        chatService.saveMessage(message,imagesNamesString);
+        /* you need to subscribe like  /user/{userId}/queue/private */
+        // Send a private message to recipient
+        messagingTemplate.convertAndSendToUser(recipient, "/queue/private", message);
+
+        /**!------------------ message block end ---------------------- */
+        return new ResponseEntity<>(result,HttpStatus.valueOf(200));
     }
 
 
@@ -160,26 +206,6 @@ public class ChatController extends WholesaleServiceContainer {
     }
 
 
-    /** Upload images and other files with chat */
-    @PostMapping("/chat/upload")
-    public ResponseEntity<Map<String,Object>> uploadImages(@ModelAttribute MessageDto message ,HttpServletRequest request){
-        Map<String,Object> result = new HashMap<>();
-        User loggedUser = (User) request.getAttribute("user");
-        String recipient = message.getReceiver();
-        if (recipient == null) throw new MyException("Please provide a valid recipient");
-        boolean saveAllImages = chatService.saveAllImages(message, loggedUser);
-        if(saveAllImages){
-            result.put("message","All images successfully sent.");
-            result.put("status" , 200);
-        }else{
-            result.put("message","Something went wrong during save images.");
-            result.put("status" , 400);
-        }
-        /* you need to subscribe like  /user/{userId}/queue/private */
-        // Send a private message to recipient
-        messagingTemplate.convertAndSendToUser(recipient, "/queue/private", message);
-        return new ResponseEntity<>(result,HttpStatus.valueOf(200));
-    }
 
     @Value("${chat.get}")
     String filePath;
