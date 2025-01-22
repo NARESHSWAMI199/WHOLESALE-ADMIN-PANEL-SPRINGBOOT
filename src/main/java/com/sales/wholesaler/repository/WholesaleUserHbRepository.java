@@ -10,8 +10,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 @Transactional
 public class WholesaleUserHbRepository {
@@ -105,6 +103,23 @@ public class WholesaleUserHbRepository {
         return query.executeUpdate() > 0;
     }
 
+
+    public int deleteChat(MessageDto messageDto){
+        String hql = "update Chat set isDeleted=:isDeleted where id=:id and receiver=:receiver and sender=:sender";
+        if(messageDto.getId()== null){
+            hql = "update Chat set isDeleted=:isDeleted where createdAt=:createdAt and receiver=:receiver and sender=:sender";
+        }
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("isDeleted",messageDto.getIsDeleted());
+        query.setParameter("sender",messageDto.getSender());
+        query.setParameter("receiver",messageDto.getReceiver());
+        if(messageDto.getId() == null){
+            query.setParameter("createdAt",messageDto.getCreatedAt());
+        }else{
+            query.setParameter("id",messageDto.getId());
+        }
+        return query.executeUpdate();
+    }
 
 
 }

@@ -76,10 +76,10 @@ public class ChatController extends WholesaleServiceContainer {
         message.setSender(sender);
         message.setReceiver(recipient);
         //message.setMessage(HtmlUtils.htmlEscape(message.getMessage()));
-        chatService.saveMessage(message,null);
+        Chat savedMessage = chatService.saveMessage(message, null);
         if (recipient == null) throw new MyException("Please provide a valid recipient");
         /* you need to subscribe like  /user/{userId}/queue/private */
-        messagingTemplate.convertAndSendToUser(recipient, "/queue/private", message);
+        messagingTemplate.convertAndSendToUser(recipient, "/queue/private", savedMessage != null ? savedMessage : message);
     }
 
 
@@ -114,10 +114,10 @@ public class ChatController extends WholesaleServiceContainer {
                 imagesNamesString +=',';
             }
         }
-        chatService.saveMessage(message,imagesNamesString);
+        Chat savedMessage = chatService.saveMessage(message, imagesNamesString);
         /* you need to subscribe like  /user/{userId}/queue/private */
         // Send a private message to recipient
-        messagingTemplate.convertAndSendToUser(recipient, "/queue/private", message);
+        messagingTemplate.convertAndSendToUser(recipient, "/queue/private", savedMessage != null ? savedMessage : message);
 
         /**!------------------ message block end ---------------------- */
         return new ResponseEntity<>(result,HttpStatus.valueOf(200));
@@ -216,6 +216,27 @@ public class ChatController extends WholesaleServiceContainer {
         Path path = Paths.get(filePath +sender+"_"+receiver+File.separator+ filename);
         Resource resource = new UrlResource(path.toUri());
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
+    }
+
+
+    @PostMapping("/chat/delete")
+    public ResponseEntity<Map<String,Object>> deleteBySlug(@RequestBody MessageDto messageDto,HttpServletRequest request){
+        Map<String,Object> result = new HashMap<>();
+        User loggedUser = (User) request.getAttribute("user");
+        int isDeleted = wholesaleUserService.deleteMessage(loggedUser, messageDto);
+        if(isDeleted > 0){
+            result.put("message","deleted successfully");
+            result.put("status", 200);
+        }else{
+            result.put("message","Something went wrong due to message deleted");
+            result.put("status", 400);
+        }
+        if(messageDto.getIsDeleted().equals("Y")){
+            /* you need to subscribe like  /user/{userId}/queue/private/deleted */
+            messagingTemplate.convertAndSendToUser(messageDto.getReceiver(), "/queue/private/deleted",messageDto);
+        }
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+
     }
 
 }

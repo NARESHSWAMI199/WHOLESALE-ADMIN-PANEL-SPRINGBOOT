@@ -25,10 +25,10 @@ public class ChatService extends RepoContainer {
 //            .userId(loggedUser.getId())
             .sender(message.getSender())
             .receiver(message.getReceiver())
-            .createdAt(Utils.getCurrentMillis())
             .message(message.getMessage())
             .images(commaSeparatedImagesName)
             .isDeleted("N")
+            .createdAt(message.getCreatedAt())
             .seen(false)
             .build();
         return chatRepository.save(chat);

@@ -229,4 +229,27 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         return wholesaleUserHbRepository.updateSeenMessage(message);
     }
 
+    public int deleteMessage(User loggedUser,MessageDto messageDto){
+        switch (messageDto.getIsDeleted()){
+            case "S":
+                if(!messageDto.getSender().equals(loggedUser.getSlug())){
+                    return  0;
+                }
+                break;
+            case "R":
+                if(!messageDto.getReceiver().equals(loggedUser.getSlug())) {
+                    return 0;
+                }
+                break;
+            case "Y", "B":
+                if(!messageDto.getReceiver().equals(loggedUser.getSlug()) && !messageDto.getSender().equals(loggedUser.getSlug())) {
+                    return 0;
+                }
+                break;
+            default:
+                return 0;
+        }
+      return wholesaleUserHbRepository.deleteChat(messageDto);
+    }
+
 }

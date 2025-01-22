@@ -13,14 +13,16 @@ import java.util.List;
 @Data
 public class MessageDto {
 
+    private Integer id;
     private String message;
     private String sender;
     private String receiver;
     private String type;
     private String sessionId;
-    private Long time;
+    private Long createdAt;
     private Long lastSeen;
     private Boolean seen=false;
     private List<MultipartFile> images;
     private List<String> imagesUrls;
+    private String isDeleted;
 }
