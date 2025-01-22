@@ -231,7 +231,7 @@ public class ChatController extends WholesaleServiceContainer {
             result.put("message","Something went wrong due to message deleted");
             result.put("status", 400);
         }
-        if(messageDto.getIsDeleted().equals("Y")){
+        if(messageDto.getIsDeleted().equals("B")){
             /* you need to subscribe like  /user/{userId}/queue/private/deleted */
             messagingTemplate.convertAndSendToUser(messageDto.getReceiver(), "/queue/private/deleted",messageDto);
         }
