@@ -1,4 +1,4 @@
-package com.sales.admin.controllers;
+package com.sales.wholesaler.controller;
 
 import com.sales.dto.MessageDto;
 import com.sales.entities.Chat;
@@ -6,7 +6,6 @@ import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
-import com.sales.wholesaler.controller.WholesaleServiceContainer;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,10 +113,10 @@ public class ChatController extends WholesaleServiceContainer {
                 imagesNamesString +=',';
             }
         }
-        Chat savedMessage = chatService.saveMessage(message, imagesNamesString);
+        chatService.saveMessage(message, imagesNamesString);
         /* you need to subscribe like  /user/{userId}/queue/private */
         // Send a private message to recipient
-        messagingTemplate.convertAndSendToUser(recipient, "/queue/private", savedMessage != null ? savedMessage : message);
+        messagingTemplate.convertAndSendToUser(recipient, "/queue/private",message);
 
         /**!------------------ message block end ---------------------- */
         return new ResponseEntity<>(result,HttpStatus.valueOf(200));

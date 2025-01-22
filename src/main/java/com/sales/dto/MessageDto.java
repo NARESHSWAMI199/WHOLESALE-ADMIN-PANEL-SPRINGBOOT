@@ -24,5 +24,7 @@ public class MessageDto {
     private Boolean seen=false;
     private List<MultipartFile> images;
     private List<String> imagesUrls;
+    private String isSenderDeleted;
+    private String isReceiverDeleted;
     private String isDeleted;
 }

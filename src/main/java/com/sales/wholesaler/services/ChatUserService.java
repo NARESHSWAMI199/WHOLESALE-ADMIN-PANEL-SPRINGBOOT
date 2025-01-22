@@ -1,8 +1,7 @@
-package com.sales.admin.services;
+package com.sales.wholesaler.services;
 
-
-
-import com.sales.entities.Contact;
+import com.sales.admin.services.RepoContainer;
+import com.sales.entities.ChatUser;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import org.springframework.stereotype.Service;
@@ -10,10 +9,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ContactsService  extends  RepoContainer{
+public class ChatUserService  extends RepoContainer {
 
-    public List<User> getAllContactsByUserId(User loggedUser){
-        List<User> userList = contactRepository.getContactByUserId(loggedUser.getId());
+    public List<User> getAllChatUsers(User loggedUser){
+        List<User> userList = chatUserRepository.getChatUserByUserId(loggedUser.getId());
         for (User user : userList) {
             Integer unSeenChatsCount = chatRepository.getUnSeenChatsCount(user.getSlug(), loggedUser.getSlug());
             user.setChatNotification(unSeenChatsCount);
@@ -22,15 +21,15 @@ public class ContactsService  extends  RepoContainer{
     }
 
 
-    public Contact addNewContact(User loggedUser ,String contactSlug){
-        /* check contact user exists or not */
+    public ChatUser addNewChatUser(User loggedUser ,String contactSlug){
+        /* check chatUser exists or not */
         User contactUser = userRepository.findUserBySlug(contactSlug);
         if(contactUser == null) throw new MyException("Not a valid contact");
-        Contact contacts = Contact.builder()
+        ChatUser chatUser = ChatUser.builder()
                 .userId(loggedUser.getId())
-                .contact(contactUser)
+                .chatUser(contactUser)
                 .build();
-        return contactRepository.save(contacts);
+        return chatUserRepository.save(chatUser);
     }
 
 }

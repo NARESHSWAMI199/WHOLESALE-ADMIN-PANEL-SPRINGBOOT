@@ -2,6 +2,8 @@ package com.sales.admin.controllers;
 
 import com.sales.admin.services.*;
 import com.sales.utils.ReadExcel;
+import com.sales.wholesaler.services.ChatUserService;
+import com.sales.wholesaler.services.ContactsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,12 +36,5 @@ public class ServiceContainer {
 
     @Autowired
     protected ServicePlanService servicePlanService;
-
-    @Autowired
-    protected ContactsService contactService;
-
-    @Autowired
-    protected  ChatUserService chatUserService;
-
 
 }

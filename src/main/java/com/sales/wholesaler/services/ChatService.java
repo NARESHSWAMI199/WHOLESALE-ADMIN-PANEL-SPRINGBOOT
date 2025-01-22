@@ -1,5 +1,6 @@
-package com.sales.admin.services;
+package com.sales.wholesaler.services;
 
+import com.sales.admin.services.RepoContainer;
 import com.sales.dto.MessageDto;
 import com.sales.entities.Chat;
 import com.sales.entities.User;
@@ -27,7 +28,8 @@ public class ChatService extends RepoContainer {
             .receiver(message.getReceiver())
             .message(message.getMessage())
             .images(commaSeparatedImagesName)
-            .isDeleted("N")
+            .isSenderDeleted("N")
+            .isReceiverDeleted("N")
             .createdAt(message.getCreatedAt())
             .seen(false)
             .build();

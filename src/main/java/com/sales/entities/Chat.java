@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLRestriction("is_deleted !='Y'")
+@SQLRestriction("is_sender_deleted !='Y' and  is_receiver_deleted !='Y' ")
 public class Chat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +32,10 @@ public class Chat {
     Long createdAt;
     @Column(name = "updated_at")
     Long updatedAt;
-    @Column(name = "is_deleted")
-    String isDeleted;
+    @Column(name = "is_sender_deleted")
+    String isSenderDeleted;
+    @Column(name = "is_receiver_deleted")
+    String isReceiverDeleted;
     @Column(name = "seen")
     Boolean seen;
     @Column(name = "images")

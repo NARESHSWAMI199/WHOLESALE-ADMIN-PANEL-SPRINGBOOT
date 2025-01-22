@@ -7,6 +7,7 @@ import com.sales.utils.Utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -105,20 +106,38 @@ public class WholesaleUserHbRepository {
 
 
     public int deleteChat(MessageDto messageDto){
-        String hql = "update Chat set isDeleted=:isDeleted where id=:id and receiver=:receiver and sender=:sender";
-        if(messageDto.getId()== null){
-            hql = "update Chat set isDeleted=:isDeleted where createdAt=:createdAt and receiver=:receiver and sender=:sender";
-        }
+        String isSenderDeleted = messageDto.getIsSenderDeleted();
+        String hql = getString(messageDto, isSenderDeleted);
+
         Query query = entityManager.createQuery(hql);
-        query.setParameter("isDeleted",messageDto.getIsDeleted());
         query.setParameter("sender",messageDto.getSender());
         query.setParameter("receiver",messageDto.getReceiver());
-        if(messageDto.getId() == null){
-            query.setParameter("createdAt",messageDto.getCreatedAt());
-        }else{
+        if(messageDto.getId() != null){
             query.setParameter("id",messageDto.getId());
+        }else{
+            query.setParameter("createdAt",messageDto.getCreatedAt());
         }
         return query.executeUpdate();
+    }
+
+    private static @NotNull String getString(MessageDto messageDto, String isSenderDeleted) {
+        String isReceiverDeleted = messageDto.getIsReceiverDeleted();
+        String hql = "update Chat set ";
+        if(isSenderDeleted !=null && isReceiverDeleted != null){
+            hql += " isSenderDeleted='H' , isReceiverDeleted='H' ";
+        } else if (isSenderDeleted != null) {
+            hql += " isSenderDeleted='"+ isSenderDeleted+"'";
+        }else if (isReceiverDeleted != null) {
+            hql += " isReceiverDeleted='"+isReceiverDeleted+"'";;
+        }
+
+        hql += " where receiver=:receiver and sender=:sender ";
+        if(messageDto.getId() !=null){
+           hql+= " and id=:id";
+        }else {
+            hql+= " and createdAt=:createdAt";
+        }
+        return hql;
     }
 
 

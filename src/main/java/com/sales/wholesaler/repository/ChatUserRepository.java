@@ -1,4 +1,4 @@
-package com.sales.admin.repositories;
+package com.sales.wholesaler.repository;
 
 
 import com.sales.entities.ChatUser;
