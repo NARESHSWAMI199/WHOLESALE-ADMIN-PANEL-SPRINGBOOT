@@ -3,7 +3,6 @@ package com.sales.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
 
@@ -15,7 +14,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLRestriction("is_sender_deleted !='Y' and  is_receiver_deleted !='Y' ")
+//@SQLRestriction("is_sender_deleted !='Y' or is_receiver_deleted !='Y' ")
 public class Chat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

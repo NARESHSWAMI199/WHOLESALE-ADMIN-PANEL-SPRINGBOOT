@@ -120,11 +120,18 @@ public class WholesaleUserHbRepository {
         return query.executeUpdate();
     }
 
+
+
+
     private static @NotNull String getString(MessageDto messageDto, String isSenderDeleted) {
         String isReceiverDeleted = messageDto.getIsReceiverDeleted();
         String hql = "update Chat set ";
         if(isSenderDeleted !=null && isReceiverDeleted != null){
-            hql += " isSenderDeleted='H' , isReceiverDeleted='H' ";
+            hql += " isSenderDeleted='H' , " +
+                    "isReceiverDeleted= CASE " +
+                    " WHEN isReceiverDeleted !='Y' THEN  'H'" +
+                    " ELSE isReceiverDeleted " +
+                    " END ";
         } else if (isSenderDeleted != null) {
             hql += " isSenderDeleted='"+ isSenderDeleted+"'";
         }else if (isReceiverDeleted != null) {
@@ -139,6 +146,8 @@ public class WholesaleUserHbRepository {
         }
         return hql;
     }
+
+
 
 
 }
