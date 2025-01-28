@@ -71,11 +71,16 @@ public class ChatController extends WholesaleServiceContainer {
     @MessageMapping("/chat/private/{recipient}")
     public void sendPrivateMessage(@DestinationVariable String recipient, MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
         String sender = (String) headerAccessor.getSessionAttributes().get("username");
-        System.err.println("Here : "+recipient);
         message.setSender(sender);
         message.setReceiver(recipient);
         //message.setMessage(HtmlUtils.htmlEscape(message.getMessage()));
         Chat savedMessage = chatService.saveMessage(message, null);
+        User loggedUser = wholesaleUserService.findUserBySlug(sender);
+        /* Added new user in to sender's chat list*/
+        chatUserService.addNewChatUser(loggedUser, recipient);
+        /* Added sender in to the recipients chat list*/
+        chatUserService.addNewChatUser(loggedUser, recipient);
+
         if (recipient == null) throw new MyException("Please provide a valid recipient");
         /* you need to subscribe like  /user/{userId}/queue/private */
         messagingTemplate.convertAndSendToUser(recipient, "/queue/private", savedMessage != null ? savedMessage : message);
@@ -91,6 +96,10 @@ public class ChatController extends WholesaleServiceContainer {
         String recipient = message.getReceiver();
         if (recipient == null) throw new MyException("Please provide a valid recipient");
         List<String> allImagesName = chatService.saveAllImages(message, loggedUser);
+        /* Added new user in to sender's chat list*/
+        chatUserService.addNewChatUser(loggedUser, recipient);
+        /* Added sender in to the recipients chat list*/
+        chatUserService.addNewChatUser(loggedUser, recipient);
         if(allImagesName.size() == message.getImages().size()){
             result.put("message","All images successfully sent.");
             result.put("status" , 200);

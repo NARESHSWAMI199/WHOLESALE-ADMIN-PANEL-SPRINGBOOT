@@ -24,6 +24,8 @@ public class ContactsService  extends RepoContainer {
 
 
     public Contact addNewContact(User loggedUser ,String contactSlug){
+        Integer userFound = chatRepository.isUserExistsInChatList(loggedUser.getSlug(),contactSlug);
+        if(userFound > 0) return null;
         /* check contact user exists or not */
         User contactUser = userRepository.findUserBySlug(contactSlug);
         if(contactUser == null) throw new MyException("Not a valid contact");
