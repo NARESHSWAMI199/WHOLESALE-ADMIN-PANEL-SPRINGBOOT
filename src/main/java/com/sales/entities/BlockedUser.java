@@ -11,17 +11,17 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Blocklist {
+public class BlockedUser {
 
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
-
     @Column(name = "user_id")
     Integer userId;
-    @Column(name = "chat_user_id")
-    Integer chatUserId;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "chat_user_id")
+    User blockedUser;
 
 
 }

@@ -3,7 +3,6 @@ package com.sales.wholesaler.services;
 
 import com.sales.admin.repositories.AddressHbRepository;
 import com.sales.admin.repositories.AddressRepository;
-import com.sales.admin.repositories.ServicePlanRepository;
 import com.sales.dto.SearchFilters;
 import com.sales.wholesaler.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +78,10 @@ public class WholesaleRepoContainer {
 
     @Autowired
     protected WholesaleUserPlansRepository wholesaleUserPlansRepository;
+
+
+    @Autowired
+    protected BlockListRepository blockListRepository;
 
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());

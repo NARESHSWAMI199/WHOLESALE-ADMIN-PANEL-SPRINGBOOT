@@ -1,10 +1,7 @@
 package com.sales.wholesaler.services;
 
 
-import com.sales.dto.MessageDto;
-import com.sales.dto.PasswordDto;
-import com.sales.dto.StoreDto;
-import com.sales.dto.UserDto;
+import com.sales.dto.*;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.SupportEmail;
 import com.sales.entities.User;
@@ -13,6 +10,9 @@ import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +22,8 @@ import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+
+import static com.sales.specifications.UserSpecifications.*;
 
 
 @Service
@@ -261,5 +263,23 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         }
       return wholesaleUserHbRepository.deleteChat(messageDto);
     }
+
+
+    /** Getting all retailers and wholesalers for chat purpose */
+
+    public Page<User> getAllUsers(UserSearchFilters filters, User loggedUser) {
+        Specification<User> specification = Specification.where(
+                (containsName(filters.getSearchKey()).or(containsEmail(filters.getSearchKey())))
+                    .and(isStatus("A"))
+                    .and(hasNotUserType("W"))
+                    .and(hasNotUserType("R"))
+                    .and(notHasSlug(loggedUser.getSlug()))
+        );
+
+        Pageable pageable = getPageable(filters);
+        return wholesaleUserRepository.findAll(specification,pageable);
+    }
+
+
 
 }

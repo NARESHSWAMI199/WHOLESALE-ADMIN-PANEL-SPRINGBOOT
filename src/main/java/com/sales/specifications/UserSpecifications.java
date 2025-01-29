@@ -77,6 +77,13 @@ public class UserSpecifications {
         };
     }
 
+    public static Specification<User> notHasSlug(String slug) {
+        return (root, query, criteriaBuilder) -> {
+            if (slug == null || slug.isEmpty()) return null;
+            return criteriaBuilder.notEqual(root.get(User_.SLUG), slug.trim());
+        };
+    }
+
     public static Specification<User> notSuperAdmin() {
         return (root, query, criteriaBuilder) -> {
             return criteriaBuilder.notEqual(root.get(User_.id), GlobalConstant.suId);

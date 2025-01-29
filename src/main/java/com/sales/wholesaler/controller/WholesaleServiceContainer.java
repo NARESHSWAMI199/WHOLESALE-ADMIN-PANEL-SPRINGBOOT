@@ -1,7 +1,6 @@
 package com.sales.wholesaler.controller;
 
 import com.sales.admin.services.AddressService;
-import com.sales.wholesaler.services.ChatService;
 import com.sales.admin.services.ServicePlanService;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.wholesaler.services.*;
@@ -55,6 +54,9 @@ public class WholesaleServiceContainer {
 
     @Autowired
     protected ContactsService contactService;
+
+    @Autowired
+    protected BlockListService blockListService;
 
 
 }

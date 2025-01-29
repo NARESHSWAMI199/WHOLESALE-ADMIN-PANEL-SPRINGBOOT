@@ -3,6 +3,7 @@ package com.sales.wholesaler.controller;
 
 import com.sales.dto.PasswordDto;
 import com.sales.dto.UserDto;
+import com.sales.dto.UserSearchFilters;
 import com.sales.entities.Store;
 import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -247,6 +249,16 @@ public class WholesaleUserController extends WholesaleServiceContainer {
 
     }
 
+
+
+    /** Returning a list of users where users are retailer and wholesaler only for chat purpose.*/
+
+    @PostMapping("chat/users")
+    public ResponseEntity<Page<User>> getAllChatUser(HttpServletRequest request, @RequestBody UserSearchFilters userSearchFilters){
+        User loggedUser = (User) request.getAttribute("user");
+        Page<User> allUsers = wholesaleUserService.getAllUsers(userSearchFilters, loggedUser);
+        return new ResponseEntity<>(allUsers,HttpStatus.OK);
+    }
 
 
 
