@@ -1,7 +1,10 @@
 package com.sales.admin.controllers;
 
 
-import com.sales.dto.*;
+import com.sales.dto.PasswordDto;
+import com.sales.dto.StatusDto;
+import com.sales.dto.UserDto;
+import com.sales.dto.UserSearchFilters;
 import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
@@ -24,7 +27,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 @RequestMapping("admin/auth")
@@ -47,7 +49,7 @@ public class UserController extends ServiceContainer {
         Map<String, Object> responseObj = new HashMap<>();
         User user = userService.findByEmailAndPassword(userDetails);
         if (user == null) {
-            responseObj.put("message", "invalid credentials.");
+            responseObj.put("message", "Invalid credentials.");
             responseObj.put("status", 401);
             return new ResponseEntity<>(responseObj, HttpStatus.UNAUTHORIZED);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
