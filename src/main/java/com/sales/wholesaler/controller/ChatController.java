@@ -76,6 +76,11 @@ public class ChatController extends WholesaleServiceContainer {
         //message.setMessage(HtmlUtils.htmlEscape(message.getMessage()));
         Chat savedMessage = chatService.saveMessage(message, null);
         User loggedUser = wholesaleUserService.findUserBySlug(sender);
+
+        /* Check you are blocked by receiver or not */
+         Boolean isBlocked = blockListService.isUserExistInBlockList(loggedUser,recipient);
+        if (isBlocked != null) return; //  If blockedUser != null that's mean. receiver already blocked you
+
         /* Added new user in to sender's chat list*/
         chatUserService.addNewChatUser(loggedUser, recipient);
         /* Added sender in to the recipients chat list*/
