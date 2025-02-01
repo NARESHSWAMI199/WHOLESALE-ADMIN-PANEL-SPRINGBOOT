@@ -9,7 +9,8 @@ public class GlobalConstant {
     public static String secretKey = "asdfghj123456789";
     public static int suId =0;
     public  static  int groupId = 0;
-
+    public static String wholesalerImagePath = "/wholesale/auth/profile/";
+    public static String staffImagePath = "/admin/auth/profile/";
 
     public static int minWidth = 500;
     public static int minHeight = 500;

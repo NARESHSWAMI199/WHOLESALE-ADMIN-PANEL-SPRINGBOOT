@@ -22,7 +22,7 @@ public class ContactController extends WholesaleServiceContainer {
     @GetMapping("all")
     public ResponseEntity<List<User>> getAllContactsByUserId(HttpServletRequest request){
         User loggedUser = (User) request.getAttribute("user");
-        List<User> allContactsByUserId = contactService.getAllContactsByUserId(loggedUser);
+        List<User> allContactsByUserId = contactService.getAllContactsByUserId(loggedUser,request);
         return new ResponseEntity<>(allContactsByUserId, HttpStatus.valueOf(200));
     }
 

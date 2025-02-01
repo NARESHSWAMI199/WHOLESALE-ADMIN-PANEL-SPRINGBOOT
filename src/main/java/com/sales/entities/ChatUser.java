@@ -2,10 +2,7 @@ package com.sales.entities;
 
 
 import jakarta.persistence.*;
-        import lombok.*;
-
-        import java.util.List;
-import java.util.Set;
+import lombok.*;
 
 @Entity
 @Table(name = "chat_users_list")
@@ -27,6 +24,9 @@ public class ChatUser {
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "chat_user_id")
     User chatUser;
+
+    @Column(name = "status")
+    String status;
 
 
 }

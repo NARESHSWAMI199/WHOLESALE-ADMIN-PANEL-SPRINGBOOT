@@ -89,6 +89,9 @@ public class WholesaleRepoContainer {
     @Autowired
     protected ChatUserRepository chatUserRepository;
 
+    @Autowired
+    protected ChatUserHbRepository chatUserHbRepository;
+
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?
@@ -96,7 +99,6 @@ public class WholesaleRepoContainer {
         Pageable pageable = PageRequest.of(filters.getPageNumber(), filters.getSize(),sort);
         return pageable;
     }
-
 
 
 }

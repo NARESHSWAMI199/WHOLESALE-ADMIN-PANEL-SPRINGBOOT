@@ -28,6 +28,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -70,21 +71,24 @@ public class ChatController extends WholesaleServiceContainer {
 
     @MessageMapping("/chat/private/{recipient}")
     public void sendPrivateMessage(@DestinationVariable String recipient, MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
-        String sender = (String) headerAccessor.getSessionAttributes().get("username");
-        message.setSender(sender);
+        User sender = (User) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("user");
+        message.setSender(sender.getSlug());
         message.setReceiver(recipient);
         //message.setMessage(HtmlUtils.htmlEscape(message.getMessage()));
         Chat savedMessage = chatService.saveMessage(message, null);
-        User loggedUser = wholesaleUserService.findUserBySlug(sender);
 
-        /* Check you are blocked by receiver or not */
-         Boolean isBlocked = blockListService.isUserExistInBlockList(loggedUser,recipient);
-        if (isBlocked != null) return; //  If blockedUser != null that's mean. receiver already blocked you
+        User receiver = wholesaleUserService.findUserBySlug(recipient);
+        if (receiver == null) throw new MyException("Please provide a valid recipient");
 
         /* Added new user in to sender's chat list*/
-        chatUserService.addNewChatUser(loggedUser, recipient);
+        chatUserService.addNewChatUser(sender, receiver,"S");
+
+        /* Check you are blocked by receiver or not */
+        boolean isBlocked = blockListService.isUserExistsInBlockList(sender,receiver);
+        if (isBlocked) return; //  If isBlocked == true that's mean. receiver already blocked you
+
         /* Added sender in to the recipients chat list*/
-        chatUserService.addNewChatUser(loggedUser, recipient);
+        chatUserService.addNewChatUser(receiver, sender,"A");
 
         if (recipient == null) throw new MyException("Please provide a valid recipient");
         /* you need to subscribe like  /user/{userId}/queue/private */
@@ -99,12 +103,23 @@ public class ChatController extends WholesaleServiceContainer {
         Map<String,Object> result = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         String recipient = message.getReceiver();
-        if (recipient == null) throw new MyException("Please provide a valid recipient");
-        List<String> allImagesName = chatService.saveAllImages(message, loggedUser);
+        User receiver = wholesaleUserService.findUserBySlug(recipient);
+        if (receiver == null) throw new MyException("Please provide a valid recipient");
+
         /* Added new user in to sender's chat list*/
-        chatUserService.addNewChatUser(loggedUser, recipient);
+        chatUserService.addNewChatUser(loggedUser, receiver,"A");
+
+        /* Check If you already blocked by receiver or not if blocked then do nothing just eat fivestar */
+        boolean isBlocked = blockListService.isUserExistsInBlockList(loggedUser,receiver);
+        if (isBlocked) {
+            return new ResponseEntity<>(new HashMap<>(),HttpStatus.OK);
+        }
+
         /* Added sender in to the recipients chat list*/
-        chatUserService.addNewChatUser(loggedUser, recipient);
+        chatUserService.addNewChatUser(receiver, loggedUser,"S");
+
+
+        List<String> allImagesName = chatService.saveAllImages(message, loggedUser);
         if(allImagesName.size() == message.getImages().size()){
             result.put("message","All images successfully sent.");
             result.put("status" , 200);
@@ -114,22 +129,11 @@ public class ChatController extends WholesaleServiceContainer {
         }
 
         /** ------------------------------- sending message and saving message ------------------------------- */
-        message.setImages(null);
-        List<String> imageUrls = allImagesName.stream().map(name -> Utils.getHostUrl(request)+"/chat/images/" + loggedUser.getSlug() + "/" + message.getReceiver() + "/" + name).collect(Collectors.toList());
-        message.setImagesUrls(imageUrls);
-        message.setSender(loggedUser.getSlug());
-        message.setReceiver(recipient);
-        //message.setMessage(HtmlUtils.htmlEscape(message.getMessage()));
-        String imagesNamesString = "";
-        for(int i =0; i < allImagesName.size(); i++){
-            imagesNamesString += allImagesName.get(i);
-            if(i < (allImagesName.size()-1)){
-                imagesNamesString +=',';
-            }
-        }
-        chatService.saveMessage(message, imagesNamesString);
-        /* you need to subscribe like  /user/{userId}/queue/private */
-        // Send a private message to recipient
+        message = chatService.addImagesList(message, request, allImagesName, loggedUser, recipient);
+        /*
+             You need to subscribe like  /user/{userId}/queue/private
+             Send a private message to recipient
+         */
         messagingTemplate.convertAndSendToUser(recipient, "/queue/private",message);
 
         /**!------------------ message block end ---------------------- */

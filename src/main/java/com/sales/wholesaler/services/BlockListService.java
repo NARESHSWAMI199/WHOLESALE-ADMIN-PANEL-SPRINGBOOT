@@ -21,8 +21,7 @@ public class BlockListService extends WholesaleRepoContainer {
     }
 
 
-    public boolean isUserExistInBlockList(User loggedUser, String receiverSlug){
-        User receiver = wholesaleUserRepository.findUserBySlug(receiverSlug);
+    public boolean isUserExistsInBlockList(User loggedUser, User receiver){
         if(receiver == null) return false;
         BlockedUser blockedUser = blockListRepository.findByUserIdAndBlockedUser(receiver.getId(),loggedUser);
         return blockedUser != null;

@@ -1,6 +1,9 @@
 package com.sales.interceptors;
 
+import com.sales.entities.User;
+import com.sales.wholesaler.services.WholesaleUserService;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.socket.WebSocketHandler;
@@ -9,6 +12,12 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 import java.util.Map;
 
 public class SalesHandshakeInterceptor implements HandshakeInterceptor {
+
+    WholesaleUserService wholesaleUserService = null;
+
+    public SalesHandshakeInterceptor (WholesaleUserService wholesaleUserService){
+        this.wholesaleUserService = wholesaleUserService;
+    }
 
     @Override
     public boolean beforeHandshake(@NotNull ServerHttpRequest request,
@@ -21,6 +30,7 @@ public class SalesHandshakeInterceptor implements HandshakeInterceptor {
         // Store username in session attributes
         if (username != null) {
             attributes.put("username", username);
+            attributes.put("user", wholesaleUserService.findUserBySlug(username));
         }
 
         return true; // Proceed with the handshake

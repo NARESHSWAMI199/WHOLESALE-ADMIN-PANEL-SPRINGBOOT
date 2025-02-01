@@ -8,6 +8,8 @@ import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,9 +39,9 @@ public class ChatService extends RepoContainer {
     }
 
 
-    public Map<String,List<Chat>> getAllChatBySenderAndReceiverKey(MessageDto message, HttpServletRequest request){
-        List<Chat> chatList = chatRepository.getChatBySenderKeyOrReceiverKey(message.getSender(), message.getReceiver());
+    public Map<String,List<Chat>> getAllChatBySenderAndReceiverKey(MessageDto message,HttpServletRequest request){
         Map<String,List<Chat>> formatedData = new TreeMap<>();
+        List<Chat> chatList = chatRepository.getChatBySenderKeyOrReceiverKey(message.getSender(), message.getReceiver());
 
         for(Chat chat : chatList){
             String createAtDate = Utils.getStringDateOnly(chat.getCreatedAt());
@@ -82,6 +84,27 @@ public class ChatService extends RepoContainer {
             throw new MyException(e.getMessage());
         }
         return imagesNames;
+    }
+
+
+
+    public MessageDto addImagesList (MessageDto message,HttpServletRequest request,List<String> allImagesName,User loggedUser,String recipient) {
+        message.setImages(null);
+        List<String> imageUrls = allImagesName.stream().map(name -> Utils.getHostUrl(request)+"/chat/images/" + loggedUser.getSlug() + "/" + message.getReceiver() + "/" + name).collect(Collectors.toList());
+        message.setImagesUrls(imageUrls);
+        message.setSender(loggedUser.getSlug());
+        message.setReceiver(recipient);
+        //message.setMessage(HtmlUtils.htmlEscape(message.getMessage()));
+        String imagesNamesString = "";
+        for(int i =0; i < allImagesName.size(); i++){
+            imagesNamesString += allImagesName.get(i);
+            if(i < (allImagesName.size()-1)){
+                imagesNamesString +=',';
+            }
+        }
+        // save the message in database
+        saveMessage(message, imagesNamesString);
+        return message;
     }
 
 }
