@@ -1,5 +1,6 @@
 package com.sales.utils;
 
+import com.sales.dto.UserDto;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.exceptions.UserException;
@@ -7,17 +8,17 @@ import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.wholesaler.services.WholesaleUserService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import java.lang.reflect.InvocationTargetException;
 import java.security.Key;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -194,6 +195,20 @@ public class Utils {
         }
 
         return hostUrl;
+    }
+
+
+    public static Map<String,Object> verifyFieldsBeforeCreateUser(UserDto userDto, List<String> requiredFields) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        Map<String,Object> result = null;
+        for (String field : requiredFields) {
+            if (PropertyUtils.getProperty(userDto, field) == null) {
+                result = new HashMap<>();
+                result.put("message" , field + " cannot be null");
+                result.put("status",400);
+                return result;
+            }
+        }
+        return result;
     }
 
 }

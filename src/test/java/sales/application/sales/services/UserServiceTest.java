@@ -20,6 +20,7 @@ public class UserServiceTest extends TestUtil {
     @Autowired
     private UserService userService;
 
+
     @Test
     public void testFindUserUsingEmailAndPassword(){
         UserDto userDto = new UserDto();

@@ -1,7 +1,6 @@
 package com.sales.exceptions;
 
 import com.sales.dto.ErrorDto;
-import com.sales.entities.User;
 import jakarta.transaction.Transactional;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,9 +92,9 @@ public class GlobalException {
 
     @Transactional
     @ExceptionHandler(value = {HttpMessageNotReadableException.class})
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorDto httpMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest request) {
-        ErrorDto message = new ErrorDto("May be request body is empty or required parameter are missing.",500);
+        ErrorDto message = new ErrorDto("May be request body is empty or required parameter are missing.",400);
         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         logger.info(ex.getMessage());
         return message;

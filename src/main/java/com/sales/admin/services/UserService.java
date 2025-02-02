@@ -2,8 +2,10 @@ package com.sales.admin.services;
 
 
 import com.sales.dto.*;
-import com.sales.entities.*;
 import com.sales.entities.Store;
+import com.sales.entities.StorePermissions;
+import com.sales.entities.SupportEmail;
+import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
@@ -17,12 +19,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.mail.Message;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import static com.sales.specifications.UserSpecifications.*;
@@ -209,7 +211,27 @@ public class UserService extends RepoContainer {
     }
 
     @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
-    public Map<String, Object> createOrUpdateUser(UserDto userDto, User loggedUser) throws MyException, IOException {
+    public Map<String, Object> createOrUpdateUser(UserDto userDto, User loggedUser) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+
+        // Before operation validate fields
+        List<String> requiredFields = new ArrayList<>(List.of("username", "contact", "email", "userType"));;
+                switch (userDto.getUserType()) {
+                    case "R":
+                        break;
+                    case "S", "SA":
+                        requiredFields.add("groupList");
+                        break;
+                    case "W" :
+                        requiredFields.addAll(List.of("city","state"));
+                        break;
+                    default :
+                        throw new IllegalStateException("Unexpected value: " + userDto.getUserType());
+        };
+
+
+        Map<String, Object> nullFields = Utils.verifyFieldsBeforeCreateUser(userDto,requiredFields);
+        if(nullFields != null) return nullFields;
+
         Map<String, Object> responseObj = new HashMap<>();
         StoreDto storeDto = null;
 
@@ -272,12 +294,12 @@ public class UserService extends RepoContainer {
         return responseObj;
     }
 
+
     @Transactional
     public User createUser(UserDto userDto, User loggedUser) {
         User user = new User(loggedUser);
         user.setUsername(userDto.getUsername());
         user.setSlug(UUID.randomUUID().toString());
-        user.setPassword(userDto.getPassword());
         user.setContact(userDto.getContact());
         user.setEmail(userDto.getEmail());
         user.setUserType(userDto.getUserType());
@@ -297,7 +319,6 @@ public class UserService extends RepoContainer {
         }
         return null;
     }
-
 
     public User getUserDetail(String slug){
         User user = userRepository.findUserBySlug(slug);
