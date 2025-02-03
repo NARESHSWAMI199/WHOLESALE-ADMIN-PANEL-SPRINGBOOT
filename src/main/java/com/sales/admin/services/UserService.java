@@ -7,6 +7,7 @@ import com.sales.entities.StorePermissions;
 import com.sales.entities.SupportEmail;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
+import com.sales.exceptions.NotFoundException;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
@@ -239,9 +240,8 @@ public class UserService extends RepoContainer {
                 throw new IllegalStateException("Unexpected value: " + userDto.getUserType());
         };
 
-
-        Map<String, Object> nullFields = Utils.verifyFieldsBeforeCreateUser(userDto,requiredFields);
-        if(nullFields != null) return nullFields;
+        // if there is any required field null then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(userDto,requiredFields);
 
         Map<String, Object> responseObj = new HashMap<>();
         StoreDto storeDto = null;
@@ -358,22 +358,33 @@ public class UserService extends RepoContainer {
     }
 
     @Transactional
-    public int updateStatusBySlug(StatusDto statusDto,User loggedUser){
+    public int updateStatusBySlug(StatusDto statusDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         try {
-            String status = statusDto.getStatus();
-            User user = userRepository.findUserBySlug(statusDto.getSlug());
-            Utils.canUpdateAStaff(statusDto.getSlug(),user.getUserType(),loggedUser);
-            user.setStatus(status);
-            if(!user.getUserType().equals("W")){
-                user = userRepository.save(user);
-                return user.getId();
+            // if there is any required field null then this will throw IllegalArgumentException
+            Utils.checkRequiredFields(statusDto, List.of("status", "slug"));
+
+            switch (statusDto.getStatus()){
+                case "A" , "D":
+                    String status = statusDto.getStatus();
+                    /* Getting user and updating status */
+                    User user = userRepository.findUserBySlug(statusDto.getSlug());
+                    if (user == null) throw new NotFoundException("No user not found to update.");
+                    Utils.canUpdateAStaff(statusDto.getSlug(),user.getUserType(),loggedUser);
+                    user.setStatus(status);
+                    if(!user.getUserType().equals("W")){
+                        user = userRepository.save(user);
+                        return user.getId();
+                    }
+                    /* Getting store and updating the status */
+                    Store store = storeRepository.findStoreByUserId(user.getId());
+                    store.setStatus(status);
+                    store = storeRepository.save(store);
+                    if (store.getId() > 0)
+                        user = userRepository.save(user);
+                    return user.getId();
+                default:
+                    throw new IllegalArgumentException("Status must be A or D.");
             }
-            Store store = storeRepository.findStoreByUserId(user.getId());
-            store.setStatus(status);
-            store = storeRepository.save(store);
-            if (store.getId() > 0)
-                user = userRepository.save(user);
-            return user.getId();
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             throw e;

@@ -29,11 +29,31 @@ public class GlobalException {
 
 
 
+    @Transactional
+    @ExceptionHandler(value = NotFoundException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public ErrorDto notFoundException (NotFoundException ex , WebRequest request){
+        logger.info(ex.getMessage());
+        return new ErrorDto(ex.getMessage(), 404);
+    }
+
+
+    @Transactional
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
+    public ErrorDto illegalArgumentException (IllegalArgumentException ex , WebRequest request){
+        logger.info(ex.getMessage());
+        return new ErrorDto(ex.getMessage(), 406);
+    }
+
+
+
+    @Transactional
     @ExceptionHandler(value = JsonMappingException.class)
     @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
     public ErrorDto jsonMappingExceptionHandle (JsonMappingException ex , WebRequest request){
         logger.info(ex.getMessage());
-        return new ErrorDto(ex.getMessage(), 400);
+        return new ErrorDto(ex.getMessage(), 406);
     }
 
     @Transactional
@@ -126,7 +146,7 @@ public class GlobalException {
     @Transactional
     @ExceptionHandler(value = {UserException.class})
     @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-    public ErrorDto userException(MyException ex, WebRequest request) {
+    public ErrorDto userException(UserException ex, WebRequest request) {
         String errorMessage = ex.getMessage();
         errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
         ErrorDto message = new ErrorDto(errorMessage,500);

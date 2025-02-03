@@ -1,8 +1,8 @@
 package com.sales.utils;
 
-import com.sales.dto.UserDto;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
+import com.sales.exceptions.NotFoundException;
 import com.sales.exceptions.UserException;
 import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
@@ -18,7 +18,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.Key;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -107,10 +110,10 @@ public class Utils {
     }
 
     public static void canUpdateAStaff(String slug ,String userType, User loggedUser){
-        if((!loggedUser.getUserType().equals("SA") &&
-            loggedUser.getId() != GlobalConstant.suId) &&
-            userType.equals("S") &&
-            !loggedUser.getSlug().equals(slug)) {
+        if((!loggedUser.getUserType().equals("SA") && // if user is not a super admin
+            loggedUser.getId() != GlobalConstant.suId) &&  // if user not owner
+            userType.equals("S") && // but user is a staff
+            !loggedUser.getSlug().equals(slug)) { // request slug not equals self slug
             throw new MyException("You don't have permissions to create or update a staff contact to administrator.");
         }
     }
@@ -168,7 +171,7 @@ public class Utils {
                 /* get user by slug. */
                 User user = userService.findUserBySlug(slug);
                 if (user.getIsDeleted().equals("Y")) {
-                    throw new UserException("User is not found.");
+                    throw new NotFoundException("User is not found.");
                 } else if (user.getStatus().equals("D")) {
                     throw new UserException("User is not active.");
                 }
@@ -198,17 +201,12 @@ public class Utils {
     }
 
 
-    public static Map<String,Object> verifyFieldsBeforeCreateUser(UserDto userDto, List<String> requiredFields) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        Map<String,Object> result = null;
+    public static <T> void checkRequiredFields(T  dto, List<String> requiredFields) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         for (String field : requiredFields) {
-            if (PropertyUtils.getProperty(userDto, field) == null) {
-                result = new HashMap<>();
-                result.put("message" , field + " cannot be null");
-                result.put("status",400);
-                return result;
+            if (PropertyUtils.getProperty(dto, field) == null) {
+                throw new IllegalArgumentException(field + " cannot be null");
             }
         }
-        return result;
     }
 
 }

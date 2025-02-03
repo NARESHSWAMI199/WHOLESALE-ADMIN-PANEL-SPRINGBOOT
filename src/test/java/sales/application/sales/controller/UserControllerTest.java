@@ -24,7 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTest extends TestUtil {
 
 
-    String authToken;
+
+    HttpHeaders headers = new HttpHeaders();
 
     @Test
     void testLoginWithRightPassword() throws Exception {
@@ -138,7 +139,8 @@ public class UserControllerTest extends TestUtil {
                 .andExpect(jsonPath("$.token", notNullValue()))
                 .andDo(print())
                 .andReturn();
-        authToken = extractTokenFromResponse(result);
+                headers.set("Authorization", extractTokenFromResponse(result));
+
     }
 
 
@@ -158,8 +160,6 @@ public class UserControllerTest extends TestUtil {
                 }
                 """;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
         mockMvc.perform(post("/admin/auth/add")
                 .content(json)
                 .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -182,8 +182,6 @@ public class UserControllerTest extends TestUtil {
                 }
                 """;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
         mockMvc.perform(post("/admin/auth/add")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -215,8 +213,6 @@ public class UserControllerTest extends TestUtil {
                     "storePhone" : 7147580822
                 }
                 """;
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
         mockMvc.perform(post("/admin/auth/add")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -239,8 +235,6 @@ public class UserControllerTest extends TestUtil {
                 }
                 """;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
         mockMvc.perform(post("/admin/auth/add")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -266,8 +260,6 @@ public class UserControllerTest extends TestUtil {
     @Test
     public void getRetailer () throws Exception {
         String retailerSlug = "54621d58-555c-425c-a48b-f06ae80cea73";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
         mockMvc.perform(get("/admin/auth/detail/"+retailerSlug)
                         .headers(headers)
                 )
@@ -280,8 +272,6 @@ public class UserControllerTest extends TestUtil {
     @Test
     public void getDeletedWholesaler () throws Exception {
         String wholesalerSlug = "d94ee65f-07c7-415b-8a40-20f1b283db58";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
         mockMvc.perform(get("/admin/auth/detail/"+wholesalerSlug)
                         .headers(headers)
                 )
@@ -294,8 +284,6 @@ public class UserControllerTest extends TestUtil {
     @Test
     public void getWholesaler () throws Exception {
         String wholesalerSlug = "d94ee65f-07c7-415b-8a40-20f1b283db58";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
         mockMvc.perform(get("/admin/auth/detail/"+wholesalerSlug)
                         .headers(headers)
                 )
@@ -309,8 +297,6 @@ public class UserControllerTest extends TestUtil {
     @Test
     public void getStaff () throws Exception {
         String staffSlug = "d03efcee-93f6-4e73-b952-a9ee4554c85e";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
         mockMvc.perform(get("/admin/auth/detail/"+staffSlug)
                         .headers(headers)
                 )
@@ -323,8 +309,6 @@ public class UserControllerTest extends TestUtil {
     @Test
     public void getStaffGroups () throws Exception {
         String staffSlug = "d03efcee-93f6-4e73-b952-a9ee4554c85e";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
         mockMvc.perform(get("/admin/auth/groups/"+staffSlug)
                         .headers(headers)
                 )
@@ -344,14 +328,151 @@ public class UserControllerTest extends TestUtil {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
                 )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content",notNullValue()))
-                .andExpect(jsonPath("$.content",notNullValue()))
-                .andDo(print())
-        ;
+                .andExpect(status().is(401))
+                .andDo(print());
     }
 
 
+    @Test
+    public void getAllWholesaler() throws Exception {
+        String json = """
+                {}
+                """;
+        mockMvc.perform(post("/admin/auth/W/all")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.content",notNullValue()),
+                        jsonPath("$.numberOfElements",notNullValue())
+                )
+                .andDo(print());
+    }
+
+
+
+    @Test
+    public void getAllRetailer() throws Exception {
+        String json = """
+                {}
+                """;
+        mockMvc.perform(post("/admin/auth/R/all")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.content",notNullValue()),
+                        jsonPath("$.numberOfElements",notNullValue())
+                )
+                .andDo(print());
+    }
+
+
+    @Test
+    public void getAllStaff() throws Exception {
+        String json = """
+                {}
+                """;
+        mockMvc.perform(post("/admin/auth/O/all")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.content",notNullValue()),
+                        jsonPath("$.numberOfElements",notNullValue())
+                )
+                .andDo(print());
+    }
+
+
+
+/** =====================  Update Status ===================== */
+
+
+@Test
+public void updateUserWrongStatus() throws Exception {
+    String json = """
+                {
+                "slug" : "bd7072f2-ed92-4ee9-8c91-7c8366d0abd2",
+                "status" : "F"
+                }
+                """;
+    mockMvc.perform(post("/admin/auth/status")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
+                    .headers(headers)
+            )
+            .andExpectAll(
+                    status().is(406),
+                    jsonPath("$.message",is("Status must be A or D."))
+            )
+            .andDo(print());
+}
+
+
+    @Test
+    public void updateUserStatus() throws Exception {
+        String json = """
+                {
+                "slug" : "bd7072f2-ed92-4ee9-8c91-7c8366d0abd2",
+                "status" : "A"
+                }
+                """;
+        mockMvc.perform(post("/admin/auth/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                        status().is(201)
+                )
+                .andDo(print());
+    }
+
+
+    @Test
+    public void updateWrongUserStatus() throws Exception {
+        String json = """
+                {
+                "slug" : "wrong_slug",
+                "status" : "A"
+                }
+                """;
+        mockMvc.perform(post("/admin/auth/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                        status().is(404)
+                )
+                .andDo(print());
+    }
+
+
+
+    @Test
+    public void updateUserStatusWithoutParams() throws Exception {
+        String json = """
+                {
+                }
+                """;
+        mockMvc.perform(post("/admin/auth/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                    status().is(406)
+                )
+                .andDo(print());
+    }
 
 
 
