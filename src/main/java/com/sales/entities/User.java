@@ -46,6 +46,7 @@ public class User {
     String userType;
     @Column(name = "status")
     String status;
+    @JsonIgnore
     @Column(name = "is_deleted")
     String isDeleted;
     @Column(name = "created_at")

@@ -1,7 +1,5 @@
 package com.sales.dto;
 
-import com.sales.entities.ItemCategory;
-import com.sales.entities.ItemSubCategory;
 import com.sales.entities.StoreCategory;
 import com.sales.entities.StoreSubCategory;
 import lombok.Getter;
@@ -18,9 +16,9 @@ public class StoreDto extends AddressDto {
     private String storeName;
     private Float rating = (float) 0;
     private String status;
-    private String storePhone="";
+    private String storePhone;
     private String storeSlug;
-    private String description ="";
+    private String description="";
     private String addressId;
     private String storeAvatar;
     private MultipartFile storePic;

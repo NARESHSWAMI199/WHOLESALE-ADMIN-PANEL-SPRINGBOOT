@@ -1,7 +1,9 @@
 package com.sales.exceptions;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.sales.dto.ErrorDto;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,7 +19,6 @@ import org.springframework.web.multipart.MultipartException;
 
 import java.io.FileNotFoundException;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.logging.Logger;
 
 @RestControllerAdvice
 public class GlobalException {
@@ -26,6 +27,14 @@ public class GlobalException {
     @Autowired
     Logger logger;
 
+
+
+    @ExceptionHandler(value = JsonMappingException.class)
+    @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
+    public ErrorDto jsonMappingExceptionHandle (JsonMappingException ex , WebRequest request){
+        logger.info(ex.getMessage());
+        return new ErrorDto(ex.getMessage(), 400);
+    }
 
     @Transactional
     @ExceptionHandler(value = {MultipartException.class})
@@ -92,9 +101,10 @@ public class GlobalException {
 
     @Transactional
     @ExceptionHandler(value = {HttpMessageNotReadableException.class})
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
     public ErrorDto httpMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest request) {
-        ErrorDto message = new ErrorDto("May be request body is empty or required parameter are missing.",400);
+    /*        ErrorDto message = new ErrorDto("May be request body is empty or required parameter are missing.",400);*/
+        ErrorDto message = new ErrorDto(ex.getMessage(),406);
         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         logger.info(ex.getMessage());
         return message;

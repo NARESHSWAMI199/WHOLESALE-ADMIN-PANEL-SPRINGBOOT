@@ -4,10 +4,9 @@ import com.sales.admin.services.AddressService;
 import com.sales.admin.services.ServicePlanService;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.wholesaler.services.*;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.logging.Logger;
 
 @Component
 public class WholesaleServiceContainer {

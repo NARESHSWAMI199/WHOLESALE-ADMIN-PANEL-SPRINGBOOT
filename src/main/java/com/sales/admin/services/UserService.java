@@ -204,7 +204,7 @@ public class UserService extends RepoContainer {
         storeDto.setCity(userDto.getCity());
         storeDto.setState(userDto.getState());
         storeDto.setStorePhone(userDto.getStorePhone());
-        storeDto.setStoreSlug(userDto.getStoreSlug());
+/*        storeDto.setStoreSlug(userDto.getStoreSlug());*/
         storeDto.setSubCategoryId(userDto.getSubCategoryId());
         storeDto.setCategoryId(userDto.getCategoryId());
         return storeDto;
@@ -215,17 +215,28 @@ public class UserService extends RepoContainer {
 
         // Before operation validate fields
         List<String> requiredFields = new ArrayList<>(List.of("username", "contact", "email", "userType"));;
-                switch (userDto.getUserType()) {
-                    case "R":
-                        break;
-                    case "S", "SA":
-                        requiredFields.add("groupList");
-                        break;
-                    case "W" :
-                        requiredFields.addAll(List.of("city","state"));
-                        break;
-                    default :
-                        throw new IllegalStateException("Unexpected value: " + userDto.getUserType());
+        switch (userDto.getUserType()) {
+            case "R":
+                break;
+            case "S", "SA":
+                requiredFields.add("groupList");
+                break;
+            case "W" :
+                requiredFields.addAll(List.of(
+                    "city",
+                    "state",
+                    "zipCode",
+                    "street",
+                    "storeName",
+                    "storeEmail",
+                    "description",
+                    "categoryId",
+                    "subCategoryId",
+                    "storePhone"
+                ));
+                break;
+            default :
+                throw new IllegalStateException("Unexpected value: " + userDto.getUserType());
         };
 
 

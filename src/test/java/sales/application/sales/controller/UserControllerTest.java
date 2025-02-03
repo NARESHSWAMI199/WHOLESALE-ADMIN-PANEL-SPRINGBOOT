@@ -13,6 +13,7 @@ import sales.application.sales.util.TestUtil;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -161,6 +162,9 @@ public class UserControllerTest extends TestUtil {
 
 
 
+
+
+    /** For admin login */
     @Test
     public void addRetailerMultipartRequestTest() throws Exception{
         String json = """
@@ -189,10 +193,10 @@ public class UserControllerTest extends TestUtil {
     public void addRetailerTest() throws Exception{
         String json = """
                 {
-                    "email" : "nareshswami@gmail.com",
-                    "username" : "naresh swami",
+                    "email" : "retailer@gmail.com",
+                    "username" : "Retailer swami",
                     "userType"  : "R",
-                    "contact" : "7145808226"
+                    "contact" : "7122808226"
                 }
                 """;
 
@@ -205,6 +209,146 @@ public class UserControllerTest extends TestUtil {
                 )
                 .andExpect(status().is(200))
                 .andDo(print());
+    }
+
+
+
+    @Test
+    public void addWholesalerTest() throws Exception{
+        String json = """
+                {
+                    "email" : "nareshswami@gmail.com",
+                    "username" : "naresh swami",
+                    "userType"  : "W",
+                    "contact" : "7145808226",
+                    "city" : "1",
+                    "state" : "1",
+                    "street" : "1 Moti dungri",
+                    "storeName" : "abc",
+                    "storeEmail" : "abc@gmail.com",
+                    "description" : "test",
+                    "categoryId" : 0,
+                    "subCategoryId"  : 0,
+                    "zipCode" : "302013",
+                    "storePhone" : 7147580822
+                }
+                """;
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authToken);
+        mockMvc.perform(post("/admin/auth/add")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .headers(headers)
+                )
+                .andExpect(status().is(200))
+                .andDo(print());
+    }
+
+    @Test
+    public void addStaff() throws Exception {
+
+        String json = """
+                {
+                    "email" : "staff@gmail.com",
+                    "username" : "Mock Test Staff",
+                    "userType"  : "S",
+                    "contact" : "7135808226",
+                    "groupList" : [0,1]            
+                }
+                """;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authToken);
+        mockMvc.perform(post("/admin/auth/add")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .headers(headers)
+                )
+                .andExpect(status().is(200))
+                .andDo(print());
+    }
+
+
+    /** add user updated  */
+
+    @Test
+    public void getRetailerWithoutLogin () throws Exception {
+        String retailerSlug = "54621d58-555c-425c-a48b-f06ae80cea73";
+        mockMvc.perform(get("/auth/admin/detail/"+retailerSlug))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username",is("Retailer swami")))
+                .andDo(print())
+        ;
+    }
+
+    @Test
+    public void getRetailer () throws Exception {
+        String retailerSlug = "54621d58-555c-425c-a48b-f06ae80cea73";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authToken);
+        mockMvc.perform(get("/admin/auth/detail/"+retailerSlug)
+                        .headers(headers)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.username",is("Retailer swami")))
+                .andDo(print())
+        ;
+    }
+
+    @Test
+    public void getDeletedWholesaler () throws Exception {
+        String wholesalerSlug = "d94ee65f-07c7-415b-8a40-20f1b283db58";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authToken);
+        mockMvc.perform(get("/admin/auth/detail/"+wholesalerSlug)
+                        .headers(headers)
+                )
+                .andExpect(status().is(404))
+                .andExpect(jsonPath("$.message",is("User not found.")))
+                .andDo(print())
+        ;
+    }
+
+    @Test
+    public void getWholesaler () throws Exception {
+        String wholesalerSlug = "d94ee65f-07c7-415b-8a40-20f1b283db58";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authToken);
+        mockMvc.perform(get("/admin/auth/detail/"+wholesalerSlug)
+                        .headers(headers)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.username",is("naresh swami")))
+                .andDo(print())
+        ;
+    }
+
+
+    @Test
+    public void getStaff () throws Exception {
+        String staffSlug = "d03efcee-93f6-4e73-b952-a9ee4554c85e";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authToken);
+        mockMvc.perform(get("/admin/auth/detail/"+staffSlug)
+                        .headers(headers)
+                )
+                .andExpect(status().isOk())
+                .andDo(print())
+        ;
+    }
+
+
+    @Test
+    public void getStaffGroups () throws Exception {
+        String staffSlug = "d03efcee-93f6-4e73-b952-a9ee4554c85e";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authToken);
+        mockMvc.perform(get("/admin/auth/groups/"+staffSlug)
+                        .headers(headers)
+                )
+                .andExpect(status().isOk())
+                .andDo(print())
+        ;
     }
 
 

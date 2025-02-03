@@ -24,7 +24,7 @@ public class GroupController extends ServiceContainer {
     @PostMapping("/all")
     public ResponseEntity<Page<Group>> getAllGroup( HttpServletRequest request,@RequestBody SearchFilters searchFilters){
         User loggedUser =  (User)request.getAttribute("user");
-        Page<Group> storePage =  groupService.getALlGroups(searchFilters,loggedUser);
+        Page<Group> storePage =  groupService.getAllGroups(searchFilters,loggedUser);
         return new ResponseEntity<>(storePage, HttpStatus.OK);
     }
 

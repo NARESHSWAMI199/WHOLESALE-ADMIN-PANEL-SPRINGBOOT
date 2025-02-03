@@ -36,7 +36,7 @@ public class UserController extends ServiceContainer {
     JwtToken jwtToken;
 
     @PostMapping("/{userType}/all")
-    public ResponseEntity<Page<User>> getAllUsers(HttpServletRequest request,@RequestBody UserSearchFilters searchFilters, @PathVariable(required = true) String userType, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<Page<User>> getAllUsers(HttpServletRequest request,@RequestBody UserSearchFilters searchFilters, @PathVariable(required = true) String userType) {
         searchFilters.setUserType(userType);
         User logggedUser = (User) request.getAttribute("user");
         Page<User> userPage = userService.getAllUser(searchFilters,logggedUser);
@@ -128,8 +128,8 @@ public class UserController extends ServiceContainer {
             responseObj.put("res", user);
             responseObj.put("status", 200);
         } else {
-            responseObj.put("message", "Please check you parameters not a valid request.");
-            responseObj.put("status", 400);
+            responseObj.put("message", "User not found.");
+            responseObj.put("status", 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
@@ -198,7 +198,7 @@ public class UserController extends ServiceContainer {
                 responseObj.put("imageName",imageName);
                 responseObj.put("message" , "Profile image successfully updated");
             }else {
-                responseObj.put("status" , 400);
+                responseObj.put("status" , 406);
                 responseObj.put("message" , "Not a valid profile image");
             }
         } catch (Exception e) {

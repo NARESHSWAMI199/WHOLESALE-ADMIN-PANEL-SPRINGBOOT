@@ -1,10 +1,10 @@
 package com.sales.beans;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.logging.Logger;
 
 @Configuration
 public class CustomBeanConfig {
@@ -12,6 +12,6 @@ public class CustomBeanConfig {
 
     @Bean
     public Logger getLogger(){
-        return Logger.getGlobal();
+        return LogManager.getLogger(this);
     }
 }

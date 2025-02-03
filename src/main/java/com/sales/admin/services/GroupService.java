@@ -27,7 +27,7 @@ public class GroupService extends RepoContainer {
 
 
 
-    public Page<Group> getALlGroups(SearchFilters filters,User loggedUser) {
+    public Page<Group> getAllGroups(SearchFilters filters,User loggedUser) {
         Specification<Group> specification = Specification.where(
                 (containsName(filters.getSearchKey()))
                         .and(greaterThanOrEqualFromDate(filters.getFromDate()))
