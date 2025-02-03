@@ -333,5 +333,26 @@ public class UserControllerTest extends TestUtil {
         ;
     }
 
+    /** ===================== Get all users ===================== */
+
+    @Test
+    public void getAllWholesalerWithoutLogin() throws Exception {
+        String json = """
+                {}
+                """;
+        mockMvc.perform(post("/admin/auth/W/all")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content",notNullValue()))
+                .andExpect(jsonPath("$.content",notNullValue()))
+                .andDo(print())
+        ;
+    }
+
+
+
+
 
 }
