@@ -9,6 +9,7 @@ import com.sales.jwtUtils.JwtToken;
 import com.sales.wholesaler.services.WholesaleUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
@@ -105,8 +106,8 @@ public class Utils {
     }
 
     public static void mobileAndEmailValidation(String email ,String contact,String errorMessage) throws MyException {
-        if (Utils.isEmpty(contact) || !contact.matches(Utils.mobileRegex)) throw new MyException(errorMessage.replaceAll("_","mobile number") +  " ["+contact+"]") ;
-        if (Utils.isEmpty(email) || !isValidEmail(email)) throw new MyException(errorMessage.replaceAll("_","email address") + " ["+email+"]") ;
+        if (Utils.isEmpty(contact) || !contact.matches(Utils.mobileRegex)) throw new IllegalArgumentException(errorMessage.replaceAll("_","mobile number") +  " ["+contact+"]") ;
+        if (Utils.isEmpty(email) || !isValidEmail(email)) throw new IllegalArgumentException(errorMessage.replaceAll("_","email address") + " ["+email+"]") ;
     }
 
     public static void canUpdateAStaff(String slug ,String userType, User loggedUser){
@@ -114,7 +115,7 @@ public class Utils {
             loggedUser.getId() != GlobalConstant.suId) &&  // if user not owner
             userType.equals("S") && // but user is a staff
             !loggedUser.getSlug().equals(slug)) { // request slug not equals self slug
-            throw new MyException("You don't have permissions to create or update a staff contact to administrator.");
+            throw new PermissionDeniedDataAccessException("You don't have permissions to create or update a staff contact to administrator.",null);
         }
     }
 
@@ -124,6 +125,7 @@ public class Utils {
 
 
     public static String isValidName(final String name,String flag) throws MyException {
+        if (name == null) throw new IllegalArgumentException(flag+"'s name can't be name");
         String NAME_PATTERN =
                 "^[a-zA-Z](?=.{1,100}$)[A-Za-z_& ]*(?:\\h+[A-Z][A-Za-z]*)*$";
         if(flag.equalsIgnoreCase("user")){
@@ -145,7 +147,7 @@ public class Utils {
             }
             message = "Not a valid "+flag+" name.";
             System.out.println(message);
-            throw  new MyException(message + " "+neededSyntax);
+            throw new IllegalArgumentException(message + " "+neededSyntax);
         }
         return name;
     }

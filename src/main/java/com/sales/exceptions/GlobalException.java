@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.transaction.UnexpectedRollbackException;
@@ -28,6 +29,14 @@ public class GlobalException {
     Logger logger;
 
 
+
+    @Transactional
+    @ExceptionHandler(value = PermissionDeniedDataAccessException.class)
+    @ResponseStatus(value = HttpStatus.FORBIDDEN)
+    public ErrorDto permissionDeniedDataAccessException (PermissionDeniedDataAccessException ex , WebRequest request){
+        logger.info(ex.getMessage());
+        return new ErrorDto(ex.getMessage(), 403);
+    }
 
     @Transactional
     @ExceptionHandler(value = NotFoundException.class)
@@ -108,12 +117,12 @@ public class GlobalException {
 
     @Transactional
     @ExceptionHandler(value = {DataIntegrityViolationException.class})
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ResponseStatus(value = HttpStatus.CONFLICT)
     public ErrorDto dataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
         //String message = ex.getMessage().contains("constraint [null]") ? "Required parameters can't be null or a duplicate entry." : ex.getMessage();
         String errorMessage = getCauseMessage(ex);;
             errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
-        ErrorDto err = new ErrorDto(errorMessage,400);
+        ErrorDto err = new ErrorDto(errorMessage,409);
         logger.info(ex.getMessage());
         return err;
     }

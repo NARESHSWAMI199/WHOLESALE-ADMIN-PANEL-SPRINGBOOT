@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.*;
@@ -94,78 +95,107 @@ public class StoreService extends RepoContainer{
         return Month.of(month).getDisplayName(TextStyle.FULL, new Locale("eng"));
     }
 
-    @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
-    public Map<String, Object> createOrUpdateStore(StoreDto storeDto,User loggedUser) throws MyException, IOException {
-            Map<String, Object> responseObj = new HashMap<>();
-                /** if user want update only his profile */
-                if (storeDto.getStoreSlug() != null && storeDto.getStoreSlug().equals("only-profile")) {
-                    responseObj.put("message", "successfully updated.");
-                    responseObj.put("status", 200);
-                } else if (!Utils.isEmpty(storeDto.getStoreSlug())) {
-                    try {
-                        StoreCategory storeCategory = storeCategoryRepository.findById(storeDto.getCategoryId()).get();
-                        storeDto.setStoreCategory(storeCategory);
-                        StoreSubCategory storeSubCategory = storeSubCategoryRepository.findById(storeDto.getSubCategoryId()).get();
-                        storeDto.setStoreSubCategory(storeSubCategory);
-                    }catch (Exception e){
-                        throw new MyException("Invalid arguments for category and subcategory");
-                    }
-                    String storeName = Utils.isValidName(storeDto.getStoreName(),"Store");
-                    storeDto.setStoreName(storeName);
-                    Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid store's _ recheck your and store's _.");
-                    updateStoreImage(storeDto.getStorePic(), storeDto.getStoreSlug());
-                    int isUpdated = updateStore(storeDto, loggedUser);
-                    if (isUpdated > 0) {
-                        responseObj.put("message", "successfully updated.");
-                        responseObj.put("status", 201);
-                    } else {
-                        responseObj.put("message", "nothing to updated. may be something went wrong");
-                        responseObj.put("status", 400);
-                    }
-                    return responseObj;
-                } else {
-                    String storeName = Utils.isValidName(storeDto.getStoreName(),"Store");
-                    storeDto.setStoreName(storeName);
-                    Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid store's _ recheck your and store's _.");
-                    try {
-                        StoreCategory storeCategory = storeCategoryRepository.findById(storeDto.getCategoryId()).get();
-                        storeDto.setStoreCategory(storeCategory);
-                        StoreSubCategory storeSubCategory = storeSubCategoryRepository.findById(storeDto.getSubCategoryId()).get();
-                        storeDto.setStoreSubCategory(storeSubCategory);
-                    }catch (Exception e){
-                        throw new MyException("Invalid arguments for category and subcategory");
-                    }
-                    Store createdStore = createStore(storeDto, loggedUser);
-                    if (createdStore.getId() > 0) {
-                        responseObj.put("res", createdStore);
-                        responseObj.put("message", "successfully inserted.");
-                        responseObj.put("status", 200);
-                    } else {
-                        responseObj.put("message", "nothing to insert. may be something went wrong");
-                        responseObj.put("status", 400);
-                    }
+    public void validateRequiredFieldsForUpdateStore(StoreDto storeDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        List<String> requiredFields = new ArrayList<>(List.of("storeName","storeEmail", "storePhone","rating","storeCategory","storeSubCategory","description"));
+        // if there is any required field null then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(storeDto,requiredFields);
+    }
 
+    public void validateRequiredFieldsForCreateStore(StoreDto storeDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        List<String> requiredFields = new ArrayList<>(List.of("storeName","storeEmail", "storePhone","rating","storeCategory","storeSubCategory","description","userSlug"));
+        // if there is any required field null then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(storeDto,requiredFields);
+    }
+
+
+
+
+    @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
+    public Map<String, Object> createOrUpdateStore(StoreDto storeDto,User loggedUser) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+            Map<String, Object> responseObj = new HashMap<>();
+            if (!Utils.isEmpty(storeDto.getStoreSlug())) { // We are going to update store.
+
+                // if there is any required field null then this will throw IllegalArgumentException
+                validateRequiredFieldsForUpdateStore(storeDto);
+
+                try {
+                    StoreCategory storeCategory = storeCategoryRepository.findById(storeDto.getCategoryId()).get();
+                    storeDto.setStoreCategory(storeCategory);
+                    StoreSubCategory storeSubCategory = storeSubCategoryRepository.findById(storeDto.getSubCategoryId()).get();
+                    storeDto.setStoreSubCategory(storeSubCategory);
+                } catch (Exception e){
+                    throw new IllegalArgumentException("Invalid arguments for category and subcategory");
                 }
-            return responseObj;
+                String storeName = Utils.isValidName(storeDto.getStoreName(),"Store");
+                storeDto.setStoreName(storeName);
+                Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid store's _ recheck your and store's _.");
+                updateStoreImage(storeDto.getStorePic(), storeDto.getStoreSlug());
+                int isUpdated = updateStore(storeDto, loggedUser);
+                if (isUpdated > 0) {
+                    responseObj.put("message", "Successfully updated.");
+                    responseObj.put("status", 201);
+                } else {
+                    responseObj.put("message", "Nothing to updated. may be something went wrong");
+                    responseObj.put("status", 404);
+                }
+                return responseObj;
+            } else {  // We are going to create store.
+
+                // if there is any required field null then this will throw IllegalArgumentException
+                validateRequiredFieldsForCreateStore(storeDto);
+
+                String storeName = Utils.isValidName(storeDto.getStoreName(),"Store");
+                storeDto.setStoreName(storeName);
+                Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid store's _ recheck your and store's _.");
+                try {
+                    StoreCategory storeCategory = storeCategoryRepository.findById(storeDto.getCategoryId()).get();
+                    storeDto.setStoreCategory(storeCategory);
+                    StoreSubCategory storeSubCategory = storeSubCategoryRepository.findById(storeDto.getSubCategoryId()).get();
+                    storeDto.setStoreSubCategory(storeSubCategory);
+                } catch (Exception e){
+                    throw new IllegalArgumentException("Invalid arguments for category and subcategory");
+                }
+                Store createdStore = createStore(storeDto, loggedUser);
+                if (createdStore.getId() > 0) {
+                    responseObj.put("res", createdStore);
+                    responseObj.put("message", "Successfully inserted.");
+                    responseObj.put("status", 200);
+                } else {
+                    responseObj.put("message", "Nothing to insert. may be something went wrong");
+                    responseObj.put("status", 404);
+                }
+                return responseObj;
+            }
 
     }
 
 
+
+    public void validateRequiredFieldsForCreateAddress(AddressDto addressDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        List<String> requiredFields = new ArrayList<>(List.of("street","zipCode", "city","state"));
+        // if there is any required field null then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(addressDto,requiredFields);
+    }
+
+
     @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
-    public Store createStore(StoreDto storeDto , User loggedUser) throws MyException {
-        /** inserting  address during create a wholesale */
+    public Store createStore(StoreDto storeDto , User loggedUser) throws MyException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        /** inserting address during create a wholesale */
         AddressDto addressDto = getAddressObjFromStore(storeDto);
+        // if there is any required field null then this will throw IllegalArgumentException
+        validateRequiredFieldsForCreateAddress(addressDto);
         Address address =  addressService.insertAddress(addressDto,loggedUser);
         /** @END inserting  address during create a wholesale */
 
-        Store store = new Store();
         if(Utils.isEmpty(storeDto.getUserSlug())){
             throw new MyException("Must provide a store user");
         }
         Optional<User> storeOwner = userRepository.findByWholesalerSLug(storeDto.getUserSlug());
         if (storeOwner.isEmpty())  throw new MyException("Make sure user is wholesaler.");
 
-        store = new Store(loggedUser);
+
+        // Saving the store data
+        Store store = new Store(loggedUser);
         store.setUser(storeOwner.get());
         store.setStoreName(storeDto.getStoreName());
         store.setEmail(storeDto.getStoreEmail());
@@ -173,7 +203,6 @@ public class StoreService extends RepoContainer{
         store.setDescription(storeDto.getDescription());
         store.setPhone(storeDto.getStorePhone());
         store.setRating(storeDto.getRating());
-
         store.setStoreCategory(storeDto.getStoreCategory());
         store.setStoreSubCategory(storeDto.getStoreSubCategory());
 

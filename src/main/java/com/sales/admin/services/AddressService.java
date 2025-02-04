@@ -20,12 +20,14 @@ public class AddressService extends RepoContainer {
     public Address insertAddress(AddressDto addressDto, User loggedUser){
         Address address = new Address();
         address.setSlug(UUID.randomUUID().toString());
+
         address.setStreet(addressDto.getStreet());
         address.setZipCode(addressDto.getZipCode());
         address.setCity(addressDto.getCity());
         address.setState(addressDto.getState());
         address.setLatitude(addressDto.getLatitude());
         address.setAltitude(addressDto.getAltitude());
+
         address.setCreatedAt(getCurrentMillis());
         address.setCreatedBy(loggedUser.getId());
         address.setUpdatedAt(getCurrentMillis());
