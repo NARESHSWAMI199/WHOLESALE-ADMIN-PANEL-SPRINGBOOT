@@ -38,8 +38,8 @@ public class UserController extends ServiceContainer {
     @PostMapping("/{userType}/all")
     public ResponseEntity<Page<User>> getAllUsers(HttpServletRequest request,@RequestBody UserSearchFilters searchFilters, @PathVariable(required = true) String userType) {
         searchFilters.setUserType(userType);
-        User logggedUser = (User) request.getAttribute("user");
-        Page<User> userPage = userService.getAllUser(searchFilters,logggedUser);
+        User loggedUser = (User) request.getAttribute("user");
+        Page<User> userPage = userService.getAllUser(searchFilters,loggedUser);
         return new ResponseEntity<>(userPage, HttpStatus.OK);
     }
 
@@ -113,8 +113,8 @@ public class UserController extends ServiceContainer {
     @PostMapping(value = {"/add", "/update"})
     public ResponseEntity<Map<String, Object>> register(HttpServletRequest request, @RequestBody UserDto userDto) throws Exception {
         Map<String,Object> responseObj = new HashMap<>();
-        User logggedUser = (User) request.getAttribute("user");
-        responseObj = userService.createOrUpdateUser(userDto, logggedUser);
+        User loggedUser = (User) request.getAttribute("user");
+        responseObj = userService.createOrUpdateUser(userDto, loggedUser);
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
 
     }
@@ -122,8 +122,8 @@ public class UserController extends ServiceContainer {
     @GetMapping("/detail/{slug}")
     public ResponseEntity<Map<String, Object>> getDetailUser(HttpServletRequest request,@PathVariable String slug) {
         Map<String,Object> responseObj = new HashMap<>();
-        User logggedUser = (User) request.getAttribute("user");
-        User user = userService.getUserDetail(slug,logggedUser);
+        User loggedUser = (User) request.getAttribute("user");
+        User user = userService.getUserDetail(slug,loggedUser);
         if (user != null) {
             responseObj.put("res", user);
             responseObj.put("status", 200);
@@ -138,8 +138,8 @@ public class UserController extends ServiceContainer {
     @GetMapping("/delete/{slug}")
     public ResponseEntity<Map<String, Object>> deleteUserBySlug(HttpServletRequest request,@PathVariable String slug) {
         Map<String,Object> responseObj = new HashMap<>();
-        User logggedUser = (User) request.getAttribute("user");
-        int isUpdated = userService.deleteUserBySlug(slug,logggedUser);
+        User loggedUser = (User) request.getAttribute("user");
+        int isUpdated = userService.deleteUserBySlug(slug,loggedUser);
         if (isUpdated > 0) {
             responseObj.put("message", "User has been successfully deleted.");
             responseObj.put("status", 200);
@@ -154,9 +154,9 @@ public class UserController extends ServiceContainer {
     @PostMapping("/password")
     public ResponseEntity<Map<String, Object>> resetUserPasswordBySlug(HttpServletRequest request ,@RequestBody PasswordDto passwordDto) {
         Map<String,Object> responseObj = new HashMap<>();
-        User logggedUser = (User) request.getAttribute("user");
-        int isUpdated = userService.resetPasswordByUserSlug(passwordDto,logggedUser);
-        if (isUpdated > 0 || logggedUser.getId() == GlobalConstant.suId) {
+        User loggedUser = (User) request.getAttribute("user");
+        int isUpdated = userService.resetPasswordByUserSlug(passwordDto,loggedUser);
+        if (isUpdated > 0 || loggedUser.getId() == GlobalConstant.suId) {
             responseObj.put("message", "User password has been successfully updated.");
             responseObj.put("status", 200);
         } else {
@@ -170,8 +170,8 @@ public class UserController extends ServiceContainer {
     @PostMapping("/status")
     public ResponseEntity<Map<String, Object>> stockSlug(HttpServletRequest request,@RequestBody StatusDto statusDto) {
         Map<String,Object> responseObj = new HashMap<>();
-        User logggedUser = (User) request.getAttribute("user");
-        int isUpdated = userService.updateStatusBySlug(statusDto,logggedUser);
+        User loggedUser = (User) request.getAttribute("user");
+        int isUpdated = userService.updateStatusBySlug(statusDto,loggedUser);
         if (isUpdated > 0) {
             responseObj.put("message", "Item's status has been successfully updated.");
             responseObj.put("status", 200);
@@ -191,8 +191,8 @@ public class UserController extends ServiceContainer {
     public ResponseEntity<Map<String, Object>> updateProfileImage(HttpServletRequest request, @RequestPart MultipartFile profileImage, @PathVariable String slug ) {
         Map<String,Object> responseObj = new HashMap<>();
         try {
-            User logggedUser = (User) request.getAttribute("user");
-            String  imageName = userService.updateProfileImage(profileImage,slug,logggedUser);
+            User loggedUser = (User) request.getAttribute("user");
+            String  imageName = userService.updateProfileImage(profileImage,slug,loggedUser);
             if(imageName!=null) {
                 responseObj.put("status" , 200);
                 responseObj.put("imageName",imageName);

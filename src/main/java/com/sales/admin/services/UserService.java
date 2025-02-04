@@ -216,24 +216,10 @@ public class UserService extends RepoContainer {
         // Before operation validate fields
         List<String> requiredFields = new ArrayList<>(List.of("username", "contact", "email", "userType"));;
         switch (userDto.getUserType()) {
-            case "R":
+            case "R","W":
                 break;
             case "S", "SA":
                 requiredFields.add("groupList");
-                break;
-            case "W" :
-                requiredFields.addAll(List.of(
-                    "city",
-                    "state",
-                    "zipCode",
-                    "street",
-                    "storeName",
-                    "storeEmail",
-                    "description",
-                    "categoryId",
-                    "subCategoryId",
-                    "storePhone"
-                ));
                 break;
             default :
                 throw new IllegalStateException("Unexpected value: " + userDto.getUserType());
@@ -265,11 +251,11 @@ public class UserService extends RepoContainer {
                 storeService.createOrUpdateStore(storeDto, loggedUser);
             }
             if (isUpdated > 0) {
-                responseObj.put("message", "successfully updated.");
+                responseObj.put("message", "Successfully updated.");
                 responseObj.put("status", 201);
             } else {
-                responseObj.put("message", "nothing to updated. may be something went wrong");
-                responseObj.put("status", 400);
+                responseObj.put("message", "Nothing found to updated.");
+                responseObj.put("status", 404);
             }
            // return responseObj;
         } else {
@@ -283,11 +269,11 @@ public class UserService extends RepoContainer {
             }
             if (updatedUser.getId() > 0) {
                 responseObj.put("res", updatedUser);
-                responseObj.put("message", "successfully inserted.");
+                responseObj.put("message", "Successfully inserted.");
                 responseObj.put("status", 200);
             } else {
-                responseObj.put("message", "nothing to save. may be something went wrong please contact to administrator.");
-                responseObj.put("status", 400);
+                responseObj.put("message", "Nothing to save. may be something went wrong please contact to administrator.");
+                responseObj.put("status", 500);
             }
         }
 
