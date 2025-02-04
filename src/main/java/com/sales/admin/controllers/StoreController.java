@@ -231,10 +231,6 @@ public class StoreController extends ServiceContainer{
     }
 
 
-
-
-
-
     @PostMapping(value = {"subcategory/add","subcategory/update"})
     public ResponseEntity<Map<String,Object>> saveOrUpdateItemSubCategory(@RequestBody SubCategoryDto subCategoryDto) {
         Map<String,Object> result = new HashMap<>();

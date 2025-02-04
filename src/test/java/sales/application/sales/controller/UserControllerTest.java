@@ -9,7 +9,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
+import sales.application.sales.testglobal.GlobalConstantTest;
 import sales.application.sales.util.TestUtil;
+
+import java.util.Random;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -24,7 +28,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTest extends TestUtil {
 
 
-    String authToken;
+
+    HttpHeaders headers = new HttpHeaders();
+
+    String randomEmail = UUID.randomUUID().toString().substring(0,6) + "@mocktest.in";
+    String randomPhone = "9"+ new Random().nextInt(999999999);
+
 
     @Test
     void testLoginWithRightPassword() throws Exception {
@@ -138,7 +147,8 @@ public class UserControllerTest extends TestUtil {
                 .andExpect(jsonPath("$.token", notNullValue()))
                 .andDo(print())
                 .andReturn();
-        authToken = extractTokenFromResponse(result);
+                headers.set("Authorization", extractTokenFromResponse(result));
+
     }
 
 
@@ -158,8 +168,6 @@ public class UserControllerTest extends TestUtil {
                 }
                 """;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
         mockMvc.perform(post("/admin/auth/add")
                 .content(json)
                 .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -182,8 +190,6 @@ public class UserControllerTest extends TestUtil {
                 }
                 """;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
         mockMvc.perform(post("/admin/auth/add")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -196,7 +202,13 @@ public class UserControllerTest extends TestUtil {
 
 
     @Test
-    public void addWholesalerTest() throws Exception{
+    public void addWholesalerAndUpdateTest() throws Exception{
+
+        String beaverToken = getLoginBeaverToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
+        HttpHeaders staffHeader = new HttpHeaders();
+        staffHeader.set("Authorization",beaverToken);
+
+
         String json = """
                 {
                     "email" : "nareshswami@gmail.com",
@@ -215,19 +227,54 @@ public class UserControllerTest extends TestUtil {
                     "storePhone" : 7147580822
                 }
                 """;
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
-        mockMvc.perform(post("/admin/auth/add")
+            MvcResult result = mockMvc.perform(post("/admin/auth/add")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
                         .headers(headers)
                 )
                 .andExpect(status().is(200))
-                .andDo(print());
+                .andDo(print())
+                .andReturn();
+
+            String userSlug = extractSlugFromResponseViaRes(result);
+
+
+
+           /*     "storeName",
+                "email",
+                "phone",
+                "rating",
+                "storeCategory",
+                "storeSubCategory",
+                "description"*/
+
+        String updatedJson = """
+                {
+                    "slug" : "{slug}",
+                    "email" : "{email}",
+                    "username" : "naresh swami",
+                    "contact" : "{contact}"
+                }
+                """
+                .replace("{slug}",userSlug)
+                .replace("{email}",randomEmail)
+                .replace("{contact}",randomPhone)
+                ;
+        // update created wholesaler
+        mockMvc.perform(post("/admin/auth/update")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatedJson)
+                .headers(staffHeader)
+        )
+        .andExpectAll(
+            status().is(201)
+        );
+
+
     }
 
-    @Test
-    public void addStaff() throws Exception {
+
+    public String addStaff() throws Exception {
 
         String json = """
                 {
@@ -239,16 +286,18 @@ public class UserControllerTest extends TestUtil {
                 }
                 """;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
-        mockMvc.perform(post("/admin/auth/add")
+        MvcResult result = mockMvc.perform(post("/admin/auth/add")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
                         .headers(headers)
                 )
                 .andExpect(status().is(200))
-                .andDo(print());
-    }
+                .andDo(print())
+                .andReturn();
+
+            return extractSlugFromResponseViaRes(result);
+
+        }
 
 
     /** add user updated  */
@@ -266,8 +315,6 @@ public class UserControllerTest extends TestUtil {
     @Test
     public void getRetailer () throws Exception {
         String retailerSlug = "54621d58-555c-425c-a48b-f06ae80cea73";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
         mockMvc.perform(get("/admin/auth/detail/"+retailerSlug)
                         .headers(headers)
                 )
@@ -280,8 +327,6 @@ public class UserControllerTest extends TestUtil {
     @Test
     public void getDeletedWholesaler () throws Exception {
         String wholesalerSlug = "d94ee65f-07c7-415b-8a40-20f1b283db58";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
         mockMvc.perform(get("/admin/auth/detail/"+wholesalerSlug)
                         .headers(headers)
                 )
@@ -294,8 +339,6 @@ public class UserControllerTest extends TestUtil {
     @Test
     public void getWholesaler () throws Exception {
         String wholesalerSlug = "d94ee65f-07c7-415b-8a40-20f1b283db58";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
         mockMvc.perform(get("/admin/auth/detail/"+wholesalerSlug)
                         .headers(headers)
                 )
@@ -309,8 +352,6 @@ public class UserControllerTest extends TestUtil {
     @Test
     public void getStaff () throws Exception {
         String staffSlug = "d03efcee-93f6-4e73-b952-a9ee4554c85e";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
         mockMvc.perform(get("/admin/auth/detail/"+staffSlug)
                         .headers(headers)
                 )
@@ -323,8 +364,6 @@ public class UserControllerTest extends TestUtil {
     @Test
     public void getStaffGroups () throws Exception {
         String staffSlug = "d03efcee-93f6-4e73-b952-a9ee4554c85e";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authToken);
         mockMvc.perform(get("/admin/auth/groups/"+staffSlug)
                         .headers(headers)
                 )
@@ -332,6 +371,78 @@ public class UserControllerTest extends TestUtil {
                 .andDo(print())
         ;
     }
+
+
+    /** ======================= UPDATE USERS */
+    @Test
+    public void updateStaffViaStaffUserAccount() throws Exception {
+        String beaverToken = getLoginBeaverToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
+        HttpHeaders staffHeader = new HttpHeaders();
+        staffHeader.set("Authorization",beaverToken);
+
+        /** user before update */
+        String userSlug = addStaff();
+
+        String json = """
+                   {
+                    "slug" : "{slug}",
+                    "email" : "{email}",
+                    "username" : "Mock Test Staff",
+                    "userType"  : "S",
+                    "contact" : "{contact}",
+                    "groupList" : [0,1]            
+                }
+                """.replace("{slug}",userSlug)
+                .replace("{email}", randomEmail)
+                .replace("{contact}", randomPhone)
+                ;
+
+        System.err.println(json);
+
+        mockMvc.perform(post("/admin/auth/update")
+                        .headers(staffHeader)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(status().is(403)) // because only a super admin can update a staff
+                .andDo(print())
+        ;
+
+    }
+
+
+    @Test
+    public void updateStaffViaSuperAdmin() throws Exception {
+        /** user before update */
+        String userSlug = addStaff();
+
+        String randomEmail = UUID.randomUUID().toString().substring(0,6) + "@mocktest.in";
+        String randomPhone = "9"+ new Random().nextInt(999999999);
+
+        String json = """
+                   {
+                    "slug" : "{slug}",
+                    "email" : "{email}",
+                    "username" : "Mock Test Staff",
+                    "userType"  : "S",
+                    "contact" : "{contact}",
+                    "groupList" : [0,1]            
+                }
+                """.replace("{slug}",userSlug)
+                .replace("{email}", randomEmail)
+                .replace("{contact}", randomPhone)
+                ;
+        mockMvc.perform(post("/admin/auth/update")
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
+            )
+            .andExpect(status().is(201))
+            .andDo(print());
+
+    }
+
+
 
     /** ===================== Get all users ===================== */
 
@@ -344,14 +455,171 @@ public class UserControllerTest extends TestUtil {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
                 )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content",notNullValue()))
-                .andExpect(jsonPath("$.content",notNullValue()))
-                .andDo(print())
-        ;
+                .andExpect(status().is(401))
+                .andDo(print());
     }
 
 
+    @Test
+    public void getAllWholesaler() throws Exception {
+        String json = """
+                {}
+                """;
+        mockMvc.perform(post("/admin/auth/W/all")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.content",notNullValue()),
+                        jsonPath("$.numberOfElements",notNullValue())
+                )
+                .andDo(print());
+    }
+
+
+
+    @Test
+    public void getAllRetailer() throws Exception {
+        String json = """
+                {}
+                """;
+        mockMvc.perform(post("/admin/auth/R/all")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.content",notNullValue()),
+                        jsonPath("$.numberOfElements",notNullValue())
+                )
+                .andDo(print());
+    }
+
+
+    @Test
+    public void getAllStaff() throws Exception {
+        String json = """
+                {}
+                """;
+        mockMvc.perform(post("/admin/auth/O/all")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.content",notNullValue()),
+                        jsonPath("$.numberOfElements",notNullValue())
+                )
+                .andDo(print());
+    }
+
+
+
+/** =====================  Update Status ===================== */
+
+
+@Test
+public void updateUserWrongStatus() throws Exception {
+    String json = """
+                {
+                "slug" : "bd7072f2-ed92-4ee9-8c91-7c8366d0abd2",
+                "status" : "F"
+                }
+                """;
+    mockMvc.perform(post("/admin/auth/status")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json)
+                    .headers(headers)
+            )
+            .andExpectAll(
+                    status().is(406),
+                    jsonPath("$.message",is("Status must be A or D."))
+            )
+            .andDo(print());
+}
+
+
+    @Test
+    public void updateUserStatus() throws Exception {
+        String json = """
+                {
+                "slug" : "bd7072f2-ed92-4ee9-8c91-7c8366d0abd2",
+                "status" : "A"
+                }
+                """;
+        mockMvc.perform(post("/admin/auth/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                        status().is(201)
+                )
+                .andDo(print());
+    }
+
+
+    @Test
+    public void updateWrongUserStatus() throws Exception {
+        String json = """
+                {
+                "slug" : "wrong_slug",
+                "status" : "A"
+                }
+                """;
+        mockMvc.perform(post("/admin/auth/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                        status().is(404)
+                )
+                .andDo(print());
+    }
+
+
+
+    @Test
+    public void updateUserStatusWithoutParams() throws Exception {
+        String json = """
+                {
+                }
+                """;
+        mockMvc.perform(post("/admin/auth/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                    status().is(406)
+                )
+                .andDo(print());
+    }
+
+
+    @Test
+    public void testCanUserUpdateSelfStatus() throws Exception {
+        String json = """
+                {
+                "slug" : "self_slug", 
+                "status" : "A"
+                }
+                """;
+        mockMvc.perform(post("/admin/auth/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                        status().is(406)
+                )
+                .andDo(print());
+    }
 
 
 

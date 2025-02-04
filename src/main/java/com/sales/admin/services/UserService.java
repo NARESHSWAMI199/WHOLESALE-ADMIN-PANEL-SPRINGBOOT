@@ -7,11 +7,13 @@ import com.sales.entities.StorePermissions;
 import com.sales.entities.SupportEmail;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
+import com.sales.exceptions.NotFoundException;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -210,10 +212,8 @@ public class UserService extends RepoContainer {
         return storeDto;
     }
 
-    @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
-    public Map<String, Object> createOrUpdateUser(UserDto userDto, User loggedUser) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
 
-        // Before operation validate fields
+    public void validateRequiredFieldsBeforeCreateUser(UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         List<String> requiredFields = new ArrayList<>(List.of("username", "contact", "email", "userType"));;
         switch (userDto.getUserType()) {
             case "R","W":
@@ -225,27 +225,55 @@ public class UserService extends RepoContainer {
                 throw new IllegalStateException("Unexpected value: " + userDto.getUserType());
         };
 
+        // if there is any required field null then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(userDto,requiredFields);
+    }
 
-        Map<String, Object> nullFields = Utils.verifyFieldsBeforeCreateUser(userDto,requiredFields);
-        if(nullFields != null) return nullFields;
 
+    public void validateRequiredFieldsBeforeUpdateUser(UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        List<String> requiredFields = new ArrayList<>(List.of("username", "contact", "email","slug"));;
+        // if there is any required field null then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(userDto,requiredFields);
+    }
+
+
+    /**
+        @Important : There are two types of user @loggedUser and @requestUser both are different
+     */
+    @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
+    public Map<String, Object> createOrUpdateUser(UserDto userDto, User loggedUser) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String, Object> responseObj = new HashMap<>();
-        StoreDto storeDto = null;
+        StoreDto storeDto;
+        // condition for create or update superuser
+        if((loggedUser.getId() !=GlobalConstant.suId &&
+                userDto.getUserType().equals("SA") &&
+                !loggedUser.getSlug().equals(userDto.getSlug())
+        )) throw new PermissionDeniedDataAccessException("You don't have permissions to create a admin contact to administrator.",null);
 
-        /** condition for create or update super user */
-        if((loggedUser.getId() !=GlobalConstant.suId && userDto.getUserType().equals("SA") && !loggedUser.getSlug().equals(userDto.getSlug()))) throw new MyException("You don't have permissions to create a admin contact to administrator.");
-        Utils.mobileAndEmailValidation(userDto.getEmail(),userDto.getContact(),"Not a valid user's _ recheck your and user's _.");
-        /** condition who can update a staff */
-        Utils.canUpdateAStaff(userDto.getSlug(),userDto.getUserType(),loggedUser);
+        Utils.mobileAndEmailValidation(
+                userDto.getEmail(),
+                userDto.getContact(),
+                "Not a valid user's _ recheck your and user's _."
+        );
+        // condition who can update a staff
+        Utils.canUpdateAStaff(userDto.getSlug(),
+                userDto.getUserType(),
+                loggedUser
+        );
 
-        String username = Utils.isValidName( userDto.getUsername(),"user");
+        String username = Utils.isValidName(userDto.getUsername(),"user");
         userDto.setUsername(username);
 
+        // Updating exists user
         if (!Utils.isEmpty(userDto.getSlug())) {
+            // Verify required fields before create user
+            validateRequiredFieldsBeforeUpdateUser(userDto);
             int isUpdated = updateUser(userDto, loggedUser);
              Integer userId = userRepository.getUserIdBySlug(userDto.getSlug());
              userDto.setUserId(userId);
-            if (userDto.getUserType().equalsIgnoreCase("W")){
+
+             // if request user is a Wholesaler
+            if (userDto.getUserType().equals("W")){
                 storeDto =  userDtoToStoreDto(userDto);
                 storeDto.setUserSlug(userDto.getSlug());
                 storeService.createOrUpdateStore(storeDto, loggedUser);
@@ -254,6 +282,12 @@ public class UserService extends RepoContainer {
                 responseObj.put("message", "Successfully updated.");
                 responseObj.put("status", 201);
             } else {
+                responseObj.put("message", "Nothing to updated. may be something went wrong");
+                responseObj.put("status", 404);
+            }
+        } else {    // Creating new user
+            // Verify required fields before create user
+            validateRequiredFieldsBeforeCreateUser(userDto);
                 responseObj.put("message", "Nothing found to updated.");
                 responseObj.put("status", 404);
             }
@@ -262,11 +296,22 @@ public class UserService extends RepoContainer {
             User updatedUser = createUser(userDto, loggedUser);
             userDto.setUserId(updatedUser.getId());
             System.out.println(userDto.getUserType() + " : "+userDto.getUserSlug());
-            if (userDto.getUserType().equalsIgnoreCase("W")){
+
+            // if logged user not same to request user and make sure request user must be Wholesaler
+            if((userDto.getUserId() != loggedUser.getId()) &&  userDto.getUserType().equals("W"))
+            {
                 storeDto =  userDtoToStoreDto(userDto);
                 storeDto.setUserSlug(updatedUser.getSlug());
                 storeService.createOrUpdateStore(storeDto,loggedUser);
+
+                // Providing default permissions to wholesaler
+                List<Integer> defaultPermissions = storePermissionsRepository.getAllDefaultPermissionsIds();
+                int isAssigned = permissionHbRepository.assignPermissionsToWholesaler(userDto.getUserId(),defaultPermissions);
+                if (isAssigned < 1)
+                    throw new MyException("Something went wrong during update wholesaler's permissions. please contact to administrator.");
             }
+
+
             if (updatedUser.getId() > 0) {
                 responseObj.put("res", updatedUser);
                 responseObj.put("message", "Successfully inserted.");
@@ -278,15 +323,13 @@ public class UserService extends RepoContainer {
         }
 
         /** going to update user's groups ------------> only for staffs and super admin has group permissions */
-        if ((userDto.getUserId() != loggedUser.getId()) && (userDto.getUserType().equals("SA") || userDto.getUserType().equals("S")) ) {
+        if (
+            (userDto.getUserId() != loggedUser.getId()) && // Logged user can't change self groups
+            (userDto.getUserType().equals("SA") || userDto.getUserType().equals("S"))  // Make sure user must be Super Admin or Staff
+        ) {
             int isAssigned = permissionHbRepository.assignGroupsToUser(userDto.getUserId(), userDto.getGroupList(),loggedUser);
             if (isAssigned < 1)
                 throw new MyException("Something went wrong during update user's groups. please contact to administrator.");
-        }else if((userDto.getUserId() != loggedUser.getId()) && userDto.getUserType().equals("W")){
-            List<Integer> defaultPermissions = storePermissionsRepository.getAllDefaultPermissionsIds();
-            int isAssigned = permissionHbRepository.assignPermissionsToWholesaler(userDto.getUserId(),defaultPermissions);
-            if (isAssigned < 1)
-                throw new MyException("Something went wrong during update wholesaler's permissions. please contact to administrator.");
         }
         return responseObj;
     }
@@ -344,22 +387,33 @@ public class UserService extends RepoContainer {
     }
 
     @Transactional
-    public int updateStatusBySlug(StatusDto statusDto,User loggedUser){
+    public int updateStatusBySlug(StatusDto statusDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         try {
-            String status = statusDto.getStatus();
-            User user = userRepository.findUserBySlug(statusDto.getSlug());
-            Utils.canUpdateAStaff(statusDto.getSlug(),user.getUserType(),loggedUser);
-            user.setStatus(status);
-            if(!user.getUserType().equals("W")){
-                user = userRepository.save(user);
-                return user.getId();
+            // if there is any required field null then this will throw IllegalArgumentException
+            Utils.checkRequiredFields(statusDto, List.of("status", "slug"));
+
+            switch (statusDto.getStatus()){
+                case "A" , "D":
+                    String status = statusDto.getStatus();
+                    /* Getting user and updating status */
+                    User user = userRepository.findUserBySlug(statusDto.getSlug());
+                    if (user == null) throw new NotFoundException("No user not found to update.");
+                    Utils.canUpdateAStaff(statusDto.getSlug(),user.getUserType(),loggedUser);
+                    user.setStatus(status);
+                    if(!user.getUserType().equals("W")){
+                        user = userRepository.save(user);
+                        return user.getId();
+                    }
+                    /* Getting store and updating the status */
+                    Store store = storeRepository.findStoreByUserId(user.getId());
+                    store.setStatus(status);
+                    store = storeRepository.save(store);
+                    if (store.getId() > 0)
+                        user = userRepository.save(user);
+                    return user.getId();
+                default:
+                    throw new IllegalArgumentException("Status must be A or D.");
             }
-            Store store = storeRepository.findStoreByUserId(user.getId());
-            store.setStatus(status);
-            store = storeRepository.save(store);
-            if (store.getId() > 0)
-                user = userRepository.save(user);
-            return user.getId();
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             throw e;
@@ -420,9 +474,6 @@ public class UserService extends RepoContainer {
     }
 
 
-
-
-
     @Transactional(rollbackOn = {MyException.class,RuntimeException.class})
     public Map<String,Object> updateWholesalerPermissions(UserDto userDto, User loggededUser) throws MyException {
         Map<String,Object> responseObject = new HashMap<>();
@@ -434,8 +485,8 @@ public class UserService extends RepoContainer {
             responseObject.put("message", "All permissions have been updated successfully.");
             responseObject.put("status", 201);
         } else {
-            responseObject.put("message", "Something went wrong during update permissions");
-            responseObject.put("status", 400);
+            responseObject.put("message", "We don't found any user to update");
+            responseObject.put("status", 404);
         }
         return responseObject;
     }

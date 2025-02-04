@@ -14,9 +14,9 @@ public class UserDto extends StoreDto {
     private String password;
     private String username;
     private String token;
-    private String userType="R";
+    private String userType="R";  // Default the user is 'Retailer' but if user will pass user type then it's will update
     private String status;
-    private String contact="";
+    private String contact=""; // Optional field
     private String slug;
     private MultipartFile profileImage;
     Integer userId;

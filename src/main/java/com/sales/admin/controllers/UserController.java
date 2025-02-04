@@ -22,6 +22,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -168,16 +169,16 @@ public class UserController extends ServiceContainer {
 
 
     @PostMapping("/status")
-    public ResponseEntity<Map<String, Object>> stockSlug(HttpServletRequest request,@RequestBody StatusDto statusDto) {
+    public ResponseEntity<Map<String, Object>> stockSlug(HttpServletRequest request,@RequestBody StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         int isUpdated = userService.updateStatusBySlug(statusDto,loggedUser);
         if (isUpdated > 0) {
-            responseObj.put("message", "Item's status has been successfully updated.");
-            responseObj.put("status", 200);
+            responseObj.put("message", "User's status updated successfully.");
+            responseObj.put("status", 201);
         } else {
-            responseObj.put("message", "There is nothing to delete.recheck you parameters");
-            responseObj.put("status", 400);
+            responseObj.put("message", "There is nothing to update.recheck you parameters");
+            responseObj.put("status", 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }

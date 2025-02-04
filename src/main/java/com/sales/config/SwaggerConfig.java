@@ -19,11 +19,11 @@ public class SwaggerConfig {
             }
 
             parameters.add(new Parameter()
-                    .in("Authorization")
+                    .in("header")
                     .name("Authorization")
                     .description("My custom header (REQUIRED)")
                     .required(true)
-                    .schema(new io.swagger.v3.oas.models.media.Schema().type("string"))); // Add schema type
+            );
 /*
 
             parameters.add(new Parameter()
