@@ -216,10 +216,25 @@ public class UserService extends RepoContainer {
     public void validateRequiredFieldsBeforeCreateUser(UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         List<String> requiredFields = new ArrayList<>(List.of("username", "contact", "email", "userType"));;
         switch (userDto.getUserType()) {
-            case "R","W":
+            case "R":
                 break;
             case "S", "SA":
                 requiredFields.add("groupList");
+                break;
+            case "W" : /* We checked these fields during create store but
+                 also checking for wholesaler also because we don't unnecessary query hit on db */
+                requiredFields.addAll(List.of(
+                        "city",
+                        "state",
+                        "zipCode",
+                        "street",
+                        "storeName",
+                        "storeEmail",
+                        "description",
+                        "categoryId",
+                        "subCategoryId",
+                        "storePhone"
+                ));
                 break;
             default :
                 throw new IllegalStateException("Unexpected value: " + userDto.getUserType());
@@ -228,7 +243,6 @@ public class UserService extends RepoContainer {
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(userDto,requiredFields);
     }
-
 
     public void validateRequiredFieldsBeforeUpdateUser(UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         List<String> requiredFields = new ArrayList<>(List.of("username", "contact", "email","slug"));;
@@ -284,15 +298,12 @@ public class UserService extends RepoContainer {
             } else {
                 responseObj.put("message", "Nothing to updated. may be something went wrong");
                 responseObj.put("status", 404);
+                // return responseObj;
             }
         } else {    // Creating new user
             // Verify required fields before create user
             validateRequiredFieldsBeforeCreateUser(userDto);
-                responseObj.put("message", "Nothing found to updated.");
-                responseObj.put("status", 404);
-            }
-           // return responseObj;
-        } else {
+
             User updatedUser = createUser(userDto, loggedUser);
             userDto.setUserId(updatedUser.getId());
             System.out.println(userDto.getUserType() + " : "+userDto.getUserSlug());
