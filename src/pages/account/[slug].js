@@ -106,8 +106,9 @@ const Page = () => {
         const data = {
           ...user,
           ...updatedUser,
-          storeSlug  : user.userType == "W" ? "only-profile" : null 
         }
+        // We are not sending user type for wholesaler profile update request's params because we just updating only wholealer's profile not store.
+        if(data.userType == "W") delete data.userType
         await axios.post(host+"/admin/auth/update",data)
         .then(res => {
           setMessage(res.data.message)
