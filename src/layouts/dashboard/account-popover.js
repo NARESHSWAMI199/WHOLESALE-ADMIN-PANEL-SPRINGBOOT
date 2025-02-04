@@ -1,9 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { UserOutlined } from '@ant-design/icons';
+import UserIcon from '@heroicons/react/24/solid/UserIcon';
+import { LogoutOutlined } from '@mui/icons-material';
+import { Box, Divider, MenuItem, MenuList, Popover, SvgIcon, Typography } from '@mui/material';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
-import { Box, Divider, MenuItem, MenuList, Popover, Typography } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
-import Link from 'next/link';
 
 export const AccountPopover = (props) => {
   const { anchorEl, onClose, open } = props;
@@ -50,11 +53,17 @@ export const AccountPopover = (props) => {
           color="text.secondary"
           variant="body2"
         >
-          <Link style={{textDecoration:'none',color:'black'}} 
+          <Link style={{
+              display : 'flex',
+              alignItems : 'center',
+              textDecoration:'none',
+              color:'black'
+            }} 
             href={{
               pathname : "/account"
             }}> 
-          {!!user.username ? (user.username).toUpperCase() : ""}
+            <UserOutlined style={{marginRight : 5}} title='Edit profile' />
+            {!!user.username ? (user.username).toUpperCase() : ""}
           </Link>
      
         </Typography>
@@ -71,6 +80,7 @@ export const AccountPopover = (props) => {
         }}
       >
         <MenuItem onClick={handleSignOut}>
+          <LogoutOutlined fontSize='35' style={{marginRight : 5}}/>
           Sign out
         </MenuItem>
       </MenuList>
