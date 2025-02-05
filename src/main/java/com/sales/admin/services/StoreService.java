@@ -110,15 +110,7 @@ public class StoreService extends RepoContainer{
     }
 
     public void validateRequiredFieldsForCreateStore(StoreDto storeDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        List<String> requiredFields = new ArrayList<>(List.of("storeName",
-                "storeEmail",
-                "storePhone",
-                "rating",
-                "categoryId",
-                "subCategoryId",
-                "description",
-                "userSlug"
-        ));
+        List<String> requiredFields = new ArrayList<>(List.of("userSlug"));
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(storeDto,requiredFields);
     }

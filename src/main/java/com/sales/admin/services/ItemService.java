@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import static com.sales.specifications.ItemsSpecifications.*;
@@ -95,41 +96,72 @@ public class ItemService extends RepoContainer{
 
 
 
+    public void validateRequiredFields(ItemDto itemDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // if there is any required field null then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(itemDto,List.of(
+                "name",
+                "slug",
+                "price",
+                "discount",
+                "description",
+                "capacity",
+                "categoryId",
+                "subCategoryId"
+        ));
+    }
+
+    public void validateRequiredFieldsBeforeCreateItem(ItemDto itemDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        /** @Note : During creation we are checking only extra required params  */
+        // if there is any required field null then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(itemDto,List.of(
+                "wholesaleSlug",
+                "rating",
+                "inStock",
+                "label",
+                "avtars"
+        ));
+    }
+
     public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser) throws Exception {
-        if(itemDto.getPrice() < itemDto.getDiscount()) throw new Exception("Discount can't be greater then price.");
+        // if there is any required field null then this will throw IllegalArgumentException
+        validateRequiredFields(itemDto);
+
+        if(itemDto.getPrice() < itemDto.getDiscount()) throw new IllegalArgumentException("Discount can't be greater then price.");
         Map<String, Object> responseObj = new HashMap<>();
 
+        // Verify item name syntax
         String itemName = Utils.isValidName( itemDto.getName(),"item");
         itemDto.setName(itemName);
 
+        // retrieve category and subcategory
         ItemCategory itemCategory = itemCategoryRepository.findById(itemDto.getCategoryId()).get();
         ItemSubCategory itemSubCategory = itemSubCategoryRepository.findById(itemDto.getSubCategoryId()).get();
         itemDto.setItemCategory(itemCategory);
         itemDto.setItemSubCategory(itemSubCategory);
+
+        // Going to update item
         if (!Utils.isEmpty(itemDto.getSlug())) {
             int isUpdated = updateItem(itemDto, loggedUser);
-            /** @UpdatingImages*/
+            // updating item images
             updateStoreImage(itemDto.getPreviousItemImages(),itemDto.getNewItemImages(),itemDto.getSlug(),"update");
             if (isUpdated > 0) {
                 responseObj.put("message", "successfully updated.");
                 responseObj.put("status", 201);
             } else {
-                responseObj.put("message", "nothing to updated. may be something went wrong");
+                responseObj.put("message", "No item found to update.");
                 responseObj.put("status", 400);
             }
             return responseObj;
-        } else {
+        } else { // Going to create item
+            // if there is any required field null then this will throw IllegalArgumentException
+            validateRequiredFieldsBeforeCreateItem(itemDto);
             Item createdItem = createItem(itemDto, loggedUser);
-            if (createdItem.getId() > 0) {
-                responseObj.put("res", createdItem);
-                responseObj.put("message", "successfully inserted.");
-                responseObj.put("status", 200);
-            } else {
-                responseObj.put("message", "nothing to insert. may be something went wrong");
-                responseObj.put("status", 400);
-            }
+            responseObj.put("res", createdItem);
+            responseObj.put("message", "successfully inserted.");
+            responseObj.put("status", 200);
+            return responseObj;
         }
-        return responseObj;
+
     }
 
 

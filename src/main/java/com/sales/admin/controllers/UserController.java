@@ -76,26 +76,25 @@ public class UserController extends ServiceContainer {
         if (user == null) {
             responseObj.put("message", "Wrong otp password.");
             responseObj.put("status", 401);
-            return new ResponseEntity<>(responseObj, HttpStatus.UNAUTHORIZED);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
             responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
-            responseObj.put("message", "success");
-            responseObj.put("status", 200);
+            responseObj.put("message", "Successfully logged in.");
             responseObj.put("user", user);
+            responseObj.put("status", 200);
             userService.resetOtp(user.getEmail());
-            return new ResponseEntity<>(responseObj, HttpStatus.OK);
         } else {
-            responseObj.put("message", "You are blocked by admin");
+            responseObj.put("message", "You are blocked by admin.");
             responseObj.put("status", 401);
-            return new ResponseEntity<>(responseObj, HttpStatus.OK);
+
         }
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
 
 
 
     @PostMapping("sendOtp")
-    public ResponseEntity<Map<String,Object>> sendOtp(HttpServletRequest request, @RequestBody UserDto userDto){
+    public ResponseEntity<Map<String,Object>> sendOtp(@RequestBody UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> responseObj = new HashMap<>();
         boolean sendOtp = userService.sendOtp(userDto);
         if(sendOtp)  {

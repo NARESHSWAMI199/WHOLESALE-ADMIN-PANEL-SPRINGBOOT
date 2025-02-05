@@ -110,11 +110,20 @@ public class Utils {
         if (Utils.isEmpty(email) || !isValidEmail(email)) throw new IllegalArgumentException(errorMessage.replaceAll("_","email address") + " ["+email+"]") ;
     }
 
-    public static void canUpdateAStaff(String slug ,String userType, User loggedUser){
+    public static void canUpdateAStaff(String slug ,String userType, User loggedUser) throws PermissionDeniedDataAccessException{
         if((!loggedUser.getUserType().equals("SA") && // if user is not a super admin
             loggedUser.getId() != GlobalConstant.suId) &&  // if user not owner
             userType.equals("S") && // but user is a staff
-            !loggedUser.getSlug().equals(slug)) { // request slug not equals self slug
+            !loggedUser.getSlug().equals(slug)) { // request slug equals self slug
+            throw new PermissionDeniedDataAccessException("You don't have permissions to create or update a staff contact to administrator.",null);
+        }
+    }
+
+    public static void canUpdateAStaffStatus(String slug ,String userType, User loggedUser) throws PermissionDeniedDataAccessException{
+        if((!loggedUser.getUserType().equals("SA") && // if user is not a super admin
+                loggedUser.getId() != GlobalConstant.suId) &&  // if user not owner
+                userType.equals("S") && // but user is a staff
+                loggedUser.getSlug().equals(slug)) { // request slug equals logged user's slug
             throw new PermissionDeniedDataAccessException("You don't have permissions to create or update a staff contact to administrator.",null);
         }
     }

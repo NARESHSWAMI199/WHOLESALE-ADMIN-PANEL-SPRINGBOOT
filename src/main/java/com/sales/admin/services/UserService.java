@@ -67,7 +67,11 @@ public class UserService extends RepoContainer {
     }
 
 
-    public boolean sendOtp(UserDto userDto){
+    public boolean sendOtp(UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+
+        // if there is any required field null then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(userDto,List.of("email"));
+
         boolean sent = false;
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com"); // Replace with your mail server
@@ -75,10 +79,9 @@ public class UserService extends RepoContainer {
         props.put("mail.smtp.starttls.enable", "true");
 
         User user = userRepository.findUserByEmail(userDto.getEmail());
-        if (user == null) return  false;
-
+        if(user == null) throw new IllegalArgumentException("We are unable to send mail on this mail id "+userDto.getEmail());
+        
         String recipient = user.getEmail();
-
         SupportEmail supportEmail =  supportEmailsRepository.findSupportEmailBySupportType("SUPPORT");
         String sender = supportEmail.getEmail();
         Session session = Session.getInstance(props, new Authenticator() {
@@ -403,13 +406,15 @@ public class UserService extends RepoContainer {
             // if there is any required field null then this will throw IllegalArgumentException
             Utils.checkRequiredFields(statusDto, List.of("status", "slug"));
 
+            System.err.println(loggedUser.getSlug()+" " + " "+statusDto.getSlug());
+
             switch (statusDto.getStatus()){
                 case "A" , "D":
                     String status = statusDto.getStatus();
                     /* Getting user and updating status */
                     User user = userRepository.findUserBySlug(statusDto.getSlug());
                     if (user == null) throw new NotFoundException("No user not found to update.");
-                    Utils.canUpdateAStaff(statusDto.getSlug(),user.getUserType(),loggedUser);
+                    Utils.canUpdateAStaffStatus(statusDto.getSlug(),user.getUserType(),loggedUser);
                     user.setStatus(status);
                     if(!user.getUserType().equals("W")){
                         user = userRepository.save(user);
