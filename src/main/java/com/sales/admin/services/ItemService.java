@@ -105,7 +105,6 @@ public class ItemService extends RepoContainer{
                 "description",
                 "capacity",
                 "categoryId",
-                "avtars",
                 "subCategoryId"
         ));
     }
