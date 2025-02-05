@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -44,17 +46,11 @@ public class ItemController extends ServiceContainer {
     }
 
 
-    @PostMapping(value = {"/add", "/update"})
-    public ResponseEntity<Map<String, Object>> addOrUpdateItems(HttpServletRequest request, @ModelAttribute ItemDto itemDto) {
-        Map responseObj = new HashMap();
-        try {
-            User logggedUser = (User) request.getAttribute("user");
-            responseObj = itemService.createOrUpdateItem(itemDto, logggedUser);
-        } catch (Exception e) {
-            responseObj.put("message", e.getMessage());
-            responseObj.put("status", 500);
-            e.printStackTrace();
-        }
+    @PostMapping(value = {"/add", "/update"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> addOrUpdateItems(HttpServletRequest request, @ModelAttribute ItemDto itemDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        User logggedUser = (User) request.getAttribute("user");
+        System.err.println(itemDto.toString());
+        Map responseObj = itemService.createOrUpdateItem(itemDto, logggedUser);
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 

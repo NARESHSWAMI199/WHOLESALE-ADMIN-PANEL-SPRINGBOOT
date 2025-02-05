@@ -16,15 +16,14 @@ import java.util.List;
 public class ItemDto {
     private String name;
     private String wholesaleSlug;
-    private float price;
-    private float discount;
-    private float rating;
+    private Float price;
+    private Float discount;
+    private Float rating;
     private String description;
     private String InStock;
     private  String slug;
     private String label;
     private  Float capacity;
-    private String  avtars;
     private MultipartFile itemImage;
     private Integer storeId;
     private Integer categoryId = 0;

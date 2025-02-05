@@ -100,12 +100,12 @@ public class ItemService extends RepoContainer{
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(itemDto,List.of(
                 "name",
-                "slug",
                 "price",
                 "discount",
                 "description",
                 "capacity",
                 "categoryId",
+                "avtars",
                 "subCategoryId"
         ));
     }
@@ -118,11 +118,11 @@ public class ItemService extends RepoContainer{
                 "rating",
                 "inStock",
                 "label",
-                "avtars"
+                "newItemImages"
         ));
     }
 
-    public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser) throws Exception {
+    public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
         // if there is any required field null then this will throw IllegalArgumentException
         validateRequiredFields(itemDto);
 
@@ -149,7 +149,7 @@ public class ItemService extends RepoContainer{
                 responseObj.put("status", 201);
             } else {
                 responseObj.put("message", "No item found to update.");
-                responseObj.put("status", 400);
+                responseObj.put("status", 404);
             }
             return responseObj;
         } else { // Going to create item
@@ -165,10 +165,10 @@ public class ItemService extends RepoContainer{
     }
 
 
-    public Item createItem (ItemDto itemDto, User loggedUser) throws Exception {
+    public Item createItem (ItemDto itemDto, User loggedUser) throws IOException {
         Item item = new Item();
         Store store = storeRepository.findStoreBySlug(itemDto.getWholesaleSlug());
-        if (store == null) throw new Exception("Not a valid store.");
+        if (store == null) throw new IllegalArgumentException("Not a valid store.");
         String slug = UUID.randomUUID().toString();
         item.setWholesaleId(store.getId());
         item.setName(itemDto.getName());

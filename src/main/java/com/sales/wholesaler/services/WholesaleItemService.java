@@ -128,41 +128,32 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         itemDto.setItemCategory(itemCategory);
         ItemSubCategory itemSubCategory = wholesaleItemSubCategoryRepository.findById(itemDto.getSubCategoryId()).get();
         itemDto.setItemSubCategory(itemSubCategory);
+
+        // Going to update Item
         if (!Utils.isEmpty(itemDto.getSlug())) {
             Item item = findItemBySLug(itemDto.getSlug());
             if (item.getStatus().equals("D")) throw new MyException("You can't update a blocked item.");;
-            String itemImage =  updateStoreImage(itemDto.getPreviousItemImages(),itemDto.getNewItemImages(), item.getSlug());
-            if(itemImage != null){
-                itemDto.setAvtars(itemImage);
-            }else{
-                itemDto.setAvtars(item.getAvtars());
-            }
+            updateStoreImage(itemDto.getPreviousItemImages(),itemDto.getNewItemImages(), item.getSlug(),"update");
             int isUpdated = updateItem(itemDto, loggedUser);
-
             if (isUpdated > 0) {
                 responseObj.put("message", "successfully updated.");
                 responseObj.put("status", 201);
             } else {
-                responseObj.put("message", "nothing to updated. may be something went wrong");
-                responseObj.put("status", 400);
+                responseObj.put("message", "No item found to update.");
+                responseObj.put("status", 404);
             }
-            return responseObj;
-        } else {
+        } else {  // Going to crate Item
             Item createdItem = createItem(itemDto, loggedUser);
-            if (createdItem.getId() > 0) {
-                responseObj.put("res", createdItem);
-                responseObj.put("message", "successfully inserted.");
-                responseObj.put("status", 200);
-            } else {
-                responseObj.put("message", "nothing to insert. may be something went wrong");
-                responseObj.put("status", 400);
-            }
+            responseObj.put("res", createdItem);
+            responseObj.put("message", "Successfully inserted.");
+            responseObj.put("status", 200);
         }
         return responseObj;
     }
 
     @Transactional
     public Item createItem (ItemDto itemDto, User loggedUser) throws MyException, IOException {
+        String slug = UUID.randomUUID().toString();
         Item item = new Item();
         item.setWholesaleId(itemDto.getStoreId());
         item.setName(itemDto.getName());
@@ -179,18 +170,12 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         item.setCapacity(itemDto.getCapacity());
         item.setItemCategory(itemDto.getItemCategory());
         item.setItemSubCategory(itemDto.getItemSubCategory());
-        item.setSlug(UUID.randomUUID().toString());
-        String itemImage = updateStoreImage("",itemDto.getNewItemImages(), item.getSlug());
-        if(itemImage != null){
-            item.setAvtars(itemImage);
-        }else{
-            item.setAvtars(itemDto.getAvtars());
-        }
+        item.setSlug(slug);
+        item.setAvtars(updateStoreImage("",itemDto.getNewItemImages(),slug,"create"));
         return wholesaleItemRepository.save(item);
     }
 
-
-    public String updateStoreImage(String previousImages, List<MultipartFile> itemImages,String slug) throws IOException {
+    public String updateStoreImage(String previousImages, List<MultipartFile> itemImages,String slug,String action) throws IOException {
         String newImages = "";
         int index = 0;
         if(itemImages != null) {
@@ -211,6 +196,9 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         }else {
             /** because it's contains ',' at the end */
             updatedImages = previousImages.substring(0,previousImages.length()-1);
+        }
+        if(!Utils.isEmpty(updatedImages) && action.equalsIgnoreCase("update")){
+            wholesaleItemHbRepository.updateItemImage(slug, updatedImages);
         }
         return updatedImages;
     }

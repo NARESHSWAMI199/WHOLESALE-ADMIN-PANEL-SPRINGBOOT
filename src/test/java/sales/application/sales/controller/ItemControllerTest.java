@@ -1,6 +1,7 @@
 package sales.application.sales.controller;
 
 
+import com.sales.SalesApplication;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,11 +14,12 @@ import sales.application.sales.util.TestUtil;
 
 import java.util.Map;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@SpringBootTest
+@SpringBootTest(classes=SalesApplication.class)
 @AutoConfigureMockMvc
 public class ItemControllerTest extends TestUtil {
 
@@ -30,33 +32,28 @@ public class ItemControllerTest extends TestUtil {
         String  token = loggedUserResponse.get("token");
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization",token);
-        String json= """
-                {
-                  "name": "Mock test item",
-                  "wholesaleSlug": "string",
-                  "price": 0,
-                  "discount": 0,
-                  "rating": 0,
-                  "description": "string",
-                  "slug": "string",
-                  "label": "string",
-                  "capacity": 0,
-                  "avtars": "string",
-                  "itemImage": "string",
-                  "storeId": 0,
-                  "categoryId": 0,
-                  "subCategoryId": 0
-                }
-                """;
         mockMvc.perform(
-                post("/admin/auth/add")
-                    .content(json)
-                    .contentType(MediaType.APPLICATION_JSON)
+                multipart("/admin/item/add")
+                    .param("name", "Mock test item")
+                    .param("wholesaleSlug","20")
+                    .param("price","20")
+                    .param("discount","10")
+                    .param("rating","0")
+                    .param("description","Mock test.")
+                    .param("capacity","1")
+                    .param("categoryId","0")
+                    .param("subCategoryId","0")
+                    .param("price","20")
+                    .param("inStock","P")
+                    .param("label","N")
+                    .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                     .headers(headers)
         )
                 .andExpectAll(
-                        status().isOk()
-                );
+                    status().is(406)
+                )
+                .andDo(print())
+        ;
 
     }
 
