@@ -105,7 +105,7 @@ public class Utils {
         return mobileRegex.matches(mobileNumber);
     }
 
-    public static void mobileAndEmailValidation(String email ,String contact,String errorMessage) throws MyException {
+    public static void mobileAndEmailValidation(String email ,String contact,String errorMessage) {
         if (Utils.isEmpty(contact) || !contact.matches(Utils.mobileRegex)) throw new IllegalArgumentException(errorMessage.replaceAll("_","mobile number") +  " ["+contact+"]") ;
         if (Utils.isEmpty(email) || !isValidEmail(email)) throw new IllegalArgumentException(errorMessage.replaceAll("_","email address") + " ["+email+"]") ;
     }

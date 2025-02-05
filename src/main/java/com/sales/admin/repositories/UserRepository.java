@@ -19,7 +19,7 @@ public interface UserRepository  extends JpaRepository<User, Integer> , JpaSpeci
 
 
     @Query(value = "from User where slug=:slug and userType='W'")
-    Optional<User> findByWholesalerSLug(@Param("slug")String slug);
+    Optional<User> findByWholesalerSlug(@Param("slug")String slug);
 
     User findUserBySlug(String slug);
 

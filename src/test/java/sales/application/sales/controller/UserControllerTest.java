@@ -238,27 +238,29 @@ public class UserControllerTest extends TestUtil {
 
             String userSlug = extractSlugFromResponseViaRes(result);
 
-
-
-           /*     "storeName",
-                "email",
-                "phone",
-                "rating",
-                "storeCategory",
-                "storeSubCategory",
-                "description"*/
-
         String updatedJson = """
                 {
                     "slug" : "{slug}",
                     "email" : "{email}",
                     "username" : "naresh swami",
-                    "contact" : "{contact}"
+                    "contact" : "{contact}",
+                    "storeName" : "abc",
+                    "storeEmail" : "{storeEmail}",
+                    "description" : "test",
+                    "categoryId" : 0,
+                    "subCategoryId"  : 0,
+                    "storePhone" : "{storePhone}",
+                    "zipCode" : "302013",
+                    "city" : "1",
+                    "state" : "1",
+                    "street" : "1 Moti dungri"
                 }
                 """
                 .replace("{slug}",userSlug)
                 .replace("{email}",randomEmail)
                 .replace("{contact}",randomPhone)
+                .replace("{storeEmail}",randomEmail)
+                .replace("{storePhone}",randomPhone)
                 ;
         // update created wholesaler
         mockMvc.perform(post("/admin/auth/update")
