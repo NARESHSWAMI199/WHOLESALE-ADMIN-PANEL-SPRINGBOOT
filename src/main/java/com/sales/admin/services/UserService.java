@@ -221,7 +221,8 @@ public class UserService extends RepoContainer {
             case "S", "SA":
                 requiredFields.add("groupList");
                 break;
-            case "W" :
+            case "W" : /* We checked these fields during create store but
+                 also checking for wholesaler also because we don't unnecessary query hit on db */
                 requiredFields.addAll(List.of(
                         "city",
                         "state",
@@ -242,7 +243,6 @@ public class UserService extends RepoContainer {
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(userDto,requiredFields);
     }
-
 
     public void validateRequiredFieldsBeforeUpdateUser(UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         List<String> requiredFields = new ArrayList<>(List.of("username", "contact", "email","slug"));;
@@ -298,10 +298,12 @@ public class UserService extends RepoContainer {
             } else {
                 responseObj.put("message", "Nothing to updated. may be something went wrong");
                 responseObj.put("status", 404);
+                // return responseObj;
             }
         } else {    // Creating new user
             // Verify required fields before create user
             validateRequiredFieldsBeforeCreateUser(userDto);
+
             User updatedUser = createUser(userDto, loggedUser);
             userDto.setUserId(updatedUser.getId());
             System.out.println(userDto.getUserType() + " : "+userDto.getUserSlug());
@@ -323,11 +325,11 @@ public class UserService extends RepoContainer {
 
             if (updatedUser.getId() > 0) {
                 responseObj.put("res", updatedUser);
-                responseObj.put("message", "successfully inserted.");
+                responseObj.put("message", "Successfully inserted.");
                 responseObj.put("status", 200);
             } else {
-                responseObj.put("message", "nothing to save. may be something went wrong please contact to administrator.");
-                responseObj.put("status", 400);
+                responseObj.put("message", "Nothing to save. may be something went wrong please contact to administrator.");
+                responseObj.put("status", 500);
             }
         }
 
