@@ -8,6 +8,8 @@ import com.sales.dto.UserSearchFilters;
 import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,16 @@ public class UserController extends ServiceContainer {
         return new ResponseEntity<>(userPage, HttpStatus.OK);
     }
 
+
+    // Required params for login in swagger ui
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        content = @Content(schema = @Schema(example = """
+                    {
+                       "email" : "string",
+                       "password" : "string"
+                    }
+                    """)
+    ))
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> findByEmailAndPassword(@RequestBody UserDto userDetails) {
         logger.info("====================== ADMIN LOGIN PROCESS STARTED ======================");
@@ -52,22 +64,29 @@ public class UserController extends ServiceContainer {
         if (user == null) {
             responseObj.put("message", "Invalid credentials.");
             responseObj.put("status", 401);
-            return new ResponseEntity<>(responseObj, HttpStatus.UNAUTHORIZED);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
             responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
             responseObj.put("message", "success");
-            responseObj.put("status", 200);
             responseObj.put("user", user);
-            return new ResponseEntity<>(responseObj, HttpStatus.OK);
+            responseObj.put("status", 200);
         } else {
             responseObj.put("message", "You are blocked by admin");
             responseObj.put("status", 401);
-            return new ResponseEntity<>(responseObj, HttpStatus.OK);
         }
+        logger.info("====================== ADMIN LOGIN PROCESS END ======================");
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
 
-
+    // Required params for otp login in swagger ui
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        content = @Content(schema = @Schema(example = """
+                {
+                   "email" : "string",
+                   "password" : "(otp) string"
+                }
+                """)
+    ))
     @PostMapping("/login/otp")
     public ResponseEntity<Map<String, Object>> findUserByOtp(@RequestBody UserDto userDetails) {
         logger.info("====================== ADMIN LOGIN OTP PROCESS STARTED ======================");
@@ -85,16 +104,23 @@ public class UserController extends ServiceContainer {
         } else {
             responseObj.put("message", "You are blocked by admin.");
             responseObj.put("status", 401);
-
         }
+        logger.info("====================== ADMIN LOGIN OTP PROCESS END ======================");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
 
 
-
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        content = @Content(schema = @Schema(example = """
+            {
+               "email" : "string",
+            }
+            """)
+    ))
     @PostMapping("sendOtp")
     public ResponseEntity<Map<String,Object>> sendOtp(@RequestBody UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("====================== START SENDING OTP STARTED ======================");
         Map<String,Object> responseObj = new HashMap<>();
         boolean sendOtp = userService.sendOtp(userDto);
         if(sendOtp)  {
@@ -104,17 +130,43 @@ public class UserController extends ServiceContainer {
             responseObj.put("status",400);
             responseObj.put("message", "We facing some issue to send otp to this mail ->"+userDto.getEmail());
         }
+        logger.info("====================== END SENDING OTP STARTED ======================");
         return  new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
 
 
+
+    // For add and update user
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @Content(schema = @Schema( description = "If you going to update must add slug",
+            example = """
+            {
+                    "slug" : "(only during update) string",
+                    "email" : "string",
+                    "username" : "string",
+                    "userType"  : "W|R|S|SA",
+                    "contact" : "string",
+                    "city" : "cityId",
+                    "state" : "stateId",
+                    "street" : "string",
+                    "storeName" : "string",
+                    "storeEmail" : "string",
+                    "description" : "string",
+                    "categoryId" : 0,
+                    "subCategoryId"  : 0,
+                    "zipCode" : "string",
+                    "storePhone" : "string"
+                }
+            """)
+    ))
     @Transactional
     @PostMapping(value = {"/add", "/update"})
     public ResponseEntity<Map<String, Object>> register(HttpServletRequest request, @RequestBody UserDto userDto) throws Exception {
-        Map<String,Object> responseObj = new HashMap<>();
+        logger.info("====================== START ADD OR UPDATE USER STARTED ======================");
         User loggedUser = (User) request.getAttribute("user");
-        responseObj = userService.createOrUpdateUser(userDto, loggedUser);
+        Map<String,Object> responseObj = userService.createOrUpdateUser(userDto, loggedUser);
+        logger.info("====================== END ADD OR UPDATE USER STARTED ======================");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
 
     }
@@ -222,9 +274,9 @@ public class UserController extends ServiceContainer {
 
     @GetMapping("/groups/{slug}")
     public ResponseEntity<Map<String,Object>> getUserGroupsIdsBySlug(HttpServletRequest request,@PathVariable String slug){
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         List<Integer> groupsIds = userService.getUserGroupsIdBySlug(slug);
-        if (groupsIds.size() > 0 ) {
+        if (!groupsIds.isEmpty()) {
             responseObj.put("content", groupsIds);
             responseObj.put("status", 200);
         } else {
@@ -238,10 +290,10 @@ public class UserController extends ServiceContainer {
 
 
     @GetMapping("wholesale/permissions/{slug}")
-    public ResponseEntity<Map> getAllAssignedPermissionsForWholesaler(HttpServletRequest request,@PathVariable String slug){
+    public ResponseEntity<Map<String,Object>> getAllAssignedPermissionsForWholesaler(HttpServletRequest request,@PathVariable String slug){
         Map<String, Object> wholesalerAllPermissions = userService.getWholesalerAllPermissions();
         List<Integer> permissions =  userService.getWholesalerAllAssignedPermissions(slug);
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         if (permissions != null ) {
             responseObj.put("assigned", permissions);
             responseObj.put("allPermissions", wholesalerAllPermissions);
@@ -254,11 +306,18 @@ public class UserController extends ServiceContainer {
     }
 
 
-
-
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @Content(schema = @Schema(example = """
+            {
+               "slug" : "string",
+               "userType" : "string",
+               "storePermissions" : "[permissionIds list]"
+            }
+            """)
+    ))
     @Transactional
     @PostMapping("wholesaler/permissions/update")
-    public ResponseEntity<Map<String,Object>> updateWholesalerPermissions(HttpServletRequest request, @RequestBody UserDto userDto){
+    public ResponseEntity<Map<String,Object>> updateWholesalerPermissions(HttpServletRequest request, @RequestBody UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         User loggedUser =  (User)request.getAttribute("user");
         Map<String,Object> response= userService.updateWholesalerPermissions(userDto,loggedUser);
         return new ResponseEntity<>(response, HttpStatus.valueOf((Integer) response.get("status")));

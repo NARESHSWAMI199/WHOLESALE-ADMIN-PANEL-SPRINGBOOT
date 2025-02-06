@@ -43,6 +43,8 @@ public class SalesInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) throws Exception {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+        // Token from swagger because swagger not send Authorization header in request.
+        token = token == null ? request.getHeader("authToken") : token;
         System.out.println("request url : "+request.getRequestURI());
         try {
         if (token != null && token.startsWith("Bearer ")) {

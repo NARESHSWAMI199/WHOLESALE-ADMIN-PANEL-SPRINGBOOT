@@ -2,6 +2,8 @@ package com.sales.admin.controllers;
 
 import com.sales.dto.*;
 import com.sales.entities.*;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -46,11 +48,32 @@ public class ItemController extends ServiceContainer {
     }
 
 
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @Content(schema = @Schema(example = """
+                {
+                    "slug" : "(only during update) string",
+                    "name": "string",
+                    "wholesaleSlug": "string",
+                    "price": 0,
+                    "discount": 0,
+                    "rating": 0.0,
+                    "description": "string",
+                    "capacity": 1,
+                    "categoryId": 0,
+                    "subCategoryId": 0,
+                    "inStock": "Y|N",
+                    "label": "N|O",
+                    "newItemImages" : "[Multipart images list]",
+                    "previousItemImages" , "during update only | string.jpeg,string.png"
+                }
+            """)
+            ))
+
     @PostMapping(value = {"/add", "/update"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> addOrUpdateItems(HttpServletRequest request, @ModelAttribute ItemDto itemDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         User loggedUser = (User) request.getAttribute("user");
         System.err.println(itemDto.toString());
-        Map responseObj = itemService.createOrUpdateItem(itemDto, loggedUser);
+        Map<String,Object> responseObj = itemService.createOrUpdateItem(itemDto, loggedUser);
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
@@ -86,7 +109,7 @@ public class ItemController extends ServiceContainer {
     @PostMapping(value = {"/exportExcel/{wholesaleSlug}"})
     public ResponseEntity<Map<String, Object>> exportItemsFromExcel(@PathVariable String wholesaleSlug, @RequestBody SearchFilters searchFilters) {
         logger.info("STARTED exportItemsFromExcel.");
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         try {
             Store wholesale = storeService.getStoreDetails(wholesaleSlug);
             if (wholesale != null) {
@@ -111,7 +134,7 @@ public class ItemController extends ServiceContainer {
 
     @PostMapping("/delete")
     public ResponseEntity<Map<String, Object>> deleteItemBySlug(HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         User user = (User) request.getAttribute("user");
         int isUpdated = itemService.deleteItem(deleteDto,user);
         if (isUpdated > 0) {
@@ -125,9 +148,20 @@ public class ItemController extends ServiceContainer {
     }
 
 
+
+
+
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @Content(schema = @Schema(example = """
+            {
+               "stock" : "Y|N",
+               "slug" : "string"
+            }
+            """)
+    ))
     @PostMapping("/stock")
     public ResponseEntity<Map<String, Object>> updateItemStock(@RequestBody Map<String, String> params) {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         int isUpdated = itemService.updateStock(params.get("stock"), params.get("slug"));
         if (isUpdated > 0) {
             responseObj.put("message", "Item's stock has been successfully updated.");
@@ -142,7 +176,7 @@ public class ItemController extends ServiceContainer {
 
     @PostMapping("/status")
     public ResponseEntity<Map<String, Object>> updateItemStatus(HttpServletRequest request ,@RequestBody StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         User user = (User) request.getAttribute("user");
         int isUpdated = itemService.updateStatusBySlug(statusDto,user);
         if (isUpdated > 0) {

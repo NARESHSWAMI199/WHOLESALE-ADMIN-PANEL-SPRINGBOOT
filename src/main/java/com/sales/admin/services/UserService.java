@@ -491,11 +491,15 @@ public class UserService extends RepoContainer {
 
 
     @Transactional(rollbackOn = {MyException.class,RuntimeException.class})
-    public Map<String,Object> updateWholesalerPermissions(UserDto userDto, User loggededUser) throws MyException {
+    public Map<String,Object> updateWholesalerPermissions(UserDto userDto, User loggededUser) throws MyException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+
+        // Validating required field is there is any null field this will throw Exception
+        Utils.checkRequiredFields(userDto,List.of("slug","userType","storePermissions"));
+
         Map<String,Object> responseObject = new HashMap<>();
         if (Utils.isEmpty(userDto.getSlug()) || !userDto.getUserType().equals("W")) throw  new MyException("There is nothing to update.");
         User user = getUserDetail(userDto.getSlug());
-        if (user == null) throw new MyException("Not a valid user.");
+        if (user == null) throw new NotFoundException("User not found.");
         int isUpdated = permissionHbRepository.assignPermissionsToWholesaler(user.getId(), userDto.getStorePermissions());
         if (isUpdated > 0) {
             responseObject.put("message", "All permissions have been updated successfully.");
