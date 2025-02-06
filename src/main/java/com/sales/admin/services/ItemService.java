@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.sales.dto.*;
 import com.sales.entities.*;
 import com.sales.exceptions.MyException;
+import com.sales.exceptions.NotFoundException;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
@@ -121,12 +122,17 @@ public class ItemService extends RepoContainer{
         ));
     }
 
-    public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
+    @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class,})
+    public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser) throws InvocationTargetException, NoSuchMethodException, IOException, IllegalAccessException {
         // if there is any required field null then this will throw IllegalArgumentException
         validateRequiredFields(itemDto);
 
-        if(itemDto.getPrice() < itemDto.getDiscount()) throw new IllegalArgumentException("Discount can't be greater then price.");
-        Map<String, Object> responseObj = new HashMap<>();
+        // Validate inStock
+        if (!(itemDto.getInStock().equals("N") || itemDto.getInStock().equals("Y"))) throw new IllegalArgumentException("inStock must be 'Y' or 'N'.");
+        // Validate label
+        if (!(itemDto.getLabel().equals("N") || itemDto.getLabel().equals("O"))) throw new IllegalArgumentException("label must be 'O' or 'N'.");
+        // Validate price and discount
+        if(itemDto.getPrice() < itemDto.getDiscount() || itemDto.getDiscount() < 0) throw new IllegalArgumentException("Discount can't be greater then price and can't be less then 0.");
 
         // Verify item name syntax
         String itemName = Utils.isValidName( itemDto.getName(),"item");
@@ -137,6 +143,8 @@ public class ItemService extends RepoContainer{
         ItemSubCategory itemSubCategory = itemSubCategoryRepository.findById(itemDto.getSubCategoryId()).get();
         itemDto.setItemCategory(itemCategory);
         itemDto.setItemSubCategory(itemSubCategory);
+
+        Map<String, Object> responseObj = new HashMap<>();
 
         // Going to update item
         if (!Utils.isEmpty(itemDto.getSlug())) {
@@ -156,7 +164,7 @@ public class ItemService extends RepoContainer{
             validateRequiredFieldsBeforeCreateItem(itemDto);
             Item createdItem = createItem(itemDto, loggedUser);
             responseObj.put("res", createdItem);
-            responseObj.put("message", "successfully inserted.");
+            responseObj.put("message", "Successfully inserted.");
             responseObj.put("status", 200);
             return responseObj;
         }
@@ -164,6 +172,7 @@ public class ItemService extends RepoContainer{
     }
 
 
+    @Transactional
     public Item createItem (ItemDto itemDto, User loggedUser) throws IOException {
         Item item = new Item();
         Store store = storeRepository.findStoreBySlug(itemDto.getWholesaleSlug());
@@ -191,6 +200,7 @@ public class ItemService extends RepoContainer{
 
 
 
+    @Transactional
     public int updateItem(ItemDto itemDto, User loggedUser) {
         Item item = findItemBySLug(itemDto.getSlug());
         String title = "Item " + item.getName() + " updated.";
@@ -213,8 +223,12 @@ public class ItemService extends RepoContainer{
     }
 
     @Transactional
-    public int deleteItem(String slug,User loggedUser) {
+    public int deleteItem(DeleteDto deleteDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // Verify required fields if any issue found this will throw  IllegalArgumentException
+        Utils.checkRequiredFields(deleteDto,List.of("slug"));
+        String slug = deleteDto.getSlug();
         Item item = findItemBySLug(slug);
+        if (item == null) throw new NotFoundException("Item not found to delete.");
         String title = "Item " + item.getName() + " deleted.";
         String messageBody = "Item " + item.getName() + " key : " + item.getSlug() + " deleted by admin. If you have any issue please contact to administrator.";
         sendNotification(title,messageBody,item.getWholesaleId(),loggedUser);
@@ -223,23 +237,35 @@ public class ItemService extends RepoContainer{
 
 
     public int updateStock(String stock, String slug) {
-        return itemHbRepository.updateStock(stock,slug);
+        if(!Utils.isEmpty(slug)){
+            if(Utils.isEmpty(stock) || !(stock.equals("Y") || stock.equals("N")))
+                throw new IllegalArgumentException("The key stock must be 'Y' or 'N'.");
+            return itemHbRepository.updateStock(stock,slug);
+        }
+        throw new IllegalArgumentException("The key slug can't be blank.");
     }
 
-    public int updateStatusBySlug(StatusDto statusDto,User loggedUser){
-        Item item = findItemBySLug(statusDto.getSlug());
-        if(item == null) return 0;
-        String title = "";
-        String messageBody= "";
-        if(statusDto.getStatus().equals("D")) {
-            title = "Item " + item.getName() + " deactivated";
-            messageBody = "Item " + item.getName() + " key : " + item.getSlug() + " deactivated by admin because it's legal policy issue. If you have any issue please contact to administrator.";
-        }else{
-            title= "Item " + item.getName() + " activated";
-            messageBody = "Item " + item.getName() + " key : " + item.getSlug() + " activated successfully by admin.";
+    public int updateStatusBySlug(StatusDto statusDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // Verify required fields update item status
+        Utils.checkRequiredFields(statusDto, List.of("status","slug"));
+        switch (statusDto.getStatus()){
+            case "A", "D":
+                Item item = findItemBySLug(statusDto.getSlug());
+                if(item == null) return 0;
+                String title = "";
+                String messageBody= "";
+                if(statusDto.getStatus().equals("D")) {
+                    title = "Item " + item.getName() + " deactivated";
+                    messageBody = "Item " + item.getName() + " key : " + item.getSlug() + " deactivated by admin because it's legal policy issue. If you have any issue please contact to administrator.";
+                }else{
+                    title= "Item " + item.getName() + " activated";
+                    messageBody = "Item " + item.getName() + " key : " + item.getSlug() + " activated successfully by admin.";
+                }
+                sendNotification(title,messageBody,item.getWholesaleId(),loggedUser);
+                return itemHbRepository.updateStatus(statusDto.getSlug(),statusDto.getStatus());
+            default:
+                throw new IllegalArgumentException("Status must be A or D.");
         }
-        sendNotification(title,messageBody,item.getWholesaleId(),loggedUser);
-        return itemHbRepository.updateStatus(statusDto.getSlug(),statusDto.getStatus());
     }
 
     public int insertAllItems (Map excel,Integer userId, Integer wholesaleId){
@@ -280,7 +306,7 @@ public class ItemService extends RepoContainer{
 
 
     @Transactional
-    public String saveItemImageName(MultipartFile itemImage, String slug) throws IOException {
+    public String saveItemImageName(MultipartFile itemImage, String slug) throws IOException {;
         if(itemImage !=null) {
             if (UploadImageValidator.isValidImage(itemImage, GlobalConstant.minWidth,
                     GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
@@ -294,16 +320,13 @@ public class ItemService extends RepoContainer{
                     File file = new File(filePath);
 
                     itemImage.transferTo(file);
-                    if (UploadImageValidator.hasWhiteBackground(new File(filePath))) {
-                        return fileOriginalName;
-                    }else{
-                        throw new MyException("Image must have a white background");
-                    }
+                    //if (!UploadImageValidator.hasWhiteBackground(new File(filePath))) throw new MyException("Image must have a white background");
+                    return fileOriginalName;
             } else {
                 throw new MyException("Image is not fit in accept ratio. please resize you image before upload.");
             }
         }
-        throw new MyException("Something went wrong.Please contact to administrator");
+        throw new MyException("Item image can't be null. Something went wrong please contact to administrator.");
     }
 
 
@@ -340,7 +363,10 @@ public class ItemService extends RepoContainer{
     }
 
 
-    public List<ItemSubCategory> getAllItemsSubCategories(SearchFilters searchFilters) {
+    public List<ItemSubCategory> getAllItemsSubCategories(SearchFilters searchFilters) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // Validating required fields if found any required field is null this will throw IllegalArgumentException
+        Utils.checkRequiredFields(searchFilters,List.of("categoryId"));
+
         Sort sort = Sort.by(searchFilters.getOrderBy());
         sort  = searchFilters.getOrder().equals("asc") ? sort.ascending() : sort.descending();
         return itemSubCategoryRepository.getSubCategories(searchFilters.getCategoryId(),sort);
@@ -348,9 +374,11 @@ public class ItemService extends RepoContainer{
 
 
     @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
-    public ItemCategory saveOrUpdateItemCategory(CategoryDto categoryDto){
+    public ItemCategory saveOrUpdateItemCategory(CategoryDto categoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // Validate required fields if we found any given field is null then this will throw Exception
+        Utils.checkRequiredFields(categoryDto,List.of("category","icon"));
         ItemCategory itemCategory = new ItemCategory();
-        if(categoryDto.getId() != null)
+        if(categoryDto.getId() != null && categoryDto.getId() !=0) // because we are using 0 for other category.
         itemCategory.setId(categoryDto.getId());
         itemCategory.setCategory(categoryDto.getCategory());
         itemCategory.setIcon(categoryDto.getIcon());
@@ -358,9 +386,11 @@ public class ItemService extends RepoContainer{
     }
 
     @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
-    public ItemSubCategory saveOrUpdateItemSubCategory(SubCategoryDto subCategoryDto){
+    public ItemSubCategory saveOrUpdateItemSubCategory(SubCategoryDto subCategoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // Validate required fields if we found any given field is null then this will throw Exception
+        Utils.checkRequiredFields(subCategoryDto,List.of("categoryId","subcategory","unit","icon"));
         ItemSubCategory itemSubCategory = new ItemSubCategory();
-        if(subCategoryDto.getId() != null)
+        if(subCategoryDto.getId() != null && subCategoryDto.getId() != 0) // because we are using 0 for other subcategory.
         itemSubCategory.setId(subCategoryDto.getId());
         itemSubCategory.setCategoryId(subCategoryDto.getCategoryId());
         itemSubCategory.setSubcategory(subCategoryDto.getSubcategory());

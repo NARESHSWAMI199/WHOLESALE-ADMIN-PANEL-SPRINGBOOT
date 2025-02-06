@@ -29,7 +29,6 @@ public class GlobalException {
     Logger logger;
 
 
-
     @Transactional
     @ExceptionHandler(value = PermissionDeniedDataAccessException.class)
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
@@ -107,7 +106,7 @@ public class GlobalException {
     @ExceptionHandler(value = {NullPointerException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorDto resourceNotFoundException(NullPointerException ex, WebRequest request) {
-        ErrorDto message = new ErrorDto("Something went wrong there is a null pointer exception.",500);
+        ErrorDto message = new ErrorDto("Something went wrong there is a null pointer exception.",400);
         logger.info(ex.getMessage());
         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         return message;

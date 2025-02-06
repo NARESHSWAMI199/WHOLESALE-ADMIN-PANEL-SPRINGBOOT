@@ -2,7 +2,6 @@ package com.sales.admin.repositories;
 
 
 import com.sales.entities.SupportEmail;
-import com.sales.entities.SupportEmail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

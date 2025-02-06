@@ -1,9 +1,7 @@
 package com.sales.interceptors;
 
-import com.sales.entities.User;
 import com.sales.wholesaler.services.WholesaleUserService;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.socket.WebSocketHandler;

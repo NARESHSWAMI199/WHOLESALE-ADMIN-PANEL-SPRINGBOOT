@@ -18,7 +18,7 @@ public class ItemDto {
     private String wholesaleSlug;
     private Float price;
     private Float discount;
-    private Float rating;
+    private Float rating = 0f;
     private String description;
     private String InStock;
     private  String slug;

@@ -217,13 +217,9 @@ public class WholesaleItemService extends WholesaleRepoContainer {
                 if(!dir.exists()) dir.mkdirs();
                 String filePath = dirPath+fileOriginalName;
                 File file = new File(filePath);
-
                 itemImage.transferTo(file);
-                if (UploadImageValidator.hasWhiteBackground(new File(filePath))) {
-                    return fileOriginalName;
-                }else{
-                    throw new MyException("Image must have a white background");
-                }
+                //if (!UploadImageValidator.hasWhiteBackground(new File(filePath))) throw new MyException("Image must have a white background");
+                return fileOriginalName;
             } else {
                 throw new MyException("Image is not fit in accept ratio. please resize you image before upload.");
             }

@@ -109,17 +109,17 @@ public class ItemController extends ServiceContainer {
     }
 
 
-    @GetMapping("/delete/{slug}")
-    public ResponseEntity<Map<String, Object>> deleteItemBySlug(HttpServletRequest request,@PathVariable String slug) {
+    @PostMapping("/delete")
+    public ResponseEntity<Map<String, Object>> deleteItemBySlug(HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map responseObj = new HashMap();
         User user = (User) request.getAttribute("user");
-        int isUpdated = itemService.deleteItem(slug,user);
+        int isUpdated = itemService.deleteItem(deleteDto,user);
         if (isUpdated > 0) {
             responseObj.put("message", "Item has been successfully deleted.");
-            responseObj.put("status", 200);
+            responseObj.put("status", 201);
         } else {
-            responseObj.put("message", "There is nothing to delete.recheck you parameters");
-            responseObj.put("status", 400);
+            responseObj.put("message", "No item found to delete.");
+            responseObj.put("status", 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
@@ -133,24 +133,24 @@ public class ItemController extends ServiceContainer {
             responseObj.put("message", "Item's stock has been successfully updated.");
             responseObj.put("status", 200);
         } else {
-            responseObj.put("message", "There is not item to update.");
-            responseObj.put("status", 400);
+            responseObj.put("message", "No item found to update.");
+            responseObj.put("status", 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
 
     @PostMapping("/status")
-    public ResponseEntity<Map<String, Object>> updateItemStatus(HttpServletRequest request ,@RequestBody StatusDto statusDto) {
+    public ResponseEntity<Map<String, Object>> updateItemStatus(HttpServletRequest request ,@RequestBody StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map responseObj = new HashMap();
         User user = (User) request.getAttribute("user");
         int isUpdated = itemService.updateStatusBySlug(statusDto,user);
         if (isUpdated > 0) {
             responseObj.put("message", "Item's status has been successfully updated.");
-            responseObj.put("status", 200);
+            responseObj.put("status", 201);
         } else {
-            responseObj.put("message", "There is nothing to delete.recheck you parameters");
-            responseObj.put("status", 400);
+            responseObj.put("message", "No item found to update.");
+            responseObj.put("status", 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
@@ -200,7 +200,7 @@ public class ItemController extends ServiceContainer {
     }
 
     @PostMapping("subcategory")
-    public ResponseEntity<List<ItemSubCategory>> getSubCategory(@RequestBody SearchFilters searchFilters) {
+    public ResponseEntity<List<ItemSubCategory>> getSubCategory(@RequestBody SearchFilters searchFilters) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         List<ItemSubCategory> itemCategories = itemService.getAllItemsSubCategories(searchFilters);
         return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
@@ -224,16 +224,16 @@ public class ItemController extends ServiceContainer {
 
 
     @PostMapping(value = {"category/add","category/update"})
-    public ResponseEntity<Map<String,Object>> saveOrUpdateItemCategory(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<Map<String,Object>> saveOrUpdateItemCategory(@RequestBody CategoryDto categoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> result = new HashMap<>();
         ItemCategory updatedItemCategory = itemService.saveOrUpdateItemCategory(categoryDto);
         if(updatedItemCategory != null) {
-            if(categoryDto.getId() != null) {
+            if(categoryDto.getId() != null && categoryDto.getId() != 0) {
                 result.put("message", "Category successfully updated.");
-                result.put("status", 200);
+                result.put("status", 201);
             }else {
                 result.put("message", "Category successfully inserted.");
-                result.put("status", 201);
+                result.put("status", 200);
             }
         }
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
@@ -241,7 +241,7 @@ public class ItemController extends ServiceContainer {
 
 
     @PostMapping(value = {"subcategory/add","subcategory/update"})
-    public ResponseEntity<Map<String,Object>> saveOrUpdateItemSubCategory(@RequestBody SubCategoryDto subCategoryDto) {
+    public ResponseEntity<Map<String,Object>> saveOrUpdateItemSubCategory(@RequestBody SubCategoryDto subCategoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> result = new HashMap<>();
         ItemSubCategory updateItemSubCategory = itemService.saveOrUpdateItemSubCategory(subCategoryDto);
         if(updateItemSubCategory != null) {

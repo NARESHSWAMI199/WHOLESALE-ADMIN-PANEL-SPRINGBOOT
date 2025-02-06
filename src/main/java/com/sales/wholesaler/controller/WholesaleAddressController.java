@@ -1,7 +1,6 @@
 package com.sales.wholesaler.controller;
 
 
-import com.sales.admin.controllers.ServiceContainer;
 import com.sales.entities.City;
 import com.sales.entities.State;
 import org.springframework.http.HttpStatus;

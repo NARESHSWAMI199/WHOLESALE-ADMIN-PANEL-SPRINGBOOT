@@ -1,16 +1,25 @@
 package sales.application.sales.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -32,8 +41,8 @@ public class TestUtil {
 
     protected String extractSlugFromResponseViaRes(MvcResult result) throws Exception {
         String responseBody = result.getResponse().getContentAsString();
-        TestUserResponse testUserResponse = objectMapper.readValue(responseBody, TestUserResponse.class); // Create a TokenResponse class
-        return (String) testUserResponse.getRes().get("slug");
+        TestResResponse resResponse = objectMapper.readValue(responseBody, TestResResponse.class); // Create a TokenResponse class
+        return (String) resResponse.getRes().get("slug");
     }
 
 
@@ -41,6 +50,12 @@ public class TestUtil {
         String responseBody = result.getResponse().getContentAsString();
         TestUser testUser = objectMapper.readValue(responseBody, TestUser.class); // Create a TokenResponse class
         return (String) testUser.getUser().get("slug");
+    }
+
+    protected List extractCategoryListFromResponse(MvcResult result) throws UnsupportedEncodingException, JsonProcessingException {
+        String responseBody = result.getResponse().getContentAsString();
+        List categoryResponse = objectMapper.readValue(responseBody, List.class); // Create a TokenResponse class
+        return categoryResponse;
     }
 
     @Getter
@@ -53,7 +68,7 @@ public class TestUtil {
 
     @Getter
     @Setter
-    private static class TestUserResponse {
+    private static class TestResResponse {
         private Map<String,Object> res;
     }
 
@@ -99,6 +114,25 @@ public class TestUtil {
         return randomMobileNumber;
     }
 
+
+
+    public MockMultipartFile getImageMultipartFileToUpload(String parameterName) throws IOException {
+        String imageFolder = "C:/Users/DATA/Downloads/";
+        imageFolder = "C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/removebg/349b224a-199d-4fa4-88ce-701435f074aa/";
+        String imageName = "result_image.PNG";
+        Path path = Paths.get(imageFolder + imageName);
+        System.err.println("The image path ================= "+path);
+        if (!Files.exists(path)) throw new FileNotFoundException(path + " not found ");
+        byte[] imageBytes = Files.readAllBytes(path);
+        MockMultipartFile file = new MockMultipartFile(
+                parameterName, // Name of the request parameter
+                imageName, // Original filename,
+                MediaType.IMAGE_PNG_VALUE,
+                imageBytes// File content as byte array
+        );
+        return file;
+
+    }
 
 
 

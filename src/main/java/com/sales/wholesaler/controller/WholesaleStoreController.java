@@ -1,11 +1,9 @@
 package com.sales.wholesaler.controller;
 
 
-import com.sales.dto.AddressDto;
 import com.sales.dto.SearchFilters;
 import com.sales.dto.StoreDto;
 import com.sales.entities.*;
-import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("wholesale/store")

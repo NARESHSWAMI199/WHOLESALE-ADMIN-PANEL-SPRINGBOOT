@@ -90,6 +90,9 @@ public class ServicePlanService extends  RepoContainer {
     }
 
     public Map<String,Object> updateServicePlanStatus(String status,String slug, User loggedUser){
+
+
+
         Map<String,Object> result = new HashMap<>();
         if(!loggedUser.getUserType().equals("SA")) throw new MyException("You don't have permission to perform this action.");
         int isUpdated = servicePlanHbRepository.updateServicePlansStatus(status, slug, loggedUser);

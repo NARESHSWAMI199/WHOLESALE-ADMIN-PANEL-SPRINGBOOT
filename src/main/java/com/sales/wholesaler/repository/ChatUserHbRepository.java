@@ -2,7 +2,6 @@ package com.sales.wholesaler.repository;
 
 
 import com.sales.entities.User;
-import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;

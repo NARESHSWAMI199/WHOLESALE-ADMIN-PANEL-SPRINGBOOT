@@ -4,7 +4,6 @@ package com.sales.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "service_plans")

@@ -4,9 +4,6 @@ package com.sales.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-import java.util.Set;
-
 @Entity
 @Table(name = "contact_list")
 @Getter

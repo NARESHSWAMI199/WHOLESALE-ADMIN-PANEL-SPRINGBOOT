@@ -3,7 +3,6 @@ package com.sales.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.Where;
 
 import java.io.Serializable;
 import java.util.UUID;

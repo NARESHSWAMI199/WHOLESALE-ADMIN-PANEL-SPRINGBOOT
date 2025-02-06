@@ -1,7 +1,6 @@
 package com.sales.wholesaler.controller;
 
 
-import com.sales.admin.controllers.ServiceContainer;
 import com.sales.dto.ContactDto;
 import com.sales.entities.Contact;
 import com.sales.entities.User;

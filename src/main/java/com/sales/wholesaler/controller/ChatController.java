@@ -5,7 +5,6 @@ import com.sales.entities.Chat;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
-import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @RestController
 public class ChatController extends WholesaleServiceContainer {

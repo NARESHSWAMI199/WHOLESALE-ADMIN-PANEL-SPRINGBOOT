@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "store_notification")
