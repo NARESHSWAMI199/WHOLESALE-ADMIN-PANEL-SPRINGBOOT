@@ -239,18 +239,20 @@ const Page = () => {
         axios.defaults.headers = {
             Authorization: auth.token
         }
-        axios.get(host + `/admin/item/delete/${slug}`)
-            .then(res => {
-                setItems((items) =>items.filter((_) => _.slug !== slug));
-                setFlag("success")
-                setMessage(res.data.message)
-                setOpen(true)
-            }).catch(err => {
-                console.log(err)
-                setMessage(err.message)
-                setFlag("error")
-                setOpen(true)
-            })
+        axios.post(`${host}/admin/item/delete`,{
+            "slug" : slug
+        })
+        .then(res => {
+            setItems((items) =>items.filter((_) => _.slug !== slug));
+            setFlag("success")
+            setMessage(res.data.message)
+            setOpen(true)
+        }).catch(err => {
+            console.log(err)
+            setMessage(err.message)
+            setFlag("error")
+            setOpen(true)
+        })
             
     }
 
