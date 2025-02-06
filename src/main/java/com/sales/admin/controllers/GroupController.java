@@ -29,7 +29,7 @@ public class GroupController extends ServiceContainer {
     }
 
 
-    @RequestMapping("/permissions/all")
+    @GetMapping("/permissions/all")
     public ResponseEntity<Map<String,List<Object>>> getAllPermissions(HttpServletRequest request){
         Map<String,List<Object>> permissions =  groupService.getAllPermissions();
         return new ResponseEntity<>(permissions, HttpStatus.OK);

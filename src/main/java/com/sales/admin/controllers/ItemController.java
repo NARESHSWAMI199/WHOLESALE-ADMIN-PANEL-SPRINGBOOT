@@ -247,10 +247,10 @@ public class ItemController extends ServiceContainer {
         if(updateItemSubCategory != null) {
             if(subCategoryDto.getId() != null) {
                 result.put("message", "Category successfully updated.");
-                result.put("status", 200);
+                result.put("status", 201);
             }else {
                 result.put("message", "Category successfully inserted.");
-                result.put("status", 201);
+                result.put("status", 200);
             }
         }
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));

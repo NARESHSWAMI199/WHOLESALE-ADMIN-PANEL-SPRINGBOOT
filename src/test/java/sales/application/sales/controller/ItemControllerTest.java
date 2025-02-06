@@ -289,7 +289,7 @@ public class ItemControllerTest extends TestUtil {
                   "icon": "Mock test icon"
                   }
                 """
-                .replace("{random}", UUID.randomUUID().toString().substring(0,6));
+                .replace("{random}", UUID.randomUUID().toString().substring(0,6)); // random added due to duplicate category issue.
         mockMvc.perform(post("/admin/item/category/add")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
@@ -312,7 +312,7 @@ public class ItemControllerTest extends TestUtil {
                   "category" : "Mock Test Category {random}",
                   "icon": "Mock test icon"
                   }
-                """.replace("{random}", UUID.randomUUID().toString().substring(0,6));
+                """.replace("{random}", UUID.randomUUID().toString().substring(0,6)); // random added due to duplicate category issue.
         mockMvc.perform(post("/admin/item/category/add")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
@@ -322,5 +322,56 @@ public class ItemControllerTest extends TestUtil {
         ).andDo(print());
     }
 
+
+    @Test
+    public void testSubCategoryAdd() throws Exception {
+        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
+        String  token = loggedUserResponse.get("token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization",token);
+        String json = """
+                  {
+                    "categoryId" : 0,
+                    "subcategory" : "Mock test subcategory {random}",
+                    "unit" : "kg",
+                    "icon" : "test"
+                  }
+                """
+                .replace("{random}", UUID.randomUUID().toString().substring(0,6)); // random added due to duplicate category issue.
+        mockMvc.perform(post("/admin/item/subcategory/add")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+                .headers(headers)
+        ).andExpectAll(
+                status().is(200)
+        ).andDo(print());
+    }
+
+
+
+    @Test
+    public void testSubCategoryUpdate() throws Exception {
+        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
+        String  token = loggedUserResponse.get("token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization",token);
+        String json = """
+                  {
+                    "id" : 31,
+                    "categoryId" : 0,
+                    "subcategory" : "Mock test subcategory {random}",
+                    "unit" : "liter",
+                    "icon" : "test"
+                  }
+                """
+                .replace("{random}", UUID.randomUUID().toString().substring(0,6)); // random added due to duplicate category issue.
+        mockMvc.perform(post("/admin/item/subcategory/update")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+                .headers(headers)
+        ).andExpectAll(
+                status().is(201)
+        ).andDo(print());
+    }
 
 }
