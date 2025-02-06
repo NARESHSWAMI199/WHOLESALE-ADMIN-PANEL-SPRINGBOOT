@@ -130,8 +130,8 @@ public class WholesaleUserController extends WholesaleServiceContainer {
     public ResponseEntity<Map<String, Object>> updateAuth(HttpServletRequest request, @RequestBody UserDto userDto) {
         Map<String,Object> responseObj = new HashMap<>();
         try {
-            User logggedUser = (User) request.getAttribute("user");
-            responseObj = wholesaleUserService.updateUserProfile(userDto, logggedUser);
+            User loggedUser = (User) request.getAttribute("user");
+            responseObj = wholesaleUserService.updateUserProfile(userDto, loggedUser);
         } catch (Exception e) {
             responseObj.put("message", e.getMessage());
             responseObj.put("status", 500);
@@ -165,9 +165,9 @@ public class WholesaleUserController extends WholesaleServiceContainer {
     @PostMapping("/password")
     public ResponseEntity<Map<String, Object>> resetUserPasswordBySlug(HttpServletRequest request ,@RequestBody PasswordDto passwordDto) {
         Map<String,Object> responseObj = new HashMap<>();
-        User logggedUser = (User) request.getAttribute("user");
-        int isUpdated = wholesaleUserService.resetPasswordByUserSlug(passwordDto,logggedUser);
-        if (isUpdated > 0 || logggedUser.getId() == GlobalConstant.suId) {
+        User loggedUser = (User) request.getAttribute("user");
+        int isUpdated = wholesaleUserService.resetPasswordByUserSlug(passwordDto,loggedUser);
+        if (isUpdated > 0 || loggedUser.getId() == GlobalConstant.suId) {
             responseObj.put("message", "User password has been successfully updated.");
             responseObj.put("status", 200);
         } else {
@@ -184,8 +184,8 @@ public class WholesaleUserController extends WholesaleServiceContainer {
     public ResponseEntity<Map<String, Object>> updateProfileImage(HttpServletRequest request, @RequestPart MultipartFile profileImage, @PathVariable String slug ) {
         Map<String,Object> responseObj = new HashMap<>();
         try {
-            User logggedUser = (User) request.getAttribute("user");
-            String  imageName = wholesaleUserService.updateProfileImage(profileImage,slug,logggedUser);
+            User loggedUser = (User) request.getAttribute("user");
+            String  imageName = wholesaleUserService.updateProfileImage(profileImage,slug,loggedUser);
             if(imageName!=null) {
                 responseObj.put("status" , 200);
                 responseObj.put("imageName",imageName);

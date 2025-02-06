@@ -27,8 +27,8 @@ public class WholesaleStoreController extends WholesaleServiceContainer{
     public ResponseEntity<Map<String, Object>> updateStore(HttpServletRequest request, @ModelAttribute StoreDto storeDto) {
         Map<String,Object> responseObj = new HashMap<>();
         try {
-            User logggedUser = (User) request.getAttribute("user");
-            responseObj = wholesaleStoreService.updateStoreBySlug(storeDto, logggedUser);
+            User loggedUser = (User) request.getAttribute("user");
+            responseObj = wholesaleStoreService.updateStoreBySlug(storeDto, loggedUser);
         } catch (Exception e) {
             responseObj.put("message", e.getMessage());
             responseObj.put("status", 500);
@@ -41,8 +41,8 @@ public class WholesaleStoreController extends WholesaleServiceContainer{
     @Transactional
     @PostMapping(value = {"notifications"})
     public ResponseEntity<Page<StoreNotifications>> getAllStoreNotification(HttpServletRequest request, @RequestBody SearchFilters searchFilters) {
-        User logggedUser = (User) request.getAttribute("user");
-        Page<StoreNotifications> storeNotifications = wholesaleStoreService.getAllStoreNotification(searchFilters,logggedUser);
+        User loggedUser = (User) request.getAttribute("user");
+        Page<StoreNotifications> storeNotifications = wholesaleStoreService.getAllStoreNotification(searchFilters,loggedUser);
         return new ResponseEntity<>(storeNotifications, HttpStatus.OK);
     }
 

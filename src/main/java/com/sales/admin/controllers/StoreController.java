@@ -89,8 +89,8 @@ public class StoreController extends ServiceContainer{
     public ResponseEntity<Map<String,Object>> addStoreOrUpdateStore(HttpServletRequest request,  @ModelAttribute StoreDto storeDto) {
         Map responseObj = new HashMap();
         try{
-            User logggedUser = (User) request.getAttribute("user");
-            responseObj = storeService.createOrUpdateStore(storeDto,logggedUser);
+            User loggedUser = (User) request.getAttribute("user");
+            responseObj = storeService.createOrUpdateStore(storeDto,loggedUser);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();;
             responseObj.put("message",e.getMessage());
@@ -108,7 +108,7 @@ public class StoreController extends ServiceContainer{
     public ResponseEntity<Map<String,Object>> uploadStoreImage(HttpServletRequest request, @RequestPart MultipartFile storeImage , @PathVariable String slug) {
         Map responseObj = new HashMap();
         try {
-            User logggedUser = (User) request.getAttribute("user");
+            User loggedUser = (User) request.getAttribute("user");
             int isUpdated = storeService.updateStoreImage(storeImage, slug);
             if (isUpdated > 0){
                 responseObj.put("message","successfully updated");
