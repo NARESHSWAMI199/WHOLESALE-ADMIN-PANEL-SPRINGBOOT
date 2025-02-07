@@ -56,6 +56,13 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         Store store = getStoreByUserId(loggedUser.getId());
         String slug = store.getSlug();
         storeDto.setStoreSlug(slug);
+
+        // before update store and store's address get address id from store
+        Integer addressId = wholesaleStoreRepository.getAddressIdBySlug(storeDto.getStoreSlug());
+        if(addressId == null) throw new IllegalArgumentException("No store found to update.");  // wrong wholesale slug.
+        storeDto.setAddressId(addressId);
+
+
         String imageName = getStoreImagePath(storeDto.getStorePic(), slug);
         if(imageName !=null){
             storeDto.setStoreAvatar(imageName);
@@ -78,10 +85,10 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         AddressDto address = new AddressDto();
         address.setStreet(storeDto.getStreet());
         address.setZipCode(storeDto.getZipCode());
-        address.setAddressSlug(storeDto.getAddressSlug());
         address.setCity(storeDto.getCity());
         address.setState(storeDto.getState());
-        int isUpdatedAddress = addressHbRepository.updateAddress(address,loggedUser);
+        address.setAddressId(storeDto.getAddressId());
+        int isUpdatedAddress = wholesaleAddressHbRepository.updateAddress(address,loggedUser);
         if(isUpdatedAddress < 1) return isUpdatedAddress;
         return wholesaleStoreHbRepository.updateStore(storeDto,loggedUser);
     }
@@ -193,7 +200,6 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
 
     public AddressDto getAddressObjFromStore(StoreDto storeDto){
         return  AddressDto.builder()
-            .addressSlug(storeDto.getAddressSlug())
             .street(storeDto.getStreet())
             .zipCode(storeDto.getZipCode())
             .city(storeDto.getCity())

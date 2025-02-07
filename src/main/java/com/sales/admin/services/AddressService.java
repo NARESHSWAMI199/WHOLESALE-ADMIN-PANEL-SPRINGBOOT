@@ -35,13 +35,6 @@ public class AddressService extends RepoContainer {
         return  addressRepository.save(address);
     }
 
-    public Address findAddressBySlug(String slug){
-        return addressRepository.findAddressBySlug(slug);
-    }
-    public int  updateAddress(AddressDto addressDto,User loggedUser){
-        return addressHbRepository.updateAddress(addressDto,loggedUser);
-    }
-
     public List<City> getCityList(int stateId){
         return addressHbRepository.getCityList(stateId);
     }

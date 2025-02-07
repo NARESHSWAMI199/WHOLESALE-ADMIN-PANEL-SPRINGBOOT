@@ -31,7 +31,7 @@ public class AddressHbRepository {
                 "altitude =:altitude, " +
                 "updatedAt =:updatedAt, " +
                 "updatedBy =:updatedBy " +
-                "where slug =:slug ";
+                "where id =:id ";
         Query query = entityManager.createQuery(hqQuery);
         query.setParameter("street",addressDto.getStreet());
         query.setParameter("zipCode",addressDto.getZipCode());
@@ -41,7 +41,7 @@ public class AddressHbRepository {
         query.setParameter("altitude",addressDto.getAltitude());
         query.setParameter("updatedBy", loggedUser.getId());
         query.setParameter("updatedAt", Utils.getCurrentMillis());
-        query.setParameter("slug",addressDto.getAddressSlug());
+        query.setParameter("id",addressDto.getAddressId());
         return  query.executeUpdate();
     }
 

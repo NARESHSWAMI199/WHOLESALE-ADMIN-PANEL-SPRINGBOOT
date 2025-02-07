@@ -9,6 +9,7 @@ import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -66,7 +67,6 @@ public class StoreService extends RepoContainer{
 
     public AddressDto getAddressObjFromStore(StoreDto storeDto){
         AddressDto addressDto = new AddressDto();
-        addressDto.setAddressSlug(storeDto.getAddressSlug());
         addressDto.setStreet(storeDto.getStreet());
         addressDto.setZipCode(storeDto.getZipCode());
         addressDto.setCity(storeDto.getCity());
@@ -116,7 +116,7 @@ public class StoreService extends RepoContainer{
     }
 
 
-    @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
+    @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class})
     public Map<String, Object> createOrUpdateStore(StoreDto storeDto,User loggedUser,String path) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
             Map<String, Object> responseObj = new HashMap<>();
             // if there is any required field null then this will throw IllegalArgumentException
@@ -133,8 +133,15 @@ public class StoreService extends RepoContainer{
             if (!Utils.isEmpty(storeDto.getStoreSlug()) && path.contains("update")) { // We are going to update store.
                 String storeName = Utils.isValidName(storeDto.getStoreName(),"Store");
                 storeDto.setStoreName(storeName);
+                // If we found any issue with email and mobile this will throw exception
                 Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid store's _ recheck your and store's _.");
                 updateStoreImage(storeDto.getStorePic(), storeDto.getStoreSlug());
+
+                // before update store and store's address get address id from store
+                Integer addressId = storeRepository.getAddressIdBySlug(storeDto.getStoreSlug());
+                if(addressId == null) throw new IllegalArgumentException("No store found to update.");  // wrong wholesale slug.
+                storeDto.setAddressId(addressId);
+
                 int isUpdated = updateStore(storeDto, loggedUser);
                 if (isUpdated > 0) {
                     responseObj.put("message", "Successfully updated.");
@@ -175,20 +182,17 @@ public class StoreService extends RepoContainer{
     }
 
 
-    @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
+    @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class})
     public Store createStore(StoreDto storeDto , User loggedUser) throws MyException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         /** inserting address during create a wholesale */
         AddressDto addressDto = getAddressObjFromStore(storeDto);
         // if there is any required field null then this will throw IllegalArgumentException
         validateRequiredFieldsForCreateAddress(addressDto);
         Address address =  addressService.insertAddress(addressDto,loggedUser);
-        /** @END inserting  address during create a wholesale */
 
-        if(Utils.isEmpty(storeDto.getUserSlug())){
-            throw new MyException("Must provide a store user");
-        }
+        /** @END inserting  address during create a wholesale */
         Optional<User> storeOwner = userRepository.findByWholesalerSlug(storeDto.getUserSlug());
-        if (storeOwner.isEmpty())  throw new MyException("Make sure user is wholesaler.");
+        if (storeOwner.isEmpty())  throw new PermissionDeniedDataAccessException("User must be wholesaler.",null);
 
 
         // Saving the store data
@@ -206,21 +210,21 @@ public class StoreService extends RepoContainer{
         return storeRepository.save(store);
     }
 
-    @Transactional
+    @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class})
     public int updateStore(StoreDto storeDto, User loggedUser){
         AddressDto address = new AddressDto();
-        address.setAddressSlug(storeDto.getAddressSlug());
         address.setStreet(storeDto.getStreet());
         address.setZipCode(storeDto.getZipCode());
         address.setState(storeDto.getState());
         address.setCity(storeDto.getCity());
         address.setState(storeDto.getState());
+        address.setAddressId(storeDto.getAddressId());
         int isUpdatedAddress = addressHbRepository.updateAddress(address,loggedUser);
         if(isUpdatedAddress < 1) return isUpdatedAddress;
         return storeHbRepository.updateStore(storeDto,loggedUser);
     }
 
-    @Transactional
+    @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class})
     public int deleteStoreBySlug(String slug){
         try {
             Store store = storeRepository.findStoreBySlug(slug);
@@ -281,7 +285,7 @@ public class StoreService extends RepoContainer{
                 storeImage.transferTo(file);
                 return storeHbRepository.updateStoreAvatar(slug,fileOriginalName);
             } else {
-                throw new MyException("Image is not fit in accept ratio. please resize you image before upload.");
+                throw new IllegalArgumentException("Image is not fit in accept ratio. please resize you image before upload.");
             }
         }
         return 0;

@@ -29,7 +29,7 @@ public class WholesaleAddressHbRepository {
                 "altitude =:altitude, " +
                 "updatedAt =:updatedAt " +
                 "updatedBy =:updatedBy " +
-                "where slug =:slug ";
+                "where id =:id ";
         Query query = entityManager.createQuery(hqQuery);
         query.setParameter("city",addressDto.getCity());
         query.setParameter("state",addressDto.getState());
@@ -37,7 +37,7 @@ public class WholesaleAddressHbRepository {
         query.setParameter("altitude",addressDto.getAltitude());
         query.setParameter("updatedBy", loggedUser.getId());
         query.setParameter("updatedAt", Utils.getCurrentMillis());
-        query.setParameter("slug",addressDto.getAddressSlug());
+        query.setParameter("id",addressDto.getAddressId());
         return  query.executeUpdate();
     }
 

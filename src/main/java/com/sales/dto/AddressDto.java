@@ -9,13 +9,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressDto {
-
-    String addressSlug;
-    String street;
-    String zipCode;
-    Integer city;
-    Integer state;
-    Float latitude;
-    Float altitude;
+    private Integer addressId;
+    private String street;
+    private String zipCode;
+    private Integer city;
+    private Integer state;
+    private Float latitude;
+    private Float altitude;
 
 }

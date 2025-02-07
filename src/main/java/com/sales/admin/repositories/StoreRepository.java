@@ -21,4 +21,7 @@ public interface StoreRepository extends JpaRepository<Store, Integer> , JpaSpec
     @Query(value = "SELECT count(id) from store s where FROM_UNIXTIME(created_at /1000,'%m') =:month and FROM_UNIXTIME(created_at /1000,'%Y') =:year and is_deleted='N'",nativeQuery = true)
     Integer totalStoreViaMonth(@Param("month") Integer month,@Param("year") Integer year);
 
+    @Query("SELECT a.id FROM Store s JOIN s.address a WHERE s.slug = :slug")
+    Integer getAddressIdBySlug(String slug);
+
 }

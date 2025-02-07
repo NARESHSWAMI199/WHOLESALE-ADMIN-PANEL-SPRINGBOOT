@@ -6,6 +6,8 @@ import com.sales.entities.StoreCategory;
 import com.sales.entities.StoreSubCategory;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +21,8 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -38,7 +42,7 @@ public class StoreController extends ServiceContainer{
     @Transactional
     @GetMapping("/delete/{slug}")
     public ResponseEntity<Map<String,Object>> deleteStore(@PathVariable String slug) {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         int isUpdated = storeService.deleteStoreBySlug(slug);
         if (isUpdated > 0) {
             responseObj.put("message", "Store has been successfully deleted.");
@@ -54,7 +58,7 @@ public class StoreController extends ServiceContainer{
 
     @GetMapping("/detail/{slug}")
     public ResponseEntity<Map<String,Object>> getStoreDetailBySlug(@PathVariable String slug) {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         Store store = storeService.getStoreDetails(slug);
         if (store!= null){
             responseObj.put("res", store);
@@ -69,7 +73,7 @@ public class StoreController extends ServiceContainer{
 
     @GetMapping("/detailbyuser/{userSLug}")
     public ResponseEntity<Map<String,Object>> getUserDetailByUserSlug(@PathVariable("userSLug") String slug) throws Exception {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         Store store = storeService.getStoreByUserSlug(slug);
         if (store!= null){
             responseObj.put("res", store);
@@ -84,22 +88,31 @@ public class StoreController extends ServiceContainer{
 
 
 
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+            schema = @Schema(example = """
+                {
+                    "storeSlug" : "string (during update only)",
+                    "userSlug" : "string (during create only)",
+                    "storeName" : "string",
+                    "storeEmail" : "string",
+                    "description" : "string",
+                    "categoryId" : 0,
+                    "subCategoryId"  : 0,
+                    "storePhone" : "string",
+                    "zipCode" : "string(6 digit)",
+                    "city" : "cityId",
+                    "state" : "stateId",
+                    "street" : "string"
+                }
+                """)
+    ))
     @Transactional
     @PostMapping(value = {"/add","/update"})
-    public ResponseEntity<Map<String,Object>> addStoreOrUpdateStore(HttpServletRequest request,  @ModelAttribute StoreDto storeDto) {
-        Map responseObj = new HashMap();
-        try{
-            User loggedUser = (User) request.getAttribute("user");
-            String path = request.getRequestURI().toLowerCase();
-            responseObj = storeService.createOrUpdateStore(storeDto,loggedUser,path);
-        }catch (Exception e){
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();;
-            responseObj.put("message",e.getMessage());
-            responseObj.put("status",500);
-        }
+    public ResponseEntity<Map<String,Object>> addStoreOrUpdateStore(HttpServletRequest request,  @ModelAttribute StoreDto storeDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        User loggedUser = (User) request.getAttribute("user");
+        String path = request.getRequestURI().toLowerCase();
+        Map<String,Object> responseObj = storeService.createOrUpdateStore(storeDto,loggedUser,path);
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
-
-
     }
 
 
@@ -107,7 +120,7 @@ public class StoreController extends ServiceContainer{
     @Transactional
     @PostMapping("profile/{slug}")
     public ResponseEntity<Map<String,Object>> uploadStoreImage(HttpServletRequest request, @RequestPart MultipartFile storeImage , @PathVariable String slug) {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         try {
             User loggedUser = (User) request.getAttribute("user");
             int isUpdated = storeService.updateStoreImage(storeImage, slug);
@@ -134,7 +147,7 @@ public class StoreController extends ServiceContainer{
     @Transactional
     @PostMapping("/status")
     public ResponseEntity<Map<String,Object>> stockSlug (@RequestBody StatusDto statusDto) {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         int isUpdated = storeService.updateStatusBySlug(statusDto);
         if (isUpdated > 0) {
             responseObj.put("message", "Store's status has been successfully updated.");
