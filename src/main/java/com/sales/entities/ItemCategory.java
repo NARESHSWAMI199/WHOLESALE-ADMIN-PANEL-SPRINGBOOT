@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.util.UUID;
-
 @Entity
 @Table(name = "item_category")
 @Getter
@@ -24,7 +22,7 @@ public class ItemCategory {
     int id;
 
     @Column(name = "slug")
-    String slug = UUID.randomUUID().toString();
+    String slug;
 
     @Column(name="category")
     String category;

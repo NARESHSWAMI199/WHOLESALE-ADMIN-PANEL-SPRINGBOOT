@@ -162,11 +162,11 @@ public class ItemHbRepository{
         return query.executeUpdate();
     }
 
-    public int getItemCategoryIdBySLug(String slug){
+    public int getItemCategoryIdBySlug(String slug){
         String hql = "select id from ItemCategory where slug=:slug ";
         Query query = entityManager.createQuery(hql);
         query.setParameter("slug",slug);
-        return (int) query.getSingleResult();
+        return (Integer) query.getSingleResult();
     }
 
     public int switchCategoryToOther(int categoryId){

@@ -201,67 +201,22 @@ public class ItemController extends ServiceContainer {
     }
 
 
+
+    // ================= Item category
+
+
     @PostMapping("category")
     public ResponseEntity<List<ItemCategory>> getAllCategory(@RequestBody  SearchFilters searchFilters) {
         List<ItemCategory> itemCategories = itemService.getAllCategory(searchFilters);
         return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
 
-
-
-    @GetMapping("category/delete/{categorySlug}")
-    public ResponseEntity<Map<String,Object>> deleteItemCategoryById(HttpServletRequest request ,@PathVariable String categorySlug) {
-        Map<String,Object> responseObj = new HashMap<>();
-        User user = (User) request.getAttribute("user");
-        int isUpdated = itemService.deleteItemCategory(categorySlug,user);
-        if (isUpdated > 0) {
-            responseObj.put("message", "Item's category was successfully deleted.");
-            responseObj.put("status", 200);
-        } else {
-            responseObj.put("message", "There is nothing to delete.recheck you parameters");
-            responseObj.put("status", 400);
-        }
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
-    }
-
-
-
-
-    @GetMapping("category/{categoryId}")
-    public ResponseEntity<ItemCategory> getAllCategory(@PathVariable Integer categoryId) {
-        ItemCategory itemCategories = itemService.getItemCategoryById(categoryId);
-        return new ResponseEntity<>(itemCategories, HttpStatus.OK);
-    }
-
-    @PostMapping("subcategory")
-    public ResponseEntity<List<ItemSubCategory>> getSubCategory(@RequestBody SearchFilters searchFilters) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        List<ItemSubCategory> itemCategories = itemService.getAllItemsSubCategories(searchFilters);
-        return new ResponseEntity<>(itemCategories, HttpStatus.OK);
-    }
-
-
-    @GetMapping("subcategory/delete/{subcategorySlug}")
-    public ResponseEntity<Map<String,Object>> deleteItemSubCategoryById(HttpServletRequest request ,@PathVariable String subcategorySlug) {
-        Map<String,Object> responseObj = new HashMap<>();
-        User user = (User) request.getAttribute("user");
-        int isUpdated = itemService.deleteItemSubCategory(subcategorySlug,user);
-        if (isUpdated > 0) {
-            responseObj.put("message", "Item's subcategory was successfully deleted.");
-            responseObj.put("status", 200);
-        } else {
-            responseObj.put("message", "There is nothing to delete.recheck you parameters");
-            responseObj.put("status", 400);
-        }
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
-    }
-
-
-
     @PostMapping(value = {"category/add","category/update"})
     public ResponseEntity<Map<String,Object>> saveOrUpdateItemCategory(@RequestBody CategoryDto categoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> result = new HashMap<>();
         ItemCategory updatedItemCategory = itemService.saveOrUpdateItemCategory(categoryDto);
         if(updatedItemCategory != null) {
+            result.put("res",updatedItemCategory); // during update and inserted for both
             if(categoryDto.getId() != null && categoryDto.getId() != 0) {
                 result.put("message", "Category successfully updated.");
                 result.put("status", 201);
@@ -274,11 +229,44 @@ public class ItemController extends ServiceContainer {
     }
 
 
+    @PostMapping("category/delete")
+    public ResponseEntity<Map<String,Object>> deleteItemCategoryById(HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        Map<String,Object> responseObj = new HashMap<>();
+        User user = (User) request.getAttribute("user");
+        int isUpdated = itemService.deleteItemCategory(deleteDto,user);
+        if (isUpdated > 0) {
+            responseObj.put("message", "Item's category delete successfully.");
+            responseObj.put("status", 201);
+        } else {
+            responseObj.put("message", "No category to found.");
+            responseObj.put("status", 404);
+        }
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+    }
+
+
+    @GetMapping("category/{categoryId}")
+    public ResponseEntity<ItemCategory> getAllCategory(@PathVariable Integer categoryId) {
+        ItemCategory itemCategories = itemService.getItemCategoryById(categoryId);
+        return new ResponseEntity<>(itemCategories, HttpStatus.OK);
+    }
+
+
+
+    // ================= Item subcategory
+
+    @PostMapping("subcategory")
+    public ResponseEntity<List<ItemSubCategory>> getSubCategory(@RequestBody SearchFilters searchFilters) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        List<ItemSubCategory> itemCategories = itemService.getAllItemsSubCategories(searchFilters);
+        return new ResponseEntity<>(itemCategories, HttpStatus.OK);
+    }
+
     @PostMapping(value = {"subcategory/add","subcategory/update"})
     public ResponseEntity<Map<String,Object>> saveOrUpdateItemSubCategory(@RequestBody SubCategoryDto subCategoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> result = new HashMap<>();
         ItemSubCategory updateItemSubCategory = itemService.saveOrUpdateItemSubCategory(subCategoryDto);
         if(updateItemSubCategory != null) {
+            result.put("res",updateItemSubCategory); // during update and inserted for both
             if(subCategoryDto.getId() != null) {
                 result.put("message", "Category successfully updated.");
                 result.put("status", 201);
@@ -290,6 +278,21 @@ public class ItemController extends ServiceContainer {
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
 
+
+    @PostMapping("subcategory/delete")
+    public ResponseEntity<Map<String,Object>> deleteItemSubCategoryById(HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        Map<String,Object> responseObj = new HashMap<>();
+        User user = (User) request.getAttribute("user");
+        int isUpdated = itemService.deleteItemSubCategory(deleteDto,user);
+        if (isUpdated > 0) {
+            responseObj.put("message", "Item's subcategory deleted successfully");
+            responseObj.put("status", 201);
+        } else {
+            responseObj.put("message", "No subcategory found to delete.");
+            responseObj.put("status", 404);
+        }
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+    }
 
 
     @GetMapping("units")

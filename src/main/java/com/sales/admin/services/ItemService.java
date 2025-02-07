@@ -11,6 +11,7 @@ import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -344,22 +345,30 @@ public class ItemService extends RepoContainer{
         return itemCategoryRepository.findById(categoryId).get();
     }
 
-    public int deleteItemCategory(String slug,User user) {
-        if(user.getUserType().equals("SA")) {
-            int categoryId = itemHbRepository.getItemCategoryIdBySLug(slug);
-            itemHbRepository.switchCategoryToOther(categoryId);
-           return itemHbRepository.deleteItemCategory(slug);
-        }
-        return 0;
+    public int deleteItemCategory(DeleteDto deleteDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // Validating required fields if they are null this will throw an Exception
+        Utils.checkRequiredFields(deleteDto,List.of("slug"));
+        String slug = deleteDto.getSlug();
+        // only super admin can delete subcategory
+        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("Only super admin can delete item's category.",null);
+        Integer categoryId = itemCategoryRepository.getItemCategoryIdBySlug(slug);
+        if (categoryId == null) throw new NotFoundException("Category not found.");
+        itemHbRepository.switchCategoryToOther(categoryId); // before delete category assign item to other category.
+        return itemHbRepository.deleteItemCategory(slug);
+
     }
 
-    public int deleteItemSubCategory(String slug,User user) {
-        if(user.getUserType().equals("SA")) {
-            int subCategoryId = itemSubCategoryRepository.getItemSubCategoryIdBySlug(slug);
-            itemHbRepository.switchSubCategoryToOther(subCategoryId);
-            return itemHbRepository.deleteItemSubCategory(slug);
-        }
-        return 0;
+    public int deleteItemSubCategory(DeleteDto deleteDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // Validating required fields if they are null this will throw an Exception
+        Utils.checkRequiredFields(deleteDto,List.of("slug"));
+        String slug = deleteDto.getSlug();
+        // only super admin can delete subcategory
+        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("Only super admin can delete subcategory.",null);
+        Integer subCategoryId = itemSubCategoryRepository.getItemSubCategoryIdBySlug(slug);
+        if (subCategoryId == null) throw new NotFoundException("Subcategory not found.");
+        itemHbRepository.switchSubCategoryToOther(subCategoryId); // before delete category assign item to other subcategory.
+        return itemHbRepository.deleteItemSubCategory(slug);
+
     }
 
 
@@ -380,6 +389,7 @@ public class ItemService extends RepoContainer{
         ItemCategory itemCategory = new ItemCategory();
         if(categoryDto.getId() != null && categoryDto.getId() !=0) // because we are using 0 for other category.
         itemCategory.setId(categoryDto.getId());
+        itemCategory.setSlug(UUID.randomUUID().toString());  // slug will also change after during update
         itemCategory.setCategory(categoryDto.getCategory());
         itemCategory.setIcon(categoryDto.getIcon());
         return itemCategoryRepository.save(itemCategory);
@@ -392,6 +402,7 @@ public class ItemService extends RepoContainer{
         ItemSubCategory itemSubCategory = new ItemSubCategory();
         if(subCategoryDto.getId() != null && subCategoryDto.getId() != 0) // because we are using 0 for other subcategory.
         itemSubCategory.setId(subCategoryDto.getId());
+        itemSubCategory.setSlug(UUID.randomUUID().toString()); // slug will also change after during update
         itemSubCategory.setCategoryId(subCategoryDto.getCategoryId());
         itemSubCategory.setSubcategory(subCategoryDto.getSubcategory());
         itemSubCategory.setIcon(subCategoryDto.getIcon());
