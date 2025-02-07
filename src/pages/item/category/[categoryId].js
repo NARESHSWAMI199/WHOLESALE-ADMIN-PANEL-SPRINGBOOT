@@ -210,7 +210,9 @@ const onDelete = (subCategorySlug) => {
   axios.defaults.headers = {
     Authorization :  auth.token  
   }
-  axios.get(host+`/admin/item/subcategory/delete/${subCategorySlug}`)
+  axios.post(host+`/admin/item/subcategory/delete`,{
+    "slug" : subCategorySlug
+  })
   .then(res => {
       setFlag("success")
       setMessage(res.data.message)
