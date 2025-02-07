@@ -117,7 +117,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
 
 
     @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
-    public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser) throws Exception {
+    public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser,String path) throws Exception {
         if(itemDto.getPrice() < itemDto.getDiscount()) throw new MyException("Discount can't be greater then price.");
         Map<String, Object> responseObj = new HashMap<>();
         String itemName = Utils.isValidName( itemDto.getName(),"item");
@@ -130,7 +130,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         itemDto.setItemSubCategory(itemSubCategory);
 
         // Going to update Item
-        if (!Utils.isEmpty(itemDto.getSlug())) {
+        if (!Utils.isEmpty(itemDto.getSlug()) && path.contains("update")) {
             Item item = findItemBySLug(itemDto.getSlug());
             if (item.getStatus().equals("D")) throw new MyException("You can't update a blocked item.");;
             updateStoreImage(itemDto.getPreviousItemImages(),itemDto.getNewItemImages(), item.getSlug(),"update");

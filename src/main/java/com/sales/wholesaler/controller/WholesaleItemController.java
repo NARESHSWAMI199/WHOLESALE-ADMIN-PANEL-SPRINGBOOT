@@ -49,7 +49,8 @@ public class WholesaleItemController extends WholesaleServiceContainer {
         Map responseObj = new HashMap();
         try {
             User loggedUser = (User) request.getAttribute("user");
-            responseObj = wholesaleItemService.createOrUpdateItem(itemDto, loggedUser);
+            String path = request.getRequestURI();
+            responseObj = wholesaleItemService.createOrUpdateItem(itemDto, loggedUser,path);
         } catch (Exception e) {
             responseObj.put("message", e.getMessage());
             responseObj.put("status", 500);
