@@ -119,7 +119,7 @@ public class ItemControllerTest extends TestUtil {
         headers.set("Authorization", token);
         MockMultipartFile file = getImageMultipartFileToUpload("newItemImages");
         List<MockMultipartFile> imageFiles = List.of(file);
-        MockMultipartHttpServletRequestBuilder requestBuilder = multipart("/admin/item/add");
+        MockMultipartHttpServletRequestBuilder requestBuilder = multipart("/admin/item/update");
         imageFiles.forEach(requestBuilder::file);
         mockMvc.perform(requestBuilder
                         .param("slug", slug)

@@ -124,7 +124,7 @@ public class ItemService extends RepoContainer{
     }
 
     @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class,})
-    public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser) throws InvocationTargetException, NoSuchMethodException, IOException, IllegalAccessException {
+    public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser,String path) throws InvocationTargetException, NoSuchMethodException, IOException, IllegalAccessException {
         // if there is any required field null then this will throw IllegalArgumentException
         validateRequiredFields(itemDto);
 
@@ -148,7 +148,7 @@ public class ItemService extends RepoContainer{
         Map<String, Object> responseObj = new HashMap<>();
 
         // Going to update item
-        if (!Utils.isEmpty(itemDto.getSlug())) {
+        if (!Utils.isEmpty(itemDto.getSlug()) && path.contains("update")) {
             int isUpdated = updateItem(itemDto, loggedUser);
             // updating item images
             updateStoreImage(itemDto.getPreviousItemImages(),itemDto.getNewItemImages(),itemDto.getSlug(),"update");
@@ -159,7 +159,6 @@ public class ItemService extends RepoContainer{
                 responseObj.put("message", "No item found to update.");
                 responseObj.put("status", 404);
             }
-            return responseObj;
         } else { // Going to create item
             // if there is any required field null then this will throw IllegalArgumentException
             validateRequiredFieldsBeforeCreateItem(itemDto);
@@ -167,8 +166,8 @@ public class ItemService extends RepoContainer{
             responseObj.put("res", createdItem);
             responseObj.put("message", "Successfully inserted.");
             responseObj.put("status", 200);
-            return responseObj;
         }
+        return responseObj;
 
     }
 

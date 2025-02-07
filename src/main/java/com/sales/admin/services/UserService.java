@@ -258,7 +258,7 @@ public class UserService extends RepoContainer {
         @Important : There are two types of user @loggedUser and @requestUser both are different
      */
     @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
-    public Map<String, Object> createOrUpdateUser(UserDto userDto, User loggedUser) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public Map<String, Object> createOrUpdateUser(UserDto userDto, User loggedUser,String path) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String, Object> responseObj = new HashMap<>();
         StoreDto storeDto;
         // condition for create or update superuser
@@ -282,7 +282,7 @@ public class UserService extends RepoContainer {
         userDto.setUsername(username);
 
         // Updating existing user
-        if (!Utils.isEmpty(userDto.getSlug())) {
+        if (!Utils.isEmpty(userDto.getSlug()) && path.contains("update")) {
             // Verify required fields before create user
             validateRequiredFieldsBeforeUpdateUser(userDto);
             int isUpdated = updateUser(userDto, loggedUser);
@@ -293,7 +293,7 @@ public class UserService extends RepoContainer {
             if (userDto.getUserType().equals("W")){
                 storeDto =  userDtoToStoreDto(userDto);
                 storeDto.setUserSlug(userDto.getSlug());
-                storeService.createOrUpdateStore(storeDto, loggedUser);
+                storeService.createOrUpdateStore(storeDto, loggedUser,path);
             }
             if (isUpdated > 0) {
                 responseObj.put("message", "Successfully updated.");
@@ -316,7 +316,7 @@ public class UserService extends RepoContainer {
             {
                 storeDto =  userDtoToStoreDto(userDto);
                 storeDto.setUserSlug(updatedUser.getSlug());
-                storeService.createOrUpdateStore(storeDto,loggedUser);
+                storeService.createOrUpdateStore(storeDto,loggedUser,path);
 
                 // Providing default permissions to wholesaler
                 List<Integer> defaultPermissions = storePermissionsRepository.getAllDefaultPermissionsIds();

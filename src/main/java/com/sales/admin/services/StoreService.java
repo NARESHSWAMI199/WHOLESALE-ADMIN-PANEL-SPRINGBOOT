@@ -117,7 +117,7 @@ public class StoreService extends RepoContainer{
 
 
     @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
-    public Map<String, Object> createOrUpdateStore(StoreDto storeDto,User loggedUser) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public Map<String, Object> createOrUpdateStore(StoreDto storeDto,User loggedUser,String path) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
             Map<String, Object> responseObj = new HashMap<>();
             // if there is any required field null then this will throw IllegalArgumentException
             validateRequiredFieldsForStore(storeDto);
@@ -130,7 +130,7 @@ public class StoreService extends RepoContainer{
                 throw new IllegalArgumentException("Invalid arguments for category and subcategory");
             }
 
-            if (!Utils.isEmpty(storeDto.getStoreSlug())) { // We are going to update store.
+            if (!Utils.isEmpty(storeDto.getStoreSlug()) && path.contains("update")) { // We are going to update store.
                 String storeName = Utils.isValidName(storeDto.getStoreName(),"Store");
                 storeDto.setStoreName(storeName);
                 Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid store's _ recheck your and store's _.");

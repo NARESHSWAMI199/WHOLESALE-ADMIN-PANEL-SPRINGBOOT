@@ -165,7 +165,8 @@ public class UserController extends ServiceContainer {
     public ResponseEntity<Map<String, Object>> register(HttpServletRequest request, @RequestBody UserDto userDto) throws Exception {
         logger.info("====================== START ADD OR UPDATE USER STARTED ======================");
         User loggedUser = (User) request.getAttribute("user");
-        Map<String,Object> responseObj = userService.createOrUpdateUser(userDto, loggedUser);
+        String path = request.getRequestURI();
+        Map<String,Object> responseObj = userService.createOrUpdateUser(userDto, loggedUser,path);
         logger.info("====================== END ADD OR UPDATE USER STARTED ======================");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
 

@@ -90,7 +90,8 @@ public class StoreController extends ServiceContainer{
         Map responseObj = new HashMap();
         try{
             User loggedUser = (User) request.getAttribute("user");
-            responseObj = storeService.createOrUpdateStore(storeDto,loggedUser);
+            String path = request.getRequestURI().toLowerCase();
+            responseObj = storeService.createOrUpdateStore(storeDto,loggedUser,path);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();;
             responseObj.put("message",e.getMessage());

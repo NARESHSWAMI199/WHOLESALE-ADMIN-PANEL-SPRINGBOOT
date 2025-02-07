@@ -72,8 +72,9 @@ public class ItemController extends ServiceContainer {
     @PostMapping(value = {"/add", "/update"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> addOrUpdateItems(HttpServletRequest request, @ModelAttribute ItemDto itemDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         User loggedUser = (User) request.getAttribute("user");
+        String path = request.getRequestURI();
         System.err.println(itemDto.toString());
-        Map<String,Object> responseObj = itemService.createOrUpdateItem(itemDto, loggedUser);
+        Map<String,Object> responseObj = itemService.createOrUpdateItem(itemDto, loggedUser,path);
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
