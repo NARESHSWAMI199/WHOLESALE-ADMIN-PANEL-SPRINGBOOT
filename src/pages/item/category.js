@@ -54,7 +54,9 @@ const [categories,setCategories] = useState([])
     axios.defaults.headers = {
       Authorization :  auth.token  
     }
-    axios.get(host+`/admin/item/category/delete/${categorySlug}`)
+    axios.post(`${host}/admin/item/category/delete`,{
+      "slug" : categorySlug
+    })
     .then(res => {
         setFlag("success")
         setMessage(res.data.message)
