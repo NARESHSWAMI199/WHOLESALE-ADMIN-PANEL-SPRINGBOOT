@@ -40,16 +40,17 @@ public class StoreController extends ServiceContainer{
     }
 
     @Transactional
-    @GetMapping("/delete/{slug}")
-    public ResponseEntity<Map<String,Object>> deleteStore(@PathVariable String slug) {
+    @PostMapping("delete")
+    public ResponseEntity<Map<String,Object>> deleteStore(HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> responseObj = new HashMap<>();
-        int isUpdated = storeService.deleteStoreBySlug(slug);
+        User loggedUser = (User) request.getAttribute("user");
+        int isUpdated = storeService.deleteStoreBySlug(deleteDto,loggedUser);
         if (isUpdated > 0) {
             responseObj.put("message", "Store has been successfully deleted.");
             responseObj.put("status", 200);
         }else{
-            responseObj.put("message", "There is nothing to delete.recheck you parameters");
-            responseObj.put("status", 400);
+            responseObj.put("message", "No store found to delete");
+            responseObj.put("status", 404);
         }
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
@@ -64,8 +65,8 @@ public class StoreController extends ServiceContainer{
             responseObj.put("res", store);
             responseObj.put("status", 200);
         }else {
-            responseObj.put("message", "Please check you parameters not a valid request.");
-            responseObj.put("status", 400);
+            responseObj.put("message", "No store found.");
+            responseObj.put("status", 404);
         }
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
@@ -79,8 +80,8 @@ public class StoreController extends ServiceContainer{
             responseObj.put("res", store);
             responseObj.put("status", 200);
         }else {
-            responseObj.put("message", "Please check you parameters not a valid request.");
-            responseObj.put("status", 400);
+            responseObj.put("message", "No record found.");
+            responseObj.put("status", 404);
         }
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
@@ -116,20 +117,19 @@ public class StoreController extends ServiceContainer{
     }
 
 
-    /** currently we are not using for upload store image */
+    /** currently we do not use it for upload store image */
     @Transactional
     @PostMapping("profile/{slug}")
     public ResponseEntity<Map<String,Object>> uploadStoreImage(HttpServletRequest request, @RequestPart MultipartFile storeImage , @PathVariable String slug) {
         Map<String,Object> responseObj = new HashMap<>();
         try {
-            User loggedUser = (User) request.getAttribute("user");
             int isUpdated = storeService.updateStoreImage(storeImage, slug);
             if (isUpdated > 0){
                 responseObj.put("message","successfully updated");
                 responseObj.put("status",201);
             }else{
-                responseObj.put("message","Something went wrong. Please recheck you parameters.");
-                responseObj.put("status",400);
+                responseObj.put("message","No record found.");
+                responseObj.put("status",404);
             }
 
         }catch (Exception e){
@@ -146,15 +146,15 @@ public class StoreController extends ServiceContainer{
 
     @Transactional
     @PostMapping("/status")
-    public ResponseEntity<Map<String,Object>> stockSlug (@RequestBody StatusDto statusDto) {
+    public ResponseEntity<Map<String,Object>> updateStoreStatus (@RequestBody StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> responseObj = new HashMap<>();
         int isUpdated = storeService.updateStatusBySlug(statusDto);
         if (isUpdated > 0) {
             responseObj.put("message", "Store's status has been successfully updated.");
-            responseObj.put("status", 200);
+            responseObj.put("status", 201);
         }else{
-            responseObj.put("message", "There is nothing to update recheck you parameters");
-            responseObj.put("status", 400);
+            responseObj.put("message", "No store found.");
+            responseObj.put("status", 404);
         }
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
@@ -179,6 +179,23 @@ public class StoreController extends ServiceContainer{
         return new ResponseEntity<>(storeCategories, HttpStatus.OK);
     }
 
+    @PostMapping(value = {"category/add","category/update"})
+    public ResponseEntity<Map<String,Object>> saveOrUpdateItemCategory(@RequestBody CategoryDto categoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        Map<String,Object> result = new HashMap<>();
+        StoreCategory updatedStoreCategory = storeService.saveOrUpdateStoreCategory(categoryDto);
+        if(updatedStoreCategory != null) {
+             result.put("res",updatedStoreCategory);
+            if(categoryDto.getId() != 0) {
+                result.put("message", "Category successfully updated.");
+                result.put("status", 201);
+            }else {
+                result.put("message", "Category successfully inserted.");
+                result.put("status", 200);
+            }
+        }
+        return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
+    }
+
 
     @GetMapping("category/{categoryId}")
     public ResponseEntity<StoreCategory> getAllCategory(@PathVariable Integer categoryId) {
@@ -187,75 +204,58 @@ public class StoreController extends ServiceContainer{
     }
 
 
+    @PostMapping("category/delete")
+    public ResponseEntity<Map<String,Object>> deleteItemCategoryById(HttpServletRequest request ,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        Map<String,Object> responseObj = new HashMap<>();
+        User user = (User) request.getAttribute("user");
+        int isUpdated = storeService.deleteStoreCategory(deleteDto,user);
+        if (isUpdated > 0) {
+            responseObj.put("message", "Store's category was successfully deleted.");
+            responseObj.put("status", 201);
+        } else {
+            responseObj.put("message", "No category found to delete.");
+            responseObj.put("status", 404);
+        }
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+    }
+
 
     @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
     @PostMapping("subcategory")
-    public ResponseEntity<List<StoreSubCategory>> getStoreSubCategory(@RequestBody SearchFilters searchFilters) {
+    public ResponseEntity<List<StoreSubCategory>> getStoreSubCategory(@RequestBody SearchFilters searchFilters) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         List<StoreSubCategory> storeSubCategories = storeService.getAllStoreSubCategories(searchFilters);
         return new ResponseEntity<>(storeSubCategories, HttpStatus.OK);
     }
 
 
-
-    @PostMapping(value = {"category/add","category/update"})
-    public ResponseEntity<Map<String,Object>> saveOrUpdateItemCategory(@RequestBody CategoryDto categoryDto) {
-        Map<String,Object> result = new HashMap<>();
-        StoreCategory updatedStoreCategory = storeService.saveOrUpdateStoreCategory(categoryDto);
-        if(updatedStoreCategory != null) {
-            if(categoryDto.getId() != null) {
-                result.put("message", "Category successfully updated.");
-                result.put("status", 200);
-            }else {
-                result.put("message", "Category successfully inserted.");
-                result.put("status", 201);
-            }
-        }
-        return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
-    }
-
-
-    @GetMapping("category/delete/{categorySlug}")
-    public ResponseEntity<Map<String,Object>> deleteItemCategoryById(HttpServletRequest request ,@PathVariable String categorySlug) {
+    @PostMapping("subcategory/delete")
+    public ResponseEntity<Map<String,Object>> deleteItemSubCategoryById(HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> responseObj = new HashMap<>();
         User user = (User) request.getAttribute("user");
-        int isUpdated = storeService.deleteStoreCategory(categorySlug,user);
+        int isUpdated = storeService.deleteStoreSubCategory(deleteDto,user);
         if (isUpdated > 0) {
-            responseObj.put("message", "Store's category was successfully deleted.");
-            responseObj.put("status", 200);
+            responseObj.put("message", "Store's subcategory successfully deleted.");
+            responseObj.put("status", 201);
         } else {
-            responseObj.put("message", "There is nothing to delete.recheck you parameters");
-            responseObj.put("status", 400);
+            responseObj.put("message", "No subcategory found to delete.");
+            responseObj.put("status", 404);
         }
-        return new ResponseEntity<>(responseObj, HttpStatus.OK);
-    }
-
-    @GetMapping("subcategory/delete/{subcategoryId}")
-    public ResponseEntity<Map<String,Object>> deleteItemSubCategoryById(HttpServletRequest request ,@PathVariable String subcategoryId) {
-        Map<String,Object> responseObj = new HashMap<>();
-        User user = (User) request.getAttribute("user");
-        int isUpdated = storeService.deleteStoreSubCategory(subcategoryId,user);
-        if (isUpdated > 0) {
-            responseObj.put("message", "Store's subcategory was successfully deleted.");
-            responseObj.put("status", 200);
-        } else {
-            responseObj.put("message", "There is nothing to delete.recheck you parameters");
-            responseObj.put("status", 400);
-        }
-        return new ResponseEntity<>(responseObj, HttpStatus.OK);
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
 
     @PostMapping(value = {"subcategory/add","subcategory/update"})
-    public ResponseEntity<Map<String,Object>> saveOrUpdateItemSubCategory(@RequestBody SubCategoryDto subCategoryDto) {
+    public ResponseEntity<Map<String,Object>> saveOrUpdateItemSubCategory(@RequestBody SubCategoryDto subCategoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> result = new HashMap<>();
         StoreSubCategory updatedStoreSubCategory = storeService.saveOrUpdateStoreSubCategory(subCategoryDto);
         if(updatedStoreSubCategory != null) {
+            result.put("res",updatedStoreSubCategory);
             if(subCategoryDto.getId() != null) {
-                result.put("message", "Category successfully updated.");
-                result.put("status", 200);
-            }else {
-                result.put("message", "Category successfully inserted.");
+                result.put("message", "Subcategory successfully updated.");
                 result.put("status", 201);
+            }else {
+                result.put("message", "Subcategory successfully inserted.");
+                result.put("status", 200);
             }
         }
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));

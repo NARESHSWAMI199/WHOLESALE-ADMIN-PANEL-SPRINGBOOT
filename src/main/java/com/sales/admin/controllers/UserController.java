@@ -1,10 +1,7 @@
 package com.sales.admin.controllers;
 
 
-import com.sales.dto.PasswordDto;
-import com.sales.dto.StatusDto;
-import com.sales.dto.UserDto;
-import com.sales.dto.UserSearchFilters;
+import com.sales.dto.*;
 import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
@@ -188,17 +185,17 @@ public class UserController extends ServiceContainer {
     }
 
     @Transactional
-    @GetMapping("/delete/{slug}")
-    public ResponseEntity<Map<String, Object>> deleteUserBySlug(HttpServletRequest request,@PathVariable String slug) {
+    @PostMapping("/delete")
+    public ResponseEntity<Map<String, Object>> deleteUserBySlug(HttpServletRequest request, @RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
-        int isUpdated = userService.deleteUserBySlug(slug,loggedUser);
+        int isUpdated = userService.deleteUserBySlug(deleteDto,loggedUser);
         if (isUpdated > 0) {
             responseObj.put("message", "User has been successfully deleted.");
-            responseObj.put("status", 200);
+            responseObj.put("status", 201);
         } else {
-            responseObj.put("message", "There is nothing to delete.recheck you parameters");
-            responseObj.put("status", 400);
+            responseObj.put("message", "No user found to delete");
+            responseObj.put("status", 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
@@ -229,7 +226,7 @@ public class UserController extends ServiceContainer {
             responseObj.put("message", "User's status updated successfully.");
             responseObj.put("status", 201);
         } else {
-            responseObj.put("message", "There is nothing to update.recheck you parameters");
+            responseObj.put("message", "No user found to update.");
             responseObj.put("status", 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));

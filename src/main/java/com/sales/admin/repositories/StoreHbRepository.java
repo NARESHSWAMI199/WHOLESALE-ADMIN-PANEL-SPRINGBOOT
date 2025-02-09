@@ -17,10 +17,18 @@ public class StoreHbRepository {
     @Autowired
     EntityManager entityManager;
 
-    public int deleteStore(String slug){
-        String hql = "Update Store set isDeleted='Y' where slug=:slug";
+    public int deleteStore(String slug,User loggedUser){
+        String hql = """
+                    Update Store set 
+                        isDeleted='Y', 
+                        updatedBy=:updatedBy,
+                        updatedAt=:updatedAt
+                    where slug=:slug ;
+                """;
         Query query = entityManager.createQuery(hql);
         query.setParameter("slug",slug);
+        query.setParameter("updatedBy",loggedUser.getId());
+        query.setParameter("updatedAt",Utils.getCurrentMillis());
         return query.executeUpdate();
     }
 
@@ -111,11 +119,11 @@ public class StoreHbRepository {
         return query.executeUpdate();
     }
 
-    public int getStoreCategoryIdBySLug(String slug){
+    public Integer getStoreCategoryIdBySLug(String slug){
         String hql = "select id from StoreCategory where slug=:slug ";
         Query query = entityManager.createQuery(hql);
         query.setParameter("slug",slug);
-        return (int) query.getSingleResult();
+        return (Integer) query.getSingleResult();
     }
 
     public int switchCategoryToOther(int categoryId){

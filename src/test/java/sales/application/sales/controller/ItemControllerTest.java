@@ -33,8 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ItemControllerTest extends TestUtil {
 
 
-    /** @Important : Here we created new functions for each Test but all called in one function
-     * If you want test separately use @Test annotation and provide you custom slug.
+    /** @Important : Here we created new functions for each Test, but all called in one function
+     * If you want test to separately use @Test annotation and provide you custom slug.
      * */
     @Autowired
     MockMvc mockMvc;
@@ -286,7 +286,7 @@ public class ItemControllerTest extends TestUtil {
                 .andReturn();
 
         List categoryList = extractCategoryListFromResponse(result);
-        if(categoryList.size() > 0) {
+        if(!categoryList.isEmpty()) {
             Map<String, Object> categoryDto = (Map<String, Object>) categoryList.get(0);
             Integer categoryId = (Integer) categoryDto.get("id");
 
@@ -340,11 +340,11 @@ public class ItemControllerTest extends TestUtil {
         String json = """
                   {
                   "id" : 17,
-                  "category" : "Mock Test Category {random}",
+                  "category" : "Mock update Test Category {random}",
                   "icon": "Mock test icon"
                   }
-                """.replace("{random}", UUID.randomUUID().toString().substring(0,6)); // random added due to duplicate category issue.
-        MvcResult result = mockMvc.perform(post("/admin/item/category/add")
+                """.replace("{random}", UUID.randomUUID().toString().substring(0,6)); // randomly added due to duplicate category issue.
+        MvcResult result = mockMvc.perform(post("/admin/item/category/update")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
                         .headers(headers)
@@ -402,7 +402,7 @@ public class ItemControllerTest extends TestUtil {
                     "icon" : "test"
                   }
                 """
-                .replace("{random}", UUID.randomUUID().toString().substring(0,6)); // random added due to duplicate category issue.
+                .replace("{random}", UUID.randomUUID().toString().substring(0,6)); // randomly added due to duplicate category issue.
         MvcResult result = mockMvc.perform(post("/admin/item/subcategory/update")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)

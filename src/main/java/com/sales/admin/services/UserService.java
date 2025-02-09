@@ -53,7 +53,7 @@ public class UserService extends RepoContainer {
     }
 
     public User findUserByOtpAndEmail(UserDto userDto) {
-        /** here password key has otp */
+        // Here password key has otp
         return  userRepository.findUserByOtpAndEmail(userDto.getEmail(),userDto.getPassword());
     }
 
@@ -382,11 +382,17 @@ public class UserService extends RepoContainer {
         return null;
     }
 
-    @Transactional
-    public int deleteUserBySlug(String slug,User loggedUser){
+    @Transactional(rollbackOn = {PermissionDeniedDataAccessException.class,IllegalArgumentException.class,RuntimeException.class,Exception.class})
+    public int deleteUserBySlug(DeleteDto deleteDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // if there is any required field null, then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(deleteDto, List.of("slug"));
+
+        String slug = deleteDto.getSlug();
         User user = getUserDetail(slug);
+        if(user == null) throw new NotFoundException("User not found to delete.");
+        // if logged user doesn't have permission, then can't delete it this will throw an Exception
         Utils.canUpdateAStaff(slug,user.getUserType(),loggedUser);
-        storeService.deleteStoreByUserId(user.getId());
+        if(user.getUserType().equals("W")) storeService.deleteStoreByUserId(user.getId());
         return userHbRepository.deleteUserBySlug(slug);
     }
 
@@ -403,10 +409,8 @@ public class UserService extends RepoContainer {
     @Transactional
     public int updateStatusBySlug(StatusDto statusDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         try {
-            // if there is any required field null then this will throw IllegalArgumentException
+            // if there is any required field null, then this will throw IllegalArgumentException
             Utils.checkRequiredFields(statusDto, List.of("status", "slug"));
-
-            System.err.println(loggedUser.getSlug()+" " + " "+statusDto.getSlug());
 
             switch (statusDto.getStatus()){
                 case "A" , "D":
@@ -416,6 +420,7 @@ public class UserService extends RepoContainer {
                     if (user == null) throw new NotFoundException("No user not found to update.");
                     Utils.canUpdateAStaffStatus(statusDto.getSlug(),user.getUserType(),loggedUser);
                     user.setStatus(status);
+                    // if userType is wholesaler no need to go further
                     if(!user.getUserType().equals("W")){
                         user = userRepository.save(user);
                         return user.getId();

@@ -345,23 +345,23 @@ public class ItemService extends RepoContainer{
     }
 
     public int deleteItemCategory(DeleteDto deleteDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        // Validating required fields if they are null this will throw an Exception
+        // Validating required fields if they are null, this will throw an Exception
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
         String slug = deleteDto.getSlug();
-        // only super admin can delete subcategory
+        // only super admin can delete it subcategory
         if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("Only super admin can delete item's category.",null);
         Integer categoryId = itemCategoryRepository.getItemCategoryIdBySlug(slug);
         if (categoryId == null) throw new NotFoundException("Category not found.");
-        itemHbRepository.switchCategoryToOther(categoryId); // before delete category assign item to other category.
+        itemHbRepository.switchCategoryToOther(categoryId); // before delete category, assign item to another category.
         return itemHbRepository.deleteItemCategory(slug);
 
     }
 
     public int deleteItemSubCategory(DeleteDto deleteDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        // Validating required fields if they are null this will throw an Exception
+        // Validating required fields if they are null, this will throw an Exception
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
         String slug = deleteDto.getSlug();
-        // only super admin can delete subcategory
+        // only super admin can delete it subcategory
         if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("Only super admin can delete subcategory.",null);
         Integer subCategoryId = itemSubCategoryRepository.getItemSubCategoryIdBySlug(slug);
         if (subCategoryId == null) throw new NotFoundException("Subcategory not found.");
@@ -372,7 +372,7 @@ public class ItemService extends RepoContainer{
 
 
     public List<ItemSubCategory> getAllItemsSubCategories(SearchFilters searchFilters) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        // Validating required fields if found any required field is null this will throw IllegalArgumentException
+        // Validating required fields if found any required field is null, this will throw IllegalArgumentException
         Utils.checkRequiredFields(searchFilters,List.of("categoryId"));
 
         Sort sort = Sort.by(searchFilters.getOrderBy());
@@ -383,11 +383,11 @@ public class ItemService extends RepoContainer{
 
     @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
     public ItemCategory saveOrUpdateItemCategory(CategoryDto categoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        // Validate required fields if we found any given field is null then this will throw Exception
+        // Validate required fields if we found any given field is null, then this will throw Exception
         Utils.checkRequiredFields(categoryDto,List.of("category","icon"));
         ItemCategory itemCategory = new ItemCategory();
-        if(categoryDto.getId() != null && categoryDto.getId() !=0) // because we are using 0 for other category.
-        itemCategory.setId(categoryDto.getId());
+        if(categoryDto.getId() != null && categoryDto.getId() !=0) // because we are using 0 for the other category.
+            itemCategory.setId(categoryDto.getId());
         itemCategory.setSlug(UUID.randomUUID().toString());  // slug will also change after during update
         itemCategory.setCategory(categoryDto.getCategory());
         itemCategory.setIcon(categoryDto.getIcon());
@@ -396,11 +396,11 @@ public class ItemService extends RepoContainer{
 
     @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
     public ItemSubCategory saveOrUpdateItemSubCategory(SubCategoryDto subCategoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        // Validate required fields if we found any given field is null then this will throw Exception
+        // Validate required fields if we found any given field is null, then this will throw Exception
         Utils.checkRequiredFields(subCategoryDto,List.of("categoryId","subcategory","unit","icon"));
         ItemSubCategory itemSubCategory = new ItemSubCategory();
-        if(subCategoryDto.getId() != null && subCategoryDto.getId() != 0) // because we are using 0 for other subcategory.
-        itemSubCategory.setId(subCategoryDto.getId());
+        if(subCategoryDto.getId() != null && subCategoryDto.getId() != 0) // because we are using 0 for the other subcategory.
+            itemSubCategory.setId(subCategoryDto.getId());
         itemSubCategory.setSlug(UUID.randomUUID().toString()); // slug will also change after during update
         itemSubCategory.setCategoryId(subCategoryDto.getCategoryId());
         itemSubCategory.setSubcategory(subCategoryDto.getSubcategory());

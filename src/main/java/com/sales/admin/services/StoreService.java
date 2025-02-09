@@ -3,6 +3,7 @@ package com.sales.admin.services;
 import com.sales.dto.*;
 import com.sales.entities.*;
 import com.sales.exceptions.MyException;
+import com.sales.exceptions.NotFoundException;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
@@ -15,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -224,21 +224,22 @@ public class StoreService extends RepoContainer{
         return storeHbRepository.updateStore(storeDto,loggedUser);
     }
 
-    @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class})
-    public int deleteStoreBySlug(String slug){
-        try {
-            Store store = storeRepository.findStoreBySlug(slug);
-            Optional<User> user = userRepository.findById(store.getUser().getId());
-            userHbRepository.deleteUserBySlug(user.get().getSlug());
-            return storeHbRepository.deleteStore(slug);
-        }catch (Exception e){
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            throw e;
-        }
+    @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class,Exception.class})
+    public int deleteStoreBySlug(DeleteDto deleteDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // Validate required fields. if we found any required field this will throw IllegalArgumentException
+        Utils.checkRequiredFields(deleteDto,List.of("slug"));
+
+        String slug = deleteDto.getSlug();
+        Store store = storeRepository.findStoreBySlug(slug);
+        if(store == null) throw new NotFoundException("No store found to delete.");
+        User user = store.getUser();
+        userHbRepository.deleteUserBySlug(user.getSlug());
+        return storeHbRepository.deleteStore(slug,loggedUser);
+
     }
 
-    public int deleteStoreByUserId(int userId){
-        return storeHbRepository.deleteStore(userId);
+    public void deleteStoreByUserId(int userId){
+        storeHbRepository.deleteStore(userId);
     }
 
 
@@ -249,41 +250,47 @@ public class StoreService extends RepoContainer{
 
 
     public Store getStoreByUserSlug(String userSlug) throws Exception {
+        if(Utils.isEmpty(userSlug)) throw new IllegalArgumentException("User slug can't be null or blank.");
         User user = userRepository.findUserBySlug(userSlug);
-        if (user == null) throw new MyException("sorry user not found.");
+        if (user == null) throw new NotFoundException("No user found.");
         return storeRepository.findStoreByUserId(user.getId());
     }
 
 
-    @Transactional
-    public int updateStatusBySlug(StatusDto statusDto){
-        try {
-            Store store = storeRepository.findStoreBySlug(statusDto.getSlug());
-            String status = statusDto.getStatus();
-            store.getUser().setStatus(statusDto.getStatus());
-            store.setStatus(status);
-            return storeRepository.save(store).getId();
-        }catch(Exception e){
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            throw e;
+    @Transactional(rollbackOn = {IllegalArgumentException.class, MyException.class,RuntimeException.class,Exception.class})
+    public int updateStatusBySlug(StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // Validate required fields. if we found any required field this will throw IllegalArgumentException
+        Utils.checkRequiredFields(statusDto,List.of("status","slug"));
+
+        switch (statusDto.getStatus()) {
+            case "A", "D":
+                Store store = storeRepository.findStoreBySlug(statusDto.getSlug());
+                if (store == null) throw new NotFoundException("No store found to update.");
+                String status = statusDto.getStatus();
+                // updating store user status also
+                store.getUser().setStatus(statusDto.getStatus());
+                store.setStatus(status);
+                return storeRepository.save(store).getId();
+            default:
+                throw new IllegalArgumentException("Status must be A or D.");
         }
     }
 
 
 
-    @Transactional
+    @Transactional(rollbackOn = {IllegalArgumentException.class, MyException.class,RuntimeException.class,Exception.class})
     public int updateStoreImage(MultipartFile storeImage, String slug) throws MyException, IOException {
         if(storeImage !=null ) {
             if (UploadImageValidator.isValidImage(storeImage, GlobalConstant.minWidth,
                 GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
                 GlobalConstant.allowedAspectRatios, GlobalConstant.allowedFormats)) {
-                String fileOriginalName = storeImage.getOriginalFilename().replaceAll(" ", "_");
-                String dirPath = storeImagePath+"/"+slug+"/";
-                File dir = new File(dirPath);
-                if(!dir.exists()) dir.mkdirs();
-                File file = new File(dirPath+fileOriginalName);
-                storeImage.transferTo(file);
-                return storeHbRepository.updateStoreAvatar(slug,fileOriginalName);
+                    String fileOriginalName = Objects.requireNonNull(storeImage.getOriginalFilename()).replaceAll(" ", "_");
+                    String dirPath = storeImagePath+"/"+slug+"/";
+                    File dir = new File(dirPath);
+                    if(!dir.exists()) dir.mkdirs();
+                    File file = new File(dirPath+fileOriginalName);
+                    storeImage.transferTo(file);
+                    return storeHbRepository.updateStoreAvatar(slug,fileOriginalName);
             } else {
                 throw new IllegalArgumentException("Image is not fit in accept ratio. please resize you image before upload.");
             }
@@ -300,29 +307,35 @@ public class StoreService extends RepoContainer{
     }
 
 
-    public List<StoreSubCategory> getAllStoreSubCategories(SearchFilters searchFilters) {
-        Sort sort = searchFilters.getOrder().equals("asc") ?
-                Sort.by(searchFilters.getOrderBy()).ascending() :
-                Sort.by(searchFilters.getOrderBy()).descending() ;
+    public List<StoreSubCategory> getAllStoreSubCategories(SearchFilters searchFilters) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // Validating required fields if found any required field is null, this will throw IllegalArgumentException
+        Utils.checkRequiredFields(searchFilters,List.of("categoryId"));
+        Sort sort = Sort.by(searchFilters.getOrderBy());
+        sort  = searchFilters.getOrder().equals("asc") ? sort.ascending() : sort.descending();
         return storeSubCategoryRepository.getSubCategories(searchFilters.getCategoryId(),sort);
     }
 
 
-    @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
-    public StoreCategory saveOrUpdateStoreCategory(CategoryDto categoryDto){
+    @Transactional(rollbackOn = {MyException.class ,IllegalArgumentException.class,RuntimeException.class})
+    public StoreCategory saveOrUpdateStoreCategory(CategoryDto categoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // Validate required fields if we found any given field is null, then this will throw Exception
+        Utils.checkRequiredFields(categoryDto,List.of("category","icon"));
+
         StoreCategory storeCategory = new StoreCategory();
         if(categoryDto.getId() != null)
-        storeCategory.setId(categoryDto.getId());
+            storeCategory.setId(categoryDto.getId());
         storeCategory.setCategory(categoryDto.getCategory());
         storeCategory.setIcon(categoryDto.getIcon());
         return storeCategoryRepository.save(storeCategory);
     }
 
-    @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
-    public StoreSubCategory saveOrUpdateStoreSubCategory(SubCategoryDto subCategoryDto){
+    @Transactional(rollbackOn = {MyException.class ,IllegalArgumentException.class,RuntimeException.class})
+    public StoreSubCategory saveOrUpdateStoreSubCategory(SubCategoryDto subCategoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // Validate required fields if we found any given field is null, then this will throw Exception
+        Utils.checkRequiredFields(subCategoryDto,List.of("categoryId","subcategory","icon"));
         StoreSubCategory storeSubCategory = new StoreSubCategory();
         if(subCategoryDto.getId() != null)
-        storeSubCategory.setId(subCategoryDto.getId());
+            storeSubCategory.setId(subCategoryDto.getId());
         storeSubCategory.setCategoryId(subCategoryDto.getCategoryId());
         storeSubCategory.setSubcategory(subCategoryDto.getSubcategory());
         storeSubCategory.setIcon(subCategoryDto.getIcon());
@@ -336,22 +349,26 @@ public class StoreService extends RepoContainer{
     }
 
 
-    public int deleteStoreCategory(String slug,User user) {
-        if(user.getUserType().equals("SA")) {
-            int categoryId = storeHbRepository.getStoreCategoryIdBySLug(slug);
-            storeHbRepository.switchCategoryToOther(categoryId);
-            return storeHbRepository.deleteStoreCategory(slug);
-        }
-        return 0;
+    public int deleteStoreCategory(DeleteDto deleteDto,User user) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // Validating required fields if they are null, this will throw an Exception
+        Utils.checkRequiredFields(deleteDto,List.of("slug"));
+        if (!user.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("Only super admin can delete a store category.",null);
+        String slug = deleteDto.getSlug();
+        Integer categoryId = storeHbRepository.getStoreCategoryIdBySLug(slug);
+        if (categoryId == null) throw new NotFoundException("Store's category not found.");
+        storeHbRepository.switchCategoryToOther(categoryId);  // before delete category assign store to the other category.
+        return storeHbRepository.deleteStoreCategory(slug);
     }
 
-    public int deleteStoreSubCategory(String slug,User user) {
-        if(user.getUserType().equals("SA")) {
-            int subCategoryId = storeSubCategoryRepository.getStoreSubCategoryIdBySlug(slug);
-            storeHbRepository.switchSubCategoryToOther(subCategoryId);
-            return storeHbRepository.deleteStoreSubCategory(slug);
-        }
-        return 0;
+    public int deleteStoreSubCategory(DeleteDto deleteDto,User user) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // Validating required fields if they are null this will throw an Exception
+        Utils.checkRequiredFields(deleteDto,List.of("slug"));
+        String slug = deleteDto.getSlug();
+        if (!user.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("Only super admin can delete a store subcategory.",null);
+        Integer subCategoryId = storeSubCategoryRepository.getStoreSubCategoryIdBySlug(slug);
+        if (subCategoryId == null) throw new NotFoundException("Store's subcategory not found.");
+        storeHbRepository.switchSubCategoryToOther(subCategoryId);
+        return storeHbRepository.deleteStoreSubCategory(slug);
     }
 
 

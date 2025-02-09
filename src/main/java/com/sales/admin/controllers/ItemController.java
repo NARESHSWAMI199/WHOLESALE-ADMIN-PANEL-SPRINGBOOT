@@ -81,7 +81,7 @@ public class ItemController extends ServiceContainer {
 
     @PostMapping(value = {"/importExcel/{wholesaleSlug}"})
     public ResponseEntity<Map<String, Object>> importItemsFromExcelSheet(HttpServletRequest request, @RequestParam("excelfile") MultipartFile excelSheet, @PathVariable("wholesaleSlug") String wholesaleSlug) {
-        Map responseObj = new HashMap();
+        Map<String,Object> responseObj = new HashMap<>();
         try {
             if (excelSheet != null) {
                 Map result = readExcel.getExcelDataInJsonFormat(excelSheet);

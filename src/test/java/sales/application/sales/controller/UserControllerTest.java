@@ -163,10 +163,10 @@ public class UserControllerTest extends TestUtil {
     public void addRetailerMultipartRequestTest() throws Exception{
         String json = """
                 {
-                    "email" : "nareshswami@gmail.com",
+                    "email" : "{email}",
                     "username" : "naresh swami",
                     "userType"  : "R",
-                    "contact" : "9145808226",
+                    "contact" : "{contact}",
                 }
                 """;
 
@@ -197,13 +197,18 @@ public class UserControllerTest extends TestUtil {
                 .replace("{contact}",randomPhone)
                 ;
 
-        mockMvc.perform(post("/admin/auth/add")
+        MvcResult result = mockMvc.perform(post("/admin/auth/add")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
                         .headers(headers)
                 )
                 .andExpect(status().is(200))
-                .andDo(print());
+                .andDo(print()).andReturn();
+
+        String userSlug = extractSlugFromResponseViaRes(result);
+
+        // delete add user
+        testDeleteRetailerUserViaStaffAccount(userSlug);
     }
 
 
@@ -221,10 +226,10 @@ public class UserControllerTest extends TestUtil {
         // Creating wholesaler
         String json = """
                 {
-                    "email" : "nareshswami@gmail.com",
+                    "email" : "{email}",
                     "username" : "naresh swami",
                     "userType"  : "W",
-                    "contact" : "7145808226",
+                    "contact" : "{contact}",
                     "city" : "1",
                     "state" : "1",
                     "street" : "1 Moti dungri",
@@ -237,6 +242,8 @@ public class UserControllerTest extends TestUtil {
                     "storePhone" : "{storePhone}"
                 }
                 """
+                .replace("{email}",randomEmail)
+                .replace("{contact}",randomPhone)
                 .replace("{storePhone}",randomPhone)
                 .replace("{storeEmail}",randomEmail);
             MvcResult result = mockMvc.perform(post("/admin/auth/add")
@@ -284,6 +291,9 @@ public class UserControllerTest extends TestUtil {
         .andExpectAll(
             status().is(201)
         );
+
+        // delete wholesaler via staff account
+        testDeleteWholesalerUserViaStaffAccount(userSlug);
 
 
     }
@@ -420,6 +430,13 @@ public class UserControllerTest extends TestUtil {
                 .andExpect(status().is(403)) // because only a super admin can update a staff
                 .andDo(print())
         ;
+
+
+        // delete user via staff account
+        testDeleteStaffUserViaStaffAccount(userSlug);
+
+        // delete user via super admin account
+        testDeleteStaffUserViaSuperAdmin(userSlug);
 
     }
 
@@ -720,7 +737,7 @@ public void updateUserWrongStatus() throws Exception {
     }
 
     @Test
-    public void testLoginWithRightCredential() throws Exception {
+    public void testOtpLoginWithRightCredential() throws Exception {
         // Make sure otp is right
         String json = """
                 {
@@ -739,7 +756,97 @@ public void updateUserWrongStatus() throws Exception {
 
 
 
+    public void testDeleteStaffUserViaStaffAccount(String slug) throws Exception {
+        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
+        String  token = loggedUserResponse.get("token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization",token);
+        String json = """
+                {
+                    "slug" : "{slug}"
+                }
+                """
+                .replace("{slug}",slug);
+        mockMvc.perform(post("/admin/auth/delete")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                        status().is(403)
+                )
+                .andDo(print());
+    }
 
+
+
+    public void testDeleteStaffUserViaSuperAdmin(String slug) throws Exception {
+        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
+        String  token = loggedUserResponse.get("token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization",token);
+        String json = """
+                {
+                    "slug" : "{slug}"
+                }
+                """
+                .replace("{slug}",slug);
+        mockMvc.perform(post("/admin/auth/delete")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                        status().is(201)
+                )
+                .andDo(print());
+    }
+
+
+
+    public void testDeleteWholesalerUserViaStaffAccount(String slug) throws Exception {
+        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
+        String  token = loggedUserResponse.get("token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization",token);
+        String json = """
+                {
+                    "slug" : "{slug}"
+                }
+                """
+                .replace("{slug}",slug);
+        mockMvc.perform(post("/admin/auth/delete")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                        status().is(201)
+                )
+                .andDo(print());
+    }
+
+    public void testDeleteRetailerUserViaStaffAccount(String slug) throws Exception {
+        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
+        String  token = loggedUserResponse.get("token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization",token);
+        String json = """
+                {
+                    "slug" : "{slug}"
+                }
+                """
+                .replace("{slug}",slug);
+        mockMvc.perform(post("/admin/auth/delete")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                        status().is(201)
+                )
+                .andDo(print());
+    }
 
 
 
