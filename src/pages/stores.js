@@ -76,7 +76,9 @@ const Page = () => {
     axios.defaults.headers = {
       Authorization :  auth.token  
     }
-    axios.get(host+`/admin/store/delete/${slug}`)
+    axios.post(`${host}/admin/store/delete`,{
+      slug : slug
+    })
     .then(res => {
         setFlag("success")
         setMessage(res.data.message)
