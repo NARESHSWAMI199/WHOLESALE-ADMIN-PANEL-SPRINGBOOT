@@ -9,6 +9,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,20 +23,23 @@ public class PermissionHbRepository {
 
 
     public int updateGroup(GroupDto groupDto,int groupId){
+        // deleting all group's exists permissions
         deleteGroupPermissionByGroupId(groupId);
+
         String hql = "update Group set name=:name where slug = :slug";
         Query query = entityManager.createQuery(hql);
         query.setParameter("name", groupDto.getName());
         query.setParameter("slug",groupDto.getSlug());
+
+        // update permissions if there provided
         List<Integer> permissions = groupDto.getPermissions();
-        if(permissions.size() > 0)
-        updatePermissions(groupId,permissions);
+        if(permissions !=null && permissions.size() > 0) updatePermissions(groupId,permissions);
         return query.executeUpdate();
     }
 
 
     public int updatePermissions(int groupId, List<Integer> permissions){
-        if(permissions.isEmpty()) return 0;
+        if(permissions ==null || permissions.isEmpty()) return 0;
         String values = "";
         for(int i=0; i < permissions.size(); i++){
             values +="("+groupId+","+permissions.get(i)+")";
@@ -48,8 +52,8 @@ public class PermissionHbRepository {
     }
 
 
-    public int deleteGroupBySlug(String slug, int groupId) throws Exception {
-        if (groupId == GlobalConstant.groupId) throw new Exception("We can't this group.");
+    public int deleteGroupBySlug(String slug, int groupId){
+        if (groupId == GlobalConstant.groupId) throw new PermissionDeniedDataAccessException("We can't delete this group.",null);
         deleteGroupPermissionByGroupId(groupId);
         deleteGroupFromUser(groupId);
         String sql = "delete from `groups` where slug=:slug";
@@ -59,6 +63,7 @@ public class PermissionHbRepository {
     }
 
     public int deleteGroupPermissionByGroupId(int groupId){
+        // If group is a super group do nothing.
         if (groupId == GlobalConstant.groupId) return  0;
         String sql = "delete from `group_permissions` where group_id = :groupId";
         Query query = entityManager.createNativeQuery(sql);
@@ -67,6 +72,7 @@ public class PermissionHbRepository {
     }
 
     public int deleteGroupFromUser(int groupId){
+        // If group is a super group do nothing.
         if (groupId == GlobalConstant.groupId) return  0;
         String sql = "delete from `user_groups` where group_id = :groupId";
         Query query = entityManager.createNativeQuery(sql);
@@ -76,6 +82,7 @@ public class PermissionHbRepository {
 
 
     public int deleteUserGroups(int userId){
+        // If user is a super admin do nothing.
         if (userId == GlobalConstant.suId) return  0;
         String sql = "delete from `user_groups` where user_id = :userId";
         Query query = entityManager.createNativeQuery(sql);

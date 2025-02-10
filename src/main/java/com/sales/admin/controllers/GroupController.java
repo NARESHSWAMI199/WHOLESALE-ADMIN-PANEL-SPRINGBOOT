@@ -1,6 +1,7 @@
 package com.sales.admin.controllers;
 
 
+import com.sales.dto.DeleteDto;
 import com.sales.dto.GroupDto;
 import com.sales.dto.SearchFilters;
 import com.sales.entities.Group;
@@ -41,8 +42,9 @@ public class GroupController extends ServiceContainer {
     @PostMapping(value = {"create", "update"})
     public ResponseEntity<Map<String,Object>> createOrUpdate(HttpServletRequest request, @RequestBody GroupDto groupDto) throws Exception {
         User loggedUser =  (User)request.getAttribute("user");
-         Map<String,Object> response= groupService.createOrUpdateGroup(groupDto,loggedUser);
-         return new ResponseEntity<Map<String,Object>>(response, HttpStatus.valueOf((Integer) response.get("status")));
+        String path = request.getRequestURI();
+        Map<String,Object> response= groupService.createOrUpdateGroup(groupDto,loggedUser,path);
+        return new ResponseEntity<>(response, HttpStatus.valueOf((Integer) response.get("status")));
     }
 
 
@@ -51,29 +53,25 @@ public class GroupController extends ServiceContainer {
     @GetMapping("/detail/{slug}")
     public ResponseEntity<Map<String, Object>> getDetailGroup(@PathVariable String slug) {
         Map responseObj = new HashMap();
-        Map<String,Object> groupPermission = groupService.findGroupBySlug(slug);
-        if (groupPermission !=null && groupPermission.size() > 0) {
-            responseObj.put("res", groupPermission);
-            responseObj.put("status", 200);
-        } else {
-            responseObj.put("message", "There is no permission at this time.");
-            responseObj.put("status", 400);
-        }
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        Map<String,Object> group = groupService.findGroupBySlug(slug);
+        responseObj.put("res", group);
+        responseObj.put("status", 200);
+        return new ResponseEntity<>(responseObj, HttpStatus.OK);
     }
 
 
     @Transactional
-    @GetMapping("/delete/{slug}")
-    public ResponseEntity<Map<String, Object>> deleteGroupBySlug(@PathVariable String slug) throws Exception {
+    @PostMapping("/delete")
+    public ResponseEntity<Map<String, Object>> deleteGroupBySlug(HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws Exception {
         Map<String,Object> responseObj = new HashMap<>();
-        int isUpdated = groupService.deleteGroupBySlug(slug);
+        User loggedUser = (User) request.getAttribute("user");
+        int isUpdated = groupService.deleteGroupBySlug(deleteDto,loggedUser);
         if (isUpdated > 0) {
             responseObj.put("message", "User has been successfully deleted.");
-            responseObj.put("status", 200);
+            responseObj.put("status", 201);
         } else {
-            responseObj.put("message", "There is nothing to delete. recheck you parameters");
-            responseObj.put("status", 400);
+            responseObj.put("message", "No group found to delete");
+            responseObj.put("status", 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }

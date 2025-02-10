@@ -282,7 +282,7 @@ public class UserService extends RepoContainer {
         userDto.setUsername(username);
 
         // Updating existing user
-        if (!Utils.isEmpty(userDto.getSlug()) && path.contains("update")) {
+        if (!Utils.isEmpty(userDto.getSlug()) || path.contains("update")) {
             // Verify required fields before create user
             validateRequiredFieldsBeforeUpdateUser(userDto);
             int isUpdated = updateUser(userDto, loggedUser);

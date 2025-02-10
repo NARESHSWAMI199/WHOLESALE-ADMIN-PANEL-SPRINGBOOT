@@ -130,7 +130,10 @@ public class StoreService extends RepoContainer{
                 throw new IllegalArgumentException("Invalid arguments for category and subcategory");
             }
 
-            if (!Utils.isEmpty(storeDto.getStoreSlug()) && path.contains("update")) { // We are going to update store.
+            if (!Utils.isEmpty(storeDto.getStoreSlug()) || path.contains("update")) { // We are going to update store.
+                // if there is any required field null then this will throw IllegalArgumentException
+                Utils.checkRequiredFields(storeDto,List.of("slug"));
+
                 String storeName = Utils.isValidName(storeDto.getStoreName(),"Store");
                 storeDto.setStoreName(storeName);
                 // If we found any issue with email and mobile this will throw exception

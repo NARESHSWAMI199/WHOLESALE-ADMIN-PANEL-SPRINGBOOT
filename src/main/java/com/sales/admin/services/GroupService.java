@@ -1,20 +1,23 @@
 package com.sales.admin.services;
 
 
+import com.sales.dto.DeleteDto;
 import com.sales.dto.GroupDto;
 import com.sales.dto.SearchFilters;
 import com.sales.dto.UserPermissionsDto;
 import com.sales.entities.Group;
 import com.sales.entities.User;
+import com.sales.exceptions.NotFoundException;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,51 +44,73 @@ public class GroupService extends RepoContainer {
     }
 
 
-    @Transactional
-    public Map<String,Object> createOrUpdateGroup(GroupDto groupDto, User loggededUser) throws Exception {
+
+
+    public void validateRequiredFieldsForGroup(GroupDto groupDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        List<String> requiredFields = new ArrayList<>(List.of(
+             "name"
+        ));
+        // if there is any required field null then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(groupDto,requiredFields);
+    }
+
+
+
+    @Transactional(rollbackOn = {IllegalArgumentException.class, NotFoundException.class,RuntimeException.class,Exception.class})
+    public Map<String,Object> createOrUpdateGroup(GroupDto groupDto, User loggedUser,String path) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> responseObject = new HashMap<>();
-        try {
-            if (!Utils.isEmpty(groupDto.getSlug())) {
-                Group group = groupRepository.findGroupBySlug(groupDto.getSlug());
-                if(group.getId() == GlobalConstant.groupId && loggededUser.getId() != GlobalConstant.suId) throw  new Exception("There is nothing to update.");
-                int isUpdated = permissionHbRepository.updateGroup(groupDto, group.getId());
-                if (isUpdated > 0 && group.getId() ==0) {
-                    responseObject.put("message", "The group has been updated successfully.But dear "+loggededUser.getUsername()+" ji We are not able to remove permissions. from "+group.getName()+" New permissions updated .");
-                    responseObject.put("status", 201);
-                }else if (isUpdated > 0) {
-                    responseObject.put("message", "The group has been updated successfully.");
-                    responseObject.put("status", 201);
-                } else {
-                    responseObject.put("message", "Something went wrong during update " + groupDto.getName() + " group.");
-                    responseObject.put("status", 400);
-                }
+
+        // Validating the required fields if there is any required field is null then this is throw Exception
+        validateRequiredFieldsForGroup(groupDto);
+
+        //Only super admin can create or update a group.
+        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("You don't have permission to create or update a group. Please contact a super admin",null);
+
+        if (!Utils.isEmpty(groupDto.getSlug()) || path.contains("update")) {
+
+            // if there is any required field null then this will throw IllegalArgumentException
+            Utils.checkRequiredFields(groupDto,List.of("slug"));
+
+            Group group = groupRepository.findGroupBySlug(groupDto.getSlug());
+            if (group == null) throw new NotFoundException("No group found to update.");
+            if(group.getId() == GlobalConstant.groupId && loggedUser.getId() != GlobalConstant.suId) throw  new NotFoundException("There is nothing to update.");
+
+            // Going to update existing group.
+            int isUpdated = permissionHbRepository.updateGroup(groupDto, group.getId());
+            if (isUpdated > 0 && group.getId() ==0) {
+                responseObject.put("message", "The group has been updated successfully.But dear "+loggedUser.getUsername()+" ji We are not able to remove permissions. from "+group.getName()+" New permissions updated .");
+                responseObject.put("status", 201);
+            }else if (isUpdated > 0) {
+                responseObject.put("message", "The group has been updated successfully.");
+                responseObject.put("status", 201);
             } else {
-                Group group = new Group(loggededUser);
-                group.setName(groupDto.getName());
-                Group insertedGroup = groupRepository.save(group);
-                if (insertedGroup.getId() > 0) {
-                    permissionHbRepository.updatePermissions(insertedGroup.getId(), groupDto.getPermissions());
-                    responseObject.put("message", groupDto.getName() + " successfully created.");
-                    responseObject.put("status", 200);
-                } else {
-                    responseObject.put("message", "Something went wrong during create " + groupDto.getName() + " group.");
-                    responseObject.put("status", 400);
-                }
+                responseObject.put("message", "No record found to update.");
+                responseObject.put("status", 404);
             }
-        }catch (Exception e){
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            throw e;
+        } else { // Going to insert a new group
+            Group group = new Group(loggedUser);
+            group.setName(groupDto.getName());
+            Group insertedGroup = groupRepository.save(group);
+            // Updating given permissions.
+            permissionHbRepository.updatePermissions(insertedGroup.getId(), groupDto.getPermissions());
+            responseObject.put("res",insertedGroup);
+            responseObject.put("message", groupDto.getName() + " successfully created.");
+            responseObject.put("status", 200);
         }
         return responseObject;
     }
 
 
     public Map<String,Object> findGroupBySlug(String slug){
+        if(Utils.isEmpty(slug)) throw new IllegalArgumentException("slug can't be null");
         Group group = groupRepository.findGroupBySlug(slug);
-        if(group == null) return null;
+        if(group == null) throw new NotFoundException("No record found.");
+
         List<Map<String,Object>> groupWithPermission =  permissionRepository.getGroupPermissionByGroupId(group.getId());
-        Map<String,Object> formattedGroup = new HashMap<String,Object>();;
+
+        Map<String,Object> formattedGroup = new HashMap<String,Object>();
         List<Integer> permissionList = new ArrayList<>();
+        // Only getting permission id list
         for (Map<String, Object> map : groupWithPermission) {
             permissionList.add((Integer) map.get("id"));
         }
@@ -114,9 +139,19 @@ public class GroupService extends RepoContainer {
       return formattedPermissions;
     }
 
-    @Transactional
-    public int deleteGroupBySlug(String slug) throws Exception {
+    @Transactional(rollbackOn = {IllegalArgumentException.class, PermissionDeniedDataAccessException.class,RuntimeException.class,Exception.class})
+    public int deleteGroupBySlug(DeleteDto deleteDto,User loggedUser) throws Exception {
+
+        // if there is any required field null then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(deleteDto,List.of("slug"));
+
+        //Only super admin can create or update a group.
+        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("You don't have permission to delete a group. Please contact a super admin",null);
+
+
+        String slug = deleteDto.getSlug();
         Group group = groupRepository.findGroupBySlug(slug);
+        if (group == null) throw new NotFoundException("No group found to delete");
         return permissionHbRepository.deleteGroupBySlug(slug,group.getId());
     }
 

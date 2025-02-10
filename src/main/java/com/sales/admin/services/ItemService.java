@@ -148,7 +148,10 @@ public class ItemService extends RepoContainer{
         Map<String, Object> responseObj = new HashMap<>();
 
         // Going to update item
-        if (!Utils.isEmpty(itemDto.getSlug()) && path.contains("update")) {
+        if (!Utils.isEmpty(itemDto.getSlug()) || path.contains("update")) {
+            // if there is any required field null then this will throw IllegalArgumentException
+            Utils.checkRequiredFields(itemDto,List.of("slug"));
+
             int isUpdated = updateItem(itemDto, loggedUser);
             // updating item images
             updateStoreImage(itemDto.getPreviousItemImages(),itemDto.getNewItemImages(),itemDto.getSlug(),"update");
