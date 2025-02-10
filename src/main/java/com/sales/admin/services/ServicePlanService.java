@@ -69,6 +69,7 @@ public class ServicePlanService extends  RepoContainer {
 
     public ServicePlan insertServicePlan(User loggedUser, ServicePlanDto servicePlanDto){
 
+        if(!loggedUser.getUserType().equals("SA")) throw new MyException("You don't have permission to perform this action. contact with your administrator.");
         if(servicePlanDto.getPrice() < 0) throw new MyException("Price can't be less than 0.");
         if(servicePlanDto.getDiscount() < 0 || servicePlanDto.getDiscount() > servicePlanDto.getPrice()) throw new MyException("Discount can't be greater than price and can't be less than 0.");
 
@@ -89,25 +90,31 @@ public class ServicePlanService extends  RepoContainer {
         return servicePlanRepository.save(servicePlan);
     }
 
-    public Map<String,Object> updateServicePlanStatus(String status,String slug, User loggedUser){
+    public Map<String,Object> updateServicePlanStatus(String status,String slug, User loggedUser) {
 
 
+        Map<String, Object> result = new HashMap<>();
+        if (!loggedUser.getUserType().equals("SA"))
+            throw new MyException("You don't have permission to perform this action.");
 
-        Map<String,Object> result = new HashMap<>();
-        if(!loggedUser.getUserType().equals("SA")) throw new MyException("You don't have permission to perform this action.");
-        int isUpdated = servicePlanHbRepository.updateServicePlansStatus(status, slug, loggedUser);
-        if(isUpdated > 0){
-            if(status.equals("A")){
-                result.put("message","Successfully Activated.");
-            }else{
-                result.put("message","Successfully Deactivated.");
-            }
-            result.put("status", 201);
-        }else{
-            result.put("message","Something went wrong.");
-            result.put("status",400);
+        switch (status) {
+            case "A", "D":
+                int isUpdated = servicePlanHbRepository.updateServicePlansStatus(status, slug, loggedUser);
+                if (isUpdated > 0) {
+                    if (status.equals("A")) {
+                        result.put("message", "Successfully Activated.");
+                    } else {
+                        result.put("message", "Successfully Deactivated.");
+                    }
+                    result.put("status", 201);
+                } else {
+                    result.put("message", "No plan found to update.");
+                    result.put("status", 404);
+                }
+                return result;
+            default:
+                throw new IllegalArgumentException("status must be A or D.");
         }
-        return result;
     }
 
     public Map<String,Object> deletedServicePlan(String slug, User loggedUser){
