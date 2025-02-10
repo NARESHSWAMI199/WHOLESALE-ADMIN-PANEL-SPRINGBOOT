@@ -7,6 +7,7 @@ import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { BasicHeaders } from 'src/sections/basic-header';
 import { BasicSearch } from 'src/sections/basic-search';
 import { PlanSearch } from 'src/sections/plans/plans-search';
+import { ServicePlansHeaders } from 'src/sections/services/service-plans-header';
 import { ServicePlansTable } from 'src/sections/services/service-plans-table';
 import { host } from 'src/utils/util';
 
@@ -167,7 +168,7 @@ const Page = () => {
                     }}
                 >
                     <Stack spacing={3}>
-                        <BasicHeaders headerTitle={'Service Plans'} userType="W" />
+                        <ServicePlansHeaders headerTitle={'Service Plans'} userType="W" />
                         <BasicSearch onSearch={onSearch} />
                         <ServicePlansTable
                             count={totalElements}
