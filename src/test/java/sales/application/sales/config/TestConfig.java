@@ -5,7 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import sales.application.sales.controller.UserControllerTest;
+import sales.application.sales.admin.controller.UserControllerTest;
 
 
 @Configuration

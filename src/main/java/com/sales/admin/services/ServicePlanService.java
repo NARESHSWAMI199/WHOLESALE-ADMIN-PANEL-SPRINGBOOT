@@ -1,24 +1,25 @@
 package com.sales.admin.services;
 
 
+import com.sales.dto.DeleteDto;
 import com.sales.dto.ServicePlanDto;
+import com.sales.dto.StatusDto;
 import com.sales.dto.UserPlanDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
 import com.sales.entities.UserPlans;
-import com.sales.exceptions.MyException;
 import com.sales.specifications.PlansSpecifications;
 import com.sales.specifications.ServicePlanSpecification;
 import com.sales.utils.Utils;
+import jakarta.transaction.Transactional;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 @Service
 public class ServicePlanService extends  RepoContainer {
@@ -67,11 +68,16 @@ public class ServicePlanService extends  RepoContainer {
     }
 
 
-    public ServicePlan insertServicePlan(User loggedUser, ServicePlanDto servicePlanDto){
 
-        if(!loggedUser.getUserType().equals("SA")) throw new MyException("You don't have permission to perform this action. contact with your administrator.");
-        if(servicePlanDto.getPrice() < 0) throw new MyException("Price can't be less than 0.");
-        if(servicePlanDto.getDiscount() < 0 || servicePlanDto.getDiscount() > servicePlanDto.getPrice()) throw new MyException("Discount can't be greater than price and can't be less than 0.");
+    @Transactional
+    public ServicePlan insertServicePlan(User loggedUser, ServicePlanDto servicePlanDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("You don't have permission to perform this action. Contact to your administrator.",null);
+
+        // Validating required fields if there we found any required field is null, then it will throw an Exception
+        Utils.checkRequiredFields(servicePlanDto, List.of("planName","price","discount","months","description"));
+
+        if(servicePlanDto.getPrice() < 0) throw new IllegalArgumentException("Price can't be less than 0.");
+        if(servicePlanDto.getDiscount() < 0 || servicePlanDto.getDiscount() > servicePlanDto.getPrice()) throw new IllegalArgumentException("Discount can't be greater than price and can't be less than 0.");
 
         ServicePlan servicePlan = ServicePlan.builder()
                 .name(servicePlanDto.getPlanName())
@@ -90,16 +96,19 @@ public class ServicePlanService extends  RepoContainer {
         return servicePlanRepository.save(servicePlan);
     }
 
-    public Map<String,Object> updateServicePlanStatus(String status,String slug, User loggedUser) {
+    public Map<String,Object> updateServicePlanStatus(StatusDto statusDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
 
+        // Validating required fields if there we found any required field is null, then it will throw an Exception
+        Utils.checkRequiredFields(statusDto, List.of("status","slug"));
 
+        String status = statusDto.getStatus();
         Map<String, Object> result = new HashMap<>();
         if (!loggedUser.getUserType().equals("SA"))
-            throw new MyException("You don't have permission to perform this action.");
+            throw new PermissionDeniedDataAccessException("You don't have permission to perform this action.Contact to your administrator",null);
 
         switch (status) {
             case "A", "D":
-                int isUpdated = servicePlanHbRepository.updateServicePlansStatus(status, slug, loggedUser);
+                int isUpdated = servicePlanHbRepository.updateServicePlansStatus(status, statusDto.getSlug(), loggedUser);
                 if (isUpdated > 0) {
                     if (status.equals("A")) {
                         result.put("message", "Successfully Activated.");
@@ -117,16 +126,20 @@ public class ServicePlanService extends  RepoContainer {
         }
     }
 
-    public Map<String,Object> deletedServicePlan(String slug, User loggedUser){
+    public Map<String,Object> deletedServicePlan(DeleteDto deleteDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+
+        // Validating required fields if there we found any required field is null, then it will throw an Exception
+        Utils.checkRequiredFields(deleteDto, List.of("slug"));
+        String slug = deleteDto.getSlug();
         Map<String,Object> result = new HashMap<>();
-        if(!loggedUser.getUserType().equals("SA")) throw new MyException("You don't have permission to perform this action.");
+        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("You don't have permission to perform this action.Contact to your administrator.",null);
         int isUpdated = servicePlanHbRepository.deleteServicePlan(slug, loggedUser);
         if(isUpdated > 0){
             result.put("message","Service plan successfully deleted.");
             result.put("status", 201);
         }else{
-            result.put("message","Something went wrong.");
-            result.put("status",400);
+            result.put("message","No service plan found to delete.");
+            result.put("status",404);
         }
         return result;
     }

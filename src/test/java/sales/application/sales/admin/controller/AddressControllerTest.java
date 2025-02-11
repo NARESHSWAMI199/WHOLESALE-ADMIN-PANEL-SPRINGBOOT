@@ -1,4 +1,4 @@
-package sales.application.sales.controller;
+package sales.application.sales.admin.controller;
 
 
 import com.sales.SalesApplication;
@@ -20,55 +20,49 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = {SalesApplication.class})
 @AutoConfigureMockMvc
-public class ServicePlanController extends TestUtil {
+public class AddressControllerTest extends  TestUtil{
 
     @Autowired
     MockMvc mockMvc;
 
+
     @Test
-    public void createServicePlansViaStaffAccount() throws Exception {
+    public void getStates() throws Exception {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String  token = loggedUserResponse.get("token");
+        String token = loggedUserResponse.get("token");
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set("Authorization" , token);
         String json = """
                 {
                 }
                 """;
-        mockMvc.perform(MockMvcRequestBuilders.post("/admin/plans/add")
-                    .content(json)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .headers(headers)
-                )
-                .andExpectAll(
-                        status().isOk()
-                )
-                .andDo(print())
-        ;
-
-
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/address/state")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(headers)
+        ).andExpectAll(
+                status().is(200)
+        ).andDo(print());
     }
+
+
     @Test
-    public void createServicePlansViaSuperAdminAccount() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
-        String  token = loggedUserResponse.get("token");
+    public void getCities() throws Exception {
+        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
+        String token = loggedUserResponse.get("token");
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set("Authorization" , token);
         String json = """
                 {
                 }
                 """;
-        mockMvc.perform(MockMvcRequestBuilders.post("/admin/plans/add")
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .headers(headers)
-                )
-                .andExpectAll(
-                        status().isOk()
-                )
-                .andDo(print())
-        ;
-
-
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/address/city/1")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(headers)
+        ).andExpectAll(
+                status().is(200)
+        ).andDo(print());
     }
+
 }

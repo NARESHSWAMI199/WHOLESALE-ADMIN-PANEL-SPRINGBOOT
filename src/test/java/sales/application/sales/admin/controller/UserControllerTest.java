@@ -1,4 +1,4 @@
-package sales.application.sales.controller;
+package sales.application.sales.admin.controller;
 
 
 import com.sales.SalesApplication;

@@ -1,4 +1,4 @@
-package sales.application.sales.repositories;
+package sales.application.sales.admin.repositories;
 
 import com.sales.admin.repositories.UserHbRepository;
 import com.sales.admin.repositories.UserRepository;

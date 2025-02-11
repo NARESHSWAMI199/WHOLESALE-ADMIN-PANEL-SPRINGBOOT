@@ -1,4 +1,4 @@
-package sales.application.sales.controller;
+package sales.application.sales.admin.controller;
 
 
 import com.google.gson.Gson;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class StoreControllerTest extends TestUtil {
 
-    /**@Note : We are not adding any new store in this test but from userController we can create store and wholesale user */
+    /**@Note : We are not adding any new store in this test, but from userController we can create store and wholesale user */
 
     @Autowired
     MockMvc mockMvc;
