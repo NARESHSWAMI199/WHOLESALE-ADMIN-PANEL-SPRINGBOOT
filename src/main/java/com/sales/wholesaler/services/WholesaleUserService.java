@@ -21,6 +21,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import static com.sales.specifications.UserSpecifications.*;
@@ -63,7 +64,7 @@ public class WholesaleUserService extends WholesaleRepoContainer {
     public boolean sendOtp(UserDto userDto){
         boolean sent = false;
         Properties props = new Properties();
-        props.put("mail.smtp.host", "smtp.gmail.com"); // Replace with your mail server
+        props.put("mail.smtp.host", "smtp.gmail.com"); // Replace it with your mail server
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
         User user = null;
@@ -141,19 +142,21 @@ public class WholesaleUserService extends WholesaleRepoContainer {
     }
 
 
-    @Transactional
-    public Map<String, Object> updateUserProfile(UserDto userDto, User loggedUser){
-        Map<String, Object> responseObj = new HashMap<>();
+    public Map<String, Object> updateUserProfile(UserDto userDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
 
+        // Validating required fields. If there we found any required field is null, this will throw an Exception
+        Utils.checkRequiredFields(userDto,List.of("slug","username","email","contact"));
+
+        Map<String, Object> responseObj = new HashMap<>();
         String username = Utils.isValidName( userDto.getUsername(),"user");
         userDto.setUsername(username);
         int isUpdated = updateUser(userDto, loggedUser);
         if (isUpdated > 0) {
-            responseObj.put("message", "successfully updated.");
+            responseObj.put("message", "Successfully updated.");
             responseObj.put("status", 201);
         } else {
-            responseObj.put("message", "nothing to updated. may be something went wrong");
-            responseObj.put("status", 400);
+            responseObj.put("message", "No user found to update.");
+            responseObj.put("status", 404);
         }
         return responseObj;
     }
@@ -168,19 +171,18 @@ public class WholesaleUserService extends WholesaleRepoContainer {
     }
 
     @Transactional
-    public int resetPasswordByUserSlug(PasswordDto passwordDto, User loggedUser){
-        String password = passwordDto.getPassword();
-        loggedUser.setPassword(password);
-        wholesaleUserRepository.save(loggedUser);
-        return loggedUser.getId();
+    public User resetPasswordByUserSlug(PasswordDto passwordDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // Validating required fields. If there we found any required field is null, this will throw an Exception
+        Utils.checkRequiredFields(passwordDto,List.of("password"));
+        loggedUser.setPassword(passwordDto.getPassword());
+        return wholesaleUserRepository.save(loggedUser);
     }
 
 
-    public String updateProfileImage(MultipartFile profileImage,String slug,User loggedUser) throws IOException {
-        User user = wholesaleUserRepository.findUserBySlug(slug);
-        Utils.canUpdateAStaff(slug,user.getUserType(),loggedUser);
+    public String updateProfileImage(MultipartFile profileImage,User loggedUser) throws IOException {
+        String slug = loggedUser.getSlug();
         String imageName = UUID.randomUUID().toString().substring(0,5)+"_"+ Objects.requireNonNull(profileImage.getOriginalFilename()).replaceAll(" ","_");
-        if (!Utils.isValidImage(imageName)) return null;
+        if (!Utils.isValidImage(imageName)) throw new IllegalArgumentException("Not a valid Image.");
         String dirPath = profilePath+slug+"/";
         File dir = new File(dirPath);
         if(!dir.exists()) dir.mkdirs();
@@ -192,8 +194,12 @@ public class WholesaleUserService extends WholesaleRepoContainer {
 
 
 
-    public User addNewUser(UserDto userDto) {
-        /* '_' replaced by actual error message in mobileAndEmailValidation */
+    public User addNewUser(UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+
+        // Validating required fields. If there we found any required field is null, this will throw an Exception
+        Utils.checkRequiredFields(userDto,List.of("username","email","password","contact"));
+
+        // '_' replaced by actual error message in mobileAndEmailValidation
         Utils.mobileAndEmailValidation(userDto.getEmail(), userDto.getContact(),"Not a valid _");
         String username = Utils.isValidName(userDto.getUsername(),"user");
         User user = User.builder()
@@ -209,12 +215,12 @@ public class WholesaleUserService extends WholesaleRepoContainer {
             .updatedAt(Utils.getCurrentMillis())
             .build();
         User insertedUser =  wholesaleUserRepository.save(user);
-        /* assigning a free plan to user */
+        // assigning a free plan to user
         ServicePlan defaultServicePlan = wholesaleServicePlanRepository.getDefaultServicePlan();
         if(defaultServicePlan != null) {
             wholesaleServicePlanService.assignUserPlan(insertedUser.getId(), defaultServicePlan.getId());
         }
-        /** Sending a mail to user for email validation. */
+        // Sending mail to user for email validation.
         if (!sendOtp(userDto)){
             throw new MyException("User was created successfully. but we facing issue some issue during sending otp. Make sure your email address was correct.");
         }

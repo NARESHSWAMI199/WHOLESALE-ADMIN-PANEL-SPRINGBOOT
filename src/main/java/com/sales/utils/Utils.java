@@ -174,7 +174,7 @@ public class Utils {
 
     public static User getUserFromRequest(HttpServletRequest request, JwtToken jwtToken, WholesaleUserService userService){
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-        // Token from swagger because swagger not send Authorization header in request.
+        // Token from swagger because swagger not sends Authorization header in request.
         token = token == null ? request.getHeader("authToken") : token;
         System.out.println("request url : "+request.getRequestURI());
         try {

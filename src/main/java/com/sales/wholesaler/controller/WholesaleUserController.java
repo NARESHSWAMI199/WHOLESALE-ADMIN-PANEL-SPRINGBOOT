@@ -9,6 +9,8 @@ import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +21,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -124,19 +127,22 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         return  new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
-
-    @Transactional
+    // For add and update user
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @Content(schema = @Schema( description = "If you going to update must add slug",
+                    example = """
+                {
+                    "slug" : "string",
+                    "email" : "string",
+                    "username" : "string",
+                    "contact" : "string"
+                }
+            """)
+            ))
     @PostMapping(value = {"/update"})
-    public ResponseEntity<Map<String, Object>> updateAuth(HttpServletRequest request, @RequestBody UserDto userDto) {
-        Map<String,Object> responseObj = new HashMap<>();
-        try {
-            User loggedUser = (User) request.getAttribute("user");
-            responseObj = wholesaleUserService.updateUserProfile(userDto, loggedUser);
-        } catch (Exception e) {
-            responseObj.put("message", e.getMessage());
-            responseObj.put("status", 500);
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        }
+    public ResponseEntity<Map<String, Object>> updateAuth(HttpServletRequest request, @RequestBody UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        User loggedUser = (User) request.getAttribute("user");
+        Map<String,Object> responseObj = wholesaleUserService.updateUserProfile(userDto, loggedUser);
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
 
     }
@@ -163,41 +169,30 @@ public class WholesaleUserController extends WholesaleServiceContainer {
 
     @Transactional
     @PostMapping("/password")
-    public ResponseEntity<Map<String, Object>> resetUserPasswordBySlug(HttpServletRequest request ,@RequestBody PasswordDto passwordDto) {
+    public ResponseEntity<Map<String, Object>> resetUserPasswordBySlug(HttpServletRequest request ,@RequestBody PasswordDto passwordDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
-        int isUpdated = wholesaleUserService.resetPasswordByUserSlug(passwordDto,loggedUser);
-        if (isUpdated > 0 || loggedUser.getId() == GlobalConstant.suId) {
-            responseObj.put("message", "User password has been successfully updated.");
-            responseObj.put("status", 200);
-        } else {
-            responseObj.put("message", "There is nothing to update.recheck you parameters");
-            responseObj.put("status", 400);
-        }
+        User updatedUser = wholesaleUserService.resetPasswordByUserSlug(passwordDto,loggedUser);
+        responseObj.put("res",updatedUser);
+        responseObj.put("message", "User password has been successfully updated.");
+        responseObj.put("status", 201);
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
 
 
-    @Transactional
-    @PostMapping("/update_profile/{slug}")
-    public ResponseEntity<Map<String, Object>> updateProfileImage(HttpServletRequest request, @RequestPart MultipartFile profileImage, @PathVariable String slug ) {
+    @PostMapping("/update_profile")
+    public ResponseEntity<Map<String, Object>> updateProfileImage(HttpServletRequest request, @RequestPart MultipartFile profileImage) throws IOException {
         Map<String,Object> responseObj = new HashMap<>();
-        try {
-            User loggedUser = (User) request.getAttribute("user");
-            String  imageName = wholesaleUserService.updateProfileImage(profileImage,slug,loggedUser);
-            if(imageName!=null) {
-                responseObj.put("status" , 200);
-                responseObj.put("imageName",imageName);
-                responseObj.put("message" , "Profile image successfully updated");
-            }else {
-                responseObj.put("status" , 400);
-                responseObj.put("message" , "Not a valid profile image");
-            }
-        } catch (Exception e) {
-            responseObj.put("message", e.getMessage());
-            responseObj.put("status", 500);
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        User loggedUser = (User) request.getAttribute("user");
+        String  imageName = wholesaleUserService.updateProfileImage(profileImage,loggedUser);
+        if(imageName!=null) {
+            responseObj.put("imageName",imageName);
+            responseObj.put("message" , "Profile image successfully updated");
+            responseObj.put("status" , 201);
+        }else {
+            responseObj.put("status" , 406);
+            responseObj.put("message" , "Not a valid profile image");
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
 
@@ -214,18 +209,26 @@ public class WholesaleUserController extends WholesaleServiceContainer {
     }
 
 
+    // For add and update user
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @Content(schema = @Schema( description = "If you going to update must add slug",
+                example = """
+                {
+                    "slug" : "(only during update) string",
+                    "email" : "string",
+                    "username" : "string",
+                    "password' : "string",
+                    "contact" : "string"
+                }
+            """)
+    ))
     @PostMapping(value = {"add","register"})
-    public ResponseEntity<Map<String,Object>> addNewUser(@RequestBody UserDto userDto){
+    public ResponseEntity<Map<String,Object>> addNewUser(@RequestBody UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> result = new HashMap<>();
         User insertedUser = wholesaleUserService.addNewUser(userDto);
-        if (insertedUser.getId() > 0) {
-            result.put("user",insertedUser);
-            result.put("message", "User created successfully");
-            result.put("status", 200);
-        }else{
-            result.put("message", "Something went wrong during create this user.");
-            result.put("status", 400);
-        }
+        result.put("user",insertedUser);
+        result.put("message", "User created successfully");
+        result.put("status", 200);
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
     }
 
