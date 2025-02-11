@@ -26,7 +26,7 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useEffect, useState } from 'react';
 import { toTitleCase } from 'src/utils/util';
-
+const currentDateTime = new Date().getTime();
 export const PlanTable = (props) => {
   const {
     count = 0,
@@ -45,6 +45,7 @@ export const PlanTable = (props) => {
   const [isCopied, setIsCopied] = useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
 
   async function copyTextToClipboard(text) {
     if ('clipboard' in navigator) {
@@ -212,7 +213,7 @@ export const PlanTable = (props) => {
 
                     {/* status */}
                     <TableCell align={'center'}>
-                      {plan.createdAt <= plan.expiryDate ? (
+                      {plan.expiryDate >= currentDateTime ? (
                         <Badge color="success" badgeContent={'Active'} />
                       ) : (
                         <Badge color="error" badgeContent={'Expired'} />

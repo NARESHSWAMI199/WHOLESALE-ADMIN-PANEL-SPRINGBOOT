@@ -91,7 +91,11 @@ const Page = () => {
         axios.defaults.headers = {
             Authorization: auth.token
         }
-        axios.get(host + `/admin/plans/delete/${slug}`)
+        axios.post(`${host}/admin/plans/delete`,
+            {
+                slug: slug
+            }
+        )
             .then(res => {
                 setFlag("success")
                 setMessage(res.data.message)
