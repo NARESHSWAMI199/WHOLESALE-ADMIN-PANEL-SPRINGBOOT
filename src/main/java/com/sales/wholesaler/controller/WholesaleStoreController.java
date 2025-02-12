@@ -80,10 +80,8 @@ public class WholesaleStoreController extends WholesaleServiceContainer{
                 {
                   "storeEmail": "string",
                   "storeName": "string",
-                  "status": "string",
                   "storePhone": "string",
                   "description": "string",
-                  "storeAvatar": "string",
                   "storePic": "string",
                   "addressId": 0,
                   "street": "string",

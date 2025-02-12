@@ -34,7 +34,16 @@ public class WholesaleStoreControllerTest extends TestUtil {
 
         String json = """
                 {
-                    "string" : ""
+                  "storeEmail": "{email}",
+                  "storeName": "Mock test wholesaler",
+                  "storePhone": "{phone}",
+                  "description": "Mock test store created by mock test user",
+                  "storePic": "string",
+                  "addressId": 0,
+                  "street": "string",
+                  "zipCode": "string",
+                  "city": 0,
+                  "state": 0
                 }
                 """;
 
