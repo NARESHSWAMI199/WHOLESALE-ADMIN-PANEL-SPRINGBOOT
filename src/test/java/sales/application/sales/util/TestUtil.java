@@ -52,6 +52,13 @@ public class TestUtil {
         return (String) testUser.getUser().get("slug");
     }
 
+    protected Map<String,Object> extractUserFromResponseViaUser(MvcResult result) throws Exception {
+        String responseBody = result.getResponse().getContentAsString();
+        TestUser testUser = objectMapper.readValue(responseBody, TestUser.class); // Create a TokenResponse class
+        return testUser.getUser();
+    }
+
+
     protected List extractCategoryListFromResponse(MvcResult result) throws UnsupportedEncodingException, JsonProcessingException {
         String responseBody = result.getResponse().getContentAsString();
         List categoryResponse = objectMapper.readValue(responseBody, List.class); // Create a TokenResponse class
@@ -101,6 +108,32 @@ public class TestUtil {
         response.put("token", extractTokenFromResponse(result));
         return response;
     }
+
+
+
+    public Map<String,String> getWholesaleLoginBeaverSlugAndToken(String email, String password) throws Exception {
+        String json = """
+                    {
+                        "email" : "{email}",
+                        "password": "{password}"
+                    }
+                """
+                .replace("{email}",email).replace("{password}",password);
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/wholesale/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpectAll(
+                        MockMvcResultMatchers.status().isOk()
+                )
+                .andReturn();
+
+        Map<String,String> response = new HashMap<>();
+        response.put("slug", extractSlugFromResponseViaUser(result));
+        response.put("token", extractTokenFromResponse(result));
+        return response;
+    }
+
 
 
 

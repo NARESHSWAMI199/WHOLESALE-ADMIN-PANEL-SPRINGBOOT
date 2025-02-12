@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import static com.sales.specifications.ItemCommentSpecifications.isUserId;
@@ -137,11 +138,15 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
 
 
 
-    @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
-    public Store createStore(StoreDto storeDto , User loggedUser) {
-        try {
+    @Transactional(rollbackOn = {MyException.class, IllegalArgumentException.class, RuntimeException.class,Exception.class})
+    public Store createStore(StoreDto storeDto , User loggedUser) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+
+            // Validating required fields. If their we found any required field is null, this will throw an Exception
+            Utils.checkRequiredFields(storeDto,List.of("storeName","storeEmail","storePhone","categoryId","subcategoryId"));
+
             /* '_' replaced by actual error message in mobileAndEmailValidation */
             Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid _");
+
             try {
                 StoreCategory storeCategory = wholesaleCategoryRepository.findById(storeDto.getCategoryId()).get();
                 storeDto.setStoreCategory(storeCategory);
@@ -153,6 +158,8 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
 
             /* inserting  address during create a wholesale */
             AddressDto addressDto = getAddressObjFromStore(storeDto);
+            // if there is any required field null then this will throw IllegalArgumentException
+            Utils.checkRequiredFields(addressDto,List.of("street","zipCode", "city","state"));
             Address address = insertAddress(addressDto, loggedUser);
 
             Store store = new Store(loggedUser);
@@ -162,7 +169,7 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
             store.setAddress(address);
             store.setDescription(storeDto.getDescription());
             store.setPhone(storeDto.getStorePhone());
-            store.setRating(storeDto.getRating());
+            store.setRating(0f);
             store.setStoreCategory(storeDto.getStoreCategory());
             store.setStoreSubCategory(storeDto.getStoreSubCategory());
             Store insertedStore = wholesaleStoreRepository.save(store);
@@ -173,9 +180,6 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
                 throw new MyException("Store image can't be blank.");
             }
             return insertedStore;
-        }catch (IOException e){
-            throw new MyException("Store image is not valid image.");
-        }
     }
 
 

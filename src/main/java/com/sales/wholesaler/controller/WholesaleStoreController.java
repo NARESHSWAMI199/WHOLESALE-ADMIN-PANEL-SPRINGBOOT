@@ -5,6 +5,8 @@ import com.sales.dto.SearchFilters;
 import com.sales.dto.StoreDto;
 import com.sales.entities.*;
 import com.sales.utils.Utils;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,9 +74,28 @@ public class WholesaleStoreController extends WholesaleServiceContainer{
     }
 
 
+
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema =
+        @Schema(example = """
+                {
+                  "storeEmail": "string",
+                  "storeName": "string",
+                  "status": "string",
+                  "storePhone": "string",
+                  "description": "string",
+                  "storeAvatar": "string",
+                  "storePic": "string",
+                  "addressId": 0,
+                  "street": "string",
+                  "zipCode": "string",
+                  "city": 0,
+                  "state": 0
+                }
+                """
+    )))
     @PostMapping("add")
     @Transactional
-    public ResponseEntity<Map<String,Object>> addNewStore(HttpServletRequest request,@ModelAttribute StoreDto storeDto) {
+    public ResponseEntity<Map<String,Object>> addNewStore(HttpServletRequest request,@ModelAttribute StoreDto storeDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> result = new HashMap<>();
         User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         Store isInserted = wholesaleStoreService.createStore(storeDto,loggedUser);

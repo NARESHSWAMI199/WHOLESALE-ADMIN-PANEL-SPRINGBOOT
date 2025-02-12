@@ -2,6 +2,8 @@ package sales.application.sales.wholesaler.controller;
 
 
 import com.sales.SalesApplication;
+import com.sales.entities.User;
+import com.sales.wholesaler.repository.WholesaleUserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,6 +28,56 @@ public class WholesaleUserControllerTest  extends TestUtil {
 
     @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    WholesaleUserRepository wholesaleUserRepository;
+
+
+//    @Test
+    public void testWholesaleLogin(String email) throws Exception {
+        String json = """
+                {
+                    "email" : "{email}",
+                    "password" : "{password}"
+                }
+                """
+                .replace("{email}",email)
+                .replace("{password}","123456");
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/wholesale/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                ).andExpectAll(
+                        status().is(200)
+//                        jsonPath("$.message", Matchers.is("User exist but not verified. You can login via otp."))
+                ).andDo(print())
+                .andReturn();
+    }
+
+
+//    @Test
+    public void validateOtp(String slug) throws Exception {
+        User user = wholesaleUserRepository.findUserBySlug(slug);
+        String otp = user.getOtp();
+        System.err.println("THE OTP ================== > "+otp);
+        String json = """
+                {
+                    "slug" : "{slug}",
+                    "password" : "{otp}"
+                }
+                """
+                .replace("{slug}",slug)
+                .replace("{otp}",otp)
+                ;
+        mockMvc.perform(MockMvcRequestBuilders.post("/wholesale/auth/validate-otp")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+        ).andExpectAll(
+                status().isOk()
+        );
+
+    }
+
 
     @Test
     public void testCreateOrRegisterUserWithoutLogin() throws Exception {
@@ -53,7 +105,20 @@ public class WholesaleUserControllerTest  extends TestUtil {
 
         String slug = extractSlugFromResponseViaUser(result);
         // update user with login as wholesaler
-        testUpdateUser(slug);
+//        testUpdateUser(slug);
+
+        // login user test
+        Map<String,Object> user = extractUserFromResponseViaUser(result);
+        String email = (String) user.get("email");
+
+        // before login validate otp
+        validateOtp(slug);
+
+        // login after validate otp
+        testWholesaleLogin(email);
+
+
+
     }
 
     @Test
@@ -142,7 +207,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
 
 //    @Test
     public void testUpdateUser(String slug) throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
+        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
         String token = loggedUserResponse.get("token");
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization" , token);
@@ -172,29 +237,108 @@ public class WholesaleUserControllerTest  extends TestUtil {
 
 
     @Test
-    public void testDetailUser() {
+    public void testDetailUser() throws Exception {
+        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
+        String token = loggedUserResponse.get("token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization" , token);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/auth/detail")
+                .headers(headers)
+        ).andExpectAll(
+                status().isOk()
+        ).andDo(print())
+        ;
 
     }
 
+
     @Test
-    public void testLastSeenUser() {
+    public void testDetailUserWithSlug() throws Exception {
+        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
+        String token = loggedUserResponse.get("token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization" , token);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/auth/detail/"+GlobalConstantTest.WHOLESALER_SLUG)
+                .headers(headers)
+        ).andExpectAll(
+                status().isOk()
+        ).andDo(print())
+        ;
 
     }
 
 
     @Test
-    public void testChatUsers() {
+    public void testUpdateLastSeenUser() throws Exception {
+        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
+        String token = loggedUserResponse.get("token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization" , token);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/auth/last-seen")
+                .headers(headers)
+        ).andExpectAll(
+                status().is(201)
+        ).andDo(print())
+        ;
 
     }
 
 
     @Test
-    public void testUpdatePassword() {
+    public void testChatUsers() throws Exception {
+        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
+        String token = loggedUserResponse.get("token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization" , token);
+
+        String json = """
+                {
+                }
+                """;
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/wholesale/auth/chat/users")
+                .headers(headers)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+        ).andExpectAll(status().isOk()).andDo(print());
+
+    }
+
+
+    /** @Note : Make sure if you update password once you need to use update password */
+    @Test
+    public void testUpdatePassword() throws Exception {
+        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
+        String token = loggedUserResponse.get("token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization" , token);
+
+        String json = """
+                {
+                    "password" : "123456"
+                }
+                """;
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/wholesale/auth/password")
+                .headers(headers)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+        ).andExpectAll(status().is(201)).andDo(print());
 
     }
 
     @Test
     public void testUpdateProfile() {
+        // TODO : skipped for now.
+    }
+
+
+
+    @Test
+    public void testValidateOtp() {
 
     }
 

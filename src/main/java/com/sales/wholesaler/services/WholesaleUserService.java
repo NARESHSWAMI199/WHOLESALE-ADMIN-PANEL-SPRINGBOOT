@@ -42,13 +42,19 @@ public class WholesaleUserService extends WholesaleRepoContainer {
     @Value("${default.password}")
     String password;
 
-    public User findByEmailAndPassword(Map<String,String> param) {
+    public User findByEmailAndPassword(Map<String,String> param) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+
+        // Validating required fields. If their we found any required field is null, this will throw an Exception
+        Utils.checkRequiredFields(param,List.of("email","password"));
+
         String email = param.get("email");
         String password = param.get("password");
         return wholesaleUserRepository.findByEmailAndPassword(email,password);
     }
 
-    public User findUserByOtpAndSlug(UserDto userDto) {
+    public User findUserByOtpAndSlug(UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // Validating required fields. If their we found any required field is null, this will throw an Exception
+        Utils.checkRequiredFields(userDto,List.of("slug","password"));
         return wholesaleUserRepository.findUserByOtpAndSlug(userDto.getSlug(),userDto.getPassword());
     }
 
@@ -144,7 +150,7 @@ public class WholesaleUserService extends WholesaleRepoContainer {
 
     public Map<String, Object> updateUserProfile(UserDto userDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
 
-        // Validating required fields. If there we found any required field is null, this will throw an Exception
+        // Validating required fields. If their we found any required field is null, this will throw an Exception
         Utils.checkRequiredFields(userDto,List.of("slug","username","email","contact"));
 
         Map<String, Object> responseObj = new HashMap<>();
@@ -172,7 +178,7 @@ public class WholesaleUserService extends WholesaleRepoContainer {
 
     @Transactional
     public User resetPasswordByUserSlug(PasswordDto passwordDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        // Validating required fields. If there we found any required field is null, this will throw an Exception
+        // Validating required fields. If their we found any required field is null, this will throw an Exception
         Utils.checkRequiredFields(passwordDto,List.of("password"));
         loggedUser.setPassword(passwordDto.getPassword());
         return wholesaleUserRepository.save(loggedUser);
@@ -196,7 +202,7 @@ public class WholesaleUserService extends WholesaleRepoContainer {
 
     public User addNewUser(UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
 
-        // Validating required fields. If there we found any required field is null, this will throw an Exception
+        // Validating required fields. If their we found any required field is null, this will throw an Exception
         Utils.checkRequiredFields(userDto,List.of("username","email","password","contact"));
 
         // '_' replaced by actual error message in mobileAndEmailValidation

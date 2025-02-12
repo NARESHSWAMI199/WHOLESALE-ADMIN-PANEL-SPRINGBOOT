@@ -38,8 +38,19 @@ public class WholesaleUserController extends WholesaleServiceContainer {
     @Autowired
     JwtToken jwtToken;
 
+
+
+
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(
+            example = """
+                    {
+                        "email" : "string",
+                        "password" : "string"
+                    }
+                    """
+    )))
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> findByEmailAndPassword(@RequestBody Map<String,String> param) {
+    public ResponseEntity<Map<String, Object>> findByEmailAndPassword(@RequestBody Map<String,String> param) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String, Object> responseObj = new HashMap<>();
             logger.info("=============LOGIN PROCESSES STARTED =====================");
         User user = wholesaleUserService.findByEmailAndPassword(param);
@@ -89,8 +100,17 @@ public class WholesaleUserController extends WholesaleServiceContainer {
     }
 
 
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(
+            example = """
+                    {
+                        "slug" : "string",
+                        "password" : "otp-password"
+                    }
+                    """
+    )))
+
     @PostMapping("validate-otp")
-    public ResponseEntity<Map<String, Object>> validateUserOtp(@RequestBody UserDto userDetails) {
+    public ResponseEntity<Map<String, Object>> validateUserOtp(@RequestBody UserDto userDetails) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.info("====================== OTP VALIDATION STARTED ======================");
         Map<String, Object> responseObj = new HashMap<>();
         User user = wholesaleUserService.findUserByOtpAndSlug(userDetails);
@@ -214,7 +234,6 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             content = @Content(schema = @Schema( description = "If you going to update must add slug",
                 example = """
                 {
-                    "slug" : "(only during update) string",
                     "email" : "string",
                     "username" : "string",
                     "password' : "string",
