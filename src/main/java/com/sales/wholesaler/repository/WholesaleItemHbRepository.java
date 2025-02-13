@@ -70,10 +70,10 @@ public class WholesaleItemHbRepository {
         query.setParameter("slug",slug);
         return query.executeUpdate();
     }
-    public int updateItemImage(String slug , String filename){
-        String hql = "update Item set avtar =:avtar where slug=:slug";
+    public int updateItemImages(String slug , String filename){
+        String hql = "update Item set avtars =:avtars where slug=:slug";
         Query query = entityManager.createQuery(hql);
-        query.setParameter("avtar", filename);
+        query.setParameter("avtars", filename);
         query.setParameter("slug", slug);
         return query.executeUpdate();
     }

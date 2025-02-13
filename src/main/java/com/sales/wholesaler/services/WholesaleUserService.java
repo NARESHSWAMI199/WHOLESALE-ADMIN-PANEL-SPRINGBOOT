@@ -159,7 +159,7 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         int isUpdated = updateUser(userDto, loggedUser);
         if (isUpdated > 0) {
             responseObj.put("message", "Successfully updated.");
-            responseObj.put("status", 201);
+            responseObj.put("status", 200);
         } else {
             responseObj.put("message", "No user found to update.");
             responseObj.put("status", 404);

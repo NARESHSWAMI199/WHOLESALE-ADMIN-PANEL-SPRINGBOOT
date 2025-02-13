@@ -74,7 +74,7 @@ public class WholesaleStoreController extends WholesaleServiceContainer{
     @PostMapping(value = {"update/notifications"})
     public ResponseEntity<String> getAllStoreNotification(@RequestBody StoreDto storeDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         wholesaleStoreService.updateSeen(storeDto);
-        return new ResponseEntity<>("success", HttpStatus.valueOf(201));
+        return new ResponseEntity<>("success", HttpStatus.valueOf(200));
     }
 
 

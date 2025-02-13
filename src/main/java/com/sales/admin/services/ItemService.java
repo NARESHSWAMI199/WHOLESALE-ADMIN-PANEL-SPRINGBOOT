@@ -159,7 +159,7 @@ public class ItemService extends RepoContainer{
             updateStoreImage(itemDto.getPreviousItemImages(),itemDto.getNewItemImages(),itemDto.getSlug(),"update");
             if (isUpdated > 0) {
                 responseObj.put("message", "successfully updated.");
-                responseObj.put("status", 201);
+                responseObj.put("status", 200);
             } else {
                 responseObj.put("message", "No item found to update.");
                 responseObj.put("status", 404);
@@ -170,7 +170,7 @@ public class ItemService extends RepoContainer{
             Item createdItem = createItem(itemDto, loggedUser);
             responseObj.put("res", createdItem);
             responseObj.put("message", "Successfully inserted.");
-            responseObj.put("status", 200);
+            responseObj.put("status", 201);
         }
         return responseObj;
 

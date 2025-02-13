@@ -1,6 +1,7 @@
 package com.sales.wholesaler.services;
 
 
+import com.sales.dto.DeleteDto;
 import com.sales.dto.GraphDto;
 import com.sales.dto.ItemDto;
 import com.sales.dto.ItemSearchFields;
@@ -138,7 +139,6 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         /** @Note : During creation we are checking only extra required params  */
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(itemDto,List.of(
-                "wholesaleSlug",
                 "rating",
                 "inStock",
                 "label",
@@ -189,7 +189,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
             int isUpdated = updateItem(itemDto, loggedUser);
             if (isUpdated > 0) {
                 responseObj.put("message", "successfully updated.");
-                responseObj.put("status", 201);
+                responseObj.put("status", 200);
             } else {
                 responseObj.put("message", "No item found to update.");
                 responseObj.put("status", 404);
@@ -201,7 +201,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
             Item createdItem = createItem(itemDto, loggedUser);
             responseObj.put("res", createdItem);
             responseObj.put("message", "Successfully inserted.");
-            responseObj.put("status", 200);
+            responseObj.put("status", 201);
         }
         return responseObj;
     }
@@ -253,7 +253,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
             updatedImages = previousImages.substring(0,previousImages.length()-1);
         }
         if(!Utils.isEmpty(updatedImages) && action.equalsIgnoreCase("update")){
-            wholesaleItemHbRepository.updateItemImage(slug, updatedImages);
+            wholesaleItemHbRepository.updateItemImages(slug, updatedImages);
         }
         return updatedImages;
     }
@@ -289,13 +289,21 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         return wholesaleItemHbRepository.updateItems(itemDto,loggedUser);
     }
 
-    public int deleteItem(String slug,Integer storeId) {
-        Item item = findItemBySLug(slug);
-        if (item.getStatus().equals("D")) return 0;
+    public int deleteItem(DeleteDto deleteDto, Integer storeId) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // if there is any required field null then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(deleteDto,List.of("slug"));
+        String slug = deleteDto.getSlug();
+        String status = getItemStatus(slug);
+        if(status == null) throw new NotFoundException("No item to delete.");
+        if (status.equals("D")) throw new IllegalArgumentException("Can't deactivated items.");
         return wholesaleItemHbRepository.deleteItem(slug,storeId);
     }
 
-    public int updateStock(String stock, String slug,Integer storeId) {
+    public int updateStock(Map<String,String> params,Integer storeId) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // if there is any required field null then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(params, List.of("slug", "stock"));
+        String slug = params.get("slug");
+        String stock = params.get("stock");
         return wholesaleItemHbRepository.updateStock(stock,slug,storeId);
     }
 

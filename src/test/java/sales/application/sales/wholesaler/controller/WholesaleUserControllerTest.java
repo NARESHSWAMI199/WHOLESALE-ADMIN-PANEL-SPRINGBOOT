@@ -100,7 +100,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
         ).andExpectAll(
-                status().isOk()
+                status().is(201)
         ).andDo(print()).andReturn();
 
         String slug = extractSlugFromResponseViaUser(result);
@@ -231,7 +231,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
                 .headers(headers)
                 .content(json)
         ).andExpectAll(
-                status().is(201)
+                status().is(200)
         );
     }
 
@@ -280,7 +280,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
         mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/auth/last-seen")
                 .headers(headers)
         ).andExpectAll(
-                status().is(201)
+                status().is(200)
         ).andDo(print())
         ;
 
@@ -326,7 +326,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
                 .headers(headers)
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
-        ).andExpectAll(status().is(201)).andDo(print());
+        ).andExpectAll(status().is(200)).andDo(print());
 
     }
 

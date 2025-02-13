@@ -77,7 +77,7 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         int isUpdated = updateStore(storeDto, loggedUser);
         if (isUpdated > 0) {
             responseObj.put("message", "successfully updated.");
-            responseObj.put("status", 201);
+            responseObj.put("status", 200);
         } else {
             responseObj.put("message", "No store found to update");
             responseObj.put("status", 404);

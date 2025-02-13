@@ -115,7 +115,7 @@ public class ServicePlanService extends  RepoContainer {
                     } else {
                         result.put("message", "Successfully Deactivated.");
                     }
-                    result.put("status", 201);
+                    result.put("status", 200);
                 } else {
                     result.put("message", "No plan found to update.");
                     result.put("status", 404);
@@ -128,7 +128,7 @@ public class ServicePlanService extends  RepoContainer {
 
     public Map<String,Object> deletedServicePlan(DeleteDto deleteDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
 
-        // Validating required fields if there we found any required field is null, then it will throw an Exception
+        // Validating required fields if their we found any required field is null, then it will throw an Exception
         Utils.checkRequiredFields(deleteDto, List.of("slug"));
         String slug = deleteDto.getSlug();
         Map<String,Object> result = new HashMap<>();
@@ -136,7 +136,7 @@ public class ServicePlanService extends  RepoContainer {
         int isUpdated = servicePlanHbRepository.deleteServicePlan(slug, loggedUser);
         if(isUpdated > 0){
             result.put("message","Service plan successfully deleted.");
-            result.put("status", 201);
+            result.put("status", 200);
         }else{
             result.put("message","No service plan found to delete.");
             result.put("status",404);

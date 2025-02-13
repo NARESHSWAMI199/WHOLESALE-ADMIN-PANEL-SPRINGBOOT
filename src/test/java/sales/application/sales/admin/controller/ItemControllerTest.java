@@ -84,17 +84,16 @@ public class ItemControllerTest extends TestUtil {
                         .param("discount", "10")
                         .param("rating", "0")
                         .param("description", "Mock test.")
-                        .param("capacity", "1")
+                        .param("capacity", "1") // optional
                         .param("categoryId", "0")
                         .param("subCategoryId", "0")
-                        .param("price", "20")
                         .param("inStock", "Y")
                         .param("label", "N")
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                         .headers(headers)
                 )
                 .andExpectAll(
-                        status().is(200)
+                        status().is(201)
                 )
                 .andDo(print())
                 .andReturn();
@@ -139,7 +138,7 @@ public class ItemControllerTest extends TestUtil {
                         .headers(headers)
                 )
                 .andExpectAll(
-                        status().is(201)
+                        status().is(200)
                 )
                 .andDo(print());
     }
@@ -191,7 +190,7 @@ public class ItemControllerTest extends TestUtil {
                         .headers(headers)
                 )
                 .andExpectAll(
-                        status().is(201)
+                        status().is(200)
                 )
                 .andDo(print());
     }
@@ -239,7 +238,7 @@ public class ItemControllerTest extends TestUtil {
                         .headers(headers)
                 )
                 .andExpectAll(
-                        status().is(201)
+                        status().is(200)
                 )
                 .andDo(print());
     }
@@ -326,7 +325,7 @@ public class ItemControllerTest extends TestUtil {
                 .content(json)
                 .headers(headers)
         ).andExpectAll(
-                status().is(200)
+                status().is(201)
         ).andDo(print());
     }
 
@@ -349,7 +348,7 @@ public class ItemControllerTest extends TestUtil {
                         .content(json)
                         .headers(headers)
                 ).andExpectAll(
-                        status().is(201)
+                        status().is(200)
                 ).andDo(print())
                 .andReturn();
         String slug = extractSlugFromResponseViaRes(result);
@@ -381,7 +380,7 @@ public class ItemControllerTest extends TestUtil {
                 .content(json)
                 .headers(headers)
         ).andExpectAll(
-                status().is(200)
+                status().is(201)
         ).andDo(print());
     }
 
@@ -408,7 +407,7 @@ public class ItemControllerTest extends TestUtil {
                         .content(json)
                         .headers(headers)
                 ).andExpectAll(
-                        status().is(201)
+                        status().is(200)
                 ).andDo(print())
                 .andReturn();
 
@@ -461,7 +460,7 @@ public class ItemControllerTest extends TestUtil {
                 .content(json)
                 .headers(headers)
         ).andExpectAll(
-                status().is(201)
+                status().is(200)
         );
     }
 
@@ -502,7 +501,7 @@ public class ItemControllerTest extends TestUtil {
                 .content(json)
                 .headers(headers)
         ).andExpectAll(
-                status().is(201)
+                status().is(200)
         );
     }
 

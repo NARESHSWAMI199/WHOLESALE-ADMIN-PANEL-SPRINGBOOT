@@ -114,7 +114,7 @@ public class StoreControllerTest extends TestUtil {
                 .contentType(MediaType.APPLICATION_JSON)
                 .headers(headers)
         ).andExpectAll(
-                status().is((201))
+                status().is((200))
         );
 
     }
@@ -286,7 +286,7 @@ public class StoreControllerTest extends TestUtil {
                 .content(json)
                 .headers(headers)
         ).andExpectAll(
-                status().is(201)
+                status().is(200)
         ).andDo(print());
 
     }
@@ -376,7 +376,7 @@ public class StoreControllerTest extends TestUtil {
                 .content(json)
                 .headers(headers)
         ).andExpectAll(
-                status().is(200)
+                status().is(201)
         ).andDo(print());
     }
 
@@ -399,7 +399,7 @@ public class StoreControllerTest extends TestUtil {
                         .content(json)
                         .headers(headers)
                 ).andExpectAll(
-                        status().is(201)
+                        status().is(200)
                 ).andDo(print())
                 .andReturn();
         String slug = extractSlugFromResponseViaRes(result);
@@ -451,7 +451,7 @@ public class StoreControllerTest extends TestUtil {
                 .content(json)
                 .headers(headers)
         ).andExpectAll(
-                status().is(201)
+                status().is(200)
         );
     }
 
@@ -492,7 +492,7 @@ public class StoreControllerTest extends TestUtil {
                 .content(json)
                 .headers(headers)
         ).andExpectAll(
-                status().is(201)
+                status().is(200)
         );
     }
 
@@ -518,7 +518,7 @@ public class StoreControllerTest extends TestUtil {
                 .content(json)
                 .headers(headers)
         ).andExpectAll(
-                status().is(200)
+                status().is(201)
         ).andDo(print());
     }
 
@@ -544,7 +544,7 @@ public class StoreControllerTest extends TestUtil {
                         .content(json)
                         .headers(headers)
                 ).andExpectAll(
-                        status().is(201)
+                        status().is(200)
                 ).andDo(print())
                 .andReturn();
 

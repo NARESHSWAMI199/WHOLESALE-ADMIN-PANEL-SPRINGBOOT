@@ -132,7 +132,7 @@ public class StoreService extends RepoContainer{
 
             if (!Utils.isEmpty(storeDto.getStoreSlug()) || path.contains("update")) { // We are going to update store.
                 // if there is any required field null then this will throw IllegalArgumentException
-                Utils.checkRequiredFields(storeDto,List.of("slug"));
+                Utils.checkRequiredFields(storeDto,List.of("storeSlug"));
 
                 String storeName = Utils.isValidName(storeDto.getStoreName(),"Store");
                 storeDto.setStoreName(storeName);
@@ -148,7 +148,7 @@ public class StoreService extends RepoContainer{
                 int isUpdated = updateStore(storeDto, loggedUser);
                 if (isUpdated > 0) {
                     responseObj.put("message", "Successfully updated.");
-                    responseObj.put("status", 201);
+                    responseObj.put("status", 200);
                 } else {
                     responseObj.put("message", "Nothing found to updated.");
                     responseObj.put("status", 404);
@@ -170,7 +170,7 @@ public class StoreService extends RepoContainer{
                 Store createdStore = createStore(storeDto, loggedUser);
                 responseObj.put("res", createdStore);
                 responseObj.put("message", "Successfully inserted.");
-                responseObj.put("status", 200);
+                responseObj.put("status", 201);
             }
         return responseObj;
 

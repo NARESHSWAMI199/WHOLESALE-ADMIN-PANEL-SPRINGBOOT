@@ -1,5 +1,6 @@
 package com.sales.wholesaler.controller;
 
+import com.sales.dto.DeleteDto;
 import com.sales.dto.ItemDto;
 import com.sales.dto.ItemSearchFields;
 import com.sales.entities.Item;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,35 +80,44 @@ public class WholesaleItemController extends WholesaleServiceContainer {
 
 
 
-    @GetMapping("/delete/{slug}")
-    public ResponseEntity<Map<String,Object>> deleteItemBySlug(HttpServletRequest request,@PathVariable String slug) {
+    @PostMapping("/delete")
+    public ResponseEntity<Map<String,Object>> deleteItemBySlug(HttpServletRequest request, @RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
-        int isUpdated = wholesaleItemService.deleteItem(slug,storeId);
+        int isUpdated = wholesaleItemService.deleteItem(deleteDto,storeId);
         if (isUpdated > 0) {
             responseObj.put("message", "Item has been successfully deleted.");
             responseObj.put("status", 200);
         }else{
-            responseObj.put("message", "There is nothing to delete.recheck you parameters");
-            responseObj.put("status", 400);
+            responseObj.put("message", "No item found to delete.");
+            responseObj.put("status", 404);
         }
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
 
+
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(
+            example = """
+                    {
+                       "slug" : "string (item slug)",
+                       "stock" : "Y|N"
+                    }
+                    """
+    )))
     @PostMapping("/stock")
-    public ResponseEntity<Map<String,Object>> updateItemStock (HttpServletRequest request,@RequestBody Map<String,String> params) {
+    public ResponseEntity<Map<String,Object>> updateItemStock (HttpServletRequest request,@RequestBody Map<String,String> params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
-        int isUpdated = wholesaleItemService.updateStock(params.get("stock"),params.get("slug"),storeId);
+        int isUpdated = wholesaleItemService.updateStock(params,storeId);
         if (isUpdated > 0) {
             responseObj.put("message", "Item's stock has been successfully updated.");
             responseObj.put("status", 200);
         }else{
-            responseObj.put("message", "There is not item to update.");
-            responseObj.put("status", 400);
+            responseObj.put("message", "No item found to update.");
+            responseObj.put("status", 404);
         }
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
     }

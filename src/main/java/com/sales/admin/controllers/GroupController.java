@@ -68,7 +68,7 @@ public class GroupController extends ServiceContainer {
         int isUpdated = groupService.deleteGroupBySlug(deleteDto,loggedUser);
         if (isUpdated > 0) {
             responseObj.put("message", "User has been successfully deleted.");
-            responseObj.put("status", 201);
+            responseObj.put("status", 200);
         } else {
             responseObj.put("message", "No group found to delete");
             responseObj.put("status", 404);

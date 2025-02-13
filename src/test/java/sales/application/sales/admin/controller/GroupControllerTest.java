@@ -97,7 +97,7 @@ public class GroupControllerTest extends TestUtil {
                         .headers(headers)
                 )
                 .andExpectAll(
-                        status().is(200)
+                        status().is(201)
                 ).andDo(print())
                 .andReturn();
 
@@ -194,7 +194,7 @@ public class GroupControllerTest extends TestUtil {
                             .headers(headers)
                     )
                     .andExpectAll(
-                            status().is(201)
+                            status().is(200)
                     ).andDo(print());
         }
 
@@ -278,7 +278,7 @@ public class GroupControllerTest extends TestUtil {
                         .content(json)
                 )
                 .andExpectAll(
-                        status().is(201)
+                        status().is(200)
                 ).andDo(print());
     }
 

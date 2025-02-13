@@ -211,7 +211,7 @@ public class ChatController extends WholesaleServiceContainer {
         boolean updated = wholesaleUserService.updateSeenMessages(message);
         if(updated){
             result.put("message","Message successfully updated.");
-            result.put("status", 201);
+            result.put("status", 200);
         }else{
             result.put("message","Something went wrong during updating all message seen.");
             result.put("status",  400);

@@ -195,7 +195,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         User updatedUser = wholesaleUserService.resetPasswordByUserSlug(passwordDto,loggedUser);
         responseObj.put("res",updatedUser);
         responseObj.put("message", "User password has been successfully updated.");
-        responseObj.put("status", 201);
+        responseObj.put("status", 200);
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
@@ -209,7 +209,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         if(imageName!=null) {
             responseObj.put("imageName",imageName);
             responseObj.put("message" , "Profile image successfully updated");
-            responseObj.put("status" , 201);
+            responseObj.put("status" , 200);
         }else {
             responseObj.put("status" , 406);
             responseObj.put("message" , "Not a valid profile image");
@@ -247,7 +247,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         User insertedUser = wholesaleUserService.addNewUser(userDto);
         result.put("user",insertedUser);
         result.put("message", "User created successfully");
-        result.put("status", 200);
+        result.put("status", 201);
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
     }
 
@@ -262,7 +262,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         GlobalConstant.onlineUsers.put(loggedUser.getSlug(), loggedUser);
         if(isUpdated > 0){
             result.put("message", "User's last seen successfully updated.");
-            result.put("status", 201);
+            result.put("status", 200);
         }else{
             result.put("message","Something went wrong during updating last seen of user");
             result.put("status",500);

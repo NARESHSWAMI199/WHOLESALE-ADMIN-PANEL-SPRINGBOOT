@@ -79,10 +79,10 @@ public class GroupService extends RepoContainer {
             int isUpdated = permissionHbRepository.updateGroup(groupDto, group.getId());
             if (isUpdated > 0 && group.getId() ==0) {
                 responseObject.put("message", "The group has been updated successfully.But dear "+loggedUser.getUsername()+" ji We are not able to remove permissions. from "+group.getName()+" New permissions updated .");
-                responseObject.put("status", 201);
+                responseObject.put("status", 200);
             }else if (isUpdated > 0) {
                 responseObject.put("message", "The group has been updated successfully.");
-                responseObject.put("status", 201);
+                responseObject.put("status", 200);
             } else {
                 responseObject.put("message", "No record found to update.");
                 responseObject.put("status", 404);
@@ -95,7 +95,7 @@ public class GroupService extends RepoContainer {
             permissionHbRepository.updatePermissions(insertedGroup.getId(), groupDto.getPermissions());
             responseObject.put("res",insertedGroup);
             responseObject.put("message", groupDto.getName() + " successfully created.");
-            responseObject.put("status", 200);
+            responseObject.put("status", 201);
         }
         return responseObject;
     }

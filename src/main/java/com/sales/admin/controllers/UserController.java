@@ -192,7 +192,7 @@ public class UserController extends ServiceContainer {
         int isUpdated = userService.deleteUserBySlug(deleteDto,loggedUser);
         if (isUpdated > 0) {
             responseObj.put("message", "User has been successfully deleted.");
-            responseObj.put("status", 201);
+            responseObj.put("status", 200);
         } else {
             responseObj.put("message", "No user found to delete");
             responseObj.put("status", 404);
@@ -224,7 +224,7 @@ public class UserController extends ServiceContainer {
         int isUpdated = userService.updateStatusBySlug(statusDto,loggedUser);
         if (isUpdated > 0) {
             responseObj.put("message", "User's status updated successfully.");
-            responseObj.put("status", 201);
+            responseObj.put("status", 200);
         } else {
             responseObj.put("message", "No user found to update.");
             responseObj.put("status", 404);

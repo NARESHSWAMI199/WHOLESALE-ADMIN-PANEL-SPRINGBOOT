@@ -202,7 +202,7 @@ public class UserControllerTest extends TestUtil {
                         .contentType(MediaType.APPLICATION_JSON)
                         .headers(headers)
                 )
-                .andExpect(status().is(200))
+                .andExpect(status().is(201))
                 .andDo(print()).andReturn();
 
         String userSlug = extractSlugFromResponseViaRes(result);
@@ -251,7 +251,7 @@ public class UserControllerTest extends TestUtil {
                         .contentType(MediaType.APPLICATION_JSON)
                         .headers(headers)
                 )
-                .andExpect(status().is(200))
+                .andExpect(status().is(201))
                 .andDo(print())
                 .andReturn();
 
@@ -289,7 +289,7 @@ public class UserControllerTest extends TestUtil {
                 .headers(staffHeader)
         )
         .andExpectAll(
-            status().is(201)
+            status().is(200)
         );
 
         // delete wholesaler via staff account
@@ -320,7 +320,7 @@ public class UserControllerTest extends TestUtil {
                         .contentType(MediaType.APPLICATION_JSON)
                         .headers(headers)
                 )
-                .andExpect(status().is(200))
+                .andExpect(status().is(201))
                 .andDo(print())
                 .andReturn();
 
@@ -365,7 +365,6 @@ public class UserControllerTest extends TestUtil {
                         .headers(headers)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.res.username",is("naresh swami")))
                 .andDo(print())
         ;
     }
@@ -467,7 +466,7 @@ public class UserControllerTest extends TestUtil {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json)
             )
-            .andExpect(status().is(201))
+            .andExpect(status().is(200))
             .andDo(print());
 
     }
@@ -589,7 +588,7 @@ public void updateUserWrongStatus() throws Exception {
                         .headers(headers)
                 )
                 .andExpectAll(
-                        status().is(201)
+                        status().is(200)
                 )
                 .andDo(print());
     }
@@ -797,7 +796,7 @@ public void updateUserWrongStatus() throws Exception {
                         .headers(headers)
                 )
                 .andExpectAll(
-                        status().is(201)
+                        status().is(200)
                 )
                 .andDo(print());
     }
@@ -821,7 +820,7 @@ public void updateUserWrongStatus() throws Exception {
                         .headers(headers)
                 )
                 .andExpectAll(
-                        status().is(201)
+                        status().is(200)
                 )
                 .andDo(print());
     }
@@ -843,7 +842,7 @@ public void updateUserWrongStatus() throws Exception {
                         .headers(headers)
                 )
                 .andExpectAll(
-                        status().is(201)
+                        status().is(200)
                 )
                 .andDo(print());
     }

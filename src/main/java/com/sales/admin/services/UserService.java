@@ -297,7 +297,7 @@ public class UserService extends RepoContainer {
             }
             if (isUpdated > 0) {
                 responseObj.put("message", "Successfully updated.");
-                responseObj.put("status", 201);
+                responseObj.put("status", 200);
             } else {
                 responseObj.put("message", "Nothing to updated. may be something went wrong");
                 responseObj.put("status", 404);
@@ -329,7 +329,7 @@ public class UserService extends RepoContainer {
             if (updatedUser.getId() > 0) {
                 responseObj.put("res", updatedUser);
                 responseObj.put("message", "Successfully inserted.");
-                responseObj.put("status", 200);
+                responseObj.put("status", 201);
             } else {
                 responseObj.put("message", "Nothing to save. may be something went wrong please contact to administrator.");
                 responseObj.put("status", 500);
@@ -508,7 +508,7 @@ public class UserService extends RepoContainer {
         int isUpdated = permissionHbRepository.assignPermissionsToWholesaler(user.getId(), userDto.getStorePermissions());
         if (isUpdated > 0) {
             responseObject.put("message", "All permissions have been updated successfully.");
-            responseObject.put("status", 201);
+            responseObject.put("status", 200);
         } else {
             responseObject.put("message", "We don't found any user to update");
             responseObject.put("status", 404);

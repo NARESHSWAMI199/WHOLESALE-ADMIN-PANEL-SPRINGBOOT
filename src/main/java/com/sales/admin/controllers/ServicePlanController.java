@@ -60,7 +60,7 @@ public class ServicePlanController extends ServiceContainer {
         ServicePlan servicePlan = servicePlanService.insertServicePlan(loggedUser,servicePlanDto);
         result.put("res",servicePlan);
         result.put("message","Service plan added successfully.");
-        result.put("status" , 200);
+        result.put("status" , 201);
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
     }
 

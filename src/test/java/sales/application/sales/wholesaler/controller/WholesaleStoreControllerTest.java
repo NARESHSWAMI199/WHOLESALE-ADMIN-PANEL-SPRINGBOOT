@@ -106,7 +106,7 @@ public class WholesaleStoreControllerTest extends TestUtil {
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .headers(headers)
         ).andExpectAll(
-                MockMvcResultMatchers.status().is(201)
+                MockMvcResultMatchers.status().is(200)
         ).andDo(MockMvcResultHandlers.print());
     }
     @Test
@@ -125,7 +125,7 @@ public class WholesaleStoreControllerTest extends TestUtil {
                 .content(json)
                 .headers(headers)
         ).andExpectAll(
-                MockMvcResultMatchers.status().is(201)
+                MockMvcResultMatchers.status().is(200)
         ).andDo(MockMvcResultHandlers.print());
     }
 
