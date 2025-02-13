@@ -105,7 +105,7 @@ public class ItemService extends RepoContainer{
                 "price",
                 "discount",
                 "description",
-                "capacity",
+//                "capacity",
                 "categoryId",
                 "subCategoryId"
         ));
@@ -141,7 +141,9 @@ public class ItemService extends RepoContainer{
 
         // retrieve category and subcategory
         ItemCategory itemCategory = itemCategoryRepository.findById(itemDto.getCategoryId()).get();
+        if(itemCategory == null) throw new IllegalArgumentException("Invalid categoryId.");
         ItemSubCategory itemSubCategory = itemSubCategoryRepository.findById(itemDto.getSubCategoryId()).get();
+        if(itemSubCategory == null) throw new IllegalArgumentException("Invalid subCategoryId.");
         itemDto.setItemCategory(itemCategory);
         itemDto.setItemSubCategory(itemSubCategory);
 

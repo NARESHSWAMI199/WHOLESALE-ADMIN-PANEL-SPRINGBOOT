@@ -9,6 +9,7 @@ import com.sales.entities.ItemCategory;
 import com.sales.entities.ItemSubCategory;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
+import com.sales.exceptions.NotFoundException;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.*;
@@ -115,25 +117,75 @@ public class WholesaleItemService extends WholesaleRepoContainer {
     }
 
 
+    public String getItemStatus(String slug) {
+        return wholesaleItemRepository.getItemStatus(slug);
+    }
 
-    @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
+    public void validateRequiredFields(ItemDto itemDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // if there is any required field null then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(itemDto,List.of(
+                "name",
+                "price",
+                "discount",
+                "description",
+//                "capacity",
+                "categoryId",
+                "subCategoryId"
+        ));
+    }
+
+    public void validateRequiredFieldsBeforeCreateItem(ItemDto itemDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        /** @Note : During creation we are checking only extra required params  */
+        // if there is any required field null then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(itemDto,List.of(
+                "wholesaleSlug",
+                "rating",
+                "inStock",
+                "label",
+                "newItemImages"
+        ));
+    }
+
+
+
+    @Transactional(rollbackOn = {IllegalArgumentException.class,MyException.class, RuntimeException.class,Exception.class})
     public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser,String path) throws Exception {
-        if(itemDto.getPrice() < itemDto.getDiscount()) throw new MyException("Discount can't be greater then price.");
-        Map<String, Object> responseObj = new HashMap<>();
+
+        // if there is any required field null then this will throw IllegalArgumentException
+        validateRequiredFields(itemDto);
+
+        // Discount can't be less than item's price
+        if(itemDto.getPrice() < itemDto.getDiscount()) throw new IllegalArgumentException("Discount can't be greater then price.");
+        // If item name not in proper syntax this will throw Exception
         String itemName = Utils.isValidName( itemDto.getName(),"item");
         itemDto.setName(itemName);
+
         Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(loggedUser.getId());
         itemDto.setStoreId(storeId);
+
+        // Getting category and subcategory from database behalf on provided Ids.
         ItemCategory itemCategory = wholesaleItemCategoryRepository.findById(itemDto.getCategoryId()).get();
+        if(itemCategory == null) throw new IllegalArgumentException("Invalid categoryId.");
         itemDto.setItemCategory(itemCategory);
         ItemSubCategory itemSubCategory = wholesaleItemSubCategoryRepository.findById(itemDto.getSubCategoryId()).get();
+        if(itemSubCategory == null) throw new IllegalArgumentException("Invalid subCategoryId.");
         itemDto.setItemSubCategory(itemSubCategory);
 
+        Map<String, Object> responseObj = new HashMap<>();
+
         // Going to update Item
-        if (!Utils.isEmpty(itemDto.getSlug()) && path.contains("update")) {
-            Item item = findItemBySLug(itemDto.getSlug());
-            if (item.getStatus().equals("D")) throw new MyException("You can't update a blocked item.");;
-            updateStoreImage(itemDto.getPreviousItemImages(),itemDto.getNewItemImages(), item.getSlug(),"update");
+        if (!Utils.isEmpty(itemDto.getSlug()) || path.contains("update")) {
+
+            // if there is any required field null then this will throw IllegalArgumentException
+            Utils.checkRequiredFields(itemDto,List.of("slug"));
+
+            // Getting item's status from database and validating the item not blocked
+            String itemStatus = getItemStatus(itemDto.getSlug());
+            if(itemStatus == null) throw new NotFoundException("No item found to update.");
+            if (itemStatus.equals("D")) throw new MyException("You can't update a blocked item.");
+
+            // Update item images
+            updateStoreImage(itemDto.getPreviousItemImages(),itemDto.getNewItemImages(), itemDto.getSlug(),"update");
             int isUpdated = updateItem(itemDto, loggedUser);
             if (isUpdated > 0) {
                 responseObj.put("message", "successfully updated.");
@@ -143,6 +195,9 @@ public class WholesaleItemService extends WholesaleRepoContainer {
                 responseObj.put("status", 404);
             }
         } else {  // Going to crate Item
+            // if there is any required field null then this will throw IllegalArgumentException
+            validateRequiredFieldsBeforeCreateItem(itemDto);
+
             Item createdItem = createItem(itemDto, loggedUser);
             responseObj.put("res", createdItem);
             responseObj.put("message", "Successfully inserted.");
@@ -151,7 +206,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         return responseObj;
     }
 
-    @Transactional
+    @Transactional(rollbackOn = {IllegalArgumentException.class,MyException.class, RuntimeException.class,Exception.class})
     public Item createItem (ItemDto itemDto, User loggedUser) throws MyException, IOException {
         String slug = UUID.randomUUID().toString();
         Item item = new Item();

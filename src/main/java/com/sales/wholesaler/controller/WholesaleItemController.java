@@ -6,6 +6,8 @@ import com.sales.entities.Item;
 import com.sales.entities.ItemCategory;
 import com.sales.entities.ItemSubCategory;
 import com.sales.entities.User;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -44,18 +46,32 @@ public class WholesaleItemController extends WholesaleServiceContainer {
 
 
 
+
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(
+            example = """
+                    {
+                      "name": "string",
+                      "price": 0,
+                      "discount": 0,
+                      "description": "string",
+                      "label": "string",
+                      "capacity": 0,
+                      "itemImage": "string",
+                      "storeId": 0,
+                      "categoryId": 0,
+                      "subCategoryId": 0,
+                      "inStock" : "Y|N",
+                       "newItemImages": [
+                          "image"
+                        ]
+                    }
+                    """
+    )))
     @PostMapping(value = {"/add", "/update"})
-    public ResponseEntity<Map<String, Object>> addOrUpdateItems(HttpServletRequest request, @ModelAttribute ItemDto itemDto) {
-        Map responseObj = new HashMap();
-        try {
-            User loggedUser = (User) request.getAttribute("user");
-            String path = request.getRequestURI();
-            responseObj = wholesaleItemService.createOrUpdateItem(itemDto, loggedUser,path);
-        } catch (Exception e) {
-            responseObj.put("message", e.getMessage());
-            responseObj.put("status", 500);
-            e.printStackTrace();
-        }
+    public ResponseEntity<Map<String, Object>> addOrUpdateItems(HttpServletRequest request, @ModelAttribute ItemDto itemDto) throws Exception {
+        User loggedUser = (User) request.getAttribute("user");
+        String path = request.getRequestURI();
+        Map responseObj = wholesaleItemService.createOrUpdateItem(itemDto, loggedUser,path);
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 

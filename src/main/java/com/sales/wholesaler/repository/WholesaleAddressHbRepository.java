@@ -27,7 +27,7 @@ public class WholesaleAddressHbRepository {
                 "state =:state," +
                 "latitude =:latitude," +
                 "altitude =:altitude, " +
-                "updatedAt =:updatedAt " +
+                "updatedAt =:updatedAt, " +
                 "updatedBy =:updatedBy " +
                 "where id =:id ";
         Query query = entityManager.createQuery(hqQuery);

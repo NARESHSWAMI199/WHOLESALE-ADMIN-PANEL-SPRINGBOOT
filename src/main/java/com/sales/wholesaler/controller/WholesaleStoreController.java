@@ -11,8 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -26,21 +26,32 @@ import java.util.Map;
 public class WholesaleStoreController extends WholesaleServiceContainer{
 
 
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema =
+    @Schema(example = """
+                {
+                  "storeSlug" : "string",
+                  "storeEmail": "string",
+                  "storeName": "string",
+                  "storePhone": "string",
+                  "description": "string",
+                  "storePic": "string",
+                  "street": "string",
+                  "zipCode": "string",
+                  "city": 0,
+                  "state": 0,
+                  "categoryId" : "0",
+                  "subcategoryId" : "0"
+                }
+                """
+    )))
     @Transactional
     @PostMapping(value = {"/update"})
-    public ResponseEntity<Map<String, Object>> updateStore(HttpServletRequest request, @ModelAttribute StoreDto storeDto) {
-        Map<String,Object> responseObj = new HashMap<>();
-        try {
-            User loggedUser = (User) request.getAttribute("user");
-            responseObj = wholesaleStoreService.updateStoreBySlug(storeDto, loggedUser);
-        } catch (Exception e) {
-            responseObj.put("message", e.getMessage());
-            responseObj.put("status", 500);
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        }
+    public ResponseEntity<Map<String, Object>> updateStore(HttpServletRequest request, @ModelAttribute StoreDto storeDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        User loggedUser = (User) request.getAttribute("user");
+        Map<String,Object> responseObj = wholesaleStoreService.updateStoreBySlug(storeDto, loggedUser);
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
-
     }
+
 
     @Transactional
     @PostMapping(value = {"notifications"})
@@ -51,12 +62,19 @@ public class WholesaleStoreController extends WholesaleServiceContainer{
     }
 
 
+
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(
+            example = """
+                    "seenIds": [
+                        "the list of seen notification ids"
+                      ],
+                    """
+    )))
     @Transactional
     @PostMapping(value = {"update/notifications"})
-    public ResponseEntity<String> getAllStoreNotification(HttpServletRequest request, @RequestBody StoreDto storeDto) {
-        User loggedUser = (User) request.getAttribute("user");
-        wholesaleStoreService.updateSeen(storeDto.getSeenIds());
-        return new ResponseEntity<>("success", HttpStatus.OK);
+    public ResponseEntity<String> getAllStoreNotification(@RequestBody StoreDto storeDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        wholesaleStoreService.updateSeen(storeDto);
+        return new ResponseEntity<>("success", HttpStatus.valueOf(201));
     }
 
 
@@ -83,15 +101,16 @@ public class WholesaleStoreController extends WholesaleServiceContainer{
                   "storePhone": "string",
                   "description": "string",
                   "storePic": "string",
-                  "addressId": 0,
                   "street": "string",
                   "zipCode": "string",
                   "city": 0,
-                  "state": 0
+                  "state": 0,
+                  "categoryId" : "0",
+                  "subcategoryId" : "0"
                 }
                 """
     )))
-    @PostMapping("add")
+    @PostMapping(value = "add",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
     public ResponseEntity<Map<String,Object>> addNewStore(HttpServletRequest request,@ModelAttribute StoreDto storeDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> result = new HashMap<>();

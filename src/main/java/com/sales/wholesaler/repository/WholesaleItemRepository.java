@@ -13,6 +13,10 @@ public interface WholesaleItemRepository extends JpaRepository<Item, Integer> , 
 
    Item findItemBySlug(String slug);
 
+
+   @Query(value = "select status from Item where slug=:slug")
+   String getItemStatus(String slug);
+
    @Query(value = "select count(id) as count from Item where wholesaleId=:id")
    Integer totalItemCount(@Param("id") Integer storeId);
 

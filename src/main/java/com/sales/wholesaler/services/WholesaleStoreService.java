@@ -37,8 +37,12 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
     @Value("${store.relative}")
     String storeImageRelativePath;
 
-    @Transactional(rollbackOn = {MyException.class , RuntimeException.class})
-    public Map<String, Object> updateStoreBySlug(StoreDto storeDto,User loggedUser) throws IOException {
+    @Transactional(rollbackOn = {IllegalArgumentException.class,MyException.class , RuntimeException.class})
+    public Map<String, Object> updateStoreBySlug(StoreDto storeDto,User loggedUser) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+
+        // Validating required fields. If their we found any required field is null, this will throw an Exception
+        Utils.checkRequiredFields(storeDto, List.of("storeSlug","storeName", "storePic", "storeEmail", "storePhone", "categoryId", "subCategoryId"));
+
         Map<String, Object> responseObj = new HashMap<>();
         String storeName = Utils.isValidName( storeDto.getStoreName(),"store");
         storeDto.setStoreName(storeName);
@@ -75,15 +79,17 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
             responseObj.put("message", "successfully updated.");
             responseObj.put("status", 201);
         } else {
-            responseObj.put("message", "nothing to updated. may be something went wrong");
-            responseObj.put("status", 400);
+            responseObj.put("message", "No store found to update");
+            responseObj.put("status", 404);
         }
         return responseObj;
     }
 
-    @Transactional(rollbackOn = {MyException.class,RuntimeException.class})
-    public int updateStore(StoreDto storeDto, User loggedUser){
+    @Transactional(rollbackOn = {IllegalArgumentException.class,MyException.class,RuntimeException.class})
+    public int updateStore(StoreDto storeDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         AddressDto address = new AddressDto();
+        // if there is any required field null then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(storeDto, List.of("street", "zipCode", "city", "state"));
         address.setStreet(storeDto.getStreet());
         address.setZipCode(storeDto.getZipCode());
         address.setCity(storeDto.getCity());
@@ -121,7 +127,7 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
                     GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
                     GlobalConstant.allowedAspectRatios, GlobalConstant.allowedFormats)) {
                 String fileOriginalName = Objects.requireNonNull(storeImage.getOriginalFilename()).replaceAll(" ", "_");
-                String dirPath = storeImagePath+"/"+slug+"/";
+                String dirPath = storeImagePath+slug+"/";
                 File dir = new File(dirPath);
                 if(!dir.exists()) dir.mkdirs();
                 File file = new File(dirPath+fileOriginalName);
@@ -142,7 +148,7 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
     public Store createStore(StoreDto storeDto , User loggedUser) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
 
             // Validating required fields. If their we found any required field is null, this will throw an Exception
-            Utils.checkRequiredFields(storeDto,List.of("storeName","storeEmail","storePhone","categoryId","subcategoryId"));
+            Utils.checkRequiredFields(storeDto, List.of("storeName", "storePic", "storeEmail", "storePhone", "categoryId", "subCategoryId"));
 
             /* '_' replaced by actual error message in mobileAndEmailValidation */
             Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid _");
@@ -159,7 +165,7 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
             /* inserting  address during create a wholesale */
             AddressDto addressDto = getAddressObjFromStore(storeDto);
             // if there is any required field null then this will throw IllegalArgumentException
-            Utils.checkRequiredFields(addressDto,List.of("street","zipCode", "city","state"));
+            Utils.checkRequiredFields(addressDto, List.of("street", "zipCode", "city", "state"));
             Address address = insertAddress(addressDto, loggedUser);
 
             Store store = new Store(loggedUser);
@@ -222,7 +228,10 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         return  wholesaleNotificationRepository.findAll(specification,pageable);
     }
 
-    public void updateSeen(List<Long> seenIds) {
+    public void updateSeen(StoreDto storeDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // if there is any required field null then this will throw IllegalArgumentException
+        Utils.checkRequiredFields(storeDto, List.of("seenIds"));
+        List<Long> seenIds = storeDto.getSeenIds();
         for(long id : seenIds){
             wholesaleStoreHbRepository.updateSeenNotifications(id);
         }

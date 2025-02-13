@@ -25,7 +25,7 @@ public class GlobalConstantTest {
     public static String STAFF_SLUG = "e53554b3-8174-438b-929c-d91c1875a0d3";
     public static String SUPER_ADMIN_SLUG = "a07ac7eb-183e-4cda-84f5-573af682bd20";
 
-    public static String TEST_STORE_SLUG = "5030af06-bba9-4e77-bce8-bd38c6cf13f2";
+    public static String TEST_STORE_SLUG = "a4d0b19f-9c2c-43f0-9abb-59b1456d92f5";
 
 
 }

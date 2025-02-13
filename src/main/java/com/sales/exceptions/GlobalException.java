@@ -28,7 +28,6 @@ public class GlobalException {
     @Autowired
     Logger logger;
 
-
     @Transactional
     @ExceptionHandler(value = PermissionDeniedDataAccessException.class)
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
@@ -195,8 +194,17 @@ public class GlobalException {
 
 
 
+/*    private String getCauseMessage(Throwable t){
+        if(t.getCause() != null) {
+            return getCauseMessage(t.getCause());
+        }else {
+            return t.getLocalizedMessage();
+        }
+    }*/
+
     private String getCauseMessage(Throwable t){
         return t.getCause().getCause().getLocalizedMessage();
     }
+
 
 }
