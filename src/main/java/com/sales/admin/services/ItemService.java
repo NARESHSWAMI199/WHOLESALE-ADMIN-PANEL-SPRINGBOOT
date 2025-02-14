@@ -10,6 +10,8 @@ import com.sales.global.GlobalConstant;
 import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.data.domain.Page;
@@ -30,6 +32,7 @@ import static com.sales.specifications.ItemsSpecifications.*;
 @Service
 public class ItemService extends RepoContainer{
 
+    private static final Logger logger = LoggerFactory.getLogger(ItemService.class);
 
     @Value("${item.absolute}")
     String itemImagePath;
@@ -39,6 +42,7 @@ public class ItemService extends RepoContainer{
 
 
     public Page<Item> getAllItems(ItemSearchFields searchFilters) {
+        logger.info("Entering getAllItems with searchFilters: {}", searchFilters);
         Sort sort = searchFilters.getOrder().equalsIgnoreCase("asc") ?
                 Sort.by(searchFilters.getOrderBy()).ascending() :
                 Sort.by(searchFilters.getOrderBy()).descending();
@@ -51,11 +55,14 @@ public class ItemService extends RepoContainer{
                 .and(lessThanOrEqualToToDate(searchFilters.getToDate()))
         );
         Pageable pageable = PageRequest.of(searchFilters.getPageNumber(), searchFilters.getSize(), sort);
-        return itemRepository.findAll(specification,pageable);
+        Page<Item> result = itemRepository.findAll(specification,pageable);
+        logger.info("Exiting getAllItems");
+        return result;
     }
 
 
     public Map<String, List> createItemsExcelSheet(SearchFilters searchFilters) throws IOException {
+        logger.info("Entering createItemsExcelSheet with searchFilters: {}", searchFilters);
         int wholesaleId = searchFilters.getStoreId();
         Long fromDate = searchFilters.getFromDate();
         Long toDate = searchFilters.getToDate();
@@ -80,25 +87,32 @@ public class ItemService extends RepoContainer{
         int totalItem = itemsList.size();
         String [] headers = {"SLUG","NAME","LABEL", "DESCRIPTION", "PRICE", "DISCOUNT", "RATING","INSTOCK","STATUS","CREATEDAT","UPDATEDAT"};
         writeExcel.writeExcel(result,totalItem,Arrays.asList(headers));
+        logger.info("Exiting createItemsExcelSheet");
         return  result;
     }
 
     public Map<String, Integer> getItemCounts () {
+        logger.info("Entering getItemCounts");
         Map<String,Integer> responseObj = new HashMap<>();
         responseObj.put("all",itemRepository.totalItemCount());
         responseObj.put("active",itemRepository.optionItemCount("A"));
         responseObj.put("deactive",itemRepository.optionItemCount("D"));
+        logger.info("Exiting getItemCounts");
         return responseObj;
     }
 
 
     public Item findItemBySLug(String slug) {
-        return itemRepository.findItemBySlug(slug);
+        logger.info("Entering findItemBySLug with slug: {}", slug);
+        Item result = itemRepository.findItemBySlug(slug);
+        logger.info("Exiting findItemBySLug");
+        return result;
     }
 
 
 
     public void validateRequiredFields(ItemDto itemDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering validateRequiredFields with itemDto: {}", itemDto);
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(itemDto,List.of(
                 "name",
@@ -109,9 +123,11 @@ public class ItemService extends RepoContainer{
                 "categoryId",
                 "subCategoryId"
         ));
+        logger.info("Exiting validateRequiredFields");
     }
 
     public void validateRequiredFieldsBeforeCreateItem(ItemDto itemDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering validateRequiredFieldsBeforeCreateItem with itemDto: {}", itemDto);
         /** @Note : During creation we are checking only extra required params  */
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(itemDto,List.of(
@@ -121,10 +137,12 @@ public class ItemService extends RepoContainer{
                 "label",
                 "newItemImages"
         ));
+        logger.info("Exiting validateRequiredFieldsBeforeCreateItem");
     }
 
     @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class,})
     public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser,String path) throws InvocationTargetException, NoSuchMethodException, IOException, IllegalAccessException {
+        logger.info("Entering createOrUpdateItem with itemDto: {}, loggedUser: {}, path: {}", itemDto, loggedUser, path);
         // if there is any required field null then this will throw IllegalArgumentException
         validateRequiredFields(itemDto);
 
@@ -151,6 +169,7 @@ public class ItemService extends RepoContainer{
 
         // Going to update item
         if (!Utils.isEmpty(itemDto.getSlug()) || path.contains("update")) {
+            logger.info("We are going to update the item.");
             // if there is any required field null then this will throw IllegalArgumentException
             Utils.checkRequiredFields(itemDto,List.of("slug"));
 
@@ -165,6 +184,7 @@ public class ItemService extends RepoContainer{
                 responseObj.put("status", 404);
             }
         } else { // Going to create item
+            logger.info("We are going to create the item.");
             // if there is any required field null then this will throw IllegalArgumentException
             validateRequiredFieldsBeforeCreateItem(itemDto);
             Item createdItem = createItem(itemDto, loggedUser);
@@ -172,6 +192,7 @@ public class ItemService extends RepoContainer{
             responseObj.put("message", "Successfully inserted.");
             responseObj.put("status", 201);
         }
+        logger.info("Exiting createOrUpdateItem");
         return responseObj;
 
     }
@@ -179,6 +200,7 @@ public class ItemService extends RepoContainer{
 
     @Transactional
     public Item createItem (ItemDto itemDto, User loggedUser) throws IOException {
+        logger.info("Entering createItem with itemDto: {}, loggedUser: {}", itemDto, loggedUser);
         Item item = new Item();
         Store store = storeRepository.findStoreBySlug(itemDto.getWholesaleSlug());
         if (store == null) throw new IllegalArgumentException("Not a valid store.");
@@ -200,35 +222,43 @@ public class ItemService extends RepoContainer{
         item.setItemCategory(itemDto.getItemCategory());
         item.setItemSubCategory(itemDto.getItemSubCategory());
         item.setAvtars(updateStoreImage("",itemDto.getNewItemImages(),slug,"create"));
-        return itemRepository.save(item);
+        Item result = itemRepository.save(item);
+        logger.info("Exiting createItem");
+        return result;
     }
 
 
 
     @Transactional
     public int updateItem(ItemDto itemDto, User loggedUser) {
+        logger.info("Entering updateItem with itemDto: {}, loggedUser: {}", itemDto, loggedUser);
         Item item = findItemBySLug(itemDto.getSlug());
         String title = "Item " + item.getName() + " updated.";
         String messageBody = "Item " + item.getName() + " key : " + item.getSlug() + " updated by admin previous data was "+
                 item.toString()
                 +". If you have any issue please contact to administrator.";
         sendNotification(title,messageBody,item.getWholesaleId(),loggedUser);
-        return itemHbRepository.updateItems(itemDto,loggedUser);
+        int result = itemHbRepository.updateItems(itemDto,loggedUser);
+        logger.info("Exiting updateItem");
+        return result;
     }
 
 
     @Transactional
     public void sendNotification(String title,String messageBody,int storeId,User loggedUser){
+        logger.info("Entering sendNotification with title: {}, messageBody: {}, storeId: {}, loggedUser: {}", title, messageBody, storeId, loggedUser);
         StoreNotifications storeNotifications = new StoreNotifications();
         storeNotifications.setTitle(title);
         storeNotifications.setMessageBody(messageBody);
         storeNotifications.setWholesaleId(storeId);
         storeNotifications.setCreatedBy(loggedUser);
         storeHbRepository.insertStoreNotifications(storeNotifications);
+        logger.info("Exiting sendNotification");
     }
 
     @Transactional
     public int deleteItem(DeleteDto deleteDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering deleteItem with deleteDto: {}, loggedUser: {}", deleteDto, loggedUser);
         // Verify required fields if any issue found this will throw  IllegalArgumentException
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
         String slug = deleteDto.getSlug();
@@ -237,20 +267,26 @@ public class ItemService extends RepoContainer{
         String title = "Item " + item.getName() + " deleted.";
         String messageBody = "Item " + item.getName() + " key : " + item.getSlug() + " deleted by admin. If you have any issue please contact to administrator.";
         sendNotification(title,messageBody,item.getWholesaleId(),loggedUser);
-        return itemHbRepository.deleteItem(slug);
+        int result = itemHbRepository.deleteItem(slug);
+        logger.info("Exiting deleteItem");
+        return result;
     }
 
 
     public int updateStock(String stock, String slug) {
+        logger.info("Entering updateStock with stock: {}, slug: {}", stock, slug);
         if(!Utils.isEmpty(slug)){
             if(Utils.isEmpty(stock) || !(stock.equals("Y") || stock.equals("N")))
                 throw new IllegalArgumentException("The key stock must be 'Y' or 'N'.");
-            return itemHbRepository.updateStock(stock,slug);
+            int result = itemHbRepository.updateStock(stock,slug);
+            logger.info("Exiting updateStock with result: {}", result);
+            return result;
         }
         throw new IllegalArgumentException("The key slug can't be blank.");
     }
 
     public int updateStatusBySlug(StatusDto statusDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering updateStatusBySlug with statusDto: {}, loggedUser: {}", statusDto, loggedUser);
         // Verify required fields update item status
         Utils.checkRequiredFields(statusDto, List.of("status","slug"));
         switch (statusDto.getStatus()){
@@ -267,21 +303,27 @@ public class ItemService extends RepoContainer{
                     messageBody = "Item " + item.getName() + " key : " + item.getSlug() + " activated successfully by admin.";
                 }
                 sendNotification(title,messageBody,item.getWholesaleId(),loggedUser);
-                return itemHbRepository.updateStatus(statusDto.getSlug(),statusDto.getStatus());
+                int result = itemHbRepository.updateStatus(statusDto.getSlug(),statusDto.getStatus());
+                logger.info("Exiting updateStatusBySlug with result: {}", result);
+                return result;
             default:
                 throw new IllegalArgumentException("Status must be A or D.");
         }
     }
 
     public int insertAllItems (Map excel,Integer userId, Integer wholesaleId){
+        logger.info("Entering insertAllItems with excel: {}, userId: {}, wholesaleId: {}", excel, userId, wholesaleId);
         userId = userId == null ? 0 : userId;
         wholesaleId = wholesaleId == null ? 0 : wholesaleId;
-        return  itemHbRepository.insertItemsList(excel,userId,wholesaleId);
+        int result = itemHbRepository.insertItemsList(excel,userId,wholesaleId);
+        logger.info("Exiting insertAllItems with result: {}", result);
+        return result;
     }
 
 
 
     public String updateStoreImage(String previousImages, List<MultipartFile> itemImages,String slug,String action) throws IOException {
+        logger.info("Entering updateStoreImage with previousImages: {}, itemImages: {}, slug: {}, action: {}", previousImages, itemImages, slug, action);
         String newImages = "";
         int index = 0;
         if(itemImages != null) {
@@ -306,12 +348,14 @@ public class ItemService extends RepoContainer{
         if(!Utils.isEmpty(updatedImages) && action.equalsIgnoreCase("update")){
             itemHbRepository.updateItemImage(slug, updatedImages);
         }
+        logger.info("Exiting updateStoreImage with result: {}", updatedImages);
         return updatedImages;
     }
 
 
     @Transactional
-    public String saveItemImageName(MultipartFile itemImage, String slug) throws IOException {;
+    public String saveItemImageName(MultipartFile itemImage, String slug) throws IOException {
+        logger.info("Entering saveItemImageName with itemImage: {}, slug: {}", itemImage, slug);
         if(itemImage !=null) {
             if (UploadImageValidator.isValidImage(itemImage, GlobalConstant.minWidth,
                     GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
@@ -326,6 +370,7 @@ public class ItemService extends RepoContainer{
 
                     itemImage.transferTo(file);
                     //if (!UploadImageValidator.hasWhiteBackground(new File(filePath))) throw new MyException("Image must have a white background");
+                    logger.info("Exiting saveItemImageName with result: {}", fileOriginalName);
                     return fileOriginalName;
             } else {
                 throw new MyException("Image is not fit in accept ratio. please resize you image before upload.");
@@ -337,19 +382,26 @@ public class ItemService extends RepoContainer{
 
 
     public List<ItemCategory> getAllCategory(SearchFilters searchFilters) {
+        logger.info("Entering getAllCategory with searchFilters: {}", searchFilters);
         Sort sort = searchFilters.getOrder().equals("asc") ?
             Sort.by(searchFilters.getOrderBy()).ascending() :
             Sort.by(searchFilters.getOrderBy()).descending() ;
-        return itemCategoryRepository.findAll(sort);
+        List<ItemCategory> result = itemCategoryRepository.findAll(sort);
+        logger.info("Exiting getAllCategory with result: {}", result);
+        return result;
     }
 
 
 
     public ItemCategory getItemCategoryById(int categoryId) {
-        return itemCategoryRepository.findById(categoryId).get();
+        logger.info("Entering getItemCategoryById with categoryId: {}", categoryId);
+        ItemCategory result = itemCategoryRepository.findById(categoryId).get();
+        logger.info("Exiting getItemCategoryById with result: {}", result);
+        return result;
     }
 
     public int deleteItemCategory(DeleteDto deleteDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering deleteItemCategory with deleteDto: {}, loggedUser: {}", deleteDto, loggedUser);
         // Validating required fields if they are null, this will throw an Exception
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
         String slug = deleteDto.getSlug();
@@ -358,11 +410,14 @@ public class ItemService extends RepoContainer{
         Integer categoryId = itemCategoryRepository.getItemCategoryIdBySlug(slug);
         if (categoryId == null) throw new NotFoundException("Category not found.");
         itemHbRepository.switchCategoryToOther(categoryId); // before delete category, assign item to another category.
-        return itemHbRepository.deleteItemCategory(slug);
+        int result = itemHbRepository.deleteItemCategory(slug);
+        logger.info("Exiting deleteItemCategory with result: {}", result);
+        return result;
 
     }
 
     public int deleteItemSubCategory(DeleteDto deleteDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering deleteItemSubCategory with deleteDto: {}, loggedUser: {}", deleteDto, loggedUser);
         // Validating required fields if they are null, this will throw an Exception
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
         String slug = deleteDto.getSlug();
@@ -371,23 +426,29 @@ public class ItemService extends RepoContainer{
         Integer subCategoryId = itemSubCategoryRepository.getItemSubCategoryIdBySlug(slug);
         if (subCategoryId == null) throw new NotFoundException("Subcategory not found.");
         itemHbRepository.switchSubCategoryToOther(subCategoryId); // before delete category assign item to other subcategory.
-        return itemHbRepository.deleteItemSubCategory(slug);
+        int result = itemHbRepository.deleteItemSubCategory(slug);
+        logger.info("Exiting deleteItemSubCategory with result: {}", result);
+        return result;
 
     }
 
 
     public List<ItemSubCategory> getAllItemsSubCategories(SearchFilters searchFilters) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering getAllItemsSubCategories with searchFilters: {}", searchFilters);
         // Validating required fields if found any required field is null, this will throw IllegalArgumentException
         Utils.checkRequiredFields(searchFilters,List.of("categoryId"));
 
         Sort sort = Sort.by(searchFilters.getOrderBy());
         sort  = searchFilters.getOrder().equals("asc") ? sort.ascending() : sort.descending();
-        return itemSubCategoryRepository.getSubCategories(searchFilters.getCategoryId(),sort);
+        List<ItemSubCategory> result = itemSubCategoryRepository.getSubCategories(searchFilters.getCategoryId(),sort);
+        logger.info("Exiting getAllItemsSubCategories with result: {}", result);
+        return result;
     }
 
 
     @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
     public ItemCategory saveOrUpdateItemCategory(CategoryDto categoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering saveOrUpdateItemCategory with categoryDto: {}", categoryDto);
         // Validate required fields if we found any given field is null, then this will throw Exception
         Utils.checkRequiredFields(categoryDto,List.of("category","icon"));
         ItemCategory itemCategory = new ItemCategory();
@@ -396,11 +457,14 @@ public class ItemService extends RepoContainer{
         itemCategory.setSlug(UUID.randomUUID().toString());  // slug will also change after during update
         itemCategory.setCategory(categoryDto.getCategory());
         itemCategory.setIcon(categoryDto.getIcon());
-        return itemCategoryRepository.save(itemCategory);
+        ItemCategory result = itemCategoryRepository.save(itemCategory);
+        logger.info("Exiting saveOrUpdateItemCategory with result: {}", result);
+        return result;
     }
 
     @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
     public ItemSubCategory saveOrUpdateItemSubCategory(SubCategoryDto subCategoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering saveOrUpdateItemSubCategory with subCategoryDto: {}", subCategoryDto);
         // Validate required fields if we found any given field is null, then this will throw Exception
         Utils.checkRequiredFields(subCategoryDto,List.of("categoryId","subcategory","unit","icon"));
         ItemSubCategory itemSubCategory = new ItemSubCategory();
@@ -412,13 +476,18 @@ public class ItemService extends RepoContainer{
         itemSubCategory.setIcon(subCategoryDto.getIcon());
         itemSubCategory.setUnit(subCategoryDto.getUnit());
         itemSubCategory.setUpdatedAt(Utils.getCurrentMillis());
-        return itemSubCategoryRepository.save(itemSubCategory);
+        ItemSubCategory result = itemSubCategoryRepository.save(itemSubCategory);
+        logger.info("Exiting saveOrUpdateItemSubCategory with result: {}", result);
+        return result;
     }
 
 
     public List<MeasurementUnit> getAllMeasurementUnit() {
+        logger.info("Entering getAllMeasurementUnit");
         Sort sort = Sort.by("unit").ascending();
-        return measurementUnitRepository.findAll(sort);
+        List<MeasurementUnit> result = measurementUnitRepository.findAll(sort);
+        logger.info("Exiting getAllMeasurementUnit with result: {}", result);
+        return result;
     }
 
 

@@ -8,6 +8,8 @@ import com.sales.global.GlobalConstant;
 import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.PermissionDeniedDataAccessException;
@@ -31,6 +33,7 @@ import static com.sales.specifications.StoreSpecifications.*;
 @Service
 public class StoreService extends RepoContainer{
 
+    private static final Logger logger = LoggerFactory.getLogger(StoreService.class);
 
     @Autowired
     AddressService addressService;
@@ -44,6 +47,7 @@ public class StoreService extends RepoContainer{
 
 
     public Page<Store> getAllStore(SearchFilters filters) {
+        logger.info("Entering getAllStore with filters: {}", filters);
         Specification<Store> specification = Specification.where(
                 (containsName(filters.getSearchKey()).or(containsEmail(filters.getSearchKey())))
                         .and(greaterThanOrEqualFromDate(filters.getFromDate()))
@@ -52,20 +56,25 @@ public class StoreService extends RepoContainer{
                         .and(hasSlug(filters.getSlug()))
         );
         Pageable pageable = getPageable(filters);
-        return storeRepository.findAll(specification,pageable);
+        Page<Store> result = storeRepository.findAll(specification,pageable);
+        logger.info("Exiting getAllStore");
+        return result;
     }
 
 
     public Map<String, Integer> getWholesaleCounts () {
+        logger.info("Entering getWholesaleCounts");
         Map<String,Integer> responseObj = new HashMap<>();
         responseObj.put("all",storeRepository.totalWholesaleCount());
         responseObj.put("active",storeRepository.optionWholesaleCount("A"));
         responseObj.put("deactive",storeRepository.optionWholesaleCount("D"));
+        logger.info("Exiting getWholesaleCounts");
         return responseObj;
     }
 
 
     public AddressDto getAddressObjFromStore(StoreDto storeDto){
+        logger.info("Entering getAddressObjFromStore with storeDto: {}", storeDto);
         AddressDto addressDto = new AddressDto();
         addressDto.setStreet(storeDto.getStreet());
         addressDto.setZipCode(storeDto.getZipCode());
@@ -73,10 +82,12 @@ public class StoreService extends RepoContainer{
         addressDto.setState(storeDto.getState());
         addressDto.setLatitude(storeDto.getLatitude());
         addressDto.setAltitude(storeDto.getAltitude());
+        logger.info("Exiting getAddressObjFromStore");
         return addressDto;
     }
 
     public Map<String,Object> getStoreCountByMonths(GraphDto graphDto){
+        logger.info("Entering getStoreCountByMonths with graphDto: {}", graphDto);
         List<Integer> months = graphDto.getMonths();
         months = (months == null || months.isEmpty()) ?
                 Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12) : months;
@@ -85,17 +96,22 @@ public class StoreService extends RepoContainer{
         for(Integer month : months) {
             monthsObj.put(getMonthName(month),storeRepository.totalStoreViaMonth(month,year));
         }
+        logger.info("Exiting getStoreCountByMonths");
         return monthsObj;
     }
 
     public String getMonthName(int month) {
+        logger.info("Entering getMonthName with month: {}", month);
         if (month <= 0 || month > 12) {
             return null;
         }
-        return Month.of(month).getDisplayName(TextStyle.FULL, new Locale("eng"));
+        String monthName = Month.of(month).getDisplayName(TextStyle.FULL, new Locale("eng"));
+        logger.info("Exiting getMonthName");
+        return monthName;
     }
 
     public void validateRequiredFieldsForStore(StoreDto storeDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering validateRequiredFieldsForStore with storeDto: {}", storeDto);
         List<String> requiredFields = new ArrayList<>(List.of(
             "storeName",
             "storeEmail",
@@ -107,17 +123,21 @@ public class StoreService extends RepoContainer{
         ));
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(storeDto,requiredFields);
+        logger.info("Exiting validateRequiredFieldsForStore");
     }
 
     public void validateRequiredFieldsForCreateStore(StoreDto storeDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering validateRequiredFieldsForCreateStore with storeDto: {}", storeDto);
         List<String> requiredFields = new ArrayList<>(List.of("userSlug"));
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(storeDto,requiredFields);
+        logger.info("Exiting validateRequiredFieldsForCreateStore");
     }
 
 
     @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class})
     public Map<String, Object> createOrUpdateStore(StoreDto storeDto,User loggedUser,String path) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering createOrUpdateStore with storeDto: {}, loggedUser: {}, path: {}", storeDto, loggedUser, path);
             Map<String, Object> responseObj = new HashMap<>();
             // if there is any required field null then this will throw IllegalArgumentException
             validateRequiredFieldsForStore(storeDto);
@@ -131,6 +151,7 @@ public class StoreService extends RepoContainer{
             }
 
             if (!Utils.isEmpty(storeDto.getStoreSlug()) || path.contains("update")) { // We are going to update store.
+                logger.info("We are going to update the store.");
                 // if there is any required field null then this will throw IllegalArgumentException
                 Utils.checkRequiredFields(storeDto,List.of("storeSlug"));
 
@@ -154,7 +175,7 @@ public class StoreService extends RepoContainer{
                     responseObj.put("status", 404);
                 }
             } else {  // We are going to create store.
-
+                logger.info("We are going to create the store.");
                 // if there is any required field null then this will throw IllegalArgumentException
                 validateRequiredFieldsForCreateStore(storeDto);
 
@@ -172,6 +193,7 @@ public class StoreService extends RepoContainer{
                 responseObj.put("message", "Successfully inserted.");
                 responseObj.put("status", 201);
             }
+        logger.info("Exiting createOrUpdateStore");
         return responseObj;
 
     }
@@ -179,14 +201,17 @@ public class StoreService extends RepoContainer{
 
 
     public void validateRequiredFieldsForCreateAddress(AddressDto addressDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering validateRequiredFieldsForCreateAddress with addressDto: {}", addressDto);
         List<String> requiredFields = new ArrayList<>(List.of("street","zipCode", "city","state"));
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(addressDto,requiredFields);
+        logger.info("Exiting validateRequiredFieldsForCreateAddress");
     }
 
 
     @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class})
     public Store createStore(StoreDto storeDto , User loggedUser) throws MyException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering createStore with storeDto: {}, loggedUser: {}", storeDto, loggedUser);
         /** inserting address during create a wholesale */
         AddressDto addressDto = getAddressObjFromStore(storeDto);
         // if there is any required field null then this will throw IllegalArgumentException
@@ -209,12 +234,13 @@ public class StoreService extends RepoContainer{
         store.setRating(storeDto.getRating());
         store.setStoreCategory(storeDto.getStoreCategory());
         store.setStoreSubCategory(storeDto.getStoreSubCategory());
-
+        logger.info("Exiting createStore");
         return storeRepository.save(store);
     }
 
     @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class})
     public int updateStore(StoreDto storeDto, User loggedUser){
+        logger.info("Entering updateStore with storeDto: {}, loggedUser: {}", storeDto, loggedUser);
         AddressDto address = new AddressDto();
         address.setStreet(storeDto.getStreet());
         address.setZipCode(storeDto.getZipCode());
@@ -224,11 +250,14 @@ public class StoreService extends RepoContainer{
         address.setAddressId(storeDto.getAddressId());
         int isUpdatedAddress = addressHbRepository.updateAddress(address,loggedUser);
         if(isUpdatedAddress < 1) return isUpdatedAddress;
-        return storeHbRepository.updateStore(storeDto,loggedUser);
+        int result = storeHbRepository.updateStore(storeDto,loggedUser);
+        logger.info("Exiting updateStore");
+        return result;
     }
 
     @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class,Exception.class})
     public int deleteStoreBySlug(DeleteDto deleteDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering deleteStoreBySlug with deleteDto: {}, loggedUser: {}", deleteDto, loggedUser);
         // Validate required fields. if we found any required field this will throw IllegalArgumentException
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
 
@@ -237,31 +266,42 @@ public class StoreService extends RepoContainer{
         if(store == null) throw new NotFoundException("No store found to delete.");
         User user = store.getUser();
         userHbRepository.deleteUserBySlug(user.getSlug());
-        return storeHbRepository.deleteStore(slug,loggedUser);
+        int result = storeHbRepository.deleteStore(slug,loggedUser);
+        logger.info("Exiting deleteStoreBySlug");
+        return result;
 
     }
 
     public void deleteStoreByUserId(int userId){
+        logger.info("Entering deleteStoreByUserId with userId: {}", userId);
         storeHbRepository.deleteStore(userId);
+        logger.info("Exiting deleteStoreByUserId");
     }
 
 
     @Transactional
     public Store getStoreDetails(String slug){
-        return storeRepository.findStoreBySlug(slug);
+        logger.info("Entering getStoreDetails with slug: {}", slug);
+        Store store = storeRepository.findStoreBySlug(slug);
+        logger.info("Exiting getStoreDetails");
+        return store;
     }
 
 
     public Store getStoreByUserSlug(String userSlug) throws Exception {
+        logger.info("Entering getStoreByUserSlug with userSlug: {}", userSlug);
         if(Utils.isEmpty(userSlug)) throw new IllegalArgumentException("User slug can't be null or blank.");
         User user = userRepository.findUserBySlug(userSlug);
         if (user == null) throw new NotFoundException("No user found.");
-        return storeRepository.findStoreByUserId(user.getId());
+        Store store = storeRepository.findStoreByUserId(user.getId());
+        logger.info("Exiting getStoreByUserSlug");
+        return store;
     }
 
 
     @Transactional(rollbackOn = {IllegalArgumentException.class, MyException.class,RuntimeException.class,Exception.class})
     public int updateStatusBySlug(StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering updateStatusBySlug with statusDto: {}", statusDto);
         // Validate required fields. if we found any required field this will throw IllegalArgumentException
         Utils.checkRequiredFields(statusDto,List.of("status","slug"));
 
@@ -273,7 +313,9 @@ public class StoreService extends RepoContainer{
                 // updating store user status also
                 store.getUser().setStatus(statusDto.getStatus());
                 store.setStatus(status);
-                return storeRepository.save(store).getId();
+                int result = storeRepository.save(store).getId();
+                logger.info("Exiting updateStatusBySlug");
+                return result;
             default:
                 throw new IllegalArgumentException("Status must be A or D.");
         }
@@ -283,6 +325,7 @@ public class StoreService extends RepoContainer{
 
     @Transactional(rollbackOn = {IllegalArgumentException.class, MyException.class,RuntimeException.class,Exception.class})
     public int updateStoreImage(MultipartFile storeImage, String slug) throws MyException, IOException {
+        logger.info("Entering updateStoreImage with storeImage: {}, slug: {}", storeImage, slug);
         if(storeImage !=null ) {
             if (UploadImageValidator.isValidImage(storeImage, GlobalConstant.minWidth,
                 GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
@@ -293,34 +336,44 @@ public class StoreService extends RepoContainer{
                     if(!dir.exists()) dir.mkdirs();
                     File file = new File(dirPath+fileOriginalName);
                     storeImage.transferTo(file);
-                    return storeHbRepository.updateStoreAvatar(slug,fileOriginalName);
+                    int result = storeHbRepository.updateStoreAvatar(slug,fileOriginalName);
+                    logger.info("Exiting updateStoreImage");
+                    return result;
             } else {
                 throw new IllegalArgumentException("Image is not fit in accept ratio. please resize you image before upload.");
             }
         }
+        logger.info("Exiting updateStoreImage");
         return 0;
     }
 
 
     public List<StoreCategory> getAllStoreCategory(SearchFilters searchFilters) {
+        logger.info("Entering getAllStoreCategory with searchFilters: {}", searchFilters);
         Sort sort = searchFilters.getOrder().equals("asc") ?
                 Sort.by(searchFilters.getOrderBy()).ascending() :
                 Sort.by(searchFilters.getOrderBy()).descending() ;
-        return storeCategoryRepository.findAll(sort);
+        List<StoreCategory> result = storeCategoryRepository.findAll(sort);
+        logger.info("Exiting getAllStoreCategory");
+        return result;
     }
 
 
     public List<StoreSubCategory> getAllStoreSubCategories(SearchFilters searchFilters) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering getAllStoreSubCategories with searchFilters: {}", searchFilters);
         // Validating required fields if found any required field is null, this will throw IllegalArgumentException
         Utils.checkRequiredFields(searchFilters,List.of("categoryId"));
         Sort sort = Sort.by(searchFilters.getOrderBy());
         sort  = searchFilters.getOrder().equals("asc") ? sort.ascending() : sort.descending();
-        return storeSubCategoryRepository.getSubCategories(searchFilters.getCategoryId(),sort);
+        List<StoreSubCategory> result = storeSubCategoryRepository.getSubCategories(searchFilters.getCategoryId(),sort);
+        logger.info("Exiting getAllStoreSubCategories");
+        return result;
     }
 
 
     @Transactional(rollbackOn = {MyException.class ,IllegalArgumentException.class,RuntimeException.class})
     public StoreCategory saveOrUpdateStoreCategory(CategoryDto categoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering saveOrUpdateStoreCategory with categoryDto: {}", categoryDto);
         // Validate required fields if we found any given field is null, then this will throw Exception
         Utils.checkRequiredFields(categoryDto,List.of("category","icon"));
 
@@ -329,11 +382,14 @@ public class StoreService extends RepoContainer{
             storeCategory.setId(categoryDto.getId());
         storeCategory.setCategory(categoryDto.getCategory());
         storeCategory.setIcon(categoryDto.getIcon());
-        return storeCategoryRepository.save(storeCategory);
+        StoreCategory result = storeCategoryRepository.save(storeCategory);
+        logger.info("Exiting saveOrUpdateStoreCategory");
+        return result;
     }
 
     @Transactional(rollbackOn = {MyException.class ,IllegalArgumentException.class,RuntimeException.class})
     public StoreSubCategory saveOrUpdateStoreSubCategory(SubCategoryDto subCategoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering saveOrUpdateStoreSubCategory with subCategoryDto: {}", subCategoryDto);
         // Validate required fields if we found any given field is null, then this will throw Exception
         Utils.checkRequiredFields(subCategoryDto,List.of("categoryId","subcategory","icon"));
         StoreSubCategory storeSubCategory = new StoreSubCategory();
@@ -343,16 +399,22 @@ public class StoreService extends RepoContainer{
         storeSubCategory.setSubcategory(subCategoryDto.getSubcategory());
         storeSubCategory.setIcon(subCategoryDto.getIcon());
         storeSubCategory.setUpdatedAt(Utils.getCurrentMillis());
-        return storeSubCategoryRepository.save(storeSubCategory);
+        StoreSubCategory result = storeSubCategoryRepository.save(storeSubCategory);
+        logger.info("Exiting saveOrUpdateStoreSubCategory");
+        return result;
     }
 
 
     public StoreCategory getStoreCategoryById(int categoryId) {
-        return storeCategoryRepository.findById(categoryId).get();
+        logger.info("Entering getStoreCategoryById with categoryId: {}", categoryId);
+        StoreCategory result = storeCategoryRepository.findById(categoryId).get();
+        logger.info("Exiting getStoreCategoryById");
+        return result;
     }
 
 
     public int deleteStoreCategory(DeleteDto deleteDto,User user) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering deleteStoreCategory with deleteDto: {}, user: {}", deleteDto, user);
         // Validating required fields if they are null, this will throw an Exception
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
         if (!user.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("Only super admin can delete a store category.",null);
@@ -360,10 +422,13 @@ public class StoreService extends RepoContainer{
         Integer categoryId = storeHbRepository.getStoreCategoryIdBySLug(slug);
         if (categoryId == null) throw new NotFoundException("Store's category not found.");
         storeHbRepository.switchCategoryToOther(categoryId);  // before delete category assign store to the other category.
-        return storeHbRepository.deleteStoreCategory(slug);
+        int result = storeHbRepository.deleteStoreCategory(slug);
+        logger.info("Exiting deleteStoreCategory");
+        return result;
     }
 
     public int deleteStoreSubCategory(DeleteDto deleteDto,User user) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Entering deleteStoreSubCategory with deleteDto: {}, user: {}", deleteDto, user);
         // Validating required fields if they are null this will throw an Exception
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
         String slug = deleteDto.getSlug();
@@ -371,7 +436,9 @@ public class StoreService extends RepoContainer{
         Integer subCategoryId = storeSubCategoryRepository.getStoreSubCategoryIdBySlug(slug);
         if (subCategoryId == null) throw new NotFoundException("Store's subcategory not found.");
         storeHbRepository.switchSubCategoryToOther(subCategoryId);
-        return storeHbRepository.deleteStoreSubCategory(slug);
+        int result = storeHbRepository.deleteStoreSubCategory(slug);
+        logger.info("Exiting deleteStoreSubCategory");
+        return result;
     }
 
 
