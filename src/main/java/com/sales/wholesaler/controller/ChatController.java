@@ -32,7 +32,7 @@ import java.util.Objects;
 @RestController
 public class ChatController extends WholesaleServiceContainer {
 
-    private static final Logger log = LoggerFactory.getLogger(ChatController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
     private final SimpMessagingTemplate messagingTemplate;
 
     public ChatController(SimpMessagingTemplate messagingTemplate) {
@@ -45,6 +45,7 @@ public class ChatController extends WholesaleServiceContainer {
 
     @PostMapping("/chats/all")
     public ResponseEntity<Map<String, List<Chat>>> getALlUsers(@RequestBody MessageDto message , HttpServletRequest request){
+        logger.info("Fetching all users for message: {}", message);
         User loggedUser = (User) request.getAttribute("user");
         message.setSender(loggedUser.getSlug());
         Map<String, List<Chat>> formatedChatList = chatService.getAllChatBySenderAndReceiverKey(message,request);
@@ -54,6 +55,7 @@ public class ChatController extends WholesaleServiceContainer {
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
     public MessageDto sendMessage(MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
+        logger.info("Sending public message: {}", message);
         // Get the sender's username
         String sender = (String) headerAccessor.getSessionAttributes().get("username");
         // Set the sender in the message
@@ -69,6 +71,7 @@ public class ChatController extends WholesaleServiceContainer {
 
     @MessageMapping("/chat/private/{recipient}")
     public void sendPrivateMessage(@DestinationVariable String recipient, MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
+        logger.info("Sending private message to recipient: {}", recipient);
         User sender = (User) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("user");
         message.setSender(sender.getSlug());
         message.setReceiver(recipient);
@@ -98,6 +101,7 @@ public class ChatController extends WholesaleServiceContainer {
     /** Upload images and other files with chat */
     @PostMapping("/chat/upload")
     public ResponseEntity<Map<String,Object>> uploadImages(@ModelAttribute MessageDto message ,HttpServletRequest request){
+        logger.info("Uploading images for message: {}", message);
         Map<String,Object> result = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         String recipient = message.getReceiver();
@@ -143,6 +147,7 @@ public class ChatController extends WholesaleServiceContainer {
 
     @MessageMapping("/chat/connect/{slug}")
     public void userConnected(@DestinationVariable String slug, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
+        logger.info("User connected with slug: {}", slug);
         System.err.println("Connected");
         try{
             String sender = simpMessageHeaderAccessor.getSessionAttributes().get("username").toString();
@@ -162,6 +167,7 @@ public class ChatController extends WholesaleServiceContainer {
 
     @MessageMapping("/chat/deactivate/{slug}")
     public void disconnectUser(@DestinationVariable String slug) {
+        logger.info("User disconnected with slug: {}", slug);
         System.err.println("Disconnected");
         try{
             User user = GlobalConstant.onlineUsers.get(slug);
@@ -178,6 +184,7 @@ public class ChatController extends WholesaleServiceContainer {
 
     @MessageMapping("/chats/was-seen/{recipient}")
     public void isReceiverSeen(@DestinationVariable("recipient") String recipient){
+        logger.info("Message seen by recipient: {}", recipient);
         if (recipient == null) throw new MyException("Please provide a valid recipient");
         System.err.println("Seen Called.....");
         /* you need to subscribe like  /user/{userId}/queue/private/chat/seen */
@@ -187,6 +194,7 @@ public class ChatController extends WholesaleServiceContainer {
 
     @MessageMapping("/chat/{slug}/userStatus")
     public void getUserStatus(@DestinationVariable String slug, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
+        logger.info("Checking user status for slug: {}", slug);
         System.err.println("Status checking." + slug);
         String sender = (String) simpMessageHeaderAccessor.getSessionAttributes().get("username");
         /* you need to subscribe like  /user/{userId}/queue/private/status */
@@ -197,6 +205,7 @@ public class ChatController extends WholesaleServiceContainer {
 
     @GetMapping("/chat/status/{slug}")
     public ResponseEntity<User> getUserStatus(@PathVariable String slug){
+        logger.info("Getting user status for slug: {}", slug);
         User user = GlobalConstant.onlineUsers.getOrDefault(slug, new User());
         return new ResponseEntity<>(user,HttpStatus.valueOf(200));
     }
@@ -205,6 +214,7 @@ public class ChatController extends WholesaleServiceContainer {
 
     @PostMapping("/chat/seen")
     public ResponseEntity<Map<String,Object>> getUserStatus(@RequestBody MessageDto message, HttpServletRequest request){
+        logger.info("Updating seen status for message: {}", message);
         Map<String,Object> result = new HashMap<>();
         User  loggedUser = (User) request.getAttribute("user");
         message.setReceiver(loggedUser.getSlug());
@@ -228,6 +238,7 @@ public class ChatController extends WholesaleServiceContainer {
     public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename
             , @PathVariable String sender,
     @PathVariable String receiver) throws Exception {
+        logger.info("Fetching file: {} for sender: {} and receiver: {}", filename, sender, receiver);
         Path path = Paths.get(filePath +sender+"_"+receiver+File.separator+ filename);
         Resource resource = new UrlResource(path.toUri());
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
@@ -236,6 +247,7 @@ public class ChatController extends WholesaleServiceContainer {
 
     @PostMapping("/chat/delete")
     public ResponseEntity<Map<String,Object>> deleteBySlug(@RequestBody MessageDto messageDto,HttpServletRequest request){
+        logger.info("Deleting message: {}", messageDto);
         Map<String,Object> result = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         int isDeleted = wholesaleUserService.deleteMessage(loggedUser, messageDto);

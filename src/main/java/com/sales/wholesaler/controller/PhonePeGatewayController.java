@@ -15,6 +15,8 @@ import com.sales.entities.User;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -30,11 +32,14 @@ import java.util.UUID;
 @RequestMapping("pg/")
 public class PhonePeGatewayController extends WholesaleServiceContainer {
 
+    private static final Logger logger = LoggerFactory.getLogger(PhonePeGatewayController.class);
+
     @ResponseBody
     @GetMapping("pay/{slug}")
     public ResponseEntity<Map<String,Object>> payViaPhonePe(HttpServletRequest request,@PathVariable String slug){
         User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         ServicePlan servicePlan = servicePlanService.findBySlug(slug);
+        logger.info("Initiating payment via PhonePe for user: {}, service plan: {}", loggedUser.getId(), servicePlan.getId());
         Map<String,Object> result = new HashMap<>();
         try {
             logger.info("user id  : "+loggedUser.getId());
@@ -69,11 +74,13 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
             PhonePeResponse<PgPayResponse> payResponse = phonepeClient.pay(pgPayRequest);
             PayPageInstrumentResponse payPageInstrumentResponse = (PayPageInstrumentResponse) payResponse.getData().getInstrumentResponse();
             String url = payPageInstrumentResponse.getRedirectInfo().getUrl();
+            logger.info("Payment URL generated successfully for user: {}", loggedUser.getId());
             result.put("res",payResponse);
             result.put("url",url);
             result.put("status" , 200);
         }
         catch (Exception e){
+            logger.error("Exception occurred during payment via PhonePe: {}", e.getMessage());
             result.put("message", "Something went wrong during payment. please contact to administrator.");
             result.put("status",500);
             logger.info( "Exception occur in  payViaPhonePe :: "+ e.getMessage());
@@ -84,7 +91,7 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
 
     @RequestMapping("callback/{servicePlanId}/{userId}/{id}")
     public ResponseEntity<Map<String,Object>>  phonePeCallbackResponse(HttpServletRequest request,@PathVariable(name = "servicePlanId")Integer servicePlanId, @PathVariable(name = "userId") Integer userId , @PathVariable( name = "id") Integer id, @RequestBody Map<String,Object> paramsBody){
-
+        logger.info("Received PhonePe callback for user: {}, service plan: {}", userId, servicePlanId);
         Map<String,Object> result = new HashMap<>();
         try {
             String xVerify = request.getHeader("x_verify");
@@ -122,10 +129,12 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
 
             int isUpdated = phonePeService.updatePhonePeTransaction(phonePeTrans);
             wholesaleServicePlanService.assignUserPlan(userId,servicePlanId);
+            logger.info("PhonePe callback processed successfully for user: {}", userId);
             result.put("isUpdate", isUpdated > 0);
             result.put("data", new Gson().fromJson(decodedString,Map.class));
             result.put("status",200);
         }  catch (Exception e){
+            logger.error("Exception occurred during PhonePe callback: {}", e.getMessage());
             result.put("message", "Something went wrong during phonepe callback. please contact to administrator.");
             result.put("status",500);
             logger.info( "Exception occur in  phonePeCallbackResponse :: "+ e.getMessage());
@@ -137,13 +146,16 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
 
     @PostMapping("refund")
     public ResponseEntity<Map<String,Object>> getRefund(@RequestBody  PhonePeDto phonePeDto){
+        logger.info("Initiating refund for transaction: {}", phonePeDto);
         Map<String,Object> result = new HashMap<>();
         try{
             String notifyUrl = "http//:localhost:8080/pg/refund-notify";
             PhonePeResponse phonePeResponse = phonePeService.takeRefund(phonePeDto,notifyUrl);
+            logger.info("Refund processed successfully for transaction: {}", phonePeDto);
             result.put("data", phonePeResponse);
             result.put("status",200);
         } catch (PhonePeException e){
+            logger.error("Exception occurred during refund: {}", e.getMessage());
             result.put("message", "Something went wrong during phonepe callback. please contact to administrator.");
             result.put("status",500);
             logger.info( "Exception occur in  getRefund :: "+ e.getMessage());
@@ -154,6 +166,7 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
 
     @RequestMapping("refund-notify")
     public ResponseEntity<Map<String,Object>> getNotificationCallback(@RequestBody Map<String,Object> body){
+        logger.info("Received refund notification callback");
         return new ResponseEntity<>(body,HttpStatus.OK);
     }
 }

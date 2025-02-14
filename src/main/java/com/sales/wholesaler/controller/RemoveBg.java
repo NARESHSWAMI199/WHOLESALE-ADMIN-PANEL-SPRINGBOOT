@@ -3,6 +3,8 @@ package com.sales.wholesaler.controller;
 import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -27,6 +29,7 @@ import java.util.Map;
 @RestController
 public class RemoveBg {
 
+    private static final Logger logger = LoggerFactory.getLogger(RemoveBg.class);
 
     @Value(value = "${removebg.absolute}")
     String outputPath;
@@ -36,6 +39,7 @@ public class RemoveBg {
 
     @PostMapping("/")
     public ResponseEntity<Map<String,String>> uploadImage(HttpServletRequest request, @RequestParam("image") MultipartFile file) throws IOException {
+        logger.info("Starting uploadImage method");
         User user = (User) request.getAttribute("user");
         String baseUrl = GlobalConstant.removeBgUrl; // Replace with your Flask API URL
         File filePath = new File(outputPath+user.getSlug()+"/"+file.getOriginalFilename());
@@ -76,15 +80,18 @@ public class RemoveBg {
         Map<String,String> result = new HashMap<>();
         result.put("downloadPath","/removebg/"+outputPathRes);
         filePath.delete();
+        logger.info("Completed uploadImage method");
         return new ResponseEntity<>(result, responseEntity.getStatusCode());
     }
 
 
     @GetMapping("/{filename}")
     public ResponseEntity<Resource> getFile( HttpServletRequest request, @PathVariable(required = true) String filename) throws Exception {
+        logger.info("Starting getFile method");
         User user = (User) request.getAttribute("user");
         Path path = Paths.get(relativePath +user.getSlug()+ "/"+filename);
         Resource resource = new UrlResource(path.toUri());
+        logger.info("Completed getFile method");
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
     }
 
