@@ -3,9 +3,9 @@ package com.sales.exceptions;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.sales.dto.ErrorDto;
 import jakarta.transaction.Transactional;
-import org.apache.logging.log4j.Logger;
 import org.hibernate.ObjectNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -24,15 +24,13 @@ import java.sql.SQLIntegrityConstraintViolationException;
 @RestControllerAdvice
 public class GlobalException {
 
-
-    @Autowired
-    Logger logger;
+    private static final Logger logger = LoggerFactory.getLogger(GlobalException.class);
 
     @Transactional
     @ExceptionHandler(value = PermissionDeniedDataAccessException.class)
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
     public ErrorDto permissionDeniedDataAccessException (PermissionDeniedDataAccessException ex , WebRequest request){
-        logger.info(ex.getMessage());
+        logger.error("PermissionDeniedDataAccessException: {}", ex.getMessage());
         return new ErrorDto(ex.getMessage(), 403);
     }
 
@@ -40,26 +38,23 @@ public class GlobalException {
     @ExceptionHandler(value = NotFoundException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ErrorDto notFoundException (NotFoundException ex , WebRequest request){
-        logger.info(ex.getMessage());
+        logger.error("NotFoundException: {}", ex.getMessage());
         return new ErrorDto(ex.getMessage(), 404);
     }
-
 
     @Transactional
     @ExceptionHandler(value = IllegalArgumentException.class)
     @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
     public ErrorDto illegalArgumentException (IllegalArgumentException ex , WebRequest request){
-        logger.info(ex.getMessage());
+        logger.error("IllegalArgumentException: {}", ex.getMessage());
         return new ErrorDto(ex.getMessage(), 406);
     }
-
-
 
     @Transactional
     @ExceptionHandler(value = JsonMappingException.class)
     @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
     public ErrorDto jsonMappingExceptionHandle (JsonMappingException ex , WebRequest request){
-        logger.info(ex.getMessage());
+        logger.error("JsonMappingException: {}", ex.getMessage());
         return new ErrorDto(ex.getMessage(), 406);
     }
 
@@ -67,26 +62,26 @@ public class GlobalException {
     @ExceptionHandler(value = {MultipartException.class})
     @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
     public ErrorDto noMultipartException (MultipartException ex , WebRequest request){
-        logger.info(ex.getMessage());
+        logger.error("MultipartException: {}", ex.getMessage());
         return new ErrorDto("This is not a multipart request", 400);
     }
-
 
     @ExceptionHandler(FileNotFoundException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ErrorDto fileNotFound(FileNotFoundException e,WebRequest request) {
+        logger.error("FileNotFoundException: {}", e.getMessage());
         ErrorDto errorDto = new ErrorDto(e.getMessage(),400);
-        logger.info(e.getMessage());
         return errorDto;
     }
+
     @Transactional
     @ExceptionHandler(value = {ObjectNotFoundException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ErrorDto resourceNotFoundException(ObjectNotFoundException ex, WebRequest request) {
+        logger.error("ObjectNotFoundException: {}", ex.getMessage());
         String errorMessage = ex.getMessage();
         errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
         ErrorDto message = new ErrorDto(errorMessage,404);
-        logger.info(ex.getMessage());
         return message;
     }
 
@@ -94,10 +89,10 @@ public class GlobalException {
     @ExceptionHandler(value = {SQLIntegrityConstraintViolationException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorDto resourceNotFoundException(SQLIntegrityConstraintViolationException ex, WebRequest request) {
+        logger.error("SQLIntegrityConstraintViolationException: {}", ex.getMessage());
         String errorMessage = ex.getMessage();
         errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
         ErrorDto message = new ErrorDto(errorMessage,500);
-        logger.info(ex.getMessage());
         return message;
     }
 
@@ -105,35 +100,30 @@ public class GlobalException {
     @ExceptionHandler(value = {NullPointerException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorDto resourceNotFoundException(NullPointerException ex, WebRequest request) {
+        logger.error("NullPointerException: {}", ex.getMessage());
         ErrorDto message = new ErrorDto("Something went wrong there is a null pointer exception.",400);
-        logger.info(ex.getMessage());
         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         return message;
     }
-
-
 
     @Transactional
     @ExceptionHandler(value = {DataIntegrityViolationException.class})
     @ResponseStatus(value = HttpStatus.CONFLICT)
     public ErrorDto dataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
-        //String message = ex.getMessage().contains("constraint [null]") ? "Required parameters can't be null or a duplicate entry." : ex.getMessage();
-        String errorMessage = getCauseMessage(ex);;
-            errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
+        logger.error("DataIntegrityViolationException: {}", ex.getMessage());
+        String errorMessage = getCauseMessage(ex);
+        errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
         ErrorDto err = new ErrorDto(errorMessage,409);
-        logger.info(ex.getMessage());
         return err;
     }
-
 
     @Transactional
     @ExceptionHandler(value = {HttpMessageNotReadableException.class})
     @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
     public ErrorDto httpMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest request) {
-    /*        ErrorDto message = new ErrorDto("May be request body is empty or required parameter are missing.",400);*/
+        logger.error("HttpMessageNotReadableException: {}", ex.getMessage());
         ErrorDto message = new ErrorDto(ex.getMessage(),406);
         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        logger.info(ex.getMessage());
         return message;
     }
 
@@ -141,24 +131,23 @@ public class GlobalException {
     @ExceptionHandler(value = {MyException.class})
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto myException(MyException ex, WebRequest request) {
+        logger.error("MyException: {}", ex.getMessage());
         String errorMessage = ex.getMessage();
         errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
         ErrorDto message = new ErrorDto(errorMessage,500);
         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        logger.info(ex.getMessage());
         return message;
     }
-
 
     @Transactional
     @ExceptionHandler(value = {UserException.class})
     @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
     public ErrorDto userException(UserException ex, WebRequest request) {
+        logger.error("UserException: {}", ex.getMessage());
         String errorMessage = ex.getMessage();
         errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
         ErrorDto message = new ErrorDto(errorMessage,500);
         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        logger.info(ex.getMessage());
         return message;
     }
 
@@ -166,11 +155,11 @@ public class GlobalException {
     @ExceptionHandler(value = {UnexpectedRollbackException.class})
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto unexpectedRollbackException(UnexpectedRollbackException ex, WebRequest request) {
+        logger.error("UnexpectedRollbackException: {}", ex.getMessage());
         String errorMessage = ex.getLocalizedMessage();
         errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
         ErrorDto message = new ErrorDto(errorMessage,500);
         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        logger.info(ex.getMessage());
         return message;
     }
 
@@ -178,6 +167,7 @@ public class GlobalException {
     @ExceptionHandler(value = {Exception.class})
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto resourceNotFoundException(Exception ex, WebRequest request) {
+        logger.error("Exception: {}", ex.getMessage());
         ErrorDto message = null;
         try{
             String errorMessage = getCauseMessage(ex);
@@ -188,23 +178,11 @@ public class GlobalException {
             errorMessage = errorMessage.contains(";") ? errorMessage.substring(0,errorMessage.indexOf(";")) : errorMessage;
             message = new ErrorDto(errorMessage, 500);
         }
-        logger.info(ex.getMessage());
         return message;
     }
-
-
-
-/*    private String getCauseMessage(Throwable t){
-        if(t.getCause() != null) {
-            return getCauseMessage(t.getCause());
-        }else {
-            return t.getLocalizedMessage();
-        }
-    }*/
 
     private String getCauseMessage(Throwable t){
         return t.getCause().getCause().getLocalizedMessage();
     }
-
 
 }
