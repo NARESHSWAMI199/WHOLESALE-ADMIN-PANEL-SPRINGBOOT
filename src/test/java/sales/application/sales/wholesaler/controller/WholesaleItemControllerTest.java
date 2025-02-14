@@ -11,6 +11,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import sales.application.sales.testglobal.GlobalConstantTest;
 import sales.application.sales.util.TestUtil;
 
@@ -173,6 +174,39 @@ public class WholesaleItemControllerTest extends TestUtil {
                         status().is(200)
                 )
                 .andDo(print());
+    }
+
+
+
+
+    @Test
+    public void testGetCategory() throws Exception {
+        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
+        String  token = loggedUserResponse.get("token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization",token);
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/item/category")
+                        .headers(headers)
+                ).andExpectAll(
+                        status().isOk()
+                )
+                .andDo(print())
+                .andReturn();
+
+        List categoryList = extractCategoryListFromResponse(result);
+        if(!categoryList.isEmpty()) {
+            Map<String, Object> categoryDto = (Map<String, Object>) categoryList.get(0);
+            Integer categoryId = (Integer) categoryDto.get("id");
+
+            // Getting subcategories also
+            headers.set("Authorization", token);
+            mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/item/subcategory/"+categoryId)
+                    .headers(headers)
+            ).andExpectAll(
+                    status().is(200)
+            );
+        }
     }
 
 

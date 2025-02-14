@@ -1,5 +1,4 @@
-package sales.application.sales.admin.controller;
-
+package sales.application.sales.wholesaler.controller;
 
 import com.sales.SalesApplication;
 import org.junit.jupiter.api.Test;
@@ -20,20 +19,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = {SalesApplication.class})
 @AutoConfigureMockMvc
-public class ItemCommentControllerTest extends TestUtil {
+public class WholesaleDashboardControllerTest extends TestUtil {
 
     @Autowired
     MockMvc mockMvc;
 
 
-
     @Test
-    public void testGetAllCommentsWithoutLogin() throws Exception {
+    public void testGraphWithoutLogin() throws Exception {
         String json = """
                 {
                 }
                 """;
-        mockMvc.perform(MockMvcRequestBuilders.post("/admin/item/comments/all")
+        mockMvc.perform(MockMvcRequestBuilders.post("/wholesale/dashboard/graph/months/")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpectAll(
@@ -43,8 +41,8 @@ public class ItemCommentControllerTest extends TestUtil {
 
 
     @Test
-    public void testGetAllComments() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
+    public void testGraphData() throws Exception {
+        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
         String token = loggedUserResponse.get("token");
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization" , token);
@@ -52,7 +50,7 @@ public class ItemCommentControllerTest extends TestUtil {
                 {
                 }
                 """;
-        mockMvc.perform(MockMvcRequestBuilders.post("/admin/item/comments/all")
+        mockMvc.perform(MockMvcRequestBuilders.post("/wholesale/dashboard/graph/months/")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
                 .headers(headers)
@@ -62,5 +60,26 @@ public class ItemCommentControllerTest extends TestUtil {
     }
 
 
+    @Test
+    public void testCountWithoutLogin() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/dashboard/counts")
+        ).andExpectAll(
+                status().is(401)
+        ).andDo(print());
+    }
+
+
+    @Test
+    public void testCounts() throws Exception {
+        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
+        String token = loggedUserResponse.get("token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization" , token);
+        mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/dashboard/counts")
+                .headers(headers)
+        ).andExpectAll(
+                status().is(200)
+        ).andDo(print());
+    }
 
 }

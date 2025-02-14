@@ -1,4 +1,4 @@
-package sales.application.sales.admin.controller;
+package sales.application.sales.wholesaler.controller;
 
 
 import com.sales.SalesApplication;
@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = {SalesApplication.class})
 @AutoConfigureMockMvc
-public class ItemCommentControllerTest extends TestUtil {
+public class WholesalerItemCommentControllerTest extends TestUtil {
 
     @Autowired
     MockMvc mockMvc;
@@ -33,13 +33,34 @@ public class ItemCommentControllerTest extends TestUtil {
                 {
                 }
                 """;
-        mockMvc.perform(MockMvcRequestBuilders.post("/admin/item/comments/all")
+        mockMvc.perform(MockMvcRequestBuilders.post("/wholesale/item/comments/all")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpectAll(
                 status().is(401)
         ).andDo(print());
     }
+
+
+    @Test
+    public void testGetAllCommentsWithoutParameter() throws Exception {
+        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
+        String token = loggedUserResponse.get("token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization" , token);
+        String json = """
+                {
+                }
+                """;
+        mockMvc.perform(MockMvcRequestBuilders.post("/wholesale/item/comments/all")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(headers)
+        ).andExpectAll(
+                status().is(406)
+        ).andDo(print());
+    }
+
 
 
     @Test
@@ -50,9 +71,10 @@ public class ItemCommentControllerTest extends TestUtil {
         headers.set("Authorization" , token);
         String json = """
                 {
+                    "itemId" : 1
                 }
                 """;
-        mockMvc.perform(MockMvcRequestBuilders.post("/admin/item/comments/all")
+        mockMvc.perform(MockMvcRequestBuilders.post("/wholesale/item/comments/all")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
                 .headers(headers)
@@ -60,7 +82,6 @@ public class ItemCommentControllerTest extends TestUtil {
                 status().is(200)
         ).andDo(print());
     }
-
 
 
 }

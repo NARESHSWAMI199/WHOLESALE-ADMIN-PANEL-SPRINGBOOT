@@ -1,4 +1,4 @@
-package sales.application.sales.admin.controller;
+package sales.application.sales.wholesaler.controller;
 
 
 import com.sales.SalesApplication;
@@ -20,31 +20,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = {SalesApplication.class})
 @AutoConfigureMockMvc
-public class ItemCommentControllerTest extends TestUtil {
+public class WholesaleAddressControllerTest extends  TestUtil{
 
     @Autowired
     MockMvc mockMvc;
 
 
-
     @Test
-    public void testGetAllCommentsWithoutLogin() throws Exception {
-        String json = """
-                {
-                }
-                """;
-        mockMvc.perform(MockMvcRequestBuilders.post("/admin/item/comments/all")
-                .content(json)
-                .contentType(MediaType.APPLICATION_JSON)
-        ).andExpectAll(
-                status().is(401)
-        ).andDo(print());
-    }
-
-
-    @Test
-    public void testGetAllComments() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
+    public void getStates() throws Exception {
+        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
         String token = loggedUserResponse.get("token");
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization" , token);
@@ -52,7 +36,7 @@ public class ItemCommentControllerTest extends TestUtil {
                 {
                 }
                 """;
-        mockMvc.perform(MockMvcRequestBuilders.post("/admin/item/comments/all")
+        mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/address/state")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
                 .headers(headers)
@@ -62,5 +46,23 @@ public class ItemCommentControllerTest extends TestUtil {
     }
 
 
+    @Test
+    public void getCities() throws Exception {
+        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
+        String token = loggedUserResponse.get("token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization" , token);
+        String json = """
+                {
+                }
+                """;
+        mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/address/city/1")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(headers)
+        ).andExpectAll(
+                status().is(200)
+        ).andDo(print());
+    }
 
 }
