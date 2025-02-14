@@ -15,6 +15,8 @@ import com.sales.global.GlobalConstant;
 import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +38,8 @@ import static com.sales.specifications.ItemsSpecifications.*;
 @Service
 public class WholesaleItemService extends WholesaleRepoContainer {
 
+    private static final Logger logger = LoggerFactory.getLogger(WholesaleItemService.class);
+
     @Value("${item.absolute}")
     String itemImagePath;
 
@@ -44,6 +48,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
 
 
     public Page<Item> getAllItems(ItemSearchFields searchFilters, Integer storeId) {
+        logger.info("Starting getAllItems method with searchFilters: {}, storeId: {}", searchFilters, storeId);
         Sort sort = searchFilters.getOrder().equalsIgnoreCase("asc") ?
                 Sort.by(searchFilters.getOrderBy()).ascending() :
                 Sort.by(searchFilters.getOrderBy()).descending();
@@ -58,71 +63,90 @@ public class WholesaleItemService extends WholesaleRepoContainer {
                         .and(lessThanOrEqualToToDate(searchFilters.getToDate()))
         );
         Pageable pageable = PageRequest.of(searchFilters.getPageNumber(), searchFilters.getSize(), sort);
-        return wholesaleItemRepository.findAll(specification,pageable);
+        Page<Item> items = wholesaleItemRepository.findAll(specification, pageable);
+        logger.info("Completed getAllItems method");
+        return items;
     }
 
 
 
 
     public Map<String, Integer> getItemCounts (Integer storeId) {
+        logger.info("Starting getItemCounts method with storeId: {}", storeId);
         Map<String,Integer> responseObj = new HashMap<>();
         responseObj.put("all",wholesaleItemRepository.totalItemCount(storeId));
         responseObj.put("inStock",wholesaleItemRepository.getItemCountInStock("Y",storeId));
         responseObj.put("outStock",wholesaleItemRepository.getItemCountInStock("N",storeId));
         responseObj.put("active",wholesaleItemRepository.optionItemCount("A",storeId));
         responseObj.put("deactive",wholesaleItemRepository.optionItemCount("D",storeId));
+        logger.info("Completed getItemCounts method");
         return responseObj;
     }
 
     public Map<String, Integer> getItemCountsForNewLabel (Integer storeId) {
+        logger.info("Starting getItemCountsForNewLabel method with storeId: {}", storeId);
         Map<String,Integer> responseObj = new HashMap<>();
         responseObj.put("all",wholesaleItemRepository.getItemCountLabel("N",storeId));
         responseObj.put("inStock",wholesaleItemRepository.getItemCountInStock("Y","N",storeId));
         responseObj.put("outStock",wholesaleItemRepository.getItemCountInStock("N","N",storeId));
         responseObj.put("active",wholesaleItemRepository.optionItemCountLabel("N","A",storeId));
         responseObj.put("deactive",wholesaleItemRepository.optionItemCountLabel("N","D",storeId));
+        logger.info("Completed getItemCountsForNewLabel method");
         return responseObj;
     }
 
     public Map<String, Integer> getItemCountsForOldLabel (Integer storeId) {
+        logger.info("Starting getItemCountsForOldLabel method with storeId: {}", storeId);
         Map<String,Integer> responseObj = new HashMap<>();
         responseObj.put("all",wholesaleItemRepository.getItemCountLabel("O",storeId));
         responseObj.put("inStock",wholesaleItemRepository.getItemCountInStock("Y","O",storeId));
         responseObj.put("outStock",wholesaleItemRepository.getItemCountInStock("N","O",storeId));
         responseObj.put("active",wholesaleItemRepository.optionItemCountLabel("O","A",storeId));
         responseObj.put("deactive",wholesaleItemRepository.optionItemCountLabel("O","D",storeId));
+        logger.info("Completed getItemCountsForOldLabel method");
         return responseObj;
     }
 
     public Map<String, Integer> getItemCountsForInStock (Integer storeId) {
+        logger.info("Starting getItemCountsForInStock method with storeId: {}", storeId);
         Map<String,Integer> responseObj = new HashMap<>();
         responseObj.put("all",wholesaleItemRepository.getItemCountInStock("Y",storeId));
         responseObj.put("active",wholesaleItemRepository.optionItemCountInStock("Y","A",storeId));
         responseObj.put("deactive",wholesaleItemRepository.optionItemCountInStock("Y","D",storeId));
+        logger.info("Completed getItemCountsForInStock method");
         return responseObj;
     }
 
 
     public Map<String, Integer> getItemCountsForOutStock (Integer storeId) {
+        logger.info("Starting getItemCountsForOutStock method with storeId: {}", storeId);
         Map<String,Integer> responseObj = new HashMap<>();
         responseObj.put("all",wholesaleItemRepository.getItemCountInStock("N",storeId));
         responseObj.put("active",wholesaleItemRepository.optionItemCountLabel("N","A",storeId));
         responseObj.put("deactive",wholesaleItemRepository.optionItemCountLabel("N","D",storeId));
+        logger.info("Completed getItemCountsForOutStock method");
         return responseObj;
     }
 
 
 
     public Item findItemBySLug(String slug) {
-        return wholesaleItemRepository.findItemBySlug(slug);
+        logger.info("Starting findItemBySLug method with slug: {}", slug);
+        Item item = wholesaleItemRepository.findItemBySlug(slug);
+        logger.info("Completed findItemBySLug method");
+        return item;
     }
 
 
     public String getItemStatus(String slug) {
-        return wholesaleItemRepository.getItemStatus(slug);
+        logger.info("Starting getItemStatus method with slug: {}", slug);
+        String status = wholesaleItemRepository.getItemStatus(slug);
+        logger.info("Completed getItemStatus method");
+        return status;
     }
 
     public void validateRequiredFields(ItemDto itemDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Starting validateRequiredFields method with itemDto: {}", itemDto);
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(itemDto,List.of(
                 "name",
@@ -133,9 +157,11 @@ public class WholesaleItemService extends WholesaleRepoContainer {
                 "categoryId",
                 "subCategoryId"
         ));
+        logger.info("Completed validateRequiredFields method");
     }
 
     public void validateRequiredFieldsBeforeCreateItem(ItemDto itemDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Starting validateRequiredFieldsBeforeCreateItem method with itemDto: {}", itemDto);
         /** @Note : During creation we are checking only extra required params  */
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(itemDto,List.of(
@@ -144,13 +170,14 @@ public class WholesaleItemService extends WholesaleRepoContainer {
                 "label",
                 "newItemImages"
         ));
+        logger.info("Completed validateRequiredFieldsBeforeCreateItem method");
     }
 
 
 
     @Transactional(rollbackOn = {IllegalArgumentException.class,MyException.class, RuntimeException.class,Exception.class})
     public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser,String path) throws Exception {
-
+        logger.info("Starting createOrUpdateItem method with itemDto: {}, loggedUser: {}, path: {}", itemDto, loggedUser, path);
         // if there is any required field null then this will throw IllegalArgumentException
         validateRequiredFields(itemDto);
 
@@ -186,7 +213,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
 
             // Update item images
             updateStoreImage(itemDto.getPreviousItemImages(),itemDto.getNewItemImages(), itemDto.getSlug(),"update");
-            int isUpdated = updateItem(itemDto, loggedUser);
+            int isUpdated = updateItem(itemDto, loggedUser); // Update operation
             if (isUpdated > 0) {
                 responseObj.put("message", "successfully updated.");
                 responseObj.put("status", 200);
@@ -198,16 +225,18 @@ public class WholesaleItemService extends WholesaleRepoContainer {
             // if there is any required field null then this will throw IllegalArgumentException
             validateRequiredFieldsBeforeCreateItem(itemDto);
 
-            Item createdItem = createItem(itemDto, loggedUser);
+            Item createdItem = createItem(itemDto, loggedUser); // Create operation
             responseObj.put("res", createdItem);
             responseObj.put("message", "Successfully inserted.");
             responseObj.put("status", 201);
         }
+        logger.info("Completed createOrUpdateItem method");
         return responseObj;
     }
 
     @Transactional(rollbackOn = {IllegalArgumentException.class,MyException.class, RuntimeException.class,Exception.class})
     public Item createItem (ItemDto itemDto, User loggedUser) throws MyException, IOException {
+        logger.info("Starting createItem method with itemDto: {}, loggedUser: {}", itemDto, loggedUser);
         String slug = UUID.randomUUID().toString();
         Item item = new Item();
         item.setWholesaleId(itemDto.getStoreId());
@@ -227,10 +256,13 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         item.setItemSubCategory(itemDto.getItemSubCategory());
         item.setSlug(slug);
         item.setAvtars(updateStoreImage("",itemDto.getNewItemImages(),slug,"create"));
-        return wholesaleItemRepository.save(item);
+        Item savedItem = wholesaleItemRepository.save(item); // Create operation
+        logger.info("Completed createItem method");
+        return savedItem;
     }
 
     public String updateStoreImage(String previousImages, List<MultipartFile> itemImages,String slug,String action) throws IOException {
+        logger.info("Starting updateStoreImage method with previousImages: {}, itemImages: {}, slug: {}, action: {}", previousImages, itemImages, slug, action);
         String newImages = "";
         int index = 0;
         if(itemImages != null) {
@@ -253,14 +285,16 @@ public class WholesaleItemService extends WholesaleRepoContainer {
             updatedImages = previousImages.substring(0,previousImages.length()-1);
         }
         if(!Utils.isEmpty(updatedImages) && action.equalsIgnoreCase("update")){
-            wholesaleItemHbRepository.updateItemImages(slug, updatedImages);
+            wholesaleItemHbRepository.updateItemImages(slug, updatedImages); // Update operation
         }
+        logger.info("Completed updateStoreImage method");
         return updatedImages;
     }
 
 
     @Transactional
     public String saveItemImageName(MultipartFile itemImage, String slug) throws IOException {
+        logger.info("Starting saveItemImageName method with itemImage: {}, slug: {}", itemImage, slug);
         if(itemImage !=null) {
             if (UploadImageValidator.isValidImage(itemImage, GlobalConstant.minWidth,
                     GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
@@ -274,6 +308,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
                 File file = new File(filePath);
                 itemImage.transferTo(file);
                 //if (!UploadImageValidator.hasWhiteBackground(new File(filePath))) throw new MyException("Image must have a white background");
+                logger.info("Completed saveItemImageName method");
                 return fileOriginalName;
             } else {
                 throw new MyException("Image is not fit in accept ratio. please resize you image before upload.");
@@ -286,30 +321,40 @@ public class WholesaleItemService extends WholesaleRepoContainer {
 
 
     public int updateItem(ItemDto itemDto, User loggedUser) {
-        return wholesaleItemHbRepository.updateItems(itemDto,loggedUser);
+        logger.info("Starting updateItem method with itemDto: {}, loggedUser: {}", itemDto, loggedUser);
+        int updateCount = wholesaleItemHbRepository.updateItems(itemDto,loggedUser); // Update operation
+        logger.info("Completed updateItem method");
+        return updateCount;
     }
 
     public int deleteItem(DeleteDto deleteDto, Integer storeId) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Starting deleteItem method with deleteDto: {}, storeId: {}", deleteDto, storeId);
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
         String slug = deleteDto.getSlug();
         String status = getItemStatus(slug);
         if(status == null) throw new NotFoundException("No item to delete.");
         if (status.equals("D")) throw new IllegalArgumentException("Can't deactivated items.");
-        return wholesaleItemHbRepository.deleteItem(slug,storeId);
+        int deleteCount = wholesaleItemHbRepository.deleteItem(slug,storeId); // Update operation
+        logger.info("Completed deleteItem method");
+        return deleteCount;
     }
 
     public int updateStock(Map<String,String> params,Integer storeId) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Starting updateStock method with params: {}, storeId: {}", params, storeId);
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(params, List.of("slug", "stock"));
         String slug = params.get("slug");
         String stock = params.get("stock");
-        return wholesaleItemHbRepository.updateStock(stock,slug,storeId);
+        int updateCount = wholesaleItemHbRepository.updateStock(stock,slug,storeId); // Update operation
+        logger.info("Completed updateStock method");
+        return updateCount;
     }
 
 
 
     public Map<String,Object> getItemCountByMonths(GraphDto graphDto,Integer storeId){
+        logger.info("Starting getItemCountByMonths method with graphDto: {}, storeId: {}", graphDto, storeId);
         List<Integer> months = graphDto.getMonths();
         months = (months == null || months.isEmpty()) ?
                 Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12) : months;
@@ -318,25 +363,35 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         for(Integer month : months) {
             monthsObj.put(getMonthName(month),wholesaleItemRepository.totalItemsViaMonth(month,year,storeId));
         }
+        logger.info("Completed getItemCountByMonths method");
         return monthsObj;
     }
 
 
     public String getMonthName(int month) {
+        logger.info("Starting getMonthName method with month: {}", month);
         if (month <= 0 || month > 12) {
             return null;
         }
-        return Month.of(month).getDisplayName(TextStyle.FULL, new Locale("eng"));
+        String monthName = Month.of(month).getDisplayName(TextStyle.FULL, new Locale("eng"));
+        logger.info("Completed getMonthName method");
+        return monthName;
     }
 
     public List<ItemCategory> getAllCategory() {
+        logger.info("Starting getAllCategory method");
         Sort sort = Sort.by("category").ascending();
-        return wholesaleItemCategoryRepository.findAll(sort);
+        List<ItemCategory> categories = wholesaleItemCategoryRepository.findAll(sort);
+        logger.info("Completed getAllCategory method");
+        return categories;
     }
 
 
     public List<ItemSubCategory> getAllItemsSubCategories(int categoryId) {
-        return wholesaleItemSubCategoryRepository.getSubCategories(categoryId);
+        logger.info("Starting getAllItemsSubCategories method with categoryId: {}", categoryId);
+        List<ItemSubCategory> subCategories = wholesaleItemSubCategoryRepository.getSubCategories(categoryId);
+        logger.info("Completed getAllItemsSubCategories method");
+        return subCategories;
     }
 
 }
