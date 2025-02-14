@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -32,11 +34,14 @@ import java.util.Map;
 @RequestMapping("admin/auth")
 public class UserController extends ServiceContainer {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
     @Autowired
     JwtToken jwtToken;
 
     @PostMapping("/{userType}/all")
     public ResponseEntity<Page<User>> getAllUsers(HttpServletRequest request,@RequestBody UserSearchFilters searchFilters, @PathVariable(required = true) String userType) {
+        logger.info("Fetching all users of type: {}", userType);
         searchFilters.setUserType(userType);
         User loggedUser = (User) request.getAttribute("user");
         Page<User> userPage = userService.getAllUser(searchFilters,loggedUser);
@@ -55,7 +60,7 @@ public class UserController extends ServiceContainer {
     ))
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> findByEmailAndPassword(@RequestBody UserDto userDetails) {
-        logger.info("====================== ADMIN LOGIN PROCESS STARTED ======================");
+        logger.info("Admin login attempt with email: {}", userDetails.getEmail());
         Map<String, Object> responseObj = new HashMap<>();
         User user = userService.findByEmailAndPassword(userDetails);
         if (user == null) {
@@ -70,7 +75,6 @@ public class UserController extends ServiceContainer {
             responseObj.put("message", "You are blocked by admin");
             responseObj.put("status", 401);
         }
-        logger.info("====================== ADMIN LOGIN PROCESS END ======================");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
@@ -86,7 +90,7 @@ public class UserController extends ServiceContainer {
     ))
     @PostMapping("/login/otp")
     public ResponseEntity<Map<String, Object>> findUserByOtp(@RequestBody UserDto userDetails) {
-        logger.info("====================== ADMIN LOGIN OTP PROCESS STARTED ======================");
+        logger.info("Admin OTP login attempt with email: {}", userDetails.getEmail());
         Map<String, Object> responseObj = new HashMap<>();
         User user = userService.findUserByOtpAndEmail(userDetails);
         if (user == null) {
@@ -102,7 +106,6 @@ public class UserController extends ServiceContainer {
             responseObj.put("message", "You are blocked by admin.");
             responseObj.put("status", 401);
         }
-        logger.info("====================== ADMIN LOGIN OTP PROCESS END ======================");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
@@ -117,7 +120,7 @@ public class UserController extends ServiceContainer {
     ))
     @PostMapping("sendOtp")
     public ResponseEntity<Map<String,Object>> sendOtp(@RequestBody UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("====================== START SENDING OTP STARTED ======================");
+        logger.info("Sending OTP to email: {}", userDto.getEmail());
         Map<String,Object> responseObj = new HashMap<>();
         boolean sendOtp = userService.sendOtp(userDto);
         if(sendOtp)  {
@@ -127,7 +130,6 @@ public class UserController extends ServiceContainer {
             responseObj.put("status",400);
             responseObj.put("message", "We facing some issue to send otp to this mail ->"+userDto.getEmail());
         }
-        logger.info("====================== END SENDING OTP STARTED ======================");
         return  new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
@@ -160,17 +162,17 @@ public class UserController extends ServiceContainer {
     @Transactional
     @PostMapping(value = {"/add", "/update"})
     public ResponseEntity<Map<String, Object>> register(HttpServletRequest request, @RequestBody UserDto userDto) throws Exception {
-        logger.info("====================== START ADD OR UPDATE USER STARTED ======================");
+        logger.info("Registering or updating user with email: {}", userDto.getEmail());
         User loggedUser = (User) request.getAttribute("user");
         String path = request.getRequestURI();
         Map<String,Object> responseObj = userService.createOrUpdateUser(userDto, loggedUser,path);
-        logger.info("====================== END ADD OR UPDATE USER STARTED ======================");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
 
     }
 
     @GetMapping("/detail/{slug}")
     public ResponseEntity<Map<String, Object>> getDetailUser(HttpServletRequest request,@PathVariable String slug) {
+        logger.info("Fetching details for user with slug: {}", slug);
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         User user = userService.getUserDetail(slug,loggedUser);
@@ -187,6 +189,7 @@ public class UserController extends ServiceContainer {
     @Transactional
     @PostMapping("/delete")
     public ResponseEntity<Map<String, Object>> deleteUserBySlug(HttpServletRequest request, @RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Deleting user with slug: {}", deleteDto.getSlug());
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         int isUpdated = userService.deleteUserBySlug(deleteDto,loggedUser);
@@ -203,6 +206,7 @@ public class UserController extends ServiceContainer {
     @Transactional
     @PostMapping("/password")
     public ResponseEntity<Map<String, Object>> resetUserPasswordBySlug(HttpServletRequest request ,@RequestBody PasswordDto passwordDto) {
+        logger.info("Resetting password for user with slug: {}", passwordDto.getSlug());
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         int isUpdated = userService.resetPasswordByUserSlug(passwordDto,loggedUser);
@@ -219,6 +223,7 @@ public class UserController extends ServiceContainer {
 
     @PostMapping("/status")
     public ResponseEntity<Map<String, Object>> stockSlug(HttpServletRequest request,@RequestBody StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Updating status for user with slug: {}", statusDto.getSlug());
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         int isUpdated = userService.updateStatusBySlug(statusDto,loggedUser);
@@ -239,6 +244,7 @@ public class UserController extends ServiceContainer {
     @Transactional
     @PostMapping("/update_profile/{slug}")
     public ResponseEntity<Map<String, Object>> updateProfileImage(HttpServletRequest request, @RequestPart MultipartFile profileImage, @PathVariable String slug ) {
+        logger.info("Updating profile image for user with slug: {}", slug);
         Map<String,Object> responseObj = new HashMap<>();
         try {
             User loggedUser = (User) request.getAttribute("user");
@@ -265,6 +271,7 @@ public class UserController extends ServiceContainer {
 
     @GetMapping("/profile/{slug}/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename ,@PathVariable String slug) throws Exception {
+        logger.info("Fetching profile image: {} for user with slug: {}", filename, slug);
         Path path = Paths.get(filePath +"/"+slug+"/"+ filename);
         Resource resource = new UrlResource(path.toUri());
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
@@ -272,6 +279,7 @@ public class UserController extends ServiceContainer {
 
     @GetMapping("/groups/{slug}")
     public ResponseEntity<Map<String,Object>> getUserGroupsIdsBySlug(HttpServletRequest request,@PathVariable String slug){
+        logger.info("Fetching group IDs for user with slug: {}", slug);
         Map<String,Object> responseObj = new HashMap<>();
         List<Integer> groupsIds = userService.getUserGroupsIdBySlug(slug);
         if (!groupsIds.isEmpty()) {
@@ -289,6 +297,7 @@ public class UserController extends ServiceContainer {
 
     @GetMapping("wholesale/permissions/{slug}")
     public ResponseEntity<Map<String,Object>> getAllAssignedPermissionsForWholesaler(HttpServletRequest request,@PathVariable String slug){
+        logger.info("Fetching all assigned permissions for wholesaler with slug: {}", slug);
         Map<String, Object> wholesalerAllPermissions = userService.getWholesalerAllPermissions();
         List<Integer> permissions =  userService.getWholesalerAllAssignedPermissions(slug);
         Map<String,Object> responseObj = new HashMap<>();
@@ -316,6 +325,7 @@ public class UserController extends ServiceContainer {
     @Transactional
     @PostMapping("wholesaler/permissions/update")
     public ResponseEntity<Map<String,Object>> updateWholesalerPermissions(HttpServletRequest request, @RequestBody UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.info("Updating permissions for wholesaler with slug: {}", userDto.getSlug());
         User loggedUser =  (User)request.getAttribute("user");
         Map<String,Object> response= userService.updateWholesalerPermissions(userDto,loggedUser);
         return new ResponseEntity<>(response, HttpStatus.valueOf((Integer) response.get("status")));
