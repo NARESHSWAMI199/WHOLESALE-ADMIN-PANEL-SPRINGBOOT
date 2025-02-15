@@ -42,8 +42,6 @@ public class StoreService extends RepoContainer{
     @Value("${store.absolute}")
     String storeImagePath;
 
-    @Value("${store.relative}")
-    String storeImageRelativePath;
 
 
     public Page<Store> getAllStore(SearchFilters filters) {

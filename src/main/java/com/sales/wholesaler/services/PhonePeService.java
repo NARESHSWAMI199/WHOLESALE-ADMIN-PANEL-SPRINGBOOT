@@ -22,16 +22,10 @@ public class PhonePeService extends WholesaleRepoContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(PhonePeService.class);
 
-    @Value("${phonepe.test.key}")
-    String testSaltKey;
-
-    @Value("${phonepe.test.mid}")
-    public String testMid;
-
-    @Value("${phonepe.prod.key}")
+    @Value("${phonepe.key}")
     String saltKey;
 
-    @Value("${phonepe.prod.mid}")
+    @Value("${phonepe.mid}")
     public String mid;
 
     @Value("${phonepe.env}")
@@ -39,13 +33,11 @@ public class PhonePeService extends WholesaleRepoContainer {
 
     public PhonePePaymentClient getPhonePeClient() {
         logger.info("Starting getPhonePeClient method");
-        String merchentId = testMid;
-        String key = testSaltKey;
+        String merchentId = saltKey;
+        String key = mid;
         Integer saltIndex = 1;
         Env env = Env.UAT;
         if (phonePeEnv.equals("PROD")) {
-            merchentId = mid;
-            key = saltKey;
             env = Env.PROD;
         }
         boolean shouldPublishEvents = true;

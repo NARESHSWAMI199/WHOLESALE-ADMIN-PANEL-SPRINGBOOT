@@ -36,9 +36,6 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
     @Value("${store.absolute}")
     String storeImagePath;
 
-    @Value("${store.relative}")
-    String storeImageRelativePath;
-
     @Transactional(rollbackOn = {IllegalArgumentException.class, MyException.class, RuntimeException.class})
     public Map<String, Object> updateStoreBySlug(StoreDto storeDto, User loggedUser) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.info("Starting updateStoreBySlug method with storeDto: {}, loggedUser: {}", storeDto, loggedUser);

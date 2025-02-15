@@ -44,9 +44,6 @@ public class UserService extends RepoContainer {
     @Value("${profile.absolute}")
     String profilePath;
 
-    @Value("${profile.relative}")
-    String profileRelativePath;
-
     @Value("${default.password}")
     String password;
 

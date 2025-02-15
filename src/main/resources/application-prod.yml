@@ -31,14 +31,9 @@ jwt:
 
 
 phonepe :
-  test:
-    key : 96434309-7796-489d-8924-ab56988a6076
-    mid : PGTESTPAYUAT86
-  prod :
-    mid : M22LJRRT3FAKQ
-    key : d021e28d-bc19-4fea-b622-41942867d395
-  #  env : PROD
-  env : UAT
+  key : d021e28d-bc19-4fea-b622-41942867d395
+  mid : M22LJRRT3FAKQ
+  env : PROD
 
 cashfree :
   test:
@@ -54,7 +49,6 @@ profile :
   #  absolute : /home/rohit/Documents/images/profiles/
   #    absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/profiles/
   absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/profiles/
-  relative :
   #  get :  /home/rohit/Documents/images/profiles/
   get : src/main/resources/public/profiles/
 
@@ -62,7 +56,6 @@ store :
   #  absolute : /home/rohit/Documents/images/stores/
   #  absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/stores/
   absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/stores/
-  relative :
   get : src/main/resources/public/stores/
 #  get : /home/rohit/Documents/images/stores/
 
@@ -70,21 +63,18 @@ item:
   #  absolute : /home/rohit/Documents/images/items/
   absolute: /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/items/
   #  absolute  : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/items/
-  relative:
   #  get : /home/rohit/Documents/images/items/
   get: src/main/resources/public/items/
 
 removebg :
   absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/removebg/
   #  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/removebg/
-  relative :
   get : src/main/resources/public/removebg/
 #  get : src/main/resources/images/removebg/
 
 chat :
   #    absolute: C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/removebg/
   absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/chat/
-  relative:
   get: src/main/resources/public/chat/
   #  get : src/main/resources/images/removebg/
 

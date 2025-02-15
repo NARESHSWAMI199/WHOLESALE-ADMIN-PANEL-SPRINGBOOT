@@ -43,9 +43,6 @@ public class WholesaleItemService extends WholesaleRepoContainer {
     @Value("${item.absolute}")
     String itemImagePath;
 
-    @Value("${item.relative}")
-    String itemImageRelativePath;
-
 
     public Page<Item> getAllItems(ItemSearchFields searchFilters, Integer storeId) {
         logger.info("Starting getAllItems method with searchFilters: {}, storeId: {}", searchFilters, storeId);
