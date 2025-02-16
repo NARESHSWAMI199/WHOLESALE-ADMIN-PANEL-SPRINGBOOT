@@ -60,7 +60,7 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
                 callbackUrl += "/"+phonePeTrans.getId();
             }
             String redirectMode = "REDIRECT";
-            String merchentId = phonePeService.phonePeEnv.equalsIgnoreCase("PROD") ? phonePeService.mid : phonePeService.testMid;
+            String merchentId = phonePeService.mid;
             PgPayRequest pgPayRequest = PgPayRequest.PayPagePayRequestBuilder()
                     .amount(amount)
                     .merchantId(merchentId) /* Make sure must change mid according env */
