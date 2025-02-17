@@ -7,6 +7,8 @@ import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,10 +20,13 @@ import java.util.stream.Collectors;
 @Service
 public class ChatService extends RepoContainer {
 
+    private static final Logger logger = LoggerFactory.getLogger(ChatService.class);
+
     @Value("${chat.absolute}")
     String chatAbsolutePath;
 
-    public Chat saveMessage(MessageDto message,String commaSeparatedImagesName) {
+    public Chat saveMessage(MessageDto message, String commaSeparatedImagesName) {
+        logger.info("Starting saveMessage method");
         Chat chat = Chat.builder()
 //            .userId(loggedUser.getId())
             .sender(message.getSender())
@@ -33,75 +38,69 @@ public class ChatService extends RepoContainer {
             .createdAt(message.getCreatedAt())
             .seen(false)
             .build();
-        return chatRepository.save(chat);
+        Chat savedChat = chatRepository.save(chat); // Create operation
+        logger.info("Completed saveMessage method");
+        return savedChat;
     }
 
-
-    public Map<String,List<Chat>> getAllChatBySenderAndReceiverKey(MessageDto message,HttpServletRequest request){
-        Map<String,List<Chat>> formatedData = new TreeMap<>();
+    public Map<String, List<Chat>> getAllChatBySenderAndReceiverKey(MessageDto message, HttpServletRequest request) {
+        logger.info("Starting getAllChatBySenderAndReceiverKey method");
+        Map<String, List<Chat>> formatedData = new TreeMap<>();
         List<Chat> chatList = chatRepository.getChatBySenderKeyOrReceiverKey(message.getSender(), message.getReceiver());
 
-        for(Chat chat : chatList){
+        for (Chat chat : chatList) {
             String createAtDate = Utils.getStringDateOnly(chat.getCreatedAt());
             List<Chat> chats;
-            if(formatedData.containsKey(createAtDate)){
+            if (formatedData.containsKey(createAtDate)) {
                 chats = formatedData.get(createAtDate);
-            }else{
+            } else {
                 chats = new ArrayList<>();
             }
             String images = chat.getImages();
-            if(images != null) {
+            if (images != null) {
                 String[] imagesList = images.split(",", -1);
                 List<String> list = Arrays.stream(imagesList).map(name -> Utils.getHostUrl(request) + "/chat/images/" + chat.getSender() + "/" + chat.getReceiver() + "/" + name).collect(Collectors.toList());
                 chat.setImagesUrls(list);
             }
             chats.add(chat);
-            formatedData.put(createAtDate,chats);
+            formatedData.put(createAtDate, chats);
         }
-
+        logger.info("Completed getAllChatBySenderAndReceiverKey method");
         return formatedData;
-
     }
 
-
-    public List<String> saveAllImages(MessageDto messageDto, User loggedUser){
+    public List<String> saveAllImages(MessageDto messageDto, User loggedUser) {
+        logger.info("Starting saveAllImages method");
         List<String> imagesNames = new ArrayList<>();
-        String folderPath = chatAbsolutePath + loggedUser.getSlug() +"_"+ messageDto.getReceiver() + File.separator;
+        String folderPath = chatAbsolutePath + loggedUser.getSlug() + "_" + messageDto.getReceiver() + File.separator;
         File directory = new File(folderPath);
-        if(!directory.exists()) directory.mkdirs();
+        if (!directory.exists()) directory.mkdirs();
         try {
-            for(MultipartFile multipartFile : messageDto.getImages()){
-                String originalFilename = multipartFile.getOriginalFilename().replaceAll(" ","_");
+            for (MultipartFile multipartFile : messageDto.getImages()) {
+                String originalFilename = multipartFile.getOriginalFilename().replaceAll(" ", "_");
                 boolean validImage = Utils.isValidImage(originalFilename);
-                if(!validImage) throw new MyException("Not valid images.");
-                multipartFile.transferTo(new File( folderPath+ originalFilename));
+                if (!validImage) throw new MyException("Not valid images.");
+                multipartFile.transferTo(new File(folderPath + originalFilename));
                 imagesNames.add(originalFilename);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             new File(folderPath).delete();
             throw new MyException(e.getMessage());
         }
+        logger.info("Completed saveAllImages method");
         return imagesNames;
     }
 
-
-
-    public MessageDto addImagesList (MessageDto message,HttpServletRequest request,List<String> allImagesName,User loggedUser,String recipient) {
+    public MessageDto addImagesList(MessageDto message, HttpServletRequest request, List<String> allImagesName, User loggedUser, String recipient) {
+        logger.info("Starting addImagesList method");
         message.setImages(null);
-        List<String> imageUrls = allImagesName.stream().map(name -> Utils.getHostUrl(request)+"/chat/images/" + loggedUser.getSlug() + "/" + message.getReceiver() + "/" + name).collect(Collectors.toList());
+        List<String> imageUrls = allImagesName.stream().map(name -> Utils.getHostUrl(request) + "/chat/images/" + loggedUser.getSlug() + "/" + message.getReceiver() + "/" + name).collect(Collectors.toList());
         message.setImagesUrls(imageUrls);
         message.setSender(loggedUser.getSlug());
         message.setReceiver(recipient);
-        //message.setMessage(HtmlUtils.htmlEscape(message.getMessage()));
-        String imagesNamesString = "";
-        for(int i =0; i < allImagesName.size(); i++){
-            imagesNamesString += allImagesName.get(i);
-            if(i < (allImagesName.size()-1)){
-                imagesNamesString +=',';
-            }
-        }
-        // save the message in database
-        saveMessage(message, imagesNamesString);
+        String imagesNamesString = String.join(",", allImagesName);
+        saveMessage(message, imagesNamesString); // Create operation
+        logger.info("Completed addImagesList method");
         return message;
     }
 

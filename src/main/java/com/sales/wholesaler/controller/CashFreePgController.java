@@ -8,6 +8,8 @@ import com.cashfree.model.CreateOrderRequest;
 import com.cashfree.model.CustomerDetails;
 import com.cashfree.model.OrderEntity;
 import com.sales.dto.CashfreeDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,8 @@ import java.util.UUID;
 @RequestMapping("cashfree")
 public class CashFreePgController extends WholesaleServiceContainer {
 
+    private static final Logger logger = LoggerFactory.getLogger(CashFreePgController.class);
+
     @Value("${cashfree.test.key}")
     String testSaltKey;
 
@@ -31,6 +35,7 @@ public class CashFreePgController extends WholesaleServiceContainer {
     @ResponseBody
     @PostMapping("sessionId")
     public ResponseEntity<Map<String,Object>> getPaymentSessionId (@RequestBody CashfreeDto cashfreeDto) {
+        logger.info("Received request to get payment session ID for mobile number: {}", cashfreeDto.getMobileNumber());
         Map<String,Object> result = new HashMap<>();
         try {
             System.err.println(cashfreeDto.getMobileNumber() + " : "+ cashfreeDto.getAmount());
@@ -50,11 +55,12 @@ public class CashFreePgController extends WholesaleServiceContainer {
             request.setCustomerDetails(customerDetails);
             Cashfree cashfree = new Cashfree();
             ApiResponse<OrderEntity> response = cashfree.PGCreateOrder("2023-08-01", request, null, null, null);
-            System.err.println(response.getData().getPaymentSessionId());
+            logger.info("Payment session ID generated successfully: {}", response.getData().getPaymentSessionId());
             result.put("res",response.getData());
             result.put("status" , 200);
         }
         catch (ApiException e){
+            logger.error("Exception occurred while getting payment session ID: {}", e.getMessage());
             result.put("message", "Something went wrong during getPaymentSessionId payment. please contact to administrator.");
             result.put("status",500);
             logger.info( "Exception occur in  getPaymentSessionId :: "+ e.getMessage());
@@ -65,6 +71,7 @@ public class CashFreePgController extends WholesaleServiceContainer {
 
     @GetMapping("pay")
     public String redirectPaymentPage(@RequestBody CashfreeDto cashfreeDto,Model model) {
+        logger.info("Redirecting to payment page for mobile number: {}", cashfreeDto.getMobileNumber());
         model.addAttribute("mobile",cashfreeDto.getMobileNumber());
         model.addAttribute("amount",cashfreeDto.getAmount());
         return "cashfree";

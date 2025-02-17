@@ -1,0 +1,82 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/test
+    username: root
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    open-in-view: false
+  mvc:
+    view:
+      prefix: '/'
+      suffix: '.html'
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+default:
+  password: saleispower
+
+jwt:
+  secret: saleispower
+
+
+phonepe :
+  key : 96434309-7796-489d-8924-ab56988a6076
+  mid : PGTESTPAYUAT86
+  env : UAT
+
+cashfree :
+  test:
+    key : cfsk_ma_test_4101943cd010dd3f59d86a25d03df53a_cce9da94
+    mid : TEST10390991bf0adc9155492e36f12619909301
+  prod :
+    mid : M22LJRRT3FAKQ
+    key : d021e28d-bc19-4fea-b622-41942867d395
+  env : PROD
+#  env : UAT
+
+profile :
+  #  absolute : /home/rohit/Documents/images/profiles/
+  #    absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/profiles/
+  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/profiles/
+  #  get :  /home/rohit/Documents/images/profiles/
+  get : src/main/resources/public/profiles/
+
+store :
+  #  absolute : /home/rohit/Documents/images/stores/
+  #  absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/stores/
+  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/stores/
+  get : src/main/resources/public/stores/
+#  get : /home/rohit/Documents/images/stores/
+
+item:
+  #  absolute : /home/rohit/Documents/images/items/
+  absolute: /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/items/
+  #  absolute  : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/items/
+  #  get : /home/rohit/Documents/images/items/
+  get: src/main/resources/public/items/
+
+removebg :
+  absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/removebg/
+  #  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/removebg/
+  get : src/main/resources/public/removebg/
+#  get : src/main/resources/images/removebg/
+
+chat :
+  #    absolute: C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/removebg/
+  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/chat/
+  get: src/main/resources/public/chat/
+  #  get : src/main/resources/images/removebg/
+
+
+

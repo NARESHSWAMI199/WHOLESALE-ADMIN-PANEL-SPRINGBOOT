@@ -6,6 +6,8 @@ import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
 import com.sales.entities.UserPlans;
 import com.sales.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -21,29 +23,40 @@ import static com.sales.specifications.PlansSpecifications.*;
 @Service
 public class WholesaleServicePlanService extends WholesaleRepoContainer {
 
-    public List<ServicePlan> getALlServicePlan(){
-        return wholesaleServicePlanRepository.findAll().stream().filter(servicePlan -> servicePlan.getPrice() > 0).toList();
+    private static final Logger logger = LoggerFactory.getLogger(WholesaleServicePlanService.class);
 
+    public List<ServicePlan> getALlServicePlan() {
+        logger.info("Starting getALlServicePlan method");
+        List<ServicePlan> servicePlans = wholesaleServicePlanRepository.findAll().stream().filter(servicePlan -> servicePlan.getPrice() > 0).toList();
+        logger.info("Completed getALlServicePlan method");
+        return servicePlans;
     }
 
-    public ServicePlan findBySlug(String slug){
-        return wholesaleServicePlanRepository.findBySlug(slug);
+    public ServicePlan findBySlug(String slug) {
+        logger.info("Starting findBySlug method with slug: {}", slug);
+        ServicePlan servicePlan = wholesaleServicePlanRepository.findBySlug(slug);
+        logger.info("Completed findBySlug method");
+        return servicePlan;
     }
 
-    public boolean isPlanActive(Integer  userPlanId){
-        if(userPlanId == null) return false;
+    public boolean isPlanActive(Integer userPlanId) {
+        logger.info("Starting isPlanActive method with userPlanId: {}", userPlanId);
+        if (userPlanId == null) return false;
         Optional<UserPlans> plan = wholesaleUserPlansRepository.findById(userPlanId);
-        if (plan.isPresent()){
+        if (plan.isPresent()) {
             UserPlans userPlan = plan.get();
             long expiryDate = userPlan.getExpiryDate();
-            long currentDate =  Utils.getCurrentMillis();
-            return currentDate <= expiryDate;
+            long currentDate = Utils.getCurrentMillis();
+            boolean isActive = currentDate <= expiryDate;
+            logger.info("Completed isPlanActive method");
+            return isActive;
         }
+        logger.info("Completed isPlanActive method");
         return false;
     }
 
-
-    public void assignUserPlan(int userId , int servicePlanId ){
+    public void assignUserPlan(int userId, int servicePlanId) {
+        logger.info("Starting assignUserPlan method with userId: {}, servicePlanId: {}", userId, servicePlanId);
         Long currentMillis = Utils.getCurrentMillis();
         ServicePlan plan = wholesaleServicePlanRepository.findById(servicePlanId).get();
         Integer months = plan.getMonths();
@@ -52,31 +65,20 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
         calendar.add(Calendar.MONTH, months);
         long expiryDate = calendar.getTimeInMillis();
         UserPlans userPlans = UserPlans.builder()
-                .slug(UUID.randomUUID().toString())
-                .userId(userId)
-                .servicePlan(plan)
-                .createdAt(currentMillis)
-                .expiryDate(expiryDate)
-                .createdBy(userId)
-                .build();
-        UserPlans userPlan = wholesaleUserPlansRepository.save(userPlans);
-        wholesaleUserHbRepository.updateUserActivePlan(userId,userPlan.getId());
-
+            .slug(UUID.randomUUID().toString())
+            .userId(userId)
+            .servicePlan(plan)
+            .createdAt(currentMillis)
+            .expiryDate(expiryDate)
+            .createdBy(userId)
+            .build();
+        UserPlans userPlan = wholesaleUserPlansRepository.save(userPlans); // Create operation
+        wholesaleUserHbRepository.updateUserActivePlan(userId, userPlan.getId()); // Update operation
+        logger.info("Completed assignUserPlan method");
     }
 
-/*    public List<Map<String,Object>> getAllUserPlans(User loggedUser){
-        List<Map<String, Object>> allUserPlansByUserId = wholesaleUserPlansRepository.getAllUserPlansByUserId(loggedUser.getId());
-        List<Map<String,Object>> result  = new ArrayList<>();
-        for (Map<String, Object> plan : allUserPlansByUserId) {*//* we can direct update in plan, but we're facing Exception : A TupleBackedMap cannot be modified; *//*
-            Map<String, Object> updatePlan = new HashMap<>(plan);
-            updatePlan.put("status", isPlanActive((Integer) plan.get("userPlanId")));
-            result.add(updatePlan);
-        }
-        return result;
-    }*/
-
-
-    public Page<UserPlans> getAllUserPlans(User loggedUser , UserPlanDto searchFilters){
+    public Page<UserPlans> getAllUserPlans(User loggedUser, UserPlanDto searchFilters) {
+        logger.info("Starting getAllUserPlans method with loggedUser: {}, searchFilters: {}", loggedUser, searchFilters);
         Specification<UserPlans> specification = Specification.where(
                 hasSlug(searchFilters.getSlug())
                 .and(greaterThanOrEqualCreatedFromDate(searchFilters.getCreatedFromDate()))
@@ -87,12 +89,16 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
                 .and(isUserId(loggedUser.getId()))
         );
         Pageable pageable = getPageable(searchFilters);
-        return  wholesaleUserPlansRepository.findAll(specification, pageable);
+        Page<UserPlans> userPlans = wholesaleUserPlansRepository.findAll(specification, pageable);
+        logger.info("Completed getAllUserPlans method");
+        return userPlans;
     }
 
-
     public ServicePlan getDefaultServicePlan() {
-        return wholesaleServicePlanRepository.getDefaultServicePlan();
+        logger.info("Starting getDefaultServicePlan method");
+        ServicePlan defaultServicePlan = wholesaleServicePlanRepository.getDefaultServicePlan();
+        logger.info("Completed getDefaultServicePlan method");
+        return defaultServicePlan;
     }
 
 }

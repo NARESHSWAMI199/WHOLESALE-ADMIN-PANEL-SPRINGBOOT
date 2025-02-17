@@ -37,9 +37,6 @@ public class ItemService extends RepoContainer{
     @Value("${item.absolute}")
     String itemImagePath;
 
-    @Value("${item.relative}")
-    String itemImageRelativePath;
-
 
     public Page<Item> getAllItems(ItemSearchFields searchFilters) {
         logger.info("Entering getAllItems with searchFilters: {}", searchFilters);
