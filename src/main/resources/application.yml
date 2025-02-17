@@ -59,26 +59,28 @@ cashfree :
 #  env : UAT
 
 
+# @Important : Make sure each path has file separator ("/") at the last
+
 profile :
 #  absolute : /home/rohit/Documents/images/profiles/
-#    absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/profiles/
-  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/profiles/
+  absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/profiles/
+#  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/profiles/
   relative :
 #  get :  /home/rohit/Documents/images/profiles/
   get : src/main/resources/public/profiles/
 
 store :
 #  absolute : /home/rohit/Documents/images/stores/
-#  absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/stores/
-  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/stores/
+  absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/stores/
+#  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/stores/
   relative :
   get : src/main/resources/public/stores/
 #  get : /home/rohit/Documents/images/stores/
 
 item:
 #  absolute : /home/rohit/Documents/images/items/
-  absolute: /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/items/
-#  absolute  : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/items/
+#  absolute: /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/items/
+  absolute  : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/items/
   relative:
 #  get : /home/rohit/Documents/images/items/
   get: src/main/resources/public/items/
@@ -92,8 +94,8 @@ removebg :
 
 
 chat :
-#    absolute: C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/removebg/
-    absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/chat/
+    absolute: C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/chat/
+#    absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/chat/
     relative:
     get: src/main/resources/public/chat/
   #  get : src/main/resources/images/removebg/
