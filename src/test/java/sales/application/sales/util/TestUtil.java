@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import sales.application.sales.testglobal.GlobalConstantTest;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -148,11 +149,9 @@ public class TestUtil {
     }
 
 
-
     public MockMultipartFile getImageMultipartFileToUpload(String parameterName) throws IOException {
-        String imageFolder = "C:/Users/DATA/Downloads/";
-        imageFolder = "C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/removebg/349b224a-199d-4fa4-88ce-701435f074aa/";
-        String imageName = "result_image.PNG";
+        String imageFolder = GlobalConstantTest.IMAGE_FOLDER_PATH_TEST;
+        String imageName = GlobalConstantTest.IMAGE_NAME_TEST;
         Path path = Paths.get(imageFolder + imageName);
         System.err.println("The image path ================= "+path);
         if (!Files.exists(path)) throw new FileNotFoundException(path + " not found ");
