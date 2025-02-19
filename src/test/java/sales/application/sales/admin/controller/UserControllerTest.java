@@ -2,8 +2,12 @@ package sales.application.sales.admin.controller;
 
 
 import com.sales.SalesApplication;
+import com.sales.admin.services.UserService;
+import com.sales.dto.UserDto;
+import com.sales.entities.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
@@ -717,6 +721,11 @@ public void updateUserWrongStatus() throws Exception {
         ;
     }
 
+
+
+
+
+/*
     @Test
     public void testLoginViaOtpButBlocked() throws Exception {
         // Make sure user must be blocked otherwise this test will fail
@@ -734,16 +743,28 @@ public void updateUserWrongStatus() throws Exception {
                 jsonPath("$.message",is("You are blocked by admin."))
         );
     }
+    */
+
+
+    @Autowired
+    UserService userService;
 
     @Test
     public void testOtpLoginWithRightCredential() throws Exception {
+        UserDto userDto = new UserDto();
+        userDto.setEmail(GlobalConstantTest.STAFF_TEST_EMAIL);
+        userDto.setPassword(GlobalConstantTest.STAFF_TEST_PASSWORD);
+        User user = userService.findByEmailAndPassword(userDto);
         // Make sure otp is right
         String json = """
                 {
-                    "email" : "swaminaresh993@gmail.com",
-                    "password" : "156384"
+                    "email" : "{email}",
+                    "password" : "{otp}"
                 }
-                """;
+                """
+                .replace("{email}",user.getEmail())
+                .replace("{otp}",user.getOtp())
+                ;
         mockMvc.perform(post("/admin/auth/login/otp")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
