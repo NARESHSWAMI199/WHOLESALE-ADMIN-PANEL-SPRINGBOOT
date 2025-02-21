@@ -23,7 +23,7 @@ public class StoreHbRepository {
                         isDeleted='Y', 
                         updatedBy=:updatedBy,
                         updatedAt=:updatedAt
-                    where slug=:slug ;
+                    where slug=:slug
                 """;
         Query query = entityManager.createQuery(hql);
         query.setParameter("slug",slug);
@@ -52,25 +52,25 @@ public class StoreHbRepository {
     }
 
     public int updateStore(StoreDto storeDto, User loggedUser){
-        String strQuery = "update Store set " +
-                "storeName=:name , " +
-                "email=:email, "+
-                "phone=:phone, "+
-                "rating=:rating, "+
-              //  "avtar=:avtar, "+
-                "storeCategory =:storeCategory,"+
-                "storeSubCategory =:storeSubCategory,"+
-                "description=:description, "+
-                "updatedAt=:updatedAt, "+
-                "updatedBy=:updatedBy "+
-                "where slug =:slug";
+        String strQuery = """
+                update Store set
+                    storeName=:name,
+                    email=:email,
+                    phone=:phone,
+                    rating=:rating,
+                    storeCategory =:storeCategory,
+                    storeSubCategory =:storeSubCategory,
+                    description=:description,
+                    updatedAt=:updatedAt,
+                    updatedBy=:updatedBy
+                where slug =:slug
+                """;
 
         Query query = entityManager.createQuery(strQuery);
         query.setParameter("name", storeDto.getStoreName());
         query.setParameter("email", storeDto.getStoreEmail());
         query.setParameter("phone", storeDto.getStorePhone());
         query.setParameter("rating", storeDto.getRating());
-      //  query.setParameter("avtar", storeDto.getStoreAvatar());
         query.setParameter("storeCategory", storeDto.getStoreCategory());
         query.setParameter("storeSubCategory", storeDto.getStoreSubCategory());
         query.setParameter("description", storeDto.getDescription());

@@ -263,7 +263,7 @@ public class StoreService extends RepoContainer{
         Store store = storeRepository.findStoreBySlug(slug);
         if(store == null) throw new NotFoundException("No store found to delete.");
         User user = store.getUser();
-        userHbRepository.deleteUserBySlug(user.getSlug());
+        if(user != null) userHbRepository.deleteUserBySlug(user.getSlug());
         int result = storeHbRepository.deleteStore(slug,loggedUser);
         logger.info("Exiting deleteStoreBySlug");
         return result;
@@ -325,8 +325,8 @@ public class StoreService extends RepoContainer{
     public int updateStoreImage(MultipartFile storeImage, String slug) throws MyException, IOException {
         logger.info("Entering updateStoreImage with storeImage: {}, slug: {}", storeImage, slug);
         if(storeImage !=null ) {
-            if (UploadImageValidator.isValidImage(storeImage, GlobalConstant.minWidth,
-                GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
+            if (UploadImageValidator.isValidImage(storeImage, GlobalConstant.bannerMinWidth,
+                GlobalConstant.bannerMinHeight, GlobalConstant.bannerMaxWidth, GlobalConstant.bannerMaxHeight,
                 GlobalConstant.allowedAspectRatios, GlobalConstant.allowedFormats)) {
                     String fileOriginalName = Objects.requireNonNull(storeImage.getOriginalFilename()).replaceAll(" ", "_");
                     String dirPath = storeImagePath+"/"+slug+"/";

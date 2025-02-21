@@ -19,8 +19,8 @@ public class GlobalConstant {
     public static int maxHeight = 1024;
 
     // for banner images
-    public static int bannerMinWidth = 1024;
-    public static int bannerMinHeight = 1024;
+    public static int bannerMinWidth = 500;
+    public static int bannerMinHeight = 500;
     public static int bannerMaxWidth = 10000;
     public static int bannerMaxHeight = 10000;
 
