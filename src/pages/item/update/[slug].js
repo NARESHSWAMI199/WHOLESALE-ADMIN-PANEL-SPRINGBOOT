@@ -57,7 +57,23 @@ const UpdateItem = () => {
             await axios.get(host + "/admin/item/detail/"+slug,)
                 .then(res => {
                     const data = res.data.res;
-                    setValues({...data,category : data.itemCategory.id, subcategory : data.itemSubCategory.id , unit : data.itemSubCategory.unit})
+                    setValues({
+                        ...data,
+                        category : data.itemCategory.id, 
+                        subcategory : data.itemSubCategory.id , 
+                        unit : data.itemSubCategory.unit
+                    })
+                    
+                    // Setting avtars 
+                    if(!!data.avtars){
+                        console.log(data.avtars)
+                        let avatarImages = data.avtars.split(',')
+                        let avatarImagesUrls = []
+                        for(let avtarImage of avatarImages){
+                            avatarImagesUrls.push(data.slug !=undefined ? itemImage+data.slug+"/"+avtarImage : '')
+                        }
+                        setAvtars(avatarImagesUrls)
+                    } 
                 })
                 .catch(err => {
                     setMessage(!!err.response ? err.response.data.message : err.message)
@@ -69,17 +85,6 @@ const UpdateItem = () => {
 
     }, [])
 
-    useEffect(()=>{
-        if(!!values.avtars){
-            console.log(values.avtars)
-            let avatarImages = values.avtars.split(',')
-            let avatarImagesUrls = []
-            for(let avtarImage of avatarImages){
-                avatarImagesUrls.push(values.slug !=undefined ? itemImage+values.slug+"/"+avtarImage : '')
-            }
-            setAvtars(avatarImagesUrls)
-        }   
-    },[values])
 
 
     useEffect(() => {

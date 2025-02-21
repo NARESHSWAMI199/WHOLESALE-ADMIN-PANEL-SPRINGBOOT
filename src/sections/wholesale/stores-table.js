@@ -110,8 +110,7 @@ export const StoresCard = (props) => {
   `;
   },[])
 
-
-  return (<>{!!store.user  &&
+  return (<>
   <Grid container sx={{boxShadow : 1 , borderRadius : 1}}>
       
           <Grid xs={12} md={2} 
@@ -142,7 +141,7 @@ export const StoresCard = (props) => {
                 textAlign : 'left' 
                 }}>
                 <Typography component="div" variant="h5">
-                  <Link title='Store Detail' style={{textDecoration : 'none' , color : 'black'}} href={"/store/"+ store.user.slug}>
+                  <Link title='Store Detail' style={{textDecoration : 'none' , color : 'black'}} href={"/store/"+ store.user?.slug}>
                     {toTitleCase(store.storeName)}
                   </Link>
                 </Typography>
@@ -191,8 +190,8 @@ export const StoresCard = (props) => {
                   }}>
                 
                     <PersonIcon sx={{ mr: 1 }} />
-                    <Link style={{textDecoration : 'none' , color : '#6C737F'}} href={"/wholesalers/"+store.user.slug}>
-                    <span title='Check user Detail' >{toTitleCase(store.user.username)}</span>
+                    <Link style={{textDecoration : 'none' , color : '#6C737F'}} href={"/wholesalers/"+store.user?.slug}>
+                    <span title='Check user Detail' >{toTitleCase(store.user?.username)}</span>
                     </Link>
                   </div> 
                 </Typography>
@@ -235,7 +234,7 @@ export const StoresCard = (props) => {
           </Grid>
 
 
-          <Grid xs={12} md={1} >
+          <Grid xs={12} md={1.2} >
               <Box sx={{ display: 'flex', flexDirection: 'column', height : '100%', justifyContent : 'center'}}>
                 { status !== 'A' ?
                 <Button  type='primary' variant="outlined" icon={<CheckCircleOutlined />} style={{background:'#5cb85c'}} onClick={(e)=> {
@@ -265,7 +264,7 @@ export const StoresCard = (props) => {
                 </Link>
 
 
-                <Link title='Store Detail' style={{textDecoration : 'none' , color : 'black'}} href={"/store/"+ store.user.slug}>
+                <Link title='Store Detail' style={{textDecoration : 'none' , color : 'black'}} href={"/store/"+ store.user?.slug}>
                 <Button type='primary'  style= {{marginTop : '5px',width:'100%'}}  icon={<RightSquareFilled />} primary>
                       Visit
                   </Button>
@@ -321,6 +320,6 @@ export const StoresCard = (props) => {
       </Snackbar>
   
     </Grid>
-}</>
+</>
   );
 }

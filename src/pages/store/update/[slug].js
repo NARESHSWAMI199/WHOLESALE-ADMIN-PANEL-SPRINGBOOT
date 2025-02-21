@@ -111,7 +111,7 @@ useEffect(()=>{
         })
       .catch(err=>console.log(err))
   }
-  if(values.state != undefined){
+  if(values.state != undefined && values.state.id != undefined){
     getCity()
   }
 },[values.state])
@@ -193,21 +193,16 @@ const handleSubmit = async (e) =>{
   let storeData = {
     ...store,
     storeSlug : store.slug,
+    storeName :  formData.get("storeName"),
     description : formData.get("description"),
     storeEmail : formData.get("email"),
     storePhone : formData.get("phone"),
-    // state:  formData.get("state"),
-    // city :  formData.get("city"),
-    state:  values.state?.id,
-    city :  values.city?.id,
     street:  formData.get("street"),
     zipCode :  formData.get("zipCode"),
-    // categoryId: formData.get("category"),
-    // subCategoryId: formData.get("subcategory"),
+    state:  values.state?.id,
+    city :  values.city?.id,
     categoryId: values.category?.id,
-    subCategoryId: values.subcategory?.id,
-
-    storeName :  formData.get("storeName")
+    subCategoryId: values.subcategory?.id
   }
   
     axios.defaults.headers = {
@@ -216,11 +211,12 @@ const handleSubmit = async (e) =>{
     }
     await axios.post(host+"/admin/store/update",storeData)
     .then(res => {
-      setStore((previous) => ({...previous , avtar : !!store.storePic ? store.storePic.name  : store.avtar }))  
+      // setStore((previous) => ({...previous , avtar : !!store.storePic ? store.storePic.name  : store.avtar }))  
       setMessage(res.data.message)
       setFlag("success")
       form.reset();
       setStore({})
+      setValues({})
       setAddress({})
       setOpen(true)
     }).catch(err=>{
@@ -348,22 +344,6 @@ return ( <>
           >      
            {/* address */}
           <FormControl fullWidth>
-          {/* <InputLabel style={{background :'white'}}  id="stateLabel">State</InputLabel>
-            <Select
-              labelId="stateLable"
-              id="demo-simple-select"
-              name='state'
-              value={!!address ? address.state: 0}
-              onChange={changeState}
-              required
-              InputLabelProps={{ shrink: true }}
-            >
-            {stateList.map((state,i)=>{
-                return (<MenuItem key={i+state.stateName} value={state.id}>{state.stateName}</MenuItem>)
-            })}
-    
-            </Select> */}
-
             <Autocomplete
                 disablePortal
                 options={[...stateList.map((state)=>({label : state.stateName, id : state.id}))]}
@@ -383,19 +363,6 @@ return ( <>
             md={6}
           >
           <FormControl fullWidth>
-            {/* <InputLabel style={{background :'white'}}  id="cityLabel">City</InputLabel>
-            <Select
-              fullWidth
-              labelId="cityLabel"
-              name='city'
-              value={!!address ? address.city : 0}
-              onChange={changeCity}
-              InputLabelProps={{ shrink: true }}
-            >
-            {cityList.map((city,i) => {
-                return (<MenuItem key={i} value={city.id}>{city.cityName}</MenuItem>)
-            })}
-            </Select>  */}
               <Autocomplete
                   disablePortal
                   options={[...cityList.map((city)=>({label : city.cityName, id : city.id}))]}

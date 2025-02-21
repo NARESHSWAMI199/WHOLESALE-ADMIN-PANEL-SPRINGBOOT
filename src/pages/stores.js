@@ -13,6 +13,7 @@ import { Divider, Pagination } from 'antd';
 import { useRouter } from 'next/router';
 import Spinner from 'src/sections/spinner';
 import styled from '@emotion/styled';
+import { ro } from 'date-fns/locale';
 
 const Page = () => {
 
@@ -178,7 +179,12 @@ const Page = () => {
             } ) }
 
                   <Box sx={{m:2,display:'flex',justifyContent:'center'}}>
-                      <Pagination  onChange={(page) => setData({...data,pageNumber : page-1})}  align="center" defaultCurrent={1} total={totalPages*10} />
+                    {/* total take page * 10 like if 4 page then write 40 */}
+                      <Pagination  onChange={(page) => setData({
+                          ...data,
+                          pageNumber : page-1
+                          }
+                        )}  align="center" defaultCurrent={1} total={totalPages*10} />  
                 </Box>
             </Stack>
         </Container>
