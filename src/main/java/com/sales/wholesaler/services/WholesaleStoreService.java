@@ -136,8 +136,8 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
     public String getStoreImagePath(MultipartFile storeImage, String slug) throws MyException, IOException {
         logger.info("Starting getStoreImagePath method with storeImage: {}, slug: {}", storeImage, slug);
         if (storeImage != null) {
-            if (UploadImageValidator.isValidImage(storeImage, GlobalConstant.minWidth,
-                    GlobalConstant.minHeight, GlobalConstant.maxWidth, GlobalConstant.maxHeight,
+            if (UploadImageValidator.isValidImage(storeImage, GlobalConstant.bannerMinWidth,
+                    GlobalConstant.bannerMinHeight, GlobalConstant.bannerMaxWidth, GlobalConstant.bannerMaxHeight,
                     GlobalConstant.allowedAspectRatios, GlobalConstant.allowedFormats)) {
                 String fileOriginalName = Objects.requireNonNull(storeImage.getOriginalFilename()).replaceAll(" ", "_");
                 String dirPath = storeImagePath + slug + "/";
