@@ -179,15 +179,20 @@ const handleChange = useCallback ((event) => {
   },[])
 
 
-const handleSubmit = useCallback(async (e) =>{
+const handleSubmit = async (e) =>{
   e.preventDefault()
   const form = e.target;
   const formData = new FormData(form)
   console.log(store)
+
+  // don't  want send in request
+  delete store.storeCategory
+  delete store.storeSubCategory
+  delete store.address
+
   let storeData = {
     ...store,
     storeSlug : store.slug,
-    addressSlug : store.address.slug,
     description : formData.get("description"),
     storeEmail : formData.get("email"),
     storePhone : formData.get("phone"),
@@ -225,7 +230,7 @@ const handleSubmit = useCallback(async (e) =>{
         setOpen(true)
     })
 
-  })
+  }
 
 const handleClose = useCallback(()=>{
       setOpen(false)
