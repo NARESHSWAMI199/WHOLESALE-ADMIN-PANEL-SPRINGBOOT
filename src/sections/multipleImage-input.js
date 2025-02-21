@@ -80,6 +80,12 @@ const MultipleImageInput = (props) => {
   );
   return (
     <>
+    <ImgCrop 
+         showGrid 
+         rotationSlider 
+         aspectSlider 
+         showReset
+       >
       <Upload
         //action={props.action}
         listType="picture-circle"
@@ -91,6 +97,7 @@ const MultipleImageInput = (props) => {
       >
         {fileList.length >= totalImage ? null : uploadButton}
       </Upload>
+      </ImgCrop>
       {previewImage && (
         <Image
           wrapperStyle={{
