@@ -14,7 +14,8 @@ import { Box,
         Snackbar,
         Alert,
         Container,
-        Stack
+        Stack,
+        Autocomplete
     } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -89,14 +90,20 @@ const Page = () =>{
 
 
     useEffect(()=>{
-      axios.defaults.headers={
-        Authorization : auth.token
+      const getCity = async () => {
+        axios.defaults.headers={
+          Authorization : auth.token
+        }
+        axios.get(host+`/admin/address/city/${values.state?.id}`)
+        .then(res=>{
+            setCityList(res.data)
+            setValues((prevState) => ({ ...prevState, city: { label: '' } }))
+          })
+        .catch(err=>console.log(err))
       }
-      axios.get(host+`/admin/address/city/${values.state}`)
-      .then(res=>{
-          setCityList(res.data)}
-          )
-      .catch(err=>console.log(err))
+      if (values.state != undefined) {
+        getCity()
+      }
     },[values.state])
 
 
@@ -139,10 +146,11 @@ const Page = () =>{
           axios.defaults.headers = {
               Authorization: auth.token
           }
-          await axios.post(host + "/admin/store/subcategory",{categoryId : values.category , orderBy : 'subcategory', order : 'asc'})
+          await axios.post(host + "/admin/store/subcategory",{categoryId : values.category?.id , orderBy : 'subcategory', order : 'asc'})
               .then(res => {
                   const data = res.data;
                   setItemSubCategories(data)
+                  setValues((prevState) => ({ ...prevState, subcategory: { label: '' } }))
               })
               .catch(err => {
                   setMessage(!!err.response ? err.response.data.message : err.message)
@@ -188,12 +196,18 @@ const Page = () =>{
             description : formData.get("description"),
             storeEmail : formData.get("storeEmail"),
             storePhone : formData.get("storePhone"),
-            state:  formData.get("state"),
-            city :  formData.get("city"),
+            // state:  formData.get("state"),
+            // city :  formData.get("city"),
+            state: values.state?.id,
+            city: values.city?.id,
             street :  formData.get("street"),
             zipCode :  formData.get("zipCode"),
-            categoryId: formData.get("category"),
-            subCategoryId: formData.get("subcategory"),
+            // categoryId: formData.get("category"),
+            // subCategoryId: formData.get("subcategory"),
+
+            categoryId: values.category?.id,
+            subCategoryId: values.subcategory?.id,
+
             storeName :  formData.get("storeName")
           }
         }
@@ -452,7 +466,7 @@ const Page = () =>{
                           md={6}
                         >      
                         <FormControl fullWidth>
-                        <InputLabel style={{background :'white'}}  id="stateLabel">State</InputLabel>
+                        {/* <InputLabel style={{background :'white'}}  id="stateLabel">State</InputLabel>
                           <Select
                             labelId="stateLable"
                             id="demo-simple-select"
@@ -464,8 +478,18 @@ const Page = () =>{
                           {stateList.map((state,i)=>{
                               return (<MenuItem key={i+state.stateName} value={state.id}>{state.stateName}</MenuItem>)
                           })}
+
+                        </Select> */}
+                            <Autocomplete
+                                disablePortal
+                                options={[...stateList.map((state) => ({ label: state.stateName, id: state.id }))]}
+                                fullWidth
+                                name="state"
+                                value={values.state?.label || ''}
+                                onChange={(e, value) => setValues((prevState) => ({ ...prevState, state: value }))}
+                                renderInput={(params) => <TextField required {...params} label="State" />} >
+                            </Autocomplete>
                   
-                          </Select>
                       </FormControl>
                         </Grid>
 
@@ -475,7 +499,7 @@ const Page = () =>{
                           md={6}
                         >
                         <FormControl fullWidth>
-                          <InputLabel style={{background :'white'}}  id="cityLabel">City</InputLabel>
+                          {/* <InputLabel style={{background :'white'}}  id="cityLabel">City</InputLabel>
                           <Select
                             fullWidth
                             labelId="cityLabel"
@@ -487,7 +511,18 @@ const Page = () =>{
                           {cityList.map((city,i) => {
                               return (<MenuItem key={i} value={city.id}>{city.cityName}</MenuItem>)
                           })}
-                          </Select> 
+                          </Select>  */}
+
+
+                                <Autocomplete
+                                    disablePortal
+                                    options={[...cityList.map((city) => ({ label: city.cityName, id: city.id }))]}
+                                    fullWidth
+                                    value={values.city?.label || ''}
+                                    onChange={(e, value) => setValues((prevState) => ({ ...prevState, city: value }))}
+                                    renderInput={(params) => <TextField name="city" required {...params} label="City" />} >
+                                </Autocomplete>
+
                           </FormControl>
                         </Grid>
 
@@ -498,24 +533,18 @@ const Page = () =>{
                 <Grid
                       xs={12}
                       md={6}
+                      item
                   >
                       <FormControl fullWidth>
-                          <InputLabel style={{background :'white'}}  id="itemLabel">Category</InputLabel>
-                          <Select
-                              labelId="itemLabel"
-                              id="category"
-                              name='category'
-                              value={values.category !=undefined ? ""+values.category : ""}
-                              onChange={handleChange}
-                              required
-                          >
-                          {categories.map((categroyObj , i) => {
-                              if(categroyObj.id !=0)
-                              return ( <MenuItem key={i} value={categroyObj.id}>{categroyObj.category}</MenuItem>
-                              )})
-                          }
-                          <MenuItem value={0}>{"Other"}</MenuItem>
-                          </Select>
+                          <Autocomplete
+                                disablePortal
+                                options={[...categories.filter(category => category.id !== 0).map((category) => ({ label: category.category, id: category.id })), { label: 'Other', id: 0 }]}
+                                fullWidth
+                                name={"category"}
+                                value={values.category?.label || ''}
+                                onChange={(e, value) => setValues((prevState) => ({ ...prevState, category: value }))}
+                                renderInput={(params) => <TextField required {...params} label="Categeory" />} >
+                          </Autocomplete>
                       </FormControl>
                   </Grid>
 
@@ -523,24 +552,19 @@ const Page = () =>{
                     <Grid
                       xs={12}
                       md={6}
+                      item
                   >
                       <FormControl fullWidth>
-                          <InputLabel style={{background :'white'}}  id="itemLabel">Subcategory</InputLabel>
-                          <Select
-                              labelId="itemLabel"
-                              id="subcategory"
-                              name='subcategory'
-                              value={values.subcategory !=undefined ? ""+values.subcategory : ""}
-                              onChange={handleChange}
-                              required
-                          >
-                          {subcategories.map((subcategroyObj , i) => {
-                              if(subcategroyObj.id !=0)
-                              return ( <MenuItem key={i} value={subcategroyObj.id}>{subcategroyObj.subcategory}</MenuItem>
-                              )})
-                          }
-                          <MenuItem value={0}>{"Other"}</MenuItem>
-                          </Select>
+                            <Autocomplete
+                                disablePortal
+                                required
+                                options={[...subcategories.filter(subcategory => subcategory.id !== 0).map(subcategory => ({ label: subcategory?.subcategory, id: subcategory?.id })), { label: 'Other', id: 0 }]}
+                                fullWidth
+                                name="subcategory"
+                                value={values.subcategory?.label || ''}
+                                onChange={(e, value) => setValues((prevState) => ({ ...prevState, subcategory: value }))}
+                                renderInput={(params) => <TextField required {...params} label="Subcategory" />} >
+                            </Autocomplete>
                       </FormControl>
                   </Grid>
 
