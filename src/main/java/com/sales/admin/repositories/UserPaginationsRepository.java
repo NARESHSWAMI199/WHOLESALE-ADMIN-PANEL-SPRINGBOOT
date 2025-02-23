@@ -7,5 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserPaginationsRepository extends JpaRepository<UserPagination,Integer> {
-    public UserPagination findByUserId(Integer userId);
+
+    UserPagination findByUserId(Integer userId);
+
+
 }

@@ -1,4 +1,4 @@
-package com.sales.admin.controllers;
+package com.sales.wholesaler.controller;
 
 
 import com.sales.dto.UserPaginationDto;
@@ -15,12 +15,12 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/admin/pagination/")
-public class PaginationController  extends ServiceContainer{
+@RequestMapping("/wholesale/pagination/")
+public class WholesalePaginationController extends WholesaleServiceContainer {
 
     @GetMapping("all")
     public ResponseEntity<List<Pagination>> findAllPaginations(){
-        List<Pagination> allPaginations = paginationService.findAllPaginations();
+        List<Pagination> allPaginations = wholesalePaginationService.findAllPaginations();
         return new ResponseEntity<>(allPaginations, HttpStatus.valueOf(200));
     }
 
@@ -30,7 +30,7 @@ public class PaginationController  extends ServiceContainer{
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         userPaginationDto.setUserId(loggedUser.getId());
-        int updated = paginationService.updateUserPaginationRowsNumber(userPaginationDto);
+        int updated = wholesalePaginationService.updateUserPaginationRowsNumber(userPaginationDto);
         if(updated > 0) {
             responseObj.put("message","Pagination updated successfully");
             responseObj.put("status",200);

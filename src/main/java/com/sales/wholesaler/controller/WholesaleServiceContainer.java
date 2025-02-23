@@ -57,5 +57,8 @@ public class WholesaleServiceContainer {
     @Autowired
     protected BlockListService blockListService;
 
+    @Autowired
+    protected WholesalePaginationService wholesalePaginationService;
+
 
 }

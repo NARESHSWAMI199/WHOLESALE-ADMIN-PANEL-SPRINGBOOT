@@ -5,6 +5,7 @@ import com.sales.dto.UserPaginationDto;
 import com.sales.entities.Pagination;
 import com.sales.entities.User;
 import com.sales.entities.UserPagination;
+import com.sales.exceptions.NotFoundException;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.util.InternalException;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class WholesalePaginationService extends  WholesaleRepoContainer{
@@ -31,36 +33,35 @@ public class WholesalePaginationService extends  WholesaleRepoContainer{
         return wholesalePaginationRepository.findByFieldFor(fieldsFor);
     }
 
+
     @Transactional(rollbackOn = {InternalException.class, RuntimeException.class,Exception.class })
     public void setUserDefaultPaginationForSettings(User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         List<Pagination> allPagination = wholesalePaginationRepository.findAll();
         for (Pagination pagination : allPagination) {
-            UserPaginationDto userPaginationDto = UserPaginationDto.builder()
-                    .paginationId(pagination.getId())
-                    .rowsNumber(25)
-                    .build();
-            UserPagination userPagination = insertUserPagination(userPaginationDto, loggedUser);
+            UserPagination userPagination = insertUserPagination(pagination, loggedUser , 25); // default rows are 25
             if(userPagination == null) throw new InternalException("We are unable to save your default pagination settings.");
 
         }
     }
 
     @Transactional(rollbackOn = {InternalException.class, RuntimeException.class,Exception.class })
-    public UserPagination insertUserPagination(UserPaginationDto userPaginationDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-
-        // validate required fields
-        Utils.checkRequiredFields(userPaginationDto,List.of("paginationId","rowsNumber"));
-        // Going to save user_pagination
+    public UserPagination insertUserPagination(Pagination pagination,User loggedUser,Integer rowNumbers) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         UserPagination userPagination = new UserPagination();
-        userPagination.setPaginationId(userPagination.getPaginationId());
+        userPagination.setPagination(pagination);
         userPagination.setUserId(loggedUser.getId());
-        userPagination.setRowsNumber(userPagination.getRowsNumber());
+        userPagination.setRowsNumber(rowNumbers);
         return wholesaleUserPaginationsRepository.save(userPagination);
     }
 
 
-    public int updateUserPaginationRowsNumber(UserPaginationDto userPaginationDto) {
-        return wholesalePaginationHbRepository.updateUserPaginations(userPaginationDto);
+
+    public int updateUserPaginationRowsNumber(UserPaginationDto userPaginationDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        // Check required fields are not null
+        Utils.checkRequiredFields(userPaginationDto,List.of("paginationId","userId"));
+        Optional<Pagination> pagination  = wholesalePaginationRepository.findById(userPaginationDto.getPaginationId());
+        if(pagination.isEmpty()) throw new NotFoundException("No fields are found to update.");
+        // check pagination field available or not
+        return wholesalePaginationHbRepository.updateUserPaginations(pagination.get(),userPaginationDto);
     }
 
 }

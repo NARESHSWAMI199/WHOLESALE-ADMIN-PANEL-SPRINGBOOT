@@ -35,7 +35,10 @@ public class WholesaleUserService extends WholesaleRepoContainer {
     private static final Logger logger = LoggerFactory.getLogger(WholesaleUserService.class);
 
     @Autowired
-    WholesaleServicePlanService wholesaleServicePlanService;
+    private WholesaleServicePlanService wholesaleServicePlanService;
+
+    @Autowired
+    private WholesalePaginationService wholesalePaginationService;
 
     @Value("${profile.absolute}")
     String profilePath;
@@ -259,6 +262,10 @@ public class WholesaleUserService extends WholesaleRepoContainer {
             throw new MyException("User was created successfully. but we facing issue some issue during sending otp. Make sure your email address was correct.");
         }
         logger.info("Completed addNewUser method");
+
+        // updating default pagination settings also for both kind of user "W" and "R"
+        wholesalePaginationService.setUserDefaultPaginationForSettings(insertedUser);
+
         return insertedUser;
     }
 

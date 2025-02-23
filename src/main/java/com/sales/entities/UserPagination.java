@@ -22,8 +22,9 @@ public class UserPagination {
     @Column(name = "user_id")
     Integer userId;
 
-    @Column(name="pagination_id")
-    Integer paginationId;
+    @OneToOne
+    @JoinColumn(name="pagination_id")
+    Pagination pagination;
 
     @Column(name="rows_number")
     Integer rowsNumber;
