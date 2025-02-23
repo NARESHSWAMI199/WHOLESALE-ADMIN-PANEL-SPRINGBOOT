@@ -2,8 +2,8 @@ package com.sales.wholesaler.controller;
 
 
 import com.sales.dto.UserPaginationDto;
-import com.sales.entities.Pagination;
 import com.sales.entities.User;
+import com.sales.entities.UserPagination;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +19,9 @@ import java.util.Map;
 public class WholesalePaginationController extends WholesaleServiceContainer {
 
     @GetMapping("all")
-    public ResponseEntity<List<Pagination>> findAllPaginations(){
-        List<Pagination> allPaginations = wholesalePaginationService.findAllPaginations();
-        return new ResponseEntity<>(allPaginations, HttpStatus.valueOf(200));
+    public ResponseEntity<List<UserPagination>> findAllPaginations(){
+        List<UserPagination> allUserPaginations = wholesalePaginationService.findAllUserPaginations();
+        return new ResponseEntity<>(allUserPaginations, HttpStatus.valueOf(200));
     }
 
 
@@ -38,7 +38,7 @@ public class WholesalePaginationController extends WholesaleServiceContainer {
             responseObj.put("message","No record found to update.");
             responseObj.put("status",404);
         }
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf(200));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
 

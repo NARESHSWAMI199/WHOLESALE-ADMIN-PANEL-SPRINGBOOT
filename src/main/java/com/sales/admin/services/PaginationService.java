@@ -20,8 +20,8 @@ public class PaginationService extends  RepoContainer{
 
 
 
-    public List<Pagination> findAllPaginations(){
-        return paginationRepository.findAll();
+    public List<UserPagination> findAllUserPaginations(){
+        return userPaginationsRepository.findAll();
     }
 
     public UserPagination findUserPaginationsByUserId(User loggedUser){

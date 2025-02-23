@@ -2,8 +2,8 @@ package com.sales.admin.controllers;
 
 
 import com.sales.dto.UserPaginationDto;
-import com.sales.entities.Pagination;
 import com.sales.entities.User;
+import com.sales.entities.UserPagination;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +19,9 @@ import java.util.Map;
 public class PaginationController  extends ServiceContainer{
 
     @GetMapping("all")
-    public ResponseEntity<List<Pagination>> findAllPaginations(){
-        List<Pagination> allPaginations = paginationService.findAllPaginations();
-        return new ResponseEntity<>(allPaginations, HttpStatus.valueOf(200));
+    public ResponseEntity<List<UserPagination>> findAllUserPaginations(){
+        List<UserPagination> allUserPaginations = paginationService.findAllUserPaginations();
+        return new ResponseEntity<>(allUserPaginations, HttpStatus.valueOf(200));
     }
 
 
@@ -38,7 +38,7 @@ public class PaginationController  extends ServiceContainer{
             responseObj.put("message","No record found to update.");
             responseObj.put("status",404);
         }
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf(200));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
 

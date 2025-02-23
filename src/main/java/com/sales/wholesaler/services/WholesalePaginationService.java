@@ -20,8 +20,8 @@ public class WholesalePaginationService extends  WholesaleRepoContainer{
 
 
 
-    public List<Pagination> findAllPaginations(){
-        return wholesalePaginationRepository.findAll();
+    public List<UserPagination> findAllUserPaginations(){
+        return wholesaleUserPaginationsRepository.findAll();
     }
 
     public UserPagination findUserPaginationsByUserId(User loggedUser){
