@@ -41,6 +41,9 @@ public class UserService extends RepoContainer {
     @Autowired
     StoreService storeService;
 
+    @Autowired
+    PaginationService paginationService;
+
     @Value("${profile.absolute}")
     String profilePath;
 
@@ -341,6 +344,9 @@ public class UserService extends RepoContainer {
                 if (isAssigned < 1)
                     throw new MyException("Something went wrong during update wholesaler's permissions. please contact to administrator.");
             }
+
+            // updating default pagination settings also for both kind of user "W" and "R"
+            paginationService.setUserDefaultPaginationForSettings(updatedUser);
 
 
             if (updatedUser.getId() > 0) {

@@ -1,5 +1,6 @@
 package com.sales.admin.controllers;
 
+import com.sales.admin.repositories.UserPaginationsRepository;
 import com.sales.admin.services.*;
 import com.sales.utils.ReadExcel;
 import org.apache.logging.log4j.Logger;
@@ -33,5 +34,11 @@ public class ServiceContainer {
 
     @Autowired
     protected ServicePlanService servicePlanService;
+
+    @Autowired
+    protected PaginationService paginationService;
+
+    @Autowired
+    protected UserPaginationsRepository userPaginationsRepository;
 
 }

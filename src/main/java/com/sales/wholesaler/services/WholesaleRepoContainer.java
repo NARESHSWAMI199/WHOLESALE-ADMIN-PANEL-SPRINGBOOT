@@ -92,6 +92,17 @@ public class WholesaleRepoContainer {
     @Autowired
     protected ChatUserHbRepository chatUserHbRepository;
 
+
+    @Autowired
+    protected WholesaleUserPaginationsRepository wholesaleUserPaginationsRepository;
+
+    @Autowired
+    protected WholesalePaginationRepository wholesalePaginationRepository;
+
+
+    @Autowired
+    protected WholesalePaginationHbRepository wholesalePaginationHbRepository;
+
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?

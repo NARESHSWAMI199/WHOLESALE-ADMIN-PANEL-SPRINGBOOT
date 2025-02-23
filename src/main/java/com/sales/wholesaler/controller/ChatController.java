@@ -82,14 +82,14 @@ public class ChatController extends WholesaleServiceContainer {
         if (receiver == null) throw new MyException("Please provide a valid recipient");
 
         /* Added new user in to sender's chat list*/
-        chatUserService.addNewChatUser(sender, receiver,"S");
+        chatUserService.addNewChatUser(sender, receiver,"A");
 
         /* Check you are blocked by receiver or not */
         boolean isBlocked = blockListService.isUserExistsInBlockList(sender,receiver);
-        if (isBlocked) return; //  If isBlocked == true that's mean. receiver already blocked you
+        if (isBlocked) return; //  If isBlocked == true, that's mean. Receiver already blocked you
 
-        /* Added sender in to the recipients chat list*/
-        chatUserService.addNewChatUser(receiver, sender,"A");
+        /* Added sender in to the recipient chat list*/
+        chatUserService.addNewChatUser(receiver, sender,"S");
 
         if (recipient == null) throw new MyException("Please provide a valid recipient");
         /* you need to subscribe like  /user/{userId}/queue/private */
@@ -111,13 +111,13 @@ public class ChatController extends WholesaleServiceContainer {
         /* Added new user in to sender's chat list*/
         chatUserService.addNewChatUser(loggedUser, receiver,"A");
 
-        /* Check If you already blocked by receiver or not if blocked then do nothing just eat fivestar */
+        /* Check If you already blocked by receiver or not if blocked, then do nothing just eat fivestar */
         boolean isBlocked = blockListService.isUserExistsInBlockList(loggedUser,receiver);
         if (isBlocked) {
             return new ResponseEntity<>(new HashMap<>(),HttpStatus.OK);
         }
 
-        /* Added sender in to the recipients chat list*/
+        /* Added sender in to the recipient chat list*/
         chatUserService.addNewChatUser(receiver, loggedUser,"S");
 
 

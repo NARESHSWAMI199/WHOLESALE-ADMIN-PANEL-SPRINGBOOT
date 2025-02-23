@@ -101,6 +101,16 @@ public class RepoContainer {
     @Autowired
     protected ChatUserRepository chatUserRepository;
 
+    @Autowired
+    protected PaginationRepository paginationRepository;
+
+    @Autowired
+    protected UserPaginationsRepository userPaginationsRepository;
+
+    @Autowired
+    protected PaginationHbRepository paginationHbRepository;
+
+
 
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
