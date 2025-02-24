@@ -4,7 +4,7 @@ public class GlobalConstantTest {
 
 
 
-    /** @Important ; Make sure don't use delete item or user, store slug */
+    /** @Important ; Make sure don't use deleted item or user, store slug */
 
 
     public static String STAFF_TEST_EMAIL = "swaminaresh993@gmail.com"; // You need to provide your staff's account email
