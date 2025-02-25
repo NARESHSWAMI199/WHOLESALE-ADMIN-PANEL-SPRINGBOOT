@@ -6,9 +6,11 @@ import com.sales.entities.Pagination;
 import com.sales.entities.User;
 import com.sales.entities.UserPagination;
 import com.sales.exceptions.NotFoundException;
+import com.sales.specifications.PaginationSpecification;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.util.InternalException;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,8 +26,8 @@ public class WholesalePaginationService extends  WholesaleRepoContainer{
         return wholesaleUserPaginationsRepository.findAll();
     }
 
-    public UserPagination findUserPaginationsByUserId(User loggedUser){
-        return wholesaleUserPaginationsRepository.findByUserId(loggedUser.getId());
+    public List<UserPagination> findUserPaginationsByUserId(User loggedUser){
+        return wholesaleUserPaginationsRepository.getUserPaginationByUserId(loggedUser.getId());
     }
 
 
@@ -36,7 +38,10 @@ public class WholesalePaginationService extends  WholesaleRepoContainer{
 
     @Transactional(rollbackOn = {InternalException.class, RuntimeException.class,Exception.class })
     public void setUserDefaultPaginationForSettings(User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        List<Pagination> allPagination = wholesalePaginationRepository.findAll();
+        Specification<Pagination> specification = Specification.where(PaginationSpecification.whoCanSee("S")
+                .or(PaginationSpecification.whoCanSee("W"))
+        );
+        List<Pagination> allPagination = wholesalePaginationRepository.findAll(specification);
         for (Pagination pagination : allPagination) {
             UserPagination userPagination = insertUserPagination(pagination, loggedUser , 25); // default rows are 25
             if(userPagination == null) throw new InternalException("We are unable to save your default pagination settings.");

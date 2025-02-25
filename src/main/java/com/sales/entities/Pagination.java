@@ -17,5 +17,7 @@ public class Pagination {
     int id;
     @Column(name = "field_for")
     String fieldFor;
+    @Column(name = "can_see")
+    String canSee;
 
 }

@@ -19,8 +19,9 @@ import java.util.Map;
 public class WholesalePaginationController extends WholesaleServiceContainer {
 
     @GetMapping("all")
-    public ResponseEntity<List<UserPagination>> findAllPaginations(){
-        List<UserPagination> allUserPaginations = wholesalePaginationService.findAllUserPaginations();
+    public ResponseEntity<List<UserPagination>> findUserPaginationSetting(HttpServletRequest request){
+        User loggedUser = (User) request.getAttribute("user");
+        List<UserPagination> allUserPaginations = wholesalePaginationService.findUserPaginationsByUserId(loggedUser);
         return new ResponseEntity<>(allUserPaginations, HttpStatus.valueOf(200));
     }
 
