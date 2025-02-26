@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 @Service
 public class WholesalePaginationService extends  WholesaleRepoContainer{
@@ -26,8 +28,17 @@ public class WholesalePaginationService extends  WholesaleRepoContainer{
         return wholesaleUserPaginationsRepository.findAll();
     }
 
-    public List<UserPagination> findUserPaginationsByUserId(User loggedUser){
-        return wholesaleUserPaginationsRepository.getUserPaginationByUserId(loggedUser.getId());
+    public Map<String,Object> findUserPaginationsByUserId(User loggedUser){
+        List<UserPagination> userPaginations = wholesaleUserPaginationsRepository.getUserPaginationByUserId(loggedUser.getId());
+        Map<String,Object> result = new TreeMap<>();
+        for(UserPagination userPagination : userPaginations) {
+            String key = userPagination.getPagination().getFieldFor();
+            // remove all whitespaces and changed with uppercase like:
+            // abc d → ABCD
+            key = key.replaceAll("\\s+", "").toUpperCase();
+            result.put(key,userPagination);
+        }
+        return result;
     }
 
 
@@ -62,7 +73,7 @@ public class WholesalePaginationService extends  WholesaleRepoContainer{
 
     public int updateUserPaginationRowsNumber(UserPaginationDto userPaginationDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         // Check required fields are not null
-        Utils.checkRequiredFields(userPaginationDto,List.of("paginationId","userId"));
+        Utils.checkRequiredFields(userPaginationDto,List.of("paginationId","userId","rowsNumber"));
         Optional<Pagination> pagination  = wholesalePaginationRepository.findById(userPaginationDto.getPaginationId());
         if(pagination.isEmpty()) throw new NotFoundException("No fields are found to update.");
         // check pagination field available or not

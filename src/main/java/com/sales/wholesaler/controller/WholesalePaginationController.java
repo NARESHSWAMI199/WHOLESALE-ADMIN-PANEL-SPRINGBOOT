@@ -3,7 +3,6 @@ package com.sales.wholesaler.controller;
 
 import com.sales.dto.UserPaginationDto;
 import com.sales.entities.User;
-import com.sales.entities.UserPagination;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -19,9 +17,9 @@ import java.util.Map;
 public class WholesalePaginationController extends WholesaleServiceContainer {
 
     @GetMapping("all")
-    public ResponseEntity<List<UserPagination>> findUserPaginationSetting(HttpServletRequest request){
+    public ResponseEntity<Map<String,Object>> findUserPaginationSetting(HttpServletRequest request){
         User loggedUser = (User) request.getAttribute("user");
-        List<UserPagination> allUserPaginations = wholesalePaginationService.findUserPaginationsByUserId(loggedUser);
+        Map<String,Object> allUserPaginations = wholesalePaginationService.findUserPaginationsByUserId(loggedUser);
         return new ResponseEntity<>(allUserPaginations, HttpStatus.valueOf(200));
     }
 

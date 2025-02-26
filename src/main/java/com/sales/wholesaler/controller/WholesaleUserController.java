@@ -67,9 +67,11 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         }else if (user.getStatus().equalsIgnoreCase("A")) {
             responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
             Store store = wholesaleStoreService.getStoreByUserId(user.getId());
+            Map<String,Object> paginations = wholesalePaginationService.findUserPaginationsByUserId(user);
             responseObj.put("message", "success");
             responseObj.put("user", user);
             responseObj.put("store", store);
+            responseObj.put("paginations",paginations);
             responseObj.put("status", 200);
         }else {
             responseObj.put("message", "You are blocked by admin");
@@ -92,9 +94,11 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         } else if (user.getStatus().equalsIgnoreCase("A")) {
             responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
             Store store = wholesaleStoreService.getStoreByUserId(user.getId());
+            Map<String,Object> paginations = wholesalePaginationService.findUserPaginationsByUserId(user);
             responseObj.put("message", "success");
             responseObj.put("user", user);
             responseObj.put("store", store);
+            responseObj.put("paginations",paginations);
             responseObj.put("status", 200);
             wholesaleUserService.resetOtp(user.getEmail());
         } else {
@@ -124,12 +128,15 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put("message", "Wrong otp password.");
             responseObj.put("status", 401);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
+            Store store = wholesaleStoreService.getStoreByUserId(user.getId());
+            Map<String,Object> paginations = wholesalePaginationService.findUserPaginationsByUserId(user);
             responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
             responseObj.put("message", "success");
             responseObj.put("user", user);
-            Store store = wholesaleStoreService.getStoreByUserId(user.getId());
             responseObj.put("store", store);
+            responseObj.put("paginations",paginations);
             responseObj.put("status", 200);
+            // setting blank otp
             wholesaleUserService.resetOtp(user.getEmail());
         } else {
             responseObj.put("message", "You are blocked by admin");

@@ -207,6 +207,7 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         logger.info("Starting resetPasswordByUserSlug method with passwordDto: {}, loggedUser: {}", passwordDto, loggedUser);
         // Validating required fields. If their we found any required field is null, this will throw an Exception
         Utils.checkRequiredFields(passwordDto,List.of("password"));
+        if(passwordDto.getPassword().isEmpty()) throw new IllegalArgumentException("password can't by empty or blank");
         loggedUser.setPassword(passwordDto.getPassword());
         User updatedUser = wholesaleUserRepository.save(loggedUser); // Update operation
         logger.info("Completed resetPasswordByUserSlug method");
