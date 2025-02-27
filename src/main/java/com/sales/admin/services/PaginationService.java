@@ -47,13 +47,13 @@ public class PaginationService extends  RepoContainer{
     }
 
     @Transactional(rollbackOn = {InternalException.class, RuntimeException.class,Exception.class })
-    public void setUserDefaultPaginationForSettings(User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public void setUserDefaultPaginationForSettings(User user) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Specification<Pagination> specification = Specification.where(PaginationSpecification.whoCanSee("B")
-                .or(PaginationSpecification.whoCanSee("S"))
+                .or(PaginationSpecification.whoCanSee(user.getUserType()))
         );
         List<Pagination> allPagination = paginationRepository.findAll(specification);
         for (Pagination pagination : allPagination) {
-            UserPagination userPagination = insertUserPagination(pagination, loggedUser , 25); // default rows are 25
+            UserPagination userPagination = insertUserPagination(pagination, user , 25); // default rows are 25
             if(userPagination == null) throw new InternalException("We are unable to save your default pagination settings.");
 
         }

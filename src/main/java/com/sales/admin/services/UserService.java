@@ -345,9 +345,10 @@ public class UserService extends RepoContainer {
                     throw new MyException("Something went wrong during update wholesaler's permissions. please contact to administrator.");
             }
 
-            // updating default pagination settings also for both kind of user "W" and "R"
-            paginationService.setUserDefaultPaginationForSettings(updatedUser);
-
+            if(!Utils.isEmpty(userDto.getUserType()) &&  (userDto.getUserType().equals("S") || userDto.getUserType().equals("W"))) {
+                // updating default pagination settings also for both kind of user "W" and "S"
+                paginationService.setUserDefaultPaginationForSettings(updatedUser);
+            }
 
             if (updatedUser.getId() > 0) {
                 responseObj.put("res", updatedUser);
