@@ -27,6 +27,7 @@
     "@mui/x-data-grid-pro": "^6.18.3",
     "@mui/x-date-pickers": "^6.18.4",
     "antd": "^5.12.8",
+    "antd-img-crop": "^4.24.0",
     "apexcharts": "3.37.0",
     "axios": "^1.6.2",
     "bootstrap": "^5.3.3",
