@@ -6,7 +6,9 @@ import { host } from 'src/utils/util';
 const HANDLERS = {
   INITIALIZE: 'INITIALIZE',
   SIGN_IN: 'SIGN_IN',
-  SIGN_OUT: 'SIGN_OUT'
+  SIGN_OUT: 'SIGN_OUT',
+  UPDATE_USER : 'UPDATE_USER',
+  UPDATE_PAGINATIONS : 'UPDATE_PAGINATIONS'
 };
 
 let authToken = () => {
@@ -28,11 +30,24 @@ let getUser = () => {
 }
 
 
+let getPaginations = () => {
+  if (typeof window === 'undefined') return null;
+  try {
+    let paginations = window.sessionStorage.getItem('paginations');
+    paginations = !!paginations ? JSON.parse(paginations) : null;
+    return paginations
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+
 const initialState = {
   token: authToken(),
   isAuthenticated: false,
   isLoading: true,
-  user: getUser()
+  user: getUser(),
+  paginations : getPaginations()
 };
 
 const handlers = {
@@ -57,18 +72,20 @@ const handlers = {
   },
   [HANDLERS.SIGN_IN]: (state, action) => {
     const user = action.payload;
+    const paginations = action.paginations;
     return {
       ...state,
       token: action.token,
       isAuthenticated: true,
-      user
+      user,paginations
     };
   },
   [HANDLERS.SIGN_OUT]: (state) => {
     return {
       ...state,
       isAuthenticated: false,
-      user: null
+      user: null,
+      paginations : null
     };
   },
   [HANDLERS.UPDATE_USER]: (state, action) => {
@@ -77,6 +94,14 @@ const handlers = {
       ...state,
       isAuthenticated: false,
       user
+    };
+  },
+  // updating user paginations
+  [HANDLERS.UPDATE_PAGINATIONS]: (state,action) => {
+    const paginations = action.paginations
+    return {
+      ...state,
+      paginations
     };
   }
 
@@ -149,15 +174,19 @@ export const AuthProvider = (props) => {
     })
       .then(res => {
         const token = res.data.token
-        window.sessionStorage.setItem('authenticated', 'true');
-        window.sessionStorage.setItem('token', token);
+        const paginations = res.data.paginations
         const user = res.data.user
-        window.sessionStorage.setItem("user", JSON.stringify(user))
-
+        if (typeof window !== 'undefined') {
+          window.sessionStorage.setItem('authenticated', 'true');
+          window.sessionStorage.setItem('token', token);
+          window.sessionStorage.setItem("user", JSON.stringify(user))
+          window.sessionStorage.setItem("paginations",JSON.stringify(paginations))
+        }
         dispatch({
           type: HANDLERS.SIGN_IN,
           token: token,
-          payload: user
+          payload: user,
+          paginations : paginations
         });
 
         setTimeout(() => {
@@ -199,9 +228,12 @@ export const AuthProvider = (props) => {
   };
 
   const signOut = () => {
-    window.sessionStorage.removeItem('authenticated');
-    window.sessionStorage.removeItem('user');
-    window.sessionStorage.removeItem('token');
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.removeItem('authenticated');
+      window.sessionStorage.removeItem('user');
+      window.sessionStorage.removeItem('token');
+      window.sessionStorage.removeItem("paginations");
+    }
     dispatch({
       type: HANDLERS.SIGN_OUT
     });
@@ -215,6 +247,26 @@ export const AuthProvider = (props) => {
     });
   };
 
+
+  const updatePaginations = (rowsNumber,pagination) =>{
+    let preSavePaginations =  getPaginations();
+    for(let label of  Object.values(preSavePaginations)){
+      if(pagination?.fieldFor === label.pagination?.fieldFor){
+        label.rowsNumber = rowsNumber
+      }
+    }
+    console.log(preSavePaginations)
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem("paginations",JSON.stringify(preSavePaginations))
+    }
+  
+    dispatch({
+      type : HANDLERS.UPDATE_PAGINATIONS,
+      paginations : preSavePaginations
+    })
+  
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -222,7 +274,8 @@ export const AuthProvider = (props) => {
         signIn,
         signUp,
         signOut,
-        updateUserDetail
+        updateUserDetail,
+        updatePaginations
       }}
     >
       {children}

@@ -244,7 +244,7 @@ const Page = (props) => {
 
 
 
-          {(!!user && user.id == suId) ?
+          {(!!user && user.id === suId) &&
             <Grid
               xs={12}
               sm={6}
@@ -260,14 +260,6 @@ const Page = (props) => {
                   sx={{ height: '100%' }}
                   value={dashboardData.admins}
                 /> </Link>
-            </Grid>
-            :
-            <Grid
-              xs={12}
-              sm={6}
-              lg={!!user && user.id != suId ? 3 : 4}
-            >
-
             </Grid>
           }
 
