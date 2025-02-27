@@ -8,6 +8,7 @@ import { host } from 'src/utils/util';
 import axios from 'axios';
 import { useAuth } from 'src/hooks/use-auth';
 import { tr } from 'date-fns/locale';
+import { PaginationSettings } from 'src/sections/settings/pagination-settings';
 
 const Page = () => {
 
@@ -47,6 +48,19 @@ const Page = () => {
       return result
     }
 
+    const showError = (err) => {
+      console.log(err)
+      setMessage(!!err.response ? err.response.data.message : err.message)
+      setFlag("error")
+      setOpen(true)
+    }
+
+    const showSuccess = (message) => {
+      setMessage(message)
+      setFlag("success")
+      setOpen(true)
+    }
+
 
 
   return (
@@ -71,6 +85,7 @@ const Page = () => {
           </Typography>
           {/* <SettingsNotifications /> */}
             <SettingsPassword handleSubmit={handleSubmit} reset={reset} />
+            <PaginationSettings showError={showError} showSuccess={showSuccess}/>
         </Stack>
       </Container>
     </Box>
