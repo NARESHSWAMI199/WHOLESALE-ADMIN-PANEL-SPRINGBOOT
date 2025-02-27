@@ -101,7 +101,7 @@ useEffect(() => {
           Authorization: auth.token
       }
       setShowSpinner('block')
-      await axios.post(host + "/admin/store/subcategory/",{categoryId : values.category,orderBy : 'updatedAt'})
+      await axios.post(host + "/admin/store/subcategory",{categoryId : values.category,orderBy : 'updatedAt'})
           .then(res => {
               const data = res.data;
               setSubcategories(data)
