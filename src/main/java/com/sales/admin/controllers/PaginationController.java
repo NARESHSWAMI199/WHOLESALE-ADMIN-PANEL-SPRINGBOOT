@@ -3,7 +3,6 @@ package com.sales.admin.controllers;
 
 import com.sales.dto.UserPaginationDto;
 import com.sales.entities.User;
-import com.sales.entities.UserPagination;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -19,8 +17,9 @@ import java.util.Map;
 public class PaginationController  extends ServiceContainer{
 
     @GetMapping("all")
-    public ResponseEntity<List<UserPagination>> findAllUserPaginations(){
-        List<UserPagination> allUserPaginations = paginationService.findAllUserPaginations();
+    public ResponseEntity<Map<String,Object>> findAllUserPaginations(HttpServletRequest request){
+        User loggedUser = (User) request.getAttribute("user");
+        Map<String,Object> allUserPaginations = paginationService.findUserPaginationsByUserId(loggedUser);
         return new ResponseEntity<>(allUserPaginations, HttpStatus.valueOf(200));
     }
 

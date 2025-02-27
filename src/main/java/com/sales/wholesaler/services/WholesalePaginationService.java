@@ -14,10 +14,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 
 @Service
 public class WholesalePaginationService extends  WholesaleRepoContainer{
@@ -30,7 +30,7 @@ public class WholesalePaginationService extends  WholesaleRepoContainer{
 
     public Map<String,Object> findUserPaginationsByUserId(User loggedUser){
         List<UserPagination> userPaginations = wholesaleUserPaginationsRepository.getUserPaginationByUserId(loggedUser.getId());
-        Map<String,Object> result = new TreeMap<>();
+        Map<String,Object> result = new LinkedHashMap<>();
         for(UserPagination userPagination : userPaginations) {
             String key = userPagination.getPagination().getFieldFor();
             // remove all whitespaces and changed with uppercase like:
@@ -49,7 +49,7 @@ public class WholesalePaginationService extends  WholesaleRepoContainer{
 
     @Transactional(rollbackOn = {InternalException.class, RuntimeException.class,Exception.class })
     public void setUserDefaultPaginationForSettings(User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        Specification<Pagination> specification = Specification.where(PaginationSpecification.whoCanSee("S")
+        Specification<Pagination> specification = Specification.where(PaginationSpecification.whoCanSee("B")
                 .or(PaginationSpecification.whoCanSee("W"))
         );
         List<Pagination> allPagination = wholesalePaginationRepository.findAll(specification);

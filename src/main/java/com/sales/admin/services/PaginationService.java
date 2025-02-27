@@ -6,13 +6,17 @@ import com.sales.entities.Pagination;
 import com.sales.entities.User;
 import com.sales.entities.UserPagination;
 import com.sales.exceptions.NotFoundException;
+import com.sales.specifications.PaginationSpecification;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.util.InternalException;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -24,8 +28,17 @@ public class PaginationService extends  RepoContainer{
         return userPaginationsRepository.findAll();
     }
 
-    public UserPagination findUserPaginationsByUserId(User loggedUser){
-        return userPaginationsRepository.findByUserId(loggedUser.getId());
+    public Map<String,Object> findUserPaginationsByUserId(User loggedUser){
+        List<UserPagination> userPaginations = userPaginationsRepository.getUserPaginationByUserId(loggedUser.getId());
+        Map<String,Object> result = new LinkedHashMap<>();
+        for(UserPagination userPagination : userPaginations) {
+            String key = userPagination.getPagination().getFieldFor();
+            // remove all whitespaces and changed with uppercase like:
+            // abc d → ABCD
+            key = key.replaceAll("\\s+", "").toUpperCase();
+            result.put(key,userPagination);
+        }
+        return result;
     }
 
 
@@ -35,7 +48,10 @@ public class PaginationService extends  RepoContainer{
 
     @Transactional(rollbackOn = {InternalException.class, RuntimeException.class,Exception.class })
     public void setUserDefaultPaginationForSettings(User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        List<Pagination> allPagination = paginationRepository.findAll();
+        Specification<Pagination> specification = Specification.where(PaginationSpecification.whoCanSee("B")
+                .or(PaginationSpecification.whoCanSee("S"))
+        );
+        List<Pagination> allPagination = paginationRepository.findAll(specification);
         for (Pagination pagination : allPagination) {
             UserPagination userPagination = insertUserPagination(pagination, loggedUser , 25); // default rows are 25
             if(userPagination == null) throw new InternalException("We are unable to save your default pagination settings.");
