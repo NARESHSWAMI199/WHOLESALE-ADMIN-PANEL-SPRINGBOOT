@@ -40,10 +40,11 @@ const Page = () => {
   const {userType} = router.query
 
   const auth = useAuth()
+  const paginations = auth.paginations
   let [status,setStatus] = useState(null)
   const [error,setErrors] = useState("")
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(paginations?.USERS?.rowsNumber);
   const [admins,setAdmins] = useState([])
   const adminsIds = UseCustomerIds(admins);
   const adminsSelection = useSelection(adminsIds);
@@ -51,7 +52,7 @@ const Page = () => {
   const [data,setData] = useState({
     userType : userType,
     pageNumber : page,
-    size : rowsPerPage
+    size : !!rowsPerPage ? rowsPerPage : 10
   })
 
   const [totalElements , setTotalElements] = useState(0)

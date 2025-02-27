@@ -56,9 +56,10 @@ const Page = () => {
 
 
   const auth = useAuth()
+  const paginations = auth.paginations
   const [error, setErrors] = useState("")
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(paginations?.USERS?.rowsNumber);
   const [customers, setCustomers] = useState([])
   const customersIds = useCustomerIds(customers);
   const customersSelection = useSelection(customersIds);
@@ -66,7 +67,7 @@ const Page = () => {
   const [data, setData] = useState({
     userType: "R",
     pageNumber: page,
-    size: rowsPerPage
+    size: !!rowsPerPage ? rowsPerPage : 10
   })
 
   const [totalElements, setTotalElements] = useState(0)

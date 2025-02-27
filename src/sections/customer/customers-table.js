@@ -333,7 +333,7 @@ export const CustomersTable = (props) => {
         onRowsPerPageChange={onRowsPerPageChange}
         page={page}
         rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[10, 15, 25]}
+        rowsPerPageOptions={[10, 25 , 50]}
       />
     </Card>
 

@@ -22,17 +22,18 @@ const Page = () => {
   const [flag, setFlag] = useState("warning")
 
   const auth = useAuth()
+  const paginations = auth.paginations
   const [totalPages,setTotalPages] = useState(0)
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(paginations?.STORES?.rowsNumber);
   const [stores,setStores] = useState([])
   const [showSpinner , setShowSpinner] = useState("block")
 
   
   const [data,setData] = useState({
     pageNumber : page,
-    size : rowsPerPage
+    size : !!rowsPerPage ? rowsPerPage : 10
   })
 
   const [totalElements , setTotalElements] = useState(0)

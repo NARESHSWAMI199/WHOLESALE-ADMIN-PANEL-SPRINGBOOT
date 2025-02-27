@@ -42,8 +42,9 @@ const Page = () => {
     const [flag, setFlag] = useState("warning")
 
     const auth = useAuth()
+    const paginations = auth.paginations
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(paginations?.ITEMS?.rowsNumber);
     const [items, setItems] = useState([])
     const itemSlugs = UseitemSlugs(items);
     const itemsSelection = useSelection(itemSlugs);
@@ -52,11 +53,11 @@ const Page = () => {
     
     const [data, setData] = useState({
         pageNumber: page,
-        size: rowsPerPage
+        size: !!rowsPerPage ? rowsNumber : 10
     })
 
     useEffect(()=>{
-        setData((previous)=>({...data , storeId : wholesale.id}))
+        setData((previous)=>({...previous , storeId : wholesale.id}))
     },[wholesale])
 
 

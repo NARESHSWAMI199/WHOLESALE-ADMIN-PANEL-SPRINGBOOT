@@ -1,20 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Alert, Box, Snackbar, Stack } from '@mui/material';
+import axios from 'axios';
 import Head from 'next/head';
-import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
-import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
-import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import {  Alert, Box, Button, Container, Grid, Snackbar, Stack, SvgIcon, Typography } from '@mui/material';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useAuth } from 'src/hooks/use-auth';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
+import { BasicSearch } from 'src/sections/basic-search';
+import { CustomerHeaders } from 'src/sections/customer/customers-header';
 import { CustomersTable } from 'src/sections/customer/customers-table';
 import { applyPagination } from 'src/utils/apply-pagination';
-import axios from 'axios';
 import { host } from 'src/utils/util';
-import { useAuth } from 'src/hooks/use-auth';
-import { CustomerHeaders } from 'src/sections/customer/customers-header';
-import { Search } from '@mui/icons-material';
-import { BasicSearch } from 'src/sections/basic-search';
-import { ArrowButtons } from 'src/layouts/arrow-button';
 
 
 
@@ -55,14 +50,15 @@ const Page = () => {
 
 
   const auth = useAuth()
+  const paginations = auth.paginations
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(paginations?.USERS?.rowsNumber);
   const [customers,setCustomers] = useState([])
   const customersIds = useCustomerIds(customers);
   const customersSelection = useSelection(customersIds);
   const [data,setData] = useState({
     pageNumber : page,
-    size : rowsPerPage
+    size : !!rowsPerPage ? rowsPerPage : 10
   })
 
   const [totalElements , setTotalElements] = useState(0)
