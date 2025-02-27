@@ -67,9 +67,11 @@ public class UserController extends ServiceContainer {
             responseObj.put("message", "Invalid credentials.");
             responseObj.put("status", 401);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
+            Map<String, Object> paginations = paginationService.findUserPaginationsByUserId(user);
             responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
             responseObj.put("message", "success");
             responseObj.put("user", user);
+            responseObj.put("paginations",paginations);
             responseObj.put("status", 200);
         } else {
             responseObj.put("message", "You are blocked by admin");
@@ -97,9 +99,11 @@ public class UserController extends ServiceContainer {
             responseObj.put("message", "Wrong otp password.");
             responseObj.put("status", 401);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
+            Map<String, Object> paginations = paginationService.findUserPaginationsByUserId(user);
             responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
             responseObj.put("message", "Successfully logged in.");
             responseObj.put("user", user);
+            responseObj.put("paginations",paginations);
             responseObj.put("status", 200);
             userService.resetOtp(user.getEmail());
         } else {
