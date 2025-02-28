@@ -117,10 +117,11 @@ export const ServicePlansTable = (props) =>{
                                 <TableCell padding="checkbox"></TableCell>
                                 <TableCell>Plan Name</TableCell>
                                 <TableCell>TOKEN ID</TableCell>
+                                <TableCell>Months</TableCell>
                                 <TableCell>Price</TableCell>
                                 <TableCell>Discount</TableCell>
+                                <TableCell>Discount %</TableCell>
                                 <TableCell>Total price</TableCell>
-                                <TableCell>Months</TableCell>
                                 <TableCell>Status</TableCell>
                                 <TableCell>Created At</TableCell>
                                 <TableCell>Updated At</TableCell>
@@ -151,6 +152,14 @@ export const ServicePlansTable = (props) =>{
                                                 <></>
                                             )}
                                             <CopyOutlined onClick={() => { handleCopyClick(plan.slug) }} />
+                                        </TableCell>
+
+                                        
+                                        {/* Months */}
+                                        <TableCell>
+                                            <Stack alignItems="center" direction="row" spacing={2}>
+                                                {plan.months}
+                                            </Stack>
                                         </TableCell>
 
 
@@ -193,6 +202,7 @@ export const ServicePlansTable = (props) =>{
                                             </Stack>
                                         </TableCell>
 
+                                        {/* actions */}
                                         <TableCell>
                                             {plan.status !== 'A' ? (
                                                 <CancelIcon sx={{ marginX: '2px', color: 'Red' }} titleAccess='activate' onClick={() => {
