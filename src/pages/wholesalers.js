@@ -10,7 +10,7 @@ import { BasicSearch } from 'src/sections/basic-search';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
 import { CustomersTable } from 'src/sections/customer/customers-table';
 import { applyPagination } from 'src/utils/apply-pagination';
-import { host } from 'src/utils/util';
+import { host, rowsPerPageOptions } from 'src/utils/util';
 
 const now = new Date();
 
@@ -47,7 +47,7 @@ const Page = () => {
     slug : slug,
     userType : "W",
     pageNumber : page,
-    size : !!rowsPerPage ? rowsPerPage : 10
+    size : !!rowsPerPage ? rowsPerPage : rowsPerPageOptions[0]
   })
 
   const [totalElements , setTotalElements] = useState(0)

@@ -8,7 +8,7 @@ import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { applyPagination } from 'src/utils/apply-pagination';
 import axios from 'axios';
-import { host, toTitleCase } from 'src/utils/util';
+import { host, rowsPerPageOptions, toTitleCase } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
 import { ItemsTable } from 'src/sections/wholesale/wholesale-table';
 import { useRouter } from 'next/router';
@@ -53,7 +53,7 @@ const Page = () => {
     
     const [data, setData] = useState({
         pageNumber: page,
-        size: !!rowsPerPage ? rowsPerPage : 10
+       size: !!rowsPerPage ? rowsPerPage : rowsPerPageOptions[0]
     })
 
     useEffect(()=>{

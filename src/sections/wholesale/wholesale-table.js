@@ -418,7 +418,7 @@ export const ItemsTable = (props) => {
         onPageChange={onPageChange}
         onRowsPerPageChange={onRowsPerPageChange}
         page={page}
-        rowsPerPage={rowsPerPage}
+        rowsPerPage={!!rowsPerPage ? rowsPerPage : rowsPerPageOptions[0]}
         rowsPerPageOptions={rowsPerPageOptions}
       />
     </Card>

@@ -10,7 +10,7 @@ import { CustomersTable } from 'src/sections/customer/customers-table';
 import { BasicSearch, CustomersSearch } from 'src/sections/basic-search';
 import { applyPagination } from 'src/utils/apply-pagination';
 import axios, { all } from 'axios';
-import { host } from 'src/utils/util';
+import { host, rowsPerPageOptions } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
 import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
 import { Card, InputAdornment, OutlinedInput } from '@mui/material';
@@ -63,7 +63,7 @@ const Page = () => {
   const [data,setData] = useState({
     userType : "S",
     pageNumber : page,
-    size : !!rowsPerPage ? rowsPerPage : 10
+    size : !!rowsPerPage ? rowsPerPage : rowsPerPageOptions[0]
   })
 
   const [totalElements , setTotalElements] = useState(0)

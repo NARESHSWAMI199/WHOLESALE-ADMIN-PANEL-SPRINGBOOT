@@ -5,7 +5,7 @@ import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { BasicSearch, CustomersSearch } from 'src/sections/basic-search';
 import axios from 'axios';
-import { host } from 'src/utils/util';
+import { host, rowsPerPageOptions } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
 import { StoresCard } from 'src/sections/wholesale/stores-table';
@@ -33,7 +33,7 @@ const Page = () => {
   
   const [data,setData] = useState({
     pageNumber : page,
-    size : !!rowsPerPage ? rowsPerPage : 10
+    size : !!rowsPerPage ? rowsPerPage : rowsPerPageOptions[0]
   })
 
   const [totalElements , setTotalElements] = useState(0)

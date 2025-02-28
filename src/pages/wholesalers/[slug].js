@@ -7,7 +7,7 @@ import { CustomersTable } from 'src/sections/customer/customers-table';
 import { BasicSearch, CustomersSearch } from 'src/sections/basic-search';
 import { applyPagination } from 'src/utils/apply-pagination';
 import axios from 'axios';
-import { host } from 'src/utils/util';
+import { host, rowsPerPageOptions } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
 import { ArrowButtons } from 'src/layouts/arrow-button';
@@ -53,8 +53,9 @@ const Page = () => {
   const {slug} = router.query
 
   const auth = useAuth()
+  const paginations = auth.paginations;
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(paginations?.USERS?.rowsNumber);
   const [customers,setCustomers] = useState([])
   const customersIds = useCustomerIds(customers);
   const customersSelection = useSelection(customersIds);
@@ -62,7 +63,7 @@ const Page = () => {
     slug : slug,
     userType : "W",
     pageNumber : page,
-    size : rowsPerPage
+    size : !!rowsPerPage ? rowsPerPage : rowsPerPageOptions[0]
   })
 
   const [totalElements , setTotalElements] = useState(0)

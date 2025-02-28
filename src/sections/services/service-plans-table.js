@@ -31,7 +31,7 @@ import Link from 'next/link';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
-import { toTitleCase } from 'src/utils/util';
+import { rowsPerPageOptions, toTitleCase } from 'src/utils/util';
 
 export const ServicePlansTable = (props) =>{
     const {
@@ -238,8 +238,8 @@ export const ServicePlansTable = (props) =>{
                     onPageChange={onPageChange}
                     onRowsPerPageChange={onRowsPerPageChange}
                     page={page}
-                    rowsPerPage={rowsPerPage}
-                    rowsPerPageOptions={[10, 15, 25]}
+                    rowsPerPage={!!rowsPerPage ? rowsPerPage : rowsPerPageOptions[0]}
+                    rowsPerPageOptions={rowsPerPageOptions}
                 />
             </Card>
 

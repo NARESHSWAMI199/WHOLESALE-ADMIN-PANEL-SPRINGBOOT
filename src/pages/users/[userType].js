@@ -6,7 +6,7 @@ import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { BasicSearch, adminsSearch } from 'src/sections/basic-search';
 import { applyPagination } from 'src/utils/apply-pagination';
 import axios from 'axios';
-import { host } from 'src/utils/util';
+import { host, rowsPerPageOptions } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
 import { ArrowButtons } from 'src/layouts/arrow-button';
@@ -52,7 +52,7 @@ const Page = () => {
   const [data,setData] = useState({
     userType : userType,
     pageNumber : page,
-    size : !!rowsPerPage ? rowsPerPage : 10
+    size : !!rowsPerPage ? rowsPerPage : rowsPerPageOptions[0]
   })
 
   const [totalElements , setTotalElements] = useState(0)

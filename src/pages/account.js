@@ -23,7 +23,7 @@ const Page = () => {
     const [assignGroup , setAssignGroup] = useState([])
     const [data,setData] = useState({
       pageNumber : 0,
-      size : 1000000
+      size : 1000000 // because we need all groups
     })
 
 

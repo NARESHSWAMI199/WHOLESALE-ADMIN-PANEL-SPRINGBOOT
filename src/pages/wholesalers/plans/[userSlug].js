@@ -8,7 +8,7 @@ import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { BasicHeaders } from 'src/sections/basic-header';
 import { PlanSearch } from 'src/sections/plans/plans-search';
 import { PlanTable } from 'src/sections/plans/plans-table';
-import { host } from 'src/utils/util';
+import { host, rowsPerPageOptions } from 'src/utils/util';
 
 const Page = () => {
   const [plans, setPlans] = useState([]);
@@ -18,12 +18,13 @@ const Page = () => {
   const router = useRouter();
   const { userSlug } = router.query;
   const auth = useAuth();
+  const paginations = auth.paginations;
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(paginations?.WHOLESALERPLANS?.rowsNumber);
   const [data, setData] = useState({
     userType: 'W',
     pageNumber: page,
-    size: rowsPerPage
+    size: !!rowsPerPage ? rowsPerPage : rowsPerPageOptions[0]
   });
   const [totalElements, setTotalElements] = useState(0)
 
@@ -97,7 +98,7 @@ const Page = () => {
         </Alert>
       </Snackbar>
       <Head>
-        <title>Plans</title>
+        <title>Wholesaler Plans</title>
       </Head>
       <Box
         component="main"
@@ -113,7 +114,7 @@ const Page = () => {
           }}
         >
           <Stack spacing={3}>
-            <BasicHeaders headerTitle={'Plans'} userType="W" />
+            <BasicHeaders headerTitle={'Wholesaler Plans'} userType="W" />
             <PlanSearch onSearch={onSearch} />
             <PlanTable
               count={totalElements}
