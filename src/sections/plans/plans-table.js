@@ -25,7 +25,7 @@ import { CopyOutlined } from '@ant-design/icons';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useEffect, useState } from 'react';
-import { toTitleCase } from 'src/utils/util';
+import { rowsPerPageOptions, toTitleCase } from 'src/utils/util';
 const currentDateTime = new Date().getTime();
 export const PlanTable = (props) => {
   const {
@@ -245,7 +245,7 @@ export const PlanTable = (props) => {
           onRowsPerPageChange={onRowsPerPageChange}
           page={page}
           rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[1, 10, 25]}
+          rowsPerPageOptions={rowsPerPageOptions}
         />
       </Card>
 

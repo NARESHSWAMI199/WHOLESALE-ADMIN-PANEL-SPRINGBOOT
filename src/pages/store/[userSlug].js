@@ -53,7 +53,7 @@ const Page = () => {
     
     const [data, setData] = useState({
         pageNumber: page,
-        size: !!rowsPerPage ? rowsNumber : 10
+        size: !!rowsPerPage ? rowsPerPage : 10
     })
 
     useEffect(()=>{
@@ -328,7 +328,7 @@ const Page = () => {
                 }}>
                     <Stack spacing={3}>
 
-                        <StoresCard deleteStore={onDeleteStore} store={wholesale} />
+                        <StoresCard deleteStore={onDeleteStore} store={wholesale} visit={false} delete={false} />
 
                         <Stack
                             direction="row"

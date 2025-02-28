@@ -36,7 +36,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
 import { getInitials } from 'src/utils/get-initials';
-import { toTitleCase, userImage } from 'src/utils/util';
+import { rowsPerPageOptions, toTitleCase, userImage } from 'src/utils/util';
 
 export const CustomersTable = (props) => {
   const {
@@ -170,7 +170,6 @@ export const CustomersTable = (props) => {
                       direction="row"
                       spacing={2}
                     >
-
                       {!!customer.avatar ? <Image style={{ borderRadius: '50%', height: '50px', width: '50px' }} src={userImage + customer.slug + "/" + customer.avatar} /> :
 
                         <Avatar src={userImage + customer.avatar} >
@@ -198,8 +197,10 @@ export const CustomersTable = (props) => {
                     <CopyOutlined onClick={() => { handleCopyClick(customer.slug) }} />
                   </TableCell>
                   {/* user type */}
-                  <TableCell align='center'>
-                    {customer.userType === "R" && <Badge color="error" badgeContent={'Retailer'} />}
+                  <TableCell>
+                    {/* Facing issue with badges position so that's why se given  */}
+                    <Box sx={{px : '28px'}}>
+                    {customer.userType === "R" && <Badge color="error" badgeContent={'Retailer'} sx={{}} />}
                     {customer.userType === "SA" && <Badge color='warning' badgeContent={'Admin'} />}
                     {customer.userType === "W" &&
                       <Link
@@ -213,6 +214,7 @@ export const CustomersTable = (props) => {
                     }
 
                     {customer.userType === "S" && <Badge color="primary" badgeContent={'Staff'} />}
+                    </Box>
                   </TableCell>
                   {/* email */}
                   <TableCell>
@@ -333,7 +335,7 @@ export const CustomersTable = (props) => {
         onRowsPerPageChange={onRowsPerPageChange}
         page={page}
         rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[10, 25 , 50]}
+        rowsPerPageOptions={rowsPerPageOptions}
       />
     </Card>
 

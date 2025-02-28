@@ -33,7 +33,7 @@ import { getInitials } from 'src/utils/get-initials';
 import React, {useEffect, useState } from 'react';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
-import { host } from 'src/utils/util';
+import { host, rowsPerPageOptions } from 'src/utils/util';
 import { useAuth } from 'src/hooks/use-auth';
 import axios from 'axios';
 import { CopyOutlined } from '@ant-design/icons';
@@ -277,7 +277,7 @@ export const GroupTable = (props) => {
         onRowsPerPageChange={onRowsPerPageChange}
         page={page}
         rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[10,15,25]}
+        rowsPerPageOptions={rowsPerPageOptions}
       />
     </Card>
 
