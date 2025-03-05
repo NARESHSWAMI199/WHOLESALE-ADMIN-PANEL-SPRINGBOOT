@@ -64,7 +64,7 @@ public class WriteExcel {
                 }
                 else if (value.equals("Y") && headers.get(colNo).equals("INSTOCK")) {
                     value = "Yes";
-                }else if (value.equals("D") && headers.get(colNo).equals("INSTOCK")) {
+                }else if (value.equals("N") && headers.get(colNo).equals("INSTOCK")) {
                     value = "No";
                 }
                 else if (headers.get(colNo).equals("CREATEDAT") || headers.get(colNo).equals("UPDATEDAT")) {
@@ -77,7 +77,7 @@ public class WriteExcel {
 
         File currDir = new File("C:/Users/DATA/Downloads/");
         String path = currDir.getAbsolutePath();
-        String fileLocation = path.substring(0, path.length()) + "temp.xlsx";
+        String fileLocation = path.substring(0, path.length())+File.separator + "temp.xlsx";
         FileOutputStream outputStream = new FileOutputStream(fileLocation);
         workbook.write(outputStream);
         workbook.close();

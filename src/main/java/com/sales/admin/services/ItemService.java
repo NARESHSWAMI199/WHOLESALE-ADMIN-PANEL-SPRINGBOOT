@@ -308,6 +308,8 @@ public class ItemService extends RepoContainer{
         }
     }
 
+
+    @Transactional(rollbackOn = {RuntimeException.class, Exception.class})
     public int insertAllItems (Map excel,Integer userId, Integer wholesaleId){
         logger.info("Entering insertAllItems with excel: {}, userId: {}, wholesaleId: {}", excel, userId, wholesaleId);
         userId = userId == null ? 0 : userId;

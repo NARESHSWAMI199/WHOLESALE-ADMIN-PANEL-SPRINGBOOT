@@ -114,24 +114,26 @@ public class ItemHbRepository{
         }
         System.out.println(dataList);
 
-        String qs = "insert into item (" +
-                "name," +
-                "wholesale_id," +
-                "label," +
-                "price," +
-                "discount," +
-                "description," +
-                "avatar," +
-                "rating," +
-                "status," +
-                "is_deleted," +
-                "created_at," +
-                "created_by," +
-                "updated_at," +
-                "updated_by," +
-                "slug," +
-                "in_stock" +
-                ") values " + dataList ;
+        String qs = """
+                insert into item (
+                    name,
+                    wholesale_id,
+                    label,
+                    price,
+                    discount,
+                    description,
+                    avatar,
+                    rating,
+                    status,
+                    is_deleted,
+                    created_at,
+                    created_by,
+                    updated_at,
+                    updated_by,
+                    slug,
+                    in_stock
+                ) values  dataList 
+                """;
 
         Query query = entityManager.createNativeQuery(qs);
         return  query.executeUpdate();

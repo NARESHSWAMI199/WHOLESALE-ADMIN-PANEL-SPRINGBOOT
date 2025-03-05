@@ -96,8 +96,8 @@ public class ItemController extends ServiceContainer {
                 Map result = readExcel.getExcelDataInJsonFormat(excelSheet);
                 User user = (User) request.getAttribute("user");
                 Store wholesale = storeService.getStoreDetails(wholesaleSlug);
-                if (wholesale != null) {itemService.insertAllItems(result, user.getId(), wholesale.getId());}
-                else { throw  new Exception("Wholesale was not found.");}
+                if (wholesale == null) throw new Exception("Wholesale was not found.");
+                itemService.insertAllItems(result, user.getId(), wholesale.getId());
                 responseObj.put("res", result);
                 responseObj.put("message", "Items successfully inserted.");
                 responseObj.put("status", 200);
