@@ -1,5 +1,6 @@
 package com.sales.admin.controllers;
 
+import com.sales.admin.repositories.ItemHbRepository;
 import com.sales.dto.*;
 import com.sales.entities.*;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -97,10 +98,16 @@ public class ItemController extends ServiceContainer {
                 User user = (User) request.getAttribute("user");
                 Store wholesale = storeService.getStoreDetails(wholesaleSlug);
                 if (wholesale == null) throw new Exception("Wholesale was not found.");
-                itemService.insertAllItems(result, user.getId(), wholesale.getId());
-                responseObj.put("res", result);
-                responseObj.put("message", "Items successfully inserted.");
-                responseObj.put("status", 200);
+                List<ItemHbRepository.ItemUpdateError> updateItemsError = itemService.updateItemsWithExcel(result, user.getId(), wholesale.getId());
+                if(updateItemsError.isEmpty()) {
+                    responseObj.put("res", result);
+                    responseObj.put("message", "Items successfully updated.");
+                    responseObj.put("status", 200);
+                }else{
+                    responseObj.put("notUpdated",updateItemsError);
+                    responseObj.put("message", "Some items are not updated.");
+                    responseObj.put("status", 400);
+                }
 
             } else {
                 responseObj.put("message", "Please add a proper file.");

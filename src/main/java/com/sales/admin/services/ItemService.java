@@ -2,6 +2,7 @@ package com.sales.admin.services;
 
 
 import com.google.gson.Gson;
+import com.sales.admin.repositories.ItemHbRepository;
 import com.sales.dto.*;
 import com.sales.entities.*;
 import com.sales.exceptions.MyException;
@@ -82,7 +83,7 @@ public class ItemService extends RepoContainer{
             });
         }
         int totalItem = itemsList.size();
-        String [] headers = {"SLUG","NAME","LABEL", "DESCRIPTION", "PRICE", "DISCOUNT", "RATING","INSTOCK","STATUS","CREATEDAT","UPDATEDAT"};
+        String [] headers = {"SLUG","NAME","LABEL","CAPACITY","DESCRIPTION", "PRICE", "DISCOUNT", "RATING","INSTOCK","STATUS","CREATEDAT","UPDATEDAT"};
         writeExcel.writeExcel(result,totalItem,Arrays.asList(headers));
         logger.info("Exiting createItemsExcelSheet");
         return  result;
@@ -310,7 +311,7 @@ public class ItemService extends RepoContainer{
 
 
     @Transactional(rollbackOn = {RuntimeException.class, Exception.class})
-    public int insertAllItems (Map excel,Integer userId, Integer wholesaleId){
+    public int insertAllItemsWithExcel (Map<String,List<String>> excel,Integer userId, Integer wholesaleId){
         logger.info("Entering insertAllItems with excel: {}, userId: {}, wholesaleId: {}", excel, userId, wholesaleId);
         userId = userId == null ? 0 : userId;
         wholesaleId = wholesaleId == null ? 0 : wholesaleId;
@@ -320,6 +321,13 @@ public class ItemService extends RepoContainer{
     }
 
 
+    @Transactional(rollbackOn = {RuntimeException.class,Exception.class})
+    public List<ItemHbRepository.ItemUpdateError> updateItemsWithExcel(Map<String,List<String>> excelData, Integer userId, Integer wholesaleId){
+        logger.info("Updating items using excel sheet : {} and userId : and wholesaleId : {}",excelData,userId,wholesaleId);
+        List<ItemHbRepository.ItemUpdateError> result = itemHbRepository.updateItemsViaExcelSheet(excelData,userId,wholesaleId);
+        logger.info("Exiting updateItemsWithExcel with result: {}", result);
+        return result;
+    }
 
     public String updateStoreImage(String previousImages, List<MultipartFile> itemImages,String slug,String action) throws IOException {
         logger.info("Entering updateStoreImage with previousImages: {}, itemImages: {}, slug: {}, action: {}", previousImages, itemImages, slug, action);

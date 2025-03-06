@@ -25,9 +25,9 @@ public class ReadExcel {
     @Autowired
     Logger logger;
 
-    public Map getExcelDataInJsonFormat(MultipartFile excelFile) throws IOException {
+    public Map<String,List<String>> getExcelDataInJsonFormat(MultipartFile excelFile) throws IOException {
 
-        Map result = new HashMap();
+        Map<String,List<String>> result = new HashMap();
         List<String> columnsList = new ArrayList<>();
         try {
             DataFormatter formatter = new DataFormatter();
@@ -51,7 +51,7 @@ public class ReadExcel {
                             result.put(column.getStringCellValue().toUpperCase(), new ArrayList<>());
                         } else {
                             String columnName = columnsList.get(colNumber);
-                            List updatedList = (List) result.get(columnName);
+                            List<String> updatedList = (List) result.get(columnName);
                             String val = formatter.formatCellValue(column);
                             updatedList.add(val);
                             result.put(columnName, updatedList);
