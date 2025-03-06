@@ -94,7 +94,7 @@ public class ItemController extends ServiceContainer {
         Map<String,Object> responseObj = new HashMap<>();
         try {
             if (excelSheet != null) {
-                Map result = readExcel.getExcelDataInJsonFormat(excelSheet);
+                Map<String,List<String>> result = readExcel.getExcelDataInJsonFormat(excelSheet);
                 User user = (User) request.getAttribute("user");
                 Store wholesale = storeService.getStoreDetails(wholesaleSlug);
                 if (wholesale == null) throw new Exception("Wholesale was not found.");
@@ -103,10 +103,12 @@ public class ItemController extends ServiceContainer {
                     responseObj.put("res", result);
                     responseObj.put("message", "Items successfully updated.");
                     responseObj.put("status", 200);
+                    logger.info("Items successfully updated : {} ",updateItemsError);
                 }else{
                     responseObj.put("notUpdated",updateItemsError);
                     responseObj.put("message", "Some items are not updated.");
                     responseObj.put("status", 400);
+                    logger.info("Some items are not updated : {} ",updateItemsError);
                 }
 
             } else {
@@ -117,7 +119,7 @@ public class ItemController extends ServiceContainer {
         } catch (Exception e) {
             responseObj.put("message", e.getMessage());
             responseObj.put("status", 500);
-            e.printStackTrace();
+            logger.error("Facing Exception during updating or importing item from excel sheet  ; {}",e.getMessage());
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }

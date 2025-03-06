@@ -59,25 +59,25 @@ public class ItemService extends RepoContainer{
     }
 
 
-    public Map<String, List> createItemsExcelSheet(SearchFilters searchFilters) throws IOException {
+    public Map<String, List<Object>> createItemsExcelSheet(SearchFilters searchFilters) throws IOException {
         logger.info("Entering createItemsExcelSheet with searchFilters: {}", searchFilters);
         int wholesaleId = searchFilters.getStoreId();
         Long fromDate = searchFilters.getFromDate();
         Long toDate = searchFilters.getToDate();
         List<Item> itemsList =  itemRepository.getAllItemsWithFilters(wholesaleId,fromDate,toDate);
-        Map<String,List> result = new HashMap<>();
+        Map<String,List<Object>> result = new HashMap<>();
         for (Item item : itemsList){
             String items = new Gson().toJson(item);
             Map<String,Object> itemMap = new Gson().fromJson(items,Map.class);
             itemMap.forEach((key,value)->{
                 if(key.equals("wholesale")){
-                    /** skip... */
+                    // skip...
                 }
                 else if (result.containsKey(key.toUpperCase())){
-                    ((List)result.get(key.toUpperCase())).add(itemMap.get(key));
+                    result.get(key.toUpperCase()).add(itemMap.get(key));
                 }else {
-                    List valueList = new ArrayList<>();
-                    valueList.add(value);
+                    List<Object> valueList = new ArrayList<>();
+                    valueList.add((String) value);
                     result.put(key.toUpperCase(),valueList);
                 }
             });
@@ -111,7 +111,7 @@ public class ItemService extends RepoContainer{
 
     public void validateRequiredFields(ItemDto itemDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.info("Entering validateRequiredFields with itemDto: {}", itemDto);
-        // if there is any required field null then this will throw IllegalArgumentException
+        // if there is any required field null, then this will throw IllegalArgumentException
         Utils.checkRequiredFields(itemDto,List.of(
                 "name",
                 "price",
@@ -126,7 +126,7 @@ public class ItemService extends RepoContainer{
 
     public void validateRequiredFieldsBeforeCreateItem(ItemDto itemDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.info("Entering validateRequiredFieldsBeforeCreateItem with itemDto: {}", itemDto);
-        /** @Note : During creation we are checking only extra required params  */
+        /** @Note during creation, we are checking only extra required params  */
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(itemDto,List.of(
                 "wholesaleSlug",
@@ -323,7 +323,7 @@ public class ItemService extends RepoContainer{
 
     @Transactional(rollbackOn = {RuntimeException.class,Exception.class})
     public List<ItemHbRepository.ItemUpdateError> updateItemsWithExcel(Map<String,List<String>> excelData, Integer userId, Integer wholesaleId){
-        logger.info("Updating items using excel sheet : {} and userId : and wholesaleId : {}",excelData,userId,wholesaleId);
+        logger.info("Updating items using excel sheet : {} and userId : {} and wholesaleId : {}",excelData,userId,wholesaleId);
         List<ItemHbRepository.ItemUpdateError> result = itemHbRepository.updateItemsViaExcelSheet(excelData,userId,wholesaleId);
         logger.info("Exiting updateItemsWithExcel with result: {}", result);
         return result;
@@ -349,7 +349,7 @@ public class ItemService extends RepoContainer{
         }else if(Utils.isEmpty(previousImages)){
             updatedImages = newImages;
         }else {
-            /** because it's contains ',' at the end */
+            // because it's contained ',' at the end
             updatedImages = previousImages.substring(0,previousImages.length()-1);
         }
         if(!Utils.isEmpty(updatedImages) && action.equalsIgnoreCase("update")){

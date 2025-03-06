@@ -76,45 +76,33 @@ public class ItemHbRepository{
     }
 
     public int insertItemsList(Map<String,List<String>> itemsData,int userId,int wholesaleId){
-        List nameList = itemsData.get("NAME");
-        List labelList = itemsData.get("LABEL");
-        List priceList = itemsData.get("PRICE");
-        List discountlist = itemsData.get("DISCOUNT");
-        List descriptionList = itemsData.get("DESCRIPTION");
-        List avatarList = itemsData.get("AVATAR");
-        List in_stockList = itemsData.get("STOCK");
+        List<String> nameList = itemsData.get("NAME");
+        List<String> labelList = itemsData.get("LABEL");
+        List<String> priceList = itemsData.get("PRICE");
+        List<String> discountlist = itemsData.get("DISCOUNT");
+        List<String> descriptionList = itemsData.get("DESCRIPTION");
+        List<String> avatarList = itemsData.get("AVATAR");
+        List<String> in_stockList = itemsData.get("STOCK");
 
-        String dataList = "";
+        StringBuilder dataList = new StringBuilder();
         for (int i = 0; i < nameList.size(); i++){
-            String label = labelList.get(i).equals("") ? "N" : (String) labelList.get(i);
-            String in_stock = in_stockList.get(i).equals("") ? "N" : (String) in_stockList.get(i);
-            String discount = discountlist.get(i).equals("") ? "0" : (String) discountlist.get(i);
+            String label = labelList.get(i).isEmpty() ? "N" : (String) labelList.get(i);
+            String in_stock = in_stockList.get(i).isEmpty() ? "N" : (String) in_stockList.get(i);
+            String discount = discountlist.get(i).isEmpty() ? "0" : (String) discountlist.get(i);
             String status = "A";
             int price = 0;
-            if (priceList.get(i).equals("")){
+            if (priceList.get(i).isEmpty()){
                 status = "D";
             }else {
-                price = Integer.valueOf((String) priceList.get(i));
+                price = Integer.parseInt((String) priceList.get(i));
             }
-            dataList += "(" +
-                "'"+nameList.get(i) +"'," +
-                    wholesaleId +","+
-                "'"+label+"'," +
-                    price +"," +
-                    discount +"," +
-                "'"+ descriptionList.get(i) +"'," +
-                "'"+avatarList.get(i) +"'," +
-                "'0'," +
-                "'"+status+"'," +
-                "'N'," +
-                    Utils.getCurrentMillis() +"," +
-                    userId +"," +
-                    Utils.getCurrentMillis()+"," +
-                    userId +"," +
-                "'"+UUID.randomUUID()+"',"+
-                "'"+in_stock+"'" +
-                    ")";
-            if (i != nameList.size()-1) dataList+=",";
+            dataList.append("(" + "'").append(nameList.get(i)).append("',").append(wholesaleId).append(",").append("'")
+                    .append(label).append("',").append(price).append(",").append(discount).append(",").append("'")
+                    .append(descriptionList.get(i)).append("',").append("'").append(avatarList.get(i)).append("',")
+                    .append("'0',").append("'").append(status).append("',").append("'N',").append(Utils.getCurrentMillis())
+                    .append(",").append(userId).append(",").append(Utils.getCurrentMillis()).append(",").append(userId).append(",")
+                    .append("'").append(UUID.randomUUID()).append("',").append("'").append(in_stock).append("'").append(")");
+            if (i != nameList.size()-1) dataList.append(",");
         }
         System.out.println(dataList);
 
@@ -165,11 +153,10 @@ public class ItemHbRepository{
         List<String> slugList,
         List<String> capacityList,
         List<String> priceList,
-        List<String> discountList,
         List<String> descriptionList,
         List<String> inStockList,
                                 int index) {
-        String itemDetail = """
+        return """
                 {
                     "name" : {name},
                     "label": {label},
@@ -177,46 +164,42 @@ public class ItemHbRepository{
                     "capacity" : {capacity},
                     "price" : {price},
                     "discount" : {discount},
-                    "description" : {discription},
                     "stock" : {stock}
                 }
-                            """
+                """
                 .replace("{name}",nameList.get(index))
                 .replace("{label}",labelList.get(index))
                 .replace("{slug}",slugList.get(index))
                 .replace("{capacity}",capacityList.get(index))
                 .replace("{price}",priceList.get(index))
-                .replace("{discount}",discountList.get(index))
                 .replace("{discription}",descriptionList.get(index))
                 .replace("{stock}",inStockList.get(index));
-        return itemDetail;
     }
 
 
     public List<ItemUpdateError> updateItemsViaExcelSheet(Map<String,List<String>> itemsData,int userId,int wholesaleId) {
         List<ItemUpdateError> errorsList = new ArrayList<>();
             List<String> nameList = itemsData.get("NAME") , labelList = itemsData.get("LABEL"),slugList = itemsData.get("SLUG"),
-                    capacityList = itemsData.get("CAPACITY"),priceList = itemsData.get("PRICE"),discountList = itemsData.get("DISCOUNT"),
-                    descriptionList = itemsData.get("DESCRIPTION"),inStockList = itemsData.get("STOCK");
+                    capacityList = itemsData.get("CAPACITY"),priceList = itemsData.get("PRICE"),discountList = itemsData.get("DISCOUNT")
+                   ,inStockList = itemsData.get("STOCK");
 
             for (int i = 0; i < nameList.size(); i++) {
-                String itemStringDetail = getItemString(nameList,labelList,slugList,capacityList,priceList,discountList,descriptionList,inStockList,i);
+                String itemStringDetail = getItemString(nameList,labelList,slugList,capacityList,priceList,discountList,inStockList,i);
                 try {
-                    String label = labelList.get(i).equals("") ? "N" : labelList.get(i);
-                    String inStock = inStockList.get(i).equals("") ? "N" : inStockList.get(i);
-                    Float discount = discountList.get(i).equals("") ? 0f : Float.valueOf(discountList.get(i));
-                    Float price = priceList.get(i).equals("") ? 0f : Float.valueOf(priceList.get(i));
+                    String label = labelList.get(i).isEmpty() ? "N" : labelList.get(i);
+                    String inStock = inStockList.get(i).isEmpty() ? "N" : inStockList.get(i);
+                    Float discount = discountList.get(i).isEmpty() ? 0f : Float.parseFloat(discountList.get(i));
+                    Float price = priceList.get(i).isEmpty() ? 0f : Float.parseFloat(priceList.get(i));
                     String hql = """
                                update Item set name=:name,
                                     label=:label,
                                     capacity:=capacity,
                                     price=:price,
                                     discount=:discount,
-                                    description=:description,
                                     inStock=:inStock,
                                     updatedAt=:updatedAt,
                                     updatedBy=:updatedBy
-                               where slug=:slug and wholesaleId=:wholesaleId;        
+                               where slug=:slug and wholesaleId=:wholesaleId
                             """;
                     Query query = entityManager.createQuery(hql);
                     query.setParameter("name", nameList.get(i))
@@ -224,7 +207,6 @@ public class ItemHbRepository{
                             .setParameter("capacity", capacityList.get(i))
                             .setParameter("price", price)
                             .setParameter("discount", discount)
-                            .setParameter("description", descriptionList.get(i))
                             .setParameter("inStock", inStock)
                             .setParameter("updatedAt", Utils.getCurrentMillis())
                             .setParameter("updatedBy", Utils.getCurrentMillis())

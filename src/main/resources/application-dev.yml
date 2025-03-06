@@ -66,9 +66,10 @@ item:
   #  get : /home/rohit/Documents/images/items/
   get: src/main/resources/public/items/
 
+
 removebg :
-  absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/removebg/
-  #  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/removebg/
+#  absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/removebg/
+  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/removebg/
   get : src/main/resources/public/removebg/
 #  get : src/main/resources/images/removebg/
 
@@ -78,5 +79,8 @@ chat :
   get: src/main/resources/public/chat/
   #  get : src/main/resources/images/removebg/
 
+  excel:
+    export :
+      absolute : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/items_excels/
 
 

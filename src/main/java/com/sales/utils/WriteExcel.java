@@ -19,8 +19,8 @@ public class WriteExcel {
     @Autowired
     Logger logger;
 
-    public void writeExcel(Map<String, List> data, int totalRow, List<String> headers) throws IOException {
-        Workbook workbook = new XSSFWorkbook();
+    public void writeExcel(Map<String, List<Object>> data, int totalRow, List<String> headers) throws IOException {
+        XSSFWorkbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Items");
         sheet.setColumnWidth(0, 6000);
         sheet.setColumnWidth(1, 4000);
@@ -31,7 +31,7 @@ public class WriteExcel {
         headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
         headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-        XSSFFont font = ((XSSFWorkbook) workbook).createFont();
+        XSSFFont font = workbook.createFont();
         font.setFontName("Arial");
         font.setColor(IndexedColors.WHITE.getIndex());
         font.setFontHeightInPoints((short) 10);
@@ -41,7 +41,7 @@ public class WriteExcel {
         CellStyle style = workbook.createCellStyle();
         style.setWrapText(true);
 
-        /** create headers */
+        // create excel file's headers
         for (int cellNo = 0; cellNo < headers.size(); cellNo++) {
             Cell headerCell = header.createCell(cellNo);
             headerCell.setCellValue(headers.get(cellNo));
