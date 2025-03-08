@@ -23,6 +23,7 @@ import { useAuth } from 'src/hooks/use-auth';
 import { host, storeImage, toTitleCase } from 'src/utils/util';
 import styled from '@emotion/styled';
 import { useMemo } from 'react';
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 
 
 export const StoresCard = (props) => {
@@ -229,6 +230,25 @@ export const StoresCard = (props) => {
 
                   </div>  
                 </Typography>
+
+                <Typography
+                  variant="subtitle"
+                  component="div"
+                  sx={{ color: 'text.secondary', fontSize: 15, my: 1 }}
+                >
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    textDecoration : 'none',
+                    color : 'green'
+                  }}>
+                    <ShoppingCartCheckoutIcon sx={{ padding: 0.3, mr: 1 }}/>
+                       {store.totalStoreItems}
+
+                  </div>  
+                </Typography>
+
                 <Rating value={store.rating} sx={{my:1}}/>
               </CardContent>
           </Grid>

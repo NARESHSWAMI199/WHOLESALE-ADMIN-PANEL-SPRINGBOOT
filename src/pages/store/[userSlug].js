@@ -3,7 +3,7 @@ import Head from 'next/head';
 import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
 import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import { Alert, Avatar, Box, Button, Container, Snackbar, Stack, SvgIcon, Typography } from '@mui/material';
+import { Alert, Avatar, Box, Button, Container, Snackbar, Stack, SvgIcon, Table, Typography } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { applyPagination } from 'src/utils/apply-pagination';
@@ -16,6 +16,7 @@ import Link from 'next/link';
 import DialogFormForExcelImport from 'src/layouts/excel/import-excel';
 import { StoresCard } from 'src/sections/wholesale/stores-table';
 import { BasicSearch } from 'src/sections/basic-search';
+import { fi } from 'date-fns/locale';
 
 
 
@@ -55,6 +56,10 @@ const Page = () => {
         pageNumber: page,
        size: !!rowsPerPage ? rowsPerPage : rowsPerPageOptions[0]
     })
+
+    const [notUpdatedItems, setNotUpdatedItems] = useState([]);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [downloadUrl, setDownloadUrl] = useState('');
 
     useEffect(()=>{
         setData((previous)=>({...previous , storeId : wholesale.id}))
@@ -111,31 +116,66 @@ const Page = () => {
 
 
 
-    const importItemExcelSheet = async (e) => {
-        let success = false
-        let form = e.target;
-        var formData = new FormData(form);
+    const importItemExcelSheet = async (formData) => {
+        let success = false;
         axios.defaults.headers = {
-            Authorization: auth.token
-        }
-        await axios.post(host + '/admin/item/importExcel/' + wholesale.slug, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
+          Authorization: auth.token
+        };
+        await axios.post(host + '/admin/item/importExcel/' + wholesale.slug, formData,{
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         }).then(res => {
-            setMessage(res.data.message)
-            setFlag("success")
+            let  resData = res.data;
+            setMessage(resData.message);
+            setFlag("success");
+            if(res.status === 201) {
+                let fileUrl = resData.fileUrl;
+                alert(fileUrl);
+                axios.get(fileUrl, { responseType: 'blob' })
+                .then(response => {
+                    const url = window.URL.createObjectURL(new Blob([response.data], 
+                        { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+                    setDownloadUrl(url);
+                })
+                .catch(err => {
+                    console.log(err);
+                    setMessage("woops! something went wrong during excel file opening.");
+                    setFlag("error");
+                    setOpen(true);
+                });
+                setFlag("warning");
+                setSnackbarOpen(true);
+            }          
+          success = true;
         })
-            .catch(err => {
-                console.log(err)
-                setMessage(!!err.response ? err.response.data.message : err.message)
-                setFlag("error")
-                setOpen(true)
-            })
-        setOpen(true)
+        .catch(err => {
+            console.log(err);
+            setMessage(!!err.response ? err.response.data.message : err.message);
+            setFlag("error");
+            setOpen(true);
+        });
+        setOpen(true);
         return success;
-    }
+      }
+    
 
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+    };
+
+    const handleDownload = () => {
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.setAttribute('download', wholesale.storeName + '_itemNotUpdated_items.xlsx');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setFlag("success")
+        setMessage("Successfully dowloaded not updated items sheet.")
+        setOpen(true)
+        setSnackbarOpen(false);
+    };
 
     const onStatusChange = (slug, status) => {
         axios.defaults.headers = {
@@ -265,6 +305,16 @@ const Page = () => {
         setOpen(false)
     };
 
+    const columns = [
+        { title: 'Name', dataIndex: 'name', key: 'name' },
+        { title: 'Label', dataIndex: 'label', key: 'label' },
+        { title: 'Slug', dataIndex: 'slug', key: 'slug' },
+        { title: 'Capacity', dataIndex: 'capacity', key: 'capacity' },
+        { title: 'Price', dataIndex: 'price', key: 'price' },
+        { title: 'Discount', dataIndex: 'discount', key: 'discount' },
+        { title: 'Stock', dataIndex: 'stock', key: 'stock' },
+    ];
+
 
     const handlePageChange = useCallback(
         (event, value) => {
@@ -295,6 +345,35 @@ const Page = () => {
         })
       }
       } 
+
+
+    const exportExcelSheet = async () => {
+        axios.defaults.headers = {
+            Authorization: auth.token
+        }
+        await axios.post(host + '/admin/item/exportExcel/' + wholesale.slug, {...data, size: totalElements}, { responseType: 'blob' })
+            .then(response => {
+                const url = window.URL.createObjectURL(new Blob([response.data], 
+                    { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', wholesale.storeName + '_items.xlsx');
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                setFlag("success")
+                setMessage("Successfully exported.")
+                setOpen(true)
+            })
+            .catch(err => {
+                console.log(err)
+                setMessage(!!err.response ? err.response.data.message : err.message)
+                setFlag("error")
+                setOpen(true)
+            })
+    }
+
+
     
 
     return (
@@ -309,6 +388,17 @@ const Page = () => {
                     {message}
                 </Alert>
             </Snackbar>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                message="Some items were not updated. Click to view."
+                action={
+                    <Button color="secondary" size="small" onClick={handleDownload}>
+                        VIEW
+                    </Button>
+                }
+            />
             <Head>
                 <title>
                     {toTitleCase(wholesale.storeName)} | Swami Sales
@@ -344,6 +434,7 @@ const Page = () => {
                                 <DialogFormForExcelImport importExcelSheet={importItemExcelSheet} />
                                 <Button
                                     color="inherit"
+                                    onClick={exportExcelSheet}
                                     startIcon={(
                                         <SvgIcon fontSize="small">
                                             <ArrowDownOnSquareIcon />
