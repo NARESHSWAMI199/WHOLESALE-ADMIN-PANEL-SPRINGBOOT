@@ -25,7 +25,11 @@ public interface ItemRepository  extends JpaRepository<Item, Integer> , JpaSpeci
 
    @Query(value = "select count(id) as count from Item")
    Integer totalItemCount();
+
    @Query(value = "select count(id) as count from Item where status=:status")
    Integer optionItemCount(@Param("status") String status);
+
+   @Query(value = "select count(id) as count from Item where wholesaleId = :wholesaleId")
+   Integer totalItemCountByWholesaleId(Integer wholesaleId);
 
 }

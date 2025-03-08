@@ -7,8 +7,13 @@ import com.sales.utils.Utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 @Component
 @Transactional
@@ -77,5 +82,45 @@ public class WholesaleItemHbRepository {
         query.setParameter("slug", slug);
         return query.executeUpdate();
     }
+
+
+    /// For updateItemsViaExcelSheet
+
+    @Getter
+    @Setter
+    @ToString
+    public static class ItemUpdateError {
+        Map<String,Object> itemRowDetail;
+        String errorMessage;
+    }
+
+
+    public int updateExcelSheetItems(ItemDto itemDto,Integer userId,Integer wholesaleId){
+        String hql = """
+           update Item set name=:name,
+                label=:label,
+                capacity=:capacity,
+                price=:price,
+                discount=:discount,
+                inStock=:inStock,
+                updatedAt=:updatedAt,
+                updatedBy=:updatedBy
+           where slug=:slug and wholesaleId=:wholesaleId
+        """;
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("name", itemDto.getName())
+                .setParameter("label", itemDto.getLabel())
+                .setParameter("capacity", itemDto.getCapacity())
+                .setParameter("price", itemDto.getPrice())
+                .setParameter("discount", itemDto.getDiscount())
+                .setParameter("inStock", itemDto.getInStock())
+                .setParameter("updatedAt", Utils.getCurrentMillis())
+                .setParameter("updatedBy", userId)
+                .setParameter("slug", itemDto.getSlug())
+                .setParameter("wholesaleId",wholesaleId);
+        return query.executeUpdate();
+    }
+
+
 
 }

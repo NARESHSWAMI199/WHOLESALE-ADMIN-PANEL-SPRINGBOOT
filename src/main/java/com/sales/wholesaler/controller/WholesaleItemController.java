@@ -1,8 +1,10 @@
 package com.sales.wholesaler.controller;
 
+import com.sales.admin.repositories.ItemHbRepository;
 import com.sales.dto.DeleteDto;
 import com.sales.dto.ItemDto;
 import com.sales.dto.ItemSearchFields;
+import com.sales.dto.SearchFilters;
 import com.sales.entities.Item;
 import com.sales.entities.ItemCategory;
 import com.sales.entities.ItemSubCategory;
@@ -12,12 +14,21 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +91,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
         logger.info("Starting addOrUpdateItems method");
         User loggedUser = (User) request.getAttribute("user");
         String path = request.getRequestURI();
-        Map responseObj = wholesaleItemService.createOrUpdateItem(itemDto, loggedUser,path);
+        Map<String,Object> responseObj = wholesaleItemService.createOrUpdateItem(itemDto, loggedUser,path);
         logger.info("Completed addOrUpdateItems method");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
@@ -144,5 +155,88 @@ public class WholesaleItemController extends WholesaleServiceContainer {
         logger.info("Completed getSubCategory method");
         return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
+
+
+
+
+
+    @PostMapping(value = {"importExcel"})
+    public ResponseEntity<Map<String, Object>> importItemsFromExcelSheet(HttpServletRequest request, @RequestParam("excelfile") MultipartFile excelSheet, @PathVariable("wholesaleSlug") String wholesaleSlug) {
+        logger.info("Importing items from Excel sheet for wholesaleSlug: {}", wholesaleSlug);
+        Map<String,Object> responseObj = new HashMap<>();
+        try {
+            if (excelSheet != null) {
+                Map<String,List<String>> result = readExcel.getExcelDataInJsonFormat(excelSheet);
+                User user = (User) request.getAttribute("user");
+                List<ItemHbRepository.ItemUpdateError> updateItemsError = wholesaleItemService.updateItemsWithExcel(result, user.getId());
+                if(updateItemsError.isEmpty()) {
+                    responseObj.put("message", "Items successfully updated.");
+                    responseObj.put("status", 200);
+                    logger.info("Items successfully updated : {} ",updateItemsError);
+                }else{
+                    responseObj.put("notUpdated",updateItemsError);
+                    responseObj.put("message", "Some items are not updated.");
+                    responseObj.put("status", 204);
+                    logger.info("Some items are not updated : {} ",updateItemsError);
+                }
+
+            } else {
+                responseObj.put("message", "Please add a proper file.");
+                responseObj.put("status", 400);
+            }
+//            User loggedUser = (User) request.getAttribute("user");
+        } catch (Exception e) {
+            responseObj.put("message", e.getMessage());
+            responseObj.put("status", 500);
+            logger.error("Facing Exception during updating or importing item from excel sheet  ; {}",e.getMessage());
+        }
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+    }
+
+
+    @PostMapping(value = {"exportExcel"})
+    public ResponseEntity<Object> exportItemsFromExcel(@RequestBody SearchFilters searchFilters ,HttpServletRequest request) {
+        User user = (User) request.getAttribute("user");
+        logger.info("Exporting items to Excel for user : {}", user );
+        Map<String,Object> responseObj = new HashMap<>();
+        try {
+            searchFilters.setStoreId(wholesaleStoreService.getStoreIdByUserSlug(user.getId()));
+            String filePath = wholesaleItemService.createItemsExcelSheet(searchFilters,user);
+            Path path = Paths.get(filePath);
+            Resource resource = new UrlResource(path.toUri());
+            responseObj.put("message", "File successfully downloaded.");
+            responseObj.put("status", 200);
+            logger.info("Response during export items excel sheet : {} ",responseObj);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")); // For .xlsx
+            headers.setContentDispositionFormData("attachment", "myItemsExcelFile.xlsx");
+            return new ResponseEntity<>(resource.getContentAsByteArray(), headers, org.springframework.http.HttpStatus.OK);
+        } catch (Exception e) {
+            responseObj.put("message", e.getMessage());
+            responseObj.put("status", 500);
+            logger.error("Exception during export excel : {}",e.getMessage(),e);
+        }
+        logger.info("ENDED exportItemsFromExcel.");
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+    }
+
+
+
+
+    @Value("${excel.update.template}")
+    String updateItemTemplate;
+
+
+    @GetMapping(value = {"download/update/template"})
+    public ResponseEntity<Object> downloadExcelUpdateTemplate() throws IOException {
+        logger.info("Download excel sheet template for update items" );
+        Path path = Paths.get(updateItemTemplate);
+        Resource resource = new UrlResource(path.toUri());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")); // For .xlsx
+        headers.setContentDispositionFormData("attachment", "update_item_template.xlsx");
+        return new ResponseEntity<>(resource.getContentAsByteArray(), headers, org.springframework.http.HttpStatus.OK);
+    }
+
 
 }

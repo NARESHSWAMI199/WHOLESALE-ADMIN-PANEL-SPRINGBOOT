@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -54,9 +55,12 @@ public class StoreService extends RepoContainer{
                         .and(hasSlug(filters.getSlug()))
         );
         Pageable pageable = getPageable(filters);
-        Page<Store> result = storeRepository.findAll(specification,pageable);
+        Page<Store> storePage = storeRepository.findAll(specification,pageable);
+        List<Store> storeList = storePage.getContent();
+        storeList.forEach(store -> store.setTotalStoreItems(itemRepository.totalItemCountByWholesaleId(store.getId())));
+        storePage = new PageImpl<>(storeList,pageable,storePage.getTotalElements());
         logger.info("Exiting getAllStore");
-        return result;
+        return storePage;
     }
 
 
@@ -285,6 +289,12 @@ public class StoreService extends RepoContainer{
         return store;
     }
 
+    public Integer getStoreIdByStoreSlug(String slug){
+        logger.info("Entering getStoreIdByStoreSlug with slug: {}", slug);
+        Integer storeId = storeRepository.getStoreIdByStoreSlug(slug);
+        logger.info("Exiting getStoreIdByStoreSlug");
+        return storeId;
+    }
 
     public Store getStoreByUserSlug(String userSlug) throws Exception {
         logger.info("Entering getStoreByUserSlug with userSlug: {}", userSlug);

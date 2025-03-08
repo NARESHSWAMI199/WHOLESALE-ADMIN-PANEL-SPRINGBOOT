@@ -24,4 +24,7 @@ public interface StoreRepository extends JpaRepository<Store, Integer> , JpaSpec
     @Query("SELECT a.id FROM Store s JOIN s.address a WHERE s.slug = :slug")
     Integer getAddressIdBySlug(String slug);
 
+    @Query(value = "select id from Store where slug=:slug")
+    Integer getStoreIdByStoreSlug(String slug);
+
 }

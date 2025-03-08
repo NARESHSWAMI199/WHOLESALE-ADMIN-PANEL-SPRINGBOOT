@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,13 +18,10 @@ import java.util.Map;
 
 @Component
 public class ReadExcel {
-
-    int totalColumns = 7;
-
     @Autowired
     Logger logger;
 
-    public Map<String,List<String>> getExcelDataInJsonFormat(MultipartFile excelFile) throws IOException {
+    public Map<String,List<String>> getExcelDataInJsonFormat(MultipartFile excelFile) {
 
         Map<String,List<String>> result = new HashMap();
         List<String> columnsList = new ArrayList<>();
@@ -39,6 +35,14 @@ public class ReadExcel {
             /** for visit worksheet */
             for (int sheetNumber = 0; sheetNumber < totalSheets; sheetNumber++) {
                 XSSFSheet worksheet = workbook.getSheetAt(sheetNumber);
+                int totalColumns = 0; // Initialize totalColumns for each sheet
+
+                if (worksheet.getPhysicalNumberOfRows() > 0) {
+                    XSSFRow firstRow = worksheet.getRow(0);
+                    if (firstRow != null) {
+                        totalColumns = firstRow.getPhysicalNumberOfCells(); // Dynamically get column count
+                    }
+                }
                 /** for visit rows */
                 for (int rowNumber = 0; rowNumber < worksheet.getPhysicalNumberOfRows(); rowNumber++) {
                     XSSFRow row = worksheet.getRow(rowNumber);
@@ -51,7 +55,7 @@ public class ReadExcel {
                             result.put(column.getStringCellValue().toUpperCase(), new ArrayList<>());
                         } else {
                             String columnName = columnsList.get(colNumber);
-                            List<String> updatedList = (List) result.get(columnName);
+                            List<String> updatedList = result.get(columnName);
                             String val = formatter.formatCellValue(column);
                             updatedList.add(val);
                             result.put(columnName, updatedList);
@@ -60,7 +64,7 @@ public class ReadExcel {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Exception during creating excel file : {} ",e.getMessage());
         }
         logger.info("Excel file reading END.... ");
         return result;

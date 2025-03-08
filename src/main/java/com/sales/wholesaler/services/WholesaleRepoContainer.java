@@ -4,6 +4,7 @@ package com.sales.wholesaler.services;
 import com.sales.admin.repositories.AddressHbRepository;
 import com.sales.admin.repositories.AddressRepository;
 import com.sales.dto.SearchFilters;
+import com.sales.utils.WriteExcel;
 import com.sales.wholesaler.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -102,6 +103,9 @@ public class WholesaleRepoContainer {
 
     @Autowired
     protected WholesalePaginationHbRepository wholesalePaginationHbRepository;
+
+    @Autowired
+    protected WriteExcel writeExcel;
 
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());

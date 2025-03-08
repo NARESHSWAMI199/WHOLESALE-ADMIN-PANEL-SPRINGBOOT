@@ -3,21 +3,26 @@ package com.sales.admin.controllers;
 import com.sales.admin.repositories.ItemHbRepository;
 import com.sales.dto.*;
 import com.sales.entities.*;
+import com.sales.utils.Utils;
+import com.sales.utils.WriteExcel;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
@@ -29,6 +34,10 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = {"admin/item"})
 public class ItemController extends ServiceContainer {
+
+
+    @Autowired
+    WriteExcel writeExcel;
 
     private static final Logger logger = LoggerFactory.getLogger(ItemController.class);
 
@@ -89,25 +98,27 @@ public class ItemController extends ServiceContainer {
 
 
     @PostMapping(value = {"/importExcel/{wholesaleSlug}"})
-    public ResponseEntity<Map<String, Object>> importItemsFromExcelSheet(HttpServletRequest request, @RequestParam("excelfile") MultipartFile excelSheet, @PathVariable("wholesaleSlug") String wholesaleSlug) {
+    public ResponseEntity<Object> importItemsFromExcelSheet(HttpServletRequest request, @RequestParam("excelfile") MultipartFile excelSheet, @PathVariable("wholesaleSlug") String wholesaleSlug) {
         logger.info("Importing items from Excel sheet for wholesaleSlug: {}", wholesaleSlug);
         Map<String,Object> responseObj = new HashMap<>();
         try {
             if (excelSheet != null) {
                 Map<String,List<String>> result = readExcel.getExcelDataInJsonFormat(excelSheet);
                 User user = (User) request.getAttribute("user");
-                Store wholesale = storeService.getStoreDetails(wholesaleSlug);
-                if (wholesale == null) throw new Exception("Wholesale was not found.");
-                List<ItemHbRepository.ItemUpdateError> updateItemsError = itemService.updateItemsWithExcel(result, user.getId(), wholesale.getId());
+                Integer wholesaleId = storeService.getStoreIdByStoreSlug(wholesaleSlug);
+                if (wholesaleId == null) throw new Exception("Wholesale was not found.");
+                List<ItemHbRepository.ItemUpdateError> updateItemsError = itemService.updateItemsWithExcel(result, user.getId(), wholesaleId);
                 if(updateItemsError.isEmpty()) {
-                    responseObj.put("res", result);
                     responseObj.put("message", "Items successfully updated.");
                     responseObj.put("status", 200);
                     logger.info("Items successfully updated : {} ",updateItemsError);
                 }else{
-                    responseObj.put("notUpdated",updateItemsError);
+                    // Creating an Excel for which items are not updated
+                    String [] headers = {"NAME","TOKEN","PRICE", "DISCOUNT","LABEL","CAPACITY","IN-STOCK","REASON"};
+                    String fileName = writeExcel.writeNotUpdatedItemsExcel(updateItemsError, headers, wholesaleSlug);
+                    responseObj.put("fileUrl", Utils.getHostUrl(request)+"/admin/item/notUpdated/"+wholesaleSlug+"/"+fileName);
                     responseObj.put("message", "Some items are not updated.");
-                    responseObj.put("status", 400);
+                    responseObj.put("status", 201);
                     logger.info("Some items are not updated : {} ",updateItemsError);
                 }
 
@@ -115,7 +126,6 @@ public class ItemController extends ServiceContainer {
                 responseObj.put("message", "Please add a proper file.");
                 responseObj.put("status", 400);
             }
-//            User loggedUser = (User) request.getAttribute("user");
         } catch (Exception e) {
             responseObj.put("message", e.getMessage());
             responseObj.put("status", 500);
@@ -126,16 +136,20 @@ public class ItemController extends ServiceContainer {
 
 
     @PostMapping(value = {"/exportExcel/{wholesaleSlug}"})
-    public ResponseEntity<Map<String, Object>> exportItemsFromExcel(@PathVariable String wholesaleSlug, @RequestBody SearchFilters searchFilters) {
+    public ResponseEntity<Object> exportItemsFromExcel(@PathVariable String wholesaleSlug, @RequestBody SearchFilters searchFilters) {
         logger.info("Exporting items to Excel for wholesaleSlug: {}", wholesaleSlug);
         Map<String,Object> responseObj = new HashMap<>();
         try {
             Store wholesale = storeService.getStoreDetails(wholesaleSlug);
             if (wholesale != null) {
                 searchFilters.setStoreId(wholesale.getId());
-                Map result = itemService.createItemsExcelSheet(searchFilters);
-                responseObj.put("res", result);
+                String filePath = itemService.createItemsExcelSheet(searchFilters,wholesaleSlug);
+                Path path = Paths.get(filePath);
+                Resource resource = new UrlResource(path.toUri());
+                responseObj.put("message", "File successfully downloaded.");
                 responseObj.put("status", 200);
+                MediaType mediaType = MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                return ResponseEntity.ok().contentType(mediaType).body(resource);
             } else {
                 logger.info("wholeSlug : " + wholesaleSlug);
                 responseObj.put("message", "Store not exist.");
@@ -144,7 +158,7 @@ public class ItemController extends ServiceContainer {
         } catch (Exception e) {
             responseObj.put("message", e.getMessage());
             responseObj.put("status", 500);
-            e.printStackTrace();
+            logger.error("Exception during export excel : {}",e.getMessage(),e);
         }
         logger.info("ENDED exportItemsFromExcel.");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
@@ -331,6 +345,43 @@ public class ItemController extends ServiceContainer {
         List<MeasurementUnit> itemMeasurementUnitList = itemService.getAllMeasurementUnit();
         return new ResponseEntity<>(itemMeasurementUnitList, HttpStatus.OK);
     }
+
+
+
+
+    @Value("${excel.update.template}")
+    String updateItemTemplate;
+
+
+    @GetMapping(value = {"download/update/template"})
+    public ResponseEntity<Object> downloadExcelUpdateTemplate() throws IOException {
+        logger.info("Download excel sheet template for update items" );
+        Path path = Paths.get(updateItemTemplate);
+        Resource resource = new UrlResource(path.toUri());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")); // For .xlsx
+        headers.setContentDispositionFormData("attachment", "update_item_template.xlsx");
+        return new ResponseEntity<>(resource.getContentAsByteArray(), headers, org.springframework.http.HttpStatus.OK);
+    }
+
+
+
+    @Value("${excel.notUpdated.absolute}")
+    String excelNotUpdateItemsFolderPath;
+
+
+    @GetMapping(value = {"notUpdated/{wholesaleSlug}/{filename}"})
+    public ResponseEntity<Object> downloadExcelUpdateTemplate(@PathVariable String wholesaleSlug ,@PathVariable String filename) throws IOException {
+        logger.info("Download excel sheet template for not updated items : {}  : {}",excelNotUpdateItemsFolderPath,filename );
+        Path path = Paths.get(excelNotUpdateItemsFolderPath+wholesaleSlug+ File.separator +filename);
+        Resource resource = new UrlResource(path.toUri());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")); // For .xlsx
+        headers.setContentDispositionFormData("attachment", "update_item_template.xlsx");
+        return new ResponseEntity<>(resource.getContentAsByteArray(), headers, org.springframework.http.HttpStatus.OK);
+    }
+
+
 
 
 

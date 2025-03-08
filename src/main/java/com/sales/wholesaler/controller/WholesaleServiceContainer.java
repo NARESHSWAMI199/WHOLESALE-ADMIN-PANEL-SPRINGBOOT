@@ -3,6 +3,7 @@ package com.sales.wholesaler.controller;
 import com.sales.admin.services.AddressService;
 import com.sales.admin.services.ServicePlanService;
 import com.sales.jwtUtils.JwtToken;
+import com.sales.utils.ReadExcel;
 import com.sales.wholesaler.services.*;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,9 @@ public class WholesaleServiceContainer {
 
     @Autowired
     protected WholesalePaginationService wholesalePaginationService;
+
+    @Autowired
+    protected ReadExcel readExcel;
 
 
 }

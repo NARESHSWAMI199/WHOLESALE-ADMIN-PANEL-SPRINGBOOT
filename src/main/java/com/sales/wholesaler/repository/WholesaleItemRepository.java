@@ -8,8 +8,18 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
-public interface WholesaleItemRepository extends JpaRepository<Item, Integer> , JpaSpecificationExecutor {
+public interface WholesaleItemRepository extends JpaRepository<Item, Integer> , JpaSpecificationExecutor<Item> {
+
+
+
+   @Query("from Item where wholesaleId=:wholesaleId and createdAt >= :fromDate and createdAt <= :toDate")
+   List<Item> getAllItemsWithFilters(@Param("wholesaleId")Integer wholesaleId,
+                                     @Param("fromDate") Long fromDate,
+                                     @Param("toDate") Long toDate);
+
 
    Item findItemBySlug(String slug);
 

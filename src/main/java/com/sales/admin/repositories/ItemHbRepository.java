@@ -13,7 +13,6 @@ import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -142,87 +141,36 @@ public class ItemHbRepository{
     @Setter
     @ToString
     public static class ItemUpdateError {
-        String itemRowDetail;
+        Map<String,Object> itemRowDetail;
         String errorMessage;
     }
 
 
-
-    public String getItemString(List<String> nameList,
-        List<String> labelList,
-        List<String> slugList,
-        List<String> capacityList,
-        List<String> priceList,
-        List<String> descriptionList,
-        List<String> inStockList,
-                                int index) {
-        return """
-                {
-                    "name" : {name},
-                    "label": {label},
-                    "slug" : {slug},
-                    "capacity" : {capacity},
-                    "price" : {price},
-                    "discount" : {discount},
-                    "stock" : {stock}
-                }
-                """
-                .replace("{name}",nameList.get(index))
-                .replace("{label}",labelList.get(index))
-                .replace("{slug}",slugList.get(index))
-                .replace("{capacity}",capacityList.get(index))
-                .replace("{price}",priceList.get(index))
-                .replace("{discription}",descriptionList.get(index))
-                .replace("{stock}",inStockList.get(index));
+    public int updateExcelSheetItems(ItemDto itemDto,Integer userId,Integer wholesaleId){
+        String hql = """
+           update Item set name=:name,
+                label=:label,
+                capacity=:capacity,
+                price=:price,
+                discount=:discount,
+                inStock=:inStock,
+                updatedAt=:updatedAt,
+                updatedBy=:updatedBy
+           where slug=:slug and wholesaleId=:wholesaleId
+        """;
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("name", itemDto.getName())
+                .setParameter("label", itemDto.getLabel())
+                .setParameter("capacity", itemDto.getCapacity())
+                .setParameter("price", itemDto.getPrice())
+                .setParameter("discount", itemDto.getDiscount())
+                .setParameter("inStock", itemDto.getInStock())
+                .setParameter("updatedAt", Utils.getCurrentMillis())
+                .setParameter("updatedBy", userId)
+                .setParameter("slug", itemDto.getSlug())
+                .setParameter("wholesaleId",wholesaleId);
+        return query.executeUpdate();
     }
-
-
-    public List<ItemUpdateError> updateItemsViaExcelSheet(Map<String,List<String>> itemsData,int userId,int wholesaleId) {
-        List<ItemUpdateError> errorsList = new ArrayList<>();
-            List<String> nameList = itemsData.get("NAME") , labelList = itemsData.get("LABEL"),slugList = itemsData.get("SLUG"),
-                    capacityList = itemsData.get("CAPACITY"),priceList = itemsData.get("PRICE"),discountList = itemsData.get("DISCOUNT")
-                   ,inStockList = itemsData.get("STOCK");
-
-            for (int i = 0; i < nameList.size(); i++) {
-                String itemStringDetail = getItemString(nameList,labelList,slugList,capacityList,priceList,discountList,inStockList,i);
-                try {
-                    String label = labelList.get(i).isEmpty() ? "N" : labelList.get(i);
-                    String inStock = inStockList.get(i).isEmpty() ? "N" : inStockList.get(i);
-                    Float discount = discountList.get(i).isEmpty() ? 0f : Float.parseFloat(discountList.get(i));
-                    Float price = priceList.get(i).isEmpty() ? 0f : Float.parseFloat(priceList.get(i));
-                    String hql = """
-                               update Item set name=:name,
-                                    label=:label,
-                                    capacity:=capacity,
-                                    price=:price,
-                                    discount=:discount,
-                                    inStock=:inStock,
-                                    updatedAt=:updatedAt,
-                                    updatedBy=:updatedBy
-                               where slug=:slug and wholesaleId=:wholesaleId
-                            """;
-                    Query query = entityManager.createQuery(hql);
-                    query.setParameter("name", nameList.get(i))
-                            .setParameter("label", label)
-                            .setParameter("capacity", capacityList.get(i))
-                            .setParameter("price", price)
-                            .setParameter("discount", discount)
-                            .setParameter("inStock", inStock)
-                            .setParameter("updatedAt", Utils.getCurrentMillis())
-                            .setParameter("updatedBy", Utils.getCurrentMillis())
-                            .setParameter("slug", slugList.get(i))
-                            .setParameter("wholesaleId", wholesaleId);
-                } catch (Exception e) {
-                    ItemUpdateError itemUpdateError = new ItemUpdateError();
-                    itemUpdateError.setItemRowDetail(itemStringDetail);
-                    itemUpdateError.setErrorMessage(e.getMessage());
-                    errorsList.add(itemUpdateError);
-                }
-            }
-        return errorsList;
-    }
-
-
 
 
     public int updateItemImage(String slug , String filenames){

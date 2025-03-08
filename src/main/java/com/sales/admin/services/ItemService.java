@@ -2,6 +2,7 @@ package com.sales.admin.services;
 
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sales.admin.repositories.ItemHbRepository;
 import com.sales.dto.*;
 import com.sales.entities.*;
@@ -59,7 +60,7 @@ public class ItemService extends RepoContainer{
     }
 
 
-    public Map<String, List<Object>> createItemsExcelSheet(SearchFilters searchFilters) throws IOException {
+    public String createItemsExcelSheet(SearchFilters searchFilters,String wholesaleSlug) throws IOException {
         logger.info("Entering createItemsExcelSheet with searchFilters: {}", searchFilters);
         int wholesaleId = searchFilters.getStoreId();
         Long fromDate = searchFilters.getFromDate();
@@ -67,8 +68,10 @@ public class ItemService extends RepoContainer{
         List<Item> itemsList =  itemRepository.getAllItemsWithFilters(wholesaleId,fromDate,toDate);
         Map<String,List<Object>> result = new HashMap<>();
         for (Item item : itemsList){
-            String items = new Gson().toJson(item);
+            Gson itemsGson = new GsonBuilder().serializeNulls().create();
+            String items = itemsGson.toJson(item);
             Map<String,Object> itemMap = new Gson().fromJson(items,Map.class);
+            logger.info("item map : {}",itemMap);
             itemMap.forEach((key,value)->{
                 if(key.equals("wholesale")){
                     // skip...
@@ -77,16 +80,16 @@ public class ItemService extends RepoContainer{
                     result.get(key.toUpperCase()).add(itemMap.get(key));
                 }else {
                     List<Object> valueList = new ArrayList<>();
-                    valueList.add((String) value);
+                    valueList.add(value);
                     result.put(key.toUpperCase(),valueList);
                 }
             });
         }
         int totalItem = itemsList.size();
-        String [] headers = {"SLUG","NAME","LABEL","CAPACITY","DESCRIPTION", "PRICE", "DISCOUNT", "RATING","INSTOCK","STATUS","CREATEDAT","UPDATEDAT"};
-        writeExcel.writeExcel(result,totalItem,Arrays.asList(headers));
+        String [] headers = {"NAME","TOKEN","PRICE", "DISCOUNT","LABEL","CAPACITY","RATING","IN-STOCK","STATUS","CREATED-AT","UPDATED-AT"};
+        String filePath = writeExcel.writeExcel(result, totalItem, Arrays.asList(headers), wholesaleSlug);
         logger.info("Exiting createItemsExcelSheet");
-        return  result;
+        return filePath;
     }
 
     public Map<String, Integer> getItemCounts () {
@@ -321,12 +324,81 @@ public class ItemService extends RepoContainer{
     }
 
 
-    @Transactional(rollbackOn = {RuntimeException.class,Exception.class})
-    public List<ItemHbRepository.ItemUpdateError> updateItemsWithExcel(Map<String,List<String>> excelData, Integer userId, Integer wholesaleId){
-        logger.info("Updating items using excel sheet : {} and userId : {} and wholesaleId : {}",excelData,userId,wholesaleId);
-        List<ItemHbRepository.ItemUpdateError> result = itemHbRepository.updateItemsViaExcelSheet(excelData,userId,wholesaleId);
-        logger.info("Exiting updateItemsWithExcel with result: {}", result);
-        return result;
+
+    public Map<String,Object> getItemDetail(List<String> nameList,
+        List<String> labelList,
+        List<String> slugList,
+        List<String> capacityList,
+        List<String> priceList,
+        List<String> discountList,
+        List<String> inStockList,
+        int index) {
+        Map<String,Object> itemDetailMap = new HashMap<>();
+        itemDetailMap.put("NAME",nameList.get(index));
+        itemDetailMap.put("LABEL",labelList.get(index));
+        itemDetailMap.put("TOKEN",slugList.get(index));
+        itemDetailMap.put("CAPACITY",capacityList.get(index));
+        itemDetailMap.put("PRICE",priceList.get(index));
+        itemDetailMap.put("DISCOUNT",discountList.get(index));
+        itemDetailMap.put("IN-STOCK",inStockList.get(index));
+        return itemDetailMap;
+    }
+
+
+
+
+    @Transactional(rollbackOn = {MyException.class})
+    public List<ItemHbRepository.ItemUpdateError> updateItemsWithExcel(Map<String,List<String>> itemsData, Integer userId, Integer wholesaleId){
+        logger.info("Updating items using excel sheet : {} and userId : {} and wholesaleId : {}",itemsData,userId,wholesaleId);
+            List<String> prefix = List.of("N","O","Y"); // N=New or No | Y = Yes | O=Old
+            ItemHbRepository.ItemUpdateError itemUpdateError = new ItemHbRepository.ItemUpdateError();
+            List<ItemHbRepository.ItemUpdateError> errorsList = new ArrayList<>();
+            List<String> nameList = itemsData.get("NAME") , labelList = itemsData.get("LABEL"),slugList = itemsData.get("TOKEN"),
+                    capacityList = itemsData.get("CAPACITY"),priceList = itemsData.get("PRICE"),discountList = itemsData.get("DISCOUNT")
+                    ,inStockList = itemsData.get("IN-STOCK");
+
+            for (int i = 0; i < nameList.size(); i++) {
+                Map<String,Object> itemStringDetail = null;
+                try {
+                    itemStringDetail = getItemDetail(nameList,labelList,slugList,capacityList,priceList,discountList,inStockList,i);
+                    if(nameList.get(i).trim().isEmpty()) continue; // if there is no item name, leave that row.
+                    String name = Utils.isValidName(nameList.get(i),"item");
+                    String label = labelList.get(i);
+                    String inStock = inStockList.get(i);
+                    if(!Utils.isEmpty(label)) label = String.valueOf(labelList.get(i).charAt(0)).toUpperCase();
+                    if(!Utils.isEmpty(inStock)) inStock = String.valueOf(inStockList.get(i).charAt(0)).toUpperCase();
+                    if(!prefix.contains(label)) throw new MyException("Label must be New or Old.");
+                    if(!prefix.contains(inStock)) throw new MyException("Stock must be Yes or NO.");
+                    Float capacity = capacityList.get(i).isEmpty() ? 0f : Float.parseFloat(capacityList.get(i));
+                    Float discount = discountList.get(i).isEmpty() ? 0f : Float.parseFloat(discountList.get(i));
+                    Float price = priceList.get(i).isEmpty() ? 0f : Float.parseFloat(priceList.get(i));
+                    if (price < discount) throw new MyException("Price can't be less then discount.");
+
+                    // creating itemDto object for update action
+                    ItemDto itemDto = new ItemDto();
+                    itemDto.setName(name);
+                    itemDto.setLabel(label);
+                    itemDto.setInStock(inStock);
+                    itemDto.setCapacity(capacity);
+                    itemDto.setPrice(price);
+                    itemDto.setDiscount(discount);
+                    itemDto.setSlug(slugList.get(i));
+
+                    int updated = itemHbRepository.updateExcelSheetItems(itemDto,userId,wholesaleId);
+                    if(updated < 1){
+                        itemUpdateError.setItemRowDetail(itemStringDetail);
+                        itemUpdateError.setErrorMessage("Item not found.");
+                        errorsList.add(itemUpdateError);
+                    }
+
+                } catch (MyException | IllegalArgumentException e) {
+                    itemUpdateError.setItemRowDetail(itemStringDetail);
+                    itemUpdateError.setErrorMessage(e.getMessage());
+                    errorsList.add(itemUpdateError);
+                }
+            }
+        logger.info("Exiting updateItemsWithExcel with result: {}", errorsList);
+        return errorsList;
     }
 
     public String updateStoreImage(String previousImages, List<MultipartFile> itemImages,String slug,String action) throws IOException {

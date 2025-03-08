@@ -46,24 +46,19 @@ cashfree :
 #  env : UAT
 
 profile :
-  #  absolute : /home/rohit/Documents/images/profiles/
   #    absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/profiles/
   absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/profiles/
-  #  get :  /home/rohit/Documents/images/profiles/
   get : src/main/resources/public/profiles/
 
 store :
-  #  absolute : /home/rohit/Documents/images/stores/
   #  absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/stores/
   absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/stores/
   get : src/main/resources/public/stores/
-#  get : /home/rohit/Documents/images/stores/
 
 item:
   #  absolute : /home/rohit/Documents/images/items/
   absolute: /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/items/
   #  absolute  : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/items/
-  #  get : /home/rohit/Documents/images/items/
   get: src/main/resources/public/items/
 
 
@@ -79,8 +74,12 @@ chat :
   get: src/main/resources/public/chat/
   #  get : src/main/resources/images/removebg/
 
-  excel:
-    export :
-      absolute : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/items_excels/
+excel:
+  export :
+    absolute : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/items_excels/
+  update :
+    template : src/main/resources/public/items_excels/update_items/update_item_template.xlsx
+  notUpdated:
+    absolute: /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/items_excels/not_updated_items/
 
 

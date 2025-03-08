@@ -133,7 +133,7 @@ public class Utils {
 
 
 
-    public static String isValidName(final String name,String flag) throws MyException {
+    public static String isValidName(final String name,String flag){
         if (name == null) throw new IllegalArgumentException(flag+"'s name can't be name");
         String NAME_PATTERN =
                 "^[a-zA-Z](?=.{1,100}$)[A-Za-z_& ]*(?:\\h+[A-Z][A-Za-z]*)*$";

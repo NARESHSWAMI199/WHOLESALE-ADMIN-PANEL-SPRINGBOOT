@@ -58,7 +58,8 @@ public class Store implements Serializable {
     @JoinColumn(name = "address")
     Address address;
 
-
+    @Transient
+    Integer totalStoreItems;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category", referencedColumnName = "id")
