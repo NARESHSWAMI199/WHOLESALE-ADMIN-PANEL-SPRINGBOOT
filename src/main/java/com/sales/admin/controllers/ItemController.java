@@ -136,7 +136,7 @@ public class ItemController extends ServiceContainer {
 
 
     @PostMapping(value = {"/exportExcel/{wholesaleSlug}"})
-    public ResponseEntity<Object> exportItemsFromExcel(@PathVariable String wholesaleSlug, @RequestBody SearchFilters searchFilters) {
+    public ResponseEntity<Object> exportItemsFromExcel(@PathVariable String wholesaleSlug, @RequestBody ItemSearchFields searchFilters) {
         logger.info("Exporting items to Excel for wholesaleSlug: {}", wholesaleSlug);
         Map<String,Object> responseObj = new HashMap<>();
         try {

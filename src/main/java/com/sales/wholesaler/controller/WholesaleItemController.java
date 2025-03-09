@@ -4,7 +4,6 @@ import com.sales.admin.repositories.ItemHbRepository;
 import com.sales.dto.DeleteDto;
 import com.sales.dto.ItemDto;
 import com.sales.dto.ItemSearchFields;
-import com.sales.dto.SearchFilters;
 import com.sales.entities.Item;
 import com.sales.entities.ItemCategory;
 import com.sales.entities.ItemSubCategory;
@@ -195,7 +194,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
 
 
     @PostMapping(value = {"exportExcel"})
-    public ResponseEntity<Object> exportItemsFromExcel(@RequestBody SearchFilters searchFilters ,HttpServletRequest request) {
+    public ResponseEntity<Object> exportItemsFromExcel(@RequestBody ItemSearchFields searchFilters ,HttpServletRequest request) {
         User user = (User) request.getAttribute("user");
         logger.info("Exporting items to Excel for user : {}", user );
         Map<String,Object> responseObj = new HashMap<>();

@@ -3,7 +3,10 @@ package com.sales.wholesaler.services;
 
 import com.google.gson.Gson;
 import com.sales.admin.repositories.ItemHbRepository;
-import com.sales.dto.*;
+import com.sales.dto.DeleteDto;
+import com.sales.dto.GraphDto;
+import com.sales.dto.ItemDto;
+import com.sales.dto.ItemSearchFields;
 import com.sales.entities.Item;
 import com.sales.entities.ItemCategory;
 import com.sales.entities.ItemSubCategory;
@@ -393,12 +396,20 @@ public class WholesaleItemService extends WholesaleRepoContainer {
 
 
 
-    public String createItemsExcelSheet(SearchFilters searchFilters,User loggedUser) throws IOException {
+    public String createItemsExcelSheet(ItemSearchFields searchFilters,User loggedUser) throws IOException {
         logger.info("Entering createItemsExcelSheet with searchFilters: {}", searchFilters);
         int wholesaleId = searchFilters.getStoreId();
-        Long fromDate = searchFilters.getFromDate();
-        Long toDate = searchFilters.getToDate();
-        List<Item> itemsList =  wholesaleItemRepository.getAllItemsWithFilters(wholesaleId,fromDate,toDate);
+        Specification<Item> specification = Specification.where(
+                (containsName(searchFilters.getSearchKey().trim())
+                        .or(hasSlug(searchFilters.getSearchKey())))
+                        .and(isWholesale(wholesaleId))
+                        .and(isStatus(searchFilters.getStatus()))
+                        .and(inStock(searchFilters.getInStock()))
+                        .and(isLabel(searchFilters.getLabel()))
+                        .and(greaterThanOrEqualFromDate(searchFilters.getFromDate()))
+                        .and(lessThanOrEqualToToDate(searchFilters.getToDate()))
+        );
+        List<Item> itemsList = wholesaleItemRepository.findAll(specification);
         Map<String,List<Object>> result = new HashMap<>();
         for (Item item : itemsList){
             String items = new Gson().toJson(item);

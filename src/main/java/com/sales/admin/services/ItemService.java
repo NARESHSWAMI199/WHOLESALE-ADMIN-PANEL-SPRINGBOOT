@@ -60,12 +60,17 @@ public class ItemService extends RepoContainer{
     }
 
 
-    public String createItemsExcelSheet(SearchFilters searchFilters,String wholesaleSlug) throws IOException {
+    public String createItemsExcelSheet(ItemSearchFields searchFilters,String wholesaleSlug) throws IOException {
         logger.info("Entering createItemsExcelSheet with searchFilters: {}", searchFilters);
-        int wholesaleId = searchFilters.getStoreId();
-        Long fromDate = searchFilters.getFromDate();
-        Long toDate = searchFilters.getToDate();
-        List<Item> itemsList =  itemRepository.getAllItemsWithFilters(wholesaleId,fromDate,toDate);
+        Specification<Item> specification = Specification.where(
+                containsName(searchFilters.getSearchKey().trim())
+                        .and(isWholesale(searchFilters.getStoreId()))
+                        .and(isStatus(searchFilters.getStatus()))
+                        .and(inStock(searchFilters.getInStock()))
+                        .and(greaterThanOrEqualFromDate(searchFilters.getFromDate()))
+                        .and(lessThanOrEqualToToDate(searchFilters.getToDate()))
+        );
+        List<Item> itemsList = itemRepository.findAll(specification);
         Map<String,List<Object>> result = new HashMap<>();
         for (Item item : itemsList){
             Gson itemsGson = new GsonBuilder().serializeNulls().create();
