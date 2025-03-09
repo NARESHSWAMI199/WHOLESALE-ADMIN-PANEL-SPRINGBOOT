@@ -348,6 +348,11 @@ const Page = () => {
 
 
     const exportExcelSheet = async () => {
+        const confirmDownload = window.confirm("Are you sure you want to download the Excel sheet?");
+        if (!confirmDownload) {
+            return;
+        }
+
         axios.defaults.headers = {
             Authorization: auth.token
         }
