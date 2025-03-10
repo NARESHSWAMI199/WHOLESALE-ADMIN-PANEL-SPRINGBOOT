@@ -131,19 +131,6 @@ const Page = () => {
   }
   } 
 
-  /** don't want re-render again */
-  const Container = useMemo(()=>{
-    return styled.div`
-    max-width: 100%;
-    height: auto; 
-  
-    @media (min-width: 768px) {
-      width: 95%;
-      margin : 0 auto;
-    }
-  `;
-  },[])
-
   return (
     <>
 
@@ -165,10 +152,18 @@ const Page = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          py: 8,
+          py: 5,
         }}
       >
-        <Container style={{padding : 10}}>
+            <Container maxWidth="xxl" sx={{
+                    px : {
+                            xs : 1,
+                            sm : 1,
+                            md : 1,
+                            lg : 5,
+                            xl : 5
+                        } 
+            }}>
             <Stack spacing={3}>
               <CustomerHeaders  headerTitle={"All Store"} userType="W" />
               <BasicSearch onSearch={onSearch} />

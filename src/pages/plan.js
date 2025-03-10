@@ -232,7 +232,15 @@ return ( <>
       py: 8
     }}
   >
-    <Container maxWidth="xl">
+      <Container maxWidth="xxl" sx={{
+                  px : {
+                          xs : 1,
+                          sm : 1,
+                          md : 1,
+                          lg : 5,
+                          xl : 5
+                      } 
+        }}>
 
       <Stack spacing={3}>
         {/* <BasicHeaders  headerTitle="Create User"  /> */}

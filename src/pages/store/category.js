@@ -104,10 +104,15 @@ const [categories,setCategories] = useState([])
           py: 8
         }}
       >
-          <Box sx={{
-                    margin : '0 auto',
-                    width : '95%'
-                }}>
+          <Container maxWidth="xxl" sx={{
+            px : {
+                    xs : 0,
+                    sm : 0,
+                    md : 0,
+                    lg : 5,
+                    xl : 5
+                } 
+            }}>
           <Stack spacing={3}>
                    
           <Stack
@@ -141,7 +146,7 @@ const [categories,setCategories] = useState([])
               onDelete = {onDelete}
             />
           </Stack>
-        </Box>
+        </Container>
         
       </Box>
     </>

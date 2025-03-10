@@ -1,4 +1,4 @@
-import { Alert, Box, Snackbar, Stack } from '@mui/material';
+import { Alert, Box, Container, Snackbar, Stack } from '@mui/material';
 import axios from 'axios';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -107,12 +107,15 @@ const Page = () => {
           py: 8,
         }}
       >
-        <Box
-          sx={{
-            margin: '0 auto',
-            width: '95%',
-          }}
-        >
+        <Container maxWidth="xxl" sx={{
+            px : {
+                    xs : 1,
+                    sm : 1,
+                    md : 1,
+                    lg : 5,
+                    xl : 5
+                } 
+          }}>
           <Stack spacing={3}>
             <BasicHeaders headerTitle={'Wholesaler Plans'} userType="W" />
             <PlanSearch onSearch={onSearch} />
@@ -125,7 +128,7 @@ const Page = () => {
               rowsPerPage={rowsPerPage}
             />
           </Stack>
-        </Box>
+        </Container>
       </Box>
     </>
   );

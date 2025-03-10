@@ -1,6 +1,6 @@
 import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import { Alert, Box, Button, Snackbar, Stack, SvgIcon } from '@mui/material';
+import { Alert, Box, Button, Container, Snackbar, Stack, SvgIcon } from '@mui/material';
 import axios from 'axios';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -413,10 +413,15 @@ const Page = () => {
                     py :5
                 }}
             >
-                <Box sx={{
-                    margin : '0 auto',
-                    width : '95%'
-                }}>
+                 <Container maxWidth="xxl" sx={{
+                    px : {
+                            xs : 0,
+                            sm : 0,
+                            md : 0,
+                            lg : 5,
+                            xl : 5
+                        } 
+                    }}>
                     <Stack spacing={3}>
 
                         <StoresCard deleteStore={onDeleteStore} store={wholesale} visit={false} delete={false} />
@@ -488,7 +493,7 @@ const Page = () => {
                             onDelete={onDelete}
                         />
                     </Stack>
-                </Box>
+                </Container>
             </Box>
         </>
     );

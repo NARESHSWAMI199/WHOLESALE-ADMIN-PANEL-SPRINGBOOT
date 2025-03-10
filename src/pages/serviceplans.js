@@ -1,4 +1,4 @@
-import { Alert, Box, Snackbar, Stack } from '@mui/material';
+import { Alert, Box, Container, Snackbar, Stack } from '@mui/material';
 import axios from 'axios';
 import Head from 'next/head';
 import { useCallback, useEffect, useState } from 'react';
@@ -166,12 +166,15 @@ const Page = () => {
                     py: 8,
                 }}
             >
-                <Box
-                    sx={{
-                        margin: '0 auto',
-                        width: '95%',
-                    }}
-                >
+                    <Container maxWidth="xxl" sx={{
+                    px : {
+                            xs : 1,
+                            sm : 1,
+                            md : 1,
+                            lg : 5,
+                            xl : 5
+                        } 
+                    }}>
                     <Stack spacing={3}>
                         <ServicePlansHeaders headerTitle={'Service Plans'} userType="W" />
                         <BasicSearch onSearch={onSearch} />
@@ -186,7 +189,7 @@ const Page = () => {
                             onDelete={onDelete}
                         />
                     </Stack>
-                </Box>
+                </Container>
             </Box>
         </>
     );

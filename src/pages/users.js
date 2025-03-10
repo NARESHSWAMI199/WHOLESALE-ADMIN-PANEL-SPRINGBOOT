@@ -1,4 +1,4 @@
-import { Alert, Box, Snackbar, Stack } from '@mui/material';
+import { Alert, Box, Container, Snackbar, Stack } from '@mui/material';
 import axios from 'axios';
 import Head from 'next/head';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -201,34 +201,39 @@ const Page = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          py: 8
+          py: 5
         }}
       >
-          <Box sx={{
-                    margin : '0 auto',
-                    width : '95%'
-                }}>
-          <Stack spacing={3}>
-            <CustomerHeaders  headerTitle={"All users"} userType="R"/>
-            <BasicSearch onSearch={onSearch} type="A" />
+          <Container maxWidth="xxl" sx={{
+                    px : {
+                            xs : 1,
+                            sm : 1,
+                            md : 1,
+                            lg : 5,
+                            xl : 5
+                        } 
+            }}>
+            <Stack spacing={3}>
+              <CustomerHeaders  headerTitle={"All users"} userType="R"/>
+              <BasicSearch onSearch={onSearch} type="A" />
 
-          <CustomersTable
-              count={totalElements}
-              items={customers}
-              onDeselectAll={customersSelection.handleDeselectAll}
-              onDeselectOne={customersSelection.handleDeselectOne}
-              onPageChange={handlePageChange}
-              onRowsPerPageChange={handleRowsPerPageChange}
-              onSelectAll={customersSelection.handleSelectAll}
-              onSelectOne={customersSelection.handleSelectOne}
-              page={page}
-              rowsPerPage={rowsPerPage}
-              selected={customersSelection.selected}
-              onStatusChange = {onStatusChange}
-              onDelete = {onDelete}
-            />
-          </Stack>
-        </Box>
+            <CustomersTable
+                count={totalElements}
+                items={customers}
+                onDeselectAll={customersSelection.handleDeselectAll}
+                onDeselectOne={customersSelection.handleDeselectOne}
+                onPageChange={handlePageChange}
+                onRowsPerPageChange={handleRowsPerPageChange}
+                onSelectAll={customersSelection.handleSelectAll}
+                onSelectOne={customersSelection.handleSelectOne}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                selected={customersSelection.selected}
+                onStatusChange = {onStatusChange}
+                onDelete = {onDelete}
+              />
+            </Stack>
+        </Container>
       </Box>
     </>
   );

@@ -78,7 +78,7 @@ const Page = () => {
         py: 8
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <Stack spacing={3}>
           <Typography variant="h4">
             Settings
