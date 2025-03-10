@@ -249,7 +249,7 @@ export const StoresCard = (props) => {
                   </div>  
                 </Typography>
 
-                <Rating value={store.rating} sx={{my:1}}/>
+                <Rating readOnly={true} value={store.rating} sx={{my:1}}/>
               </CardContent>
           </Grid>
 
