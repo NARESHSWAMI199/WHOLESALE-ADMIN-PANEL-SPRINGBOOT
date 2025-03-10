@@ -164,7 +164,7 @@ export const items = (user) =>{
 
     {
       title: 'Item Categories',
-      path: '/item/category/',
+      path: '/item/category',
       show : !!user ? user.userType == 'SA' : false,
       icon: (
         <SvgIcon fontSize="small">
@@ -176,7 +176,7 @@ export const items = (user) =>{
 
     {
       title: 'Store Categories',
-      path: '/store/category/',
+      path: '/store/category',
       show : !!user ? user.userType == 'SA' : false,
       icon: (
         <SvgIcon fontSize="small">
