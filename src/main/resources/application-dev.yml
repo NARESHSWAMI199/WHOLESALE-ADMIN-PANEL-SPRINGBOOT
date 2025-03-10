@@ -45,41 +45,39 @@ cashfree :
   env : PROD
 #  env : UAT
 
+# ------------------ start public folder path
+public_folder :
+  #  path : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/
+  absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public
+  get : src/main/resources/public
+
+# ------------------! end public folder path
+
 profile :
-  #    absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/profiles/
-  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/profiles/
-  get : src/main/resources/public/profiles/
+  absolute  : ${public_folder.absolute}/profiles/
+  get : ${public_folder.get}/profiles/
 
 store :
-  #  absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/stores/
-  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/stores/
-  get : src/main/resources/public/stores/
+  absolute  :  ${public_folder.absolute}/stores/
+  get :  ${public_folder.get}/stores/
 
 item:
-  #  absolute : /home/rohit/Documents/images/items/
-  absolute: /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/items/
-  #  absolute  : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/items/
-  get: src/main/resources/public/items/
-
+  absolute:  ${public_folder.absolute}items/
+  get:  ${public_folder.get}/items/
 
 removebg :
-#  absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/removebg/
-  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/images/removebg/
-  get : src/main/resources/public/removebg/
-#  get : src/main/resources/images/removebg/
+  absolute : ${public_folder.absolute}/removebg/
+  get :  ${public_folder.get}/removebg/
 
 chat :
-  #    absolute: C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/removebg/
-  absolute  : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/chat/
-  get: src/main/resources/public/chat/
-  #  get : src/main/resources/images/removebg/
+  absolute  : ${public_folder.absolute}/chat/
+  get:  ${public_folder.get}/chat/
 
 excel:
   export :
-    absolute : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/items_excels/
+    absolute :  ${public_folder.absolute}/items_excels/
   update :
-    template : src/main/resources/public/items_excels/update_items/update_item_template.xlsx
+    template : ${public_folder.get}/items_excels/update_items/update_item_template.xlsx
   notUpdated:
-    absolute: /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/items_excels/not_updated_items/
-
+    absolute:  ${public_folder.absolute}/items_excels/not_updated_items/
 

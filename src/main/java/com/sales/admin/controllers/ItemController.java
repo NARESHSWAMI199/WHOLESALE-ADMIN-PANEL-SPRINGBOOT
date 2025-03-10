@@ -127,7 +127,7 @@ public class ItemController extends ServiceContainer {
                 responseObj.put("status", 400);
             }
         } catch (Exception e) {
-            responseObj.put("message", e.getMessage());
+            responseObj.put("message", "Not a valid sheet or something went. Recheck your sheet otherwise contact to administrator.");
             responseObj.put("status", 500);
             logger.error("Facing Exception during updating or importing item from excel sheet  ; {}",e.getMessage());
         }

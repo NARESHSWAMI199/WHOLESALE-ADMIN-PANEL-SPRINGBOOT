@@ -302,6 +302,9 @@ public class StoreService extends RepoContainer{
         User user = userRepository.findUserBySlug(userSlug);
         if (user == null) throw new NotFoundException("No user found.");
         Store store = storeRepository.findStoreByUserId(user.getId());
+        if(store == null) throw new NotFoundException("Store not found.");
+        // setting total items to with store detail
+        store.setTotalStoreItems(itemRepository.totalItemCountByWholesaleId(store.getId()));
         logger.info("Exiting getStoreByUserSlug");
         return store;
     }

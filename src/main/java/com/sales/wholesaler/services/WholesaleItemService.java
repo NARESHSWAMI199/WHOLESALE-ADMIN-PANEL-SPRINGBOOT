@@ -444,13 +444,13 @@ public class WholesaleItemService extends WholesaleRepoContainer {
          List<String> inStockList,
          int index) {
         Map<String,Object> itemDetailMap = new HashMap<>();
-        itemDetailMap.put("name",nameList.get(index));
-        itemDetailMap.put("label",labelList.get(index));
-        itemDetailMap.put("slug",slugList.get(index));
-        itemDetailMap.put("capacity",capacityList.get(index));
-        itemDetailMap.put("price",priceList.get(index));
-        itemDetailMap.put("discount",discountList.get(index));
-        itemDetailMap.put("stock",inStockList.get(index));
+        itemDetailMap.put("NAME",nameList.get(index));
+        itemDetailMap.put("LABEL",labelList.get(index));
+        itemDetailMap.put("TOKEN",slugList.get(index));
+        itemDetailMap.put("CAPACITY",capacityList.get(index));
+        itemDetailMap.put("PRICE",priceList.get(index));
+        itemDetailMap.put("DISCOUNT",discountList.get(index));
+        itemDetailMap.put("STOCK",inStockList.get(index));
         return itemDetailMap;
     }
 
