@@ -30,6 +30,22 @@ jwt:
   secret: saleispower
 
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+
+    health:
+      show-details=always:
+
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+
+
 phonepe :
   key : 96434309-7796-489d-8924-ab56988a6076
   mid : PGTESTPAYUAT86
