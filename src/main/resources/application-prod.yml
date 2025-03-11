@@ -62,7 +62,7 @@ store :
   get : ${public_folder.get}/stores/
 
 item:
-  absolute: ${public_folder.absolute}items/
+  absolute: ${public_folder.absolute}/items/
   get: ${public_folder.get}/items/
 
 removebg :
