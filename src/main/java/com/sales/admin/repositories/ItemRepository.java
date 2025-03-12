@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ItemRepository  extends JpaRepository<Item, Integer> , JpaSpecificationExecutor<Item> {
+public interface ItemRepository  extends JpaRepository<Item, Long> , JpaSpecificationExecutor<Item> {
 
 
 

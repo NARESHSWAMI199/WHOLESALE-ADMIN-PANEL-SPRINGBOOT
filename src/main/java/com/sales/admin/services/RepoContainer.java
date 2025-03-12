@@ -110,7 +110,11 @@ public class RepoContainer {
     @Autowired
     protected PaginationHbRepository paginationHbRepository;
 
+    @Autowired
+    protected StoreReportRepository storeReportRepository;
 
+    @Autowired
+    protected ItemReportRepository itemReportRepository;
 
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());

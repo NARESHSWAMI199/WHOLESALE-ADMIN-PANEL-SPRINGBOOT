@@ -123,7 +123,7 @@ public class StoreService extends RepoContainer{
             "subCategoryId",
             "description"
         ));
-        // if there is any required field null then this will throw IllegalArgumentException
+        // if there is any required field null, then this will throw IllegalArgumentException
         Utils.checkRequiredFields(storeDto,requiredFields);
         logger.info("Exiting validateRequiredFieldsForStore");
     }
@@ -131,7 +131,7 @@ public class StoreService extends RepoContainer{
     public void validateRequiredFieldsForCreateStore(StoreDto storeDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.info("Entering validateRequiredFieldsForCreateStore with storeDto: {}", storeDto);
         List<String> requiredFields = new ArrayList<>(List.of("userSlug"));
-        // if there is any required field null then this will throw IllegalArgumentException
+        // if there is any required field null, then this will throw IllegalArgumentException
         Utils.checkRequiredFields(storeDto,requiredFields);
         logger.info("Exiting validateRequiredFieldsForCreateStore");
     }
@@ -141,7 +141,7 @@ public class StoreService extends RepoContainer{
     public Map<String, Object> createOrUpdateStore(StoreDto storeDto,User loggedUser,String path) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.info("Entering createOrUpdateStore with storeDto: {}, loggedUser: {}, path: {}", storeDto, loggedUser, path);
             Map<String, Object> responseObj = new HashMap<>();
-            // if there is any required field null then this will throw IllegalArgumentException
+            // if there is any required field null, then this will throw IllegalArgumentException
             validateRequiredFieldsForStore(storeDto);
             try {
                 StoreCategory storeCategory = storeCategoryRepository.findById(storeDto.getCategoryId()).get();
@@ -152,14 +152,14 @@ public class StoreService extends RepoContainer{
                 throw new IllegalArgumentException("Invalid arguments for category and subcategory");
             }
 
-            if (!Utils.isEmpty(storeDto.getStoreSlug()) || path.contains("update")) { // We are going to update store.
+            if (!Utils.isEmpty(storeDto.getStoreSlug()) || path.contains("update")) { // We are going to update the store.
                 logger.info("We are going to update the store.");
-                // if there is any required field null then this will throw IllegalArgumentException
+                // if there is any required field null, then this will throw IllegalArgumentException
                 Utils.checkRequiredFields(storeDto,List.of("storeSlug"));
 
                 String storeName = Utils.isValidName(storeDto.getStoreName(),"Store");
                 storeDto.setStoreName(storeName);
-                // If we found any issue with email and mobile this will throw exception
+                // If we found any issue with email and mobile, this will throw exception
                 Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid store's _ recheck your and store's _.");
                 updateStoreImage(storeDto.getStorePic(), storeDto.getStoreSlug());
 
@@ -176,12 +176,12 @@ public class StoreService extends RepoContainer{
                     responseObj.put("message", "Nothing found to updated.");
                     responseObj.put("status", 404);
                 }
-            } else {  // We are going to create store.
+            } else {  // We are going to create a store.
                 logger.info("We are going to create the store.");
-                // if there is any required field null then this will throw IllegalArgumentException
+                // if there is any required field null, then this will throw IllegalArgumentException
                 validateRequiredFieldsForCreateStore(storeDto);
 
-                // if there is any issue this will throw IllegalArgumentException
+                // if there is any issue, this will throw IllegalArgumentException
                 Utils.mobileAndEmailValidation(
                     storeDto.getStoreEmail(),
                     storeDto.getStorePhone(),
@@ -205,7 +205,7 @@ public class StoreService extends RepoContainer{
     public void validateRequiredFieldsForCreateAddress(AddressDto addressDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.info("Entering validateRequiredFieldsForCreateAddress with addressDto: {}", addressDto);
         List<String> requiredFields = new ArrayList<>(List.of("street","zipCode", "city","state"));
-        // if there is any required field null then this will throw IllegalArgumentException
+        // if there is any required field null, then this will throw IllegalArgumentException
         Utils.checkRequiredFields(addressDto,requiredFields);
         logger.info("Exiting validateRequiredFieldsForCreateAddress");
     }

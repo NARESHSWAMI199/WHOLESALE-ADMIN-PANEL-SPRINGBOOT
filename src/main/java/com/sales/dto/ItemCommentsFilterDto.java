@@ -10,6 +10,6 @@ public class ItemCommentsFilterDto extends SearchFilters{
     Integer userId;
     String userSlug;
     String itemSlug;
-    int itemId;
+    long itemId;
     int parentId = 0;
 }

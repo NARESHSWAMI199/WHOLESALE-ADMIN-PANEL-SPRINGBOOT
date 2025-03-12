@@ -6,25 +6,21 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
+@Table(name = "item_report")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "item_comments")
-@SQLRestriction("is_deleted != 'Y'")
-public class ItemComments {
-    @Id
+@AllArgsConstructor
+public class ItemReport {
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     int id;
 
     @Column(name = "item_id")
     Long itemId;
-
-    @Column(name = "slug")
-    String slug;
 
     @Column(name = "store_id")
     Integer storeId;
@@ -32,25 +28,13 @@ public class ItemComments {
     @Column(name = "user_id")
     Integer userId;
 
-    @Column(name = "likes")
-    Long likes= 0L;
-
-    @Column(name = "parent_id")
-    Integer parentId;
-
     @Column(name = "message")
     String message;
 
     @Column(name = "created_at")
-    String createdAt;
-
-    @Column(name="is_deleted")
-    String isDeleted;
+    Long createdAt;
 
     @Column(name = "updated_at")
-    String updatedAt;
-
-    @Transient
-    Integer repliesCount;
+    Long updatedAt;
 
 }

@@ -41,4 +41,10 @@ public class ServiceContainer {
     @Autowired
     protected UserPaginationsRepository userPaginationsRepository;
 
+    @Autowired
+    protected StoreReportService storeReportService;
+
+    @Autowired
+    protected ItemReportService itemReportService;
+
 }

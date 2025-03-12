@@ -11,7 +11,7 @@ public class StorePromotionDto {
     String bannerImage = "test.png";
     String promotionType;
     Integer storeId;
-    Integer itemId;
+    Long itemId;
     String priority;
     Long priorityHours;
     Integer maxRepeat;

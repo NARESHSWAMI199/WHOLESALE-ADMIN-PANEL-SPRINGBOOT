@@ -13,7 +13,7 @@ public class ItemCommentSpecifications {
     }
 
 
-    public static Specification<ItemComments> isItemId(int itemId) {
+    public static Specification<ItemComments> isItemId(Long itemId) {
         return (root, query, criteriaBuilder) -> {
             return criteriaBuilder.equal(root.get(ItemComments_.ITEM_ID), itemId);
         };

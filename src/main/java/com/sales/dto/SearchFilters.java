@@ -19,6 +19,7 @@ public class SearchFilters {
     int size = 10;
     String slug="";
     int storeId;
+    long itemId;
     Integer categoryId;
     Integer subCategoryId;
 }

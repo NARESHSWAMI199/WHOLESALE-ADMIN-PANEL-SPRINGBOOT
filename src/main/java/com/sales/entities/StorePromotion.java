@@ -31,7 +31,7 @@ public class StorePromotion {
     Integer storeId;
 
     @Column(name = "item_id")
-    Integer itemId;
+    Long itemId;
 
     @Column(name = "priority")
     String priority;
