@@ -25,8 +25,9 @@ public class ItemReport {
     @Column(name = "store_id")
     Integer storeId;
 
-    @Column(name = "user_id")
-    Integer userId;
+    @OneToOne(fetch =FetchType.EAGER )
+    @JoinColumn(name = "user_id")
+    User user;
 
     @Column(name = "message")
     String message;
