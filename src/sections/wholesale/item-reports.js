@@ -1,4 +1,5 @@
 import {
+    Avatar,
     Box,
     Card,
     Stack,
@@ -22,7 +23,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useEffect, useState } from 'react';
-import { rowsPerPageOptions, toTitleCase } from 'src/utils/util';
+import { rowsPerPageOptions, toTitleCase, userImage } from 'src/utils/util';
+import { getInitials } from 'src/utils/get-initials';
 
 export const ItemReports = (props) => {
   const {
@@ -34,7 +36,7 @@ export const ItemReports = (props) => {
     rowsPerPage = 0,
     selected = []
   } = props;
-  const [itemReports,setItemReports] = useState([])
+  const [itemReports,setItemReports] = useState(props.itemReports)
   const [message,setMessage] = useState("")
   const [confirm,setConfirm] = useState(false)
   const [slug,setSlug] = useState(null)
@@ -118,7 +120,7 @@ export const ItemReports = (props) => {
                 return (
                   <TableRow
                     hover
-                    key={item.id}
+                    key={itemReport.id}
                     selected={isSelected}
                   >
                     <TableCell padding="checkbox">
@@ -130,14 +132,14 @@ export const ItemReports = (props) => {
                         spacing={2}
                       >      
                  
-                    {/* {!!item.avtar ? <Image src={itemImage+item.slug+"/"+item.avtars?.split(',')[0]} style={{borderRadius : "50%" , width:"50px", height : "50px" }}/>  : 
-                        <Avatar src={itemImage+itemReport.slug+"/"+itemReport.avtars?.split(',')[0]} >
-                          {getInitials(item.name)}
+                    {!!itemReport.user?.avtar ? <Image src={userImage+itemReport.user?.slug+"/"+item.avtar} style={{borderRadius : "50%" , width:"50px", height : "50px" }}/>  : 
+                        <Avatar src={userImage+itemReport.user?.slug+"/"+itemReport.user?.avtar} >
+                          {getInitials(itemReport.user?.username)}
                         </Avatar>
-                        } */}
+                        }
                    
                       <Typography variant="subtitle2">
-                      {toTitleCase(user.username)}
+                      {toTitleCase(itemReport.user?.username)}
                     </Typography>
                          
                       </Stack>
@@ -148,11 +150,11 @@ export const ItemReports = (props) => {
                         {itemReport.category}
                     </TableCell>
 
-                    <TableCell align='center'>
+                    <TableCell>
                         {itemReport.message}
                     </TableCell>
 
-                    <TableCell align='center'>
+                    <TableCell>
                         {createdAt}
                     </TableCell>
                 </TableRow>

@@ -8,7 +8,7 @@ import { format } from 'date-fns';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { OptionMenu } from 'src/layouts/option-menu';
@@ -38,6 +38,7 @@ function TabPanel(props) {
 }
 const Page = () => {
 
+  // For snackbar
   const [open,setOpen] = useState()
   const [message, setMessage] = useState("")
   const [flag, setFlag] = useState("warning")
@@ -50,8 +51,11 @@ const Page = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [comments,setComments] = useState([])
+  const [itemReports,setItemReports] = useState([])
   const [currentTarget,setCurrentTarget] = useState(null)
   const openMenu = Boolean(currentTarget);
+
+  // filter data
   const [data,setData] = useState({
     pageNumber : page,
     size : rowsPerPage
@@ -69,6 +73,8 @@ const Page = () => {
   };
 
 
+
+  // Getting item details
   useEffect(() => {
     const getData = async () => {
         axios.defaults.headers = {
@@ -90,7 +96,8 @@ const Page = () => {
 
 }, [])
 
-/** for item comments */
+
+// Getting item comments */
 useEffect( ()=>{
     const getData = async () => {
        axios.defaults.headers = {
@@ -113,6 +120,32 @@ useEffect( ()=>{
    },[data])
 
 
+
+// Getting item reports */
+useEffect( ()=>{
+  const getData = async () => {
+     axios.defaults.headers = {
+       Authorization : auth.token
+     }
+     await axios.post(host+"/admin/item/report/all",data)
+     .then(res => {
+        const data = res.data;
+         setItemReports(data.content);
+         setTotalElements(data.totalElements)
+         console.log("item reports : "+JSON.stringify(data.content))
+     })
+     .catch(err => {
+       setFlag("error")
+       setMessage(!!err.response ? err.response.data.message : err.message)
+       setOpen(true)
+     } )
+   }
+  getData();
+
+ },[data])
+
+
+
      /** for snackbar close */
   const handleClose = () => {
     setOpen(false)
@@ -132,6 +165,23 @@ useEffect( ()=>{
   } 
 
 
+  const handlePageChange = useCallback(
+    (event, value) => {
+      setPage(value);
+      setData({...data, pageNumber : value})
+    },
+    []
+  );
+
+
+  
+  const handleRowsPerPageChange = useCallback(
+      (event) => {
+        setRowsPerPage(event.target.value);
+      },
+      []
+    );
+  
   
   return (
     <>
@@ -390,7 +440,15 @@ useEffect( ()=>{
             <TabPanel value={value} index={1}>
             {/* Item Reports */}
               <Box>
-                <ItemReports />
+                <ItemReports 
+                  count={totalElements}
+                  itemReports={itemReports}
+                  onPageChange={handlePageChange}
+                  onRowsPerPageChange={handleRowsPerPageChange}
+                  page={page}
+                  rowsPerPage={rowsPerPage}
+
+                />
               </Box>
             </TabPanel>
         </Container>
