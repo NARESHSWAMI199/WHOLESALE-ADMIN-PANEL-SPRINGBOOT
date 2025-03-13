@@ -42,9 +42,10 @@ public class ItemController extends ServiceContainer {
     private static final Logger logger = LoggerFactory.getLogger(ItemController.class);
 
     @PostMapping("/all")
-    public ResponseEntity<Page<Item>> getAllItem(@RequestBody ItemSearchFields searchFilters) {
+    public ResponseEntity<Page<Item>> getAllItem(@RequestBody ItemSearchFields searchFilters,HttpServletRequest request) {
         logger.info("Fetching all items with filters: {}", searchFilters);
-        Page<Item> alItems = itemService.getAllItems(searchFilters);
+        User loggedUser = (User) request.getAttribute("user");
+        Page<Item> alItems = itemService.getAllItems(searchFilters,loggedUser);
         return new ResponseEntity<>(alItems, HttpStatus.OK);
     }
 
@@ -136,14 +137,15 @@ public class ItemController extends ServiceContainer {
 
 
     @PostMapping(value = {"/exportExcel/{wholesaleSlug}"})
-    public ResponseEntity<Object> exportItemsFromExcel(@PathVariable String wholesaleSlug, @RequestBody ItemSearchFields searchFilters) {
+    public ResponseEntity<Object> exportItemsFromExcel(@PathVariable String wholesaleSlug, @RequestBody ItemSearchFields searchFilters,HttpServletRequest request) {
         logger.info("Exporting items to Excel for wholesaleSlug: {}", wholesaleSlug);
+        User loggedUser = (User) request.getAttribute("user");
         Map<String,Object> responseObj = new HashMap<>();
         try {
             Store wholesale = storeService.getStoreDetails(wholesaleSlug);
             if (wholesale != null) {
                 searchFilters.setStoreId(wholesale.getId());
-                String filePath = itemService.createItemsExcelSheet(searchFilters,wholesaleSlug);
+                String filePath = itemService.createItemsExcelSheet(searchFilters,wholesaleSlug,loggedUser);
                 Path path = Paths.get(filePath);
                 Resource resource = new UrlResource(path.toUri());
                 responseObj.put("message", "File successfully downloaded.");

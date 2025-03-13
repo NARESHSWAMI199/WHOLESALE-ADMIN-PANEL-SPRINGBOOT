@@ -22,8 +22,17 @@ public class ItemsSpecifications {
         };
     }*/
 
+
     public static Specification<Item> isWholesale(Integer wholesaleId) {
         return (root, query, criteriaBuilder) -> {
+            return criteriaBuilder.equal(root.get(Item_.wholesaleId), wholesaleId);
+        };
+    }
+
+
+    public static Specification<Item> isWholesale(Integer wholesaleId, String userType) {
+        return (root, query, criteriaBuilder) -> {
+            if((wholesaleId == null || wholesaleId == 0) && (userType.equals("S") || userType.equals("SA"))) return null;
             return criteriaBuilder.equal(root.get(Item_.wholesaleId), wholesaleId);
         };
     }

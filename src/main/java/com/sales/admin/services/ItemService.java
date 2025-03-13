@@ -40,14 +40,14 @@ public class ItemService extends RepoContainer{
     String itemImagePath;
 
 
-    public Page<Item> getAllItems(ItemSearchFields searchFilters) {
+    public Page<Item> getAllItems(ItemSearchFields searchFilters,User loggedUser) {
         logger.info("Entering getAllItems with searchFilters: {}", searchFilters);
         Sort sort = searchFilters.getOrder().equalsIgnoreCase("asc") ?
                 Sort.by(searchFilters.getOrderBy()).ascending() :
                 Sort.by(searchFilters.getOrderBy()).descending();
         Specification<Item> specification = Specification.where(
             containsName(searchFilters.getSearchKey().trim())
-                .and(isWholesale(searchFilters.getStoreId()))
+                .and(isWholesale(searchFilters.getStoreId(),loggedUser.getUserType()))
                 .and(isStatus(searchFilters.getStatus()))
                 .and(inStock(searchFilters.getInStock()))
                 .and(greaterThanOrEqualFromDate(searchFilters.getFromDate()))
@@ -60,11 +60,11 @@ public class ItemService extends RepoContainer{
     }
 
 
-    public String createItemsExcelSheet(ItemSearchFields searchFilters,String wholesaleSlug) throws IOException {
+    public String createItemsExcelSheet(ItemSearchFields searchFilters,String wholesaleSlug,User loggedUser) throws IOException {
         logger.info("Entering createItemsExcelSheet with searchFilters: {}", searchFilters);
         Specification<Item> specification = Specification.where(
                 containsName(searchFilters.getSearchKey().trim())
-                        .and(isWholesale(searchFilters.getStoreId()))
+                        .and(isWholesale(searchFilters.getStoreId(),loggedUser.getUserType()))
                         .and(isStatus(searchFilters.getStatus()))
                         .and(inStock(searchFilters.getInStock()))
                         .and(greaterThanOrEqualFromDate(searchFilters.getFromDate()))

@@ -40,7 +40,13 @@ public class Item implements Serializable {
     @Column(name = "avatar")
     String avtars;
     @Column(name = "rating")
-    float rating;
+    Float rating;
+    @Column(name = "total_rating_count")
+    Integer totalRatingCount;
+    @Column(name = "total_comments")
+    Integer totalComments;
+    @Column(name = "total_reports_count")
+    Integer totalReportsCount;
     @Column(name = "status")
     String status="A";
     @Column(name = "is_deleted")
