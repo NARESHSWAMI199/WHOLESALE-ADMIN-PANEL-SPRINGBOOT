@@ -1,7 +1,7 @@
 import { CurrencyRupee, Discount, EditOutlined } from '@mui/icons-material';
 import KeyIcon from '@mui/icons-material/Key';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Alert, Box, Button, Card, CardContent, Container, Grid, Rating, Snackbar, Typography } from '@mui/material';
+import { Alert, Box, Button, Card, CardContent, Container, Grid, Rating, Snackbar, Tab, Tabs, Typography } from '@mui/material';
 import { Carousel, Image } from 'antd';
 import axios from 'axios';
 import { format } from 'date-fns';
@@ -13,10 +13,29 @@ import { useAuth } from 'src/hooks/use-auth';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { OptionMenu } from 'src/layouts/option-menu';
 import { host, itemImage, toTitleCase } from 'src/utils/util';
+import ReportIcon from '@mui/icons-material/Report';
+import CommentIcon from '@mui/icons-material/Comment';
+import {ItemReports} from 'src/sections/wholesale/item-reports';
 
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
 
-const now = new Date();
-
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          {children}
+        </Box>
+      )}
+    </div>
+  );
+}
 const Page = () => {
 
   const [open,setOpen] = useState()
@@ -39,7 +58,7 @@ const Page = () => {
   })
 
   const [totalElements , setTotalElements] = useState(0)
-
+  const [value, setValue] = useState(0);
 
   const handleOptionMenu = (e) =>{
     setCurrentTarget(e.currentTarget)
@@ -101,6 +120,18 @@ useEffect( ()=>{
 
 
 
+  function a11yProps(index) {
+    return {
+      id: `full-width-tab-${index}`,
+      'aria-controls': `full-width-tabpanel-${index}`,
+    };
+  }
+
+  const handleChange = (event,newValue) => {
+    setValue(newValue)
+  } 
+
+
   
   return (
     <>
@@ -128,37 +159,43 @@ useEffect( ()=>{
             py: 8
           }}
       >
-        <Container maxWidth="xl">
+        <Container maxWidth="xxl">
           <Card>
             <CardContent>
-              {/* <BasicSearch onSearch={onSearch} /> */}
-              <Grid container spacing={3}>
-                  <Grid xs={12} md={3}> 
-                    <Carousel style={{
-                      height : 400,
-                      background : '#303030'
-                    }}>
-                      {!!item.avtars && item.avtars.split(',').map(avtar =>{
-                       return (<Image
-                            width ={376}
-                            height={'auto'}
-                            max-width='300px'
-                            max-height='300px'
-                            src={itemImage+item.slug+"/"+avtar}
-                        />)
-                      })}
-                      </Carousel>
+              <Grid container>
+                  <Grid item xs={12} md={3}> 
+
+                    {/* image carousel */}
+                      <Carousel style={{
+                          width : '100%',
+                          height : 'auto',
+                          maxHeight : 400,
+                          background : '#303030'
+                        }}>
+                            {!!item.avtars && item.avtars.split(',').map((avtar,i) =>{
+                            return (<Image
+                                  key={i}
+                                  src={itemImage+item.slug+"/"+avtar}
+                                  height={400}
+                                  width={'100%'}
+                                  alt={item.name}
+                                  style={{objectFit : 'contain'}} 
+                              />)
+                            })}
+                        </Carousel>
                   </Grid>
+
                   {/* item Detail */}
-                    <Grid item xs={12} md={7} 
-                          style={{
+                    <Grid item xs={12} md={6} 
+                          sx={{
                             display : 'flex',
                             flexDirection : 'column',
                             justifyContent : 'center',
-                            // alignItems : 'center',
-                            textAlign : 'left'
+                            px : 5
                           }}
                       >
+            
+                      <Box sx={{ textAlign : 'left',}}>
                           <Typography component="div" variant="h5">
                               {toTitleCase(item.name)}
                           </Typography>
@@ -209,14 +246,15 @@ useEffect( ()=>{
                                       textDecoration : 'none'
                                       }}>
                                     
-                                      <div>Current Pice : <span style={{ fontWeight:'bold' , fontSize : '20px', marginRight : '10px' }}> { (Math.round((item.price - item.discount) * 100) / 100).toFixed(2)}</span></div>
+                                      <div>Current Pice : <span style={{ fontWeight:'bold' , fontSize : '20px', marginRight : '10px' }}> 
+                                        { (Math.round((item.price - item.discount) * 100) / 100).toFixed(2)}</span></div>
                                       <CurrencyRupee sx={{ padding: 0.3, mr: 1}}/>
                                       </div>  
                                   </Grid>
                               </Grid>
-                              </Typography>
+                          </Typography>
 
-                              <Typography
+                          <Typography
                                   variant="subtitle"
                                   component="div"
                                   sx={{ color: 'text.secondary', fontSize: 15, my: 1 }}
@@ -227,11 +265,14 @@ useEffect( ()=>{
                                         display: 'flex'
                                       }}>
                                       <div style={{display:'flex'}}>
-                                          <strike style={{fontSize : 20}}>{(Math.round((item.price) * 100) / 100).toFixed(2)}</strike>
+                                          <strike style={{fontSize : 14}}>{(Math.round((item.price) * 100) / 100).toFixed(2)}</strike>
                                           <CurrencyRupee sx={{ padding: 0.3, mr: 1 }}/>
                                       </div>
                                       <div style={{display:'flex'}}>
-                                          <span style={{ color:'red',fontSize : 20}}>{(Math.round((item.discount) * 100) / 100).toFixed(2)}</span>
+                                          <span style={{ color:'red',fontSize : 14}}>
+                                            {(Math.round((item.discount) * 100) / 100).toFixed(2)}
+                                            </span>
+                                          <CurrencyRupee sx={{ padding: 0.3, mr: 1 }}/>
                                           <Discount sx={{ padding: 0.3, mr: 1 }}/>
                                       </div>
                                       </div>  
@@ -239,7 +280,7 @@ useEffect( ()=>{
                               </Grid>
                           </Typography>
 
-                          <Rating value={parseFloat(item.rating)} sx={{my:1}}/>
+                          <Rating readOnly value={parseFloat(item.rating)} sx={{my:1}}/>
 
                           <Typography
                                   variant="subtitle"
@@ -255,9 +296,12 @@ useEffect( ()=>{
                                       <span style={{ color: "green" ,  fontSize : 15}}>Currently {item.inStock == "Y" ? <span style={{color:'green'}}>Avilable</span> : <span>Unavilable</span>}</span>
                                   </div>  
                           </Typography>
+
+                        </Box>
                   </Grid>
 
-                 <Grid xs={2} md={2} 
+
+                 <Grid item xs={12} md={2} 
                   style={{
                     display : "flex",
                     justifyContent : 'flex-end',
@@ -277,49 +321,78 @@ useEffect( ()=>{
                             Edit
                           </Typography> </Button>
                       </Link>         
-                  </Grid>`
+                </Grid>
 
               </Grid>
             </CardContent>
           </Card>
-            <Box sx={{mt : 10, boxShadow : 1}}>
-              <Typography variant='h6' sx={{color : 'text.primary'}}>
-                  Customer Reviews :
-              </Typography>
-              {comments.map((comment,i) => {
-                  return (<Box 
-                  key ={i}
-                  style={{width : '100%' , padding : 20}} sx={{boxShadow : 1}}>
-                    <Grid container spacing={3}>
-                      <Grid item xs={11} md={11} >
-                        <Typography variant='subtitle' sx={{color : "text.primary", fontSize : 15}}>
-                          {comment.message}
-                        </Typography>
-                        <Typography variant='subtitle' component="div" sx={{color : "text.secondary",fontSize : 10}}>
-                          <span>{!!comment.createdAt ? format(parseInt(comment.createdAt),'dd/MM/yyyy') : '01/01/2000'}</span>
-                        </Typography>
+
+          {/* Tabs */}
+          <Box
+            sx={{
+              display : 'flex',
+              justifyContent : 'center',
+              alignItems : 'center',
+              mt : 5
+            }}
+          >
+              <Tabs  
+                  value={value}
+                  onChange={handleChange}
+                  aria-label="icon tabs example"
+                >
+                <Tab icon={<CommentIcon />} aria-label="comments" {...a11yProps(0)}  label="COMMENTS" />
+                <Tab icon={<ReportIcon />} aria-label="comments"  {...a11yProps(1)} label= "REPORTS"  />
+              </Tabs>
+          </Box>
+
+            {/* Comments and reviews */}
+            <TabPanel value={value} index={0}>
+              <Box sx={{mt : 10, boxShadow : 1}}>
+                <Typography variant='h6' sx={{color : 'text.primary'}}>
+                    Customer Reviews :
+                </Typography>
+                {comments.map((comment,i) => {
+                    return (<Box 
+                    key ={i}
+                    style={{width : '100%' , padding : 20}} sx={{boxShadow : 1, mb: 2}}>
+                      <Grid container spacing={3}>
+                        <Grid item xs={11} md={11} >
+                          <Typography variant='subtitle' sx={{color : "text.primary", fontSize : 15}}>
+                            {comment.message}
+                          </Typography>
+                          <Typography variant='subtitle' component="div" sx={{color : "text.secondary",fontSize : 10}}>
+                            <span>{!!comment.createdAt ? format(parseInt(comment.createdAt),'dd/MM/yyyy') : '01/01/2000'}</span>
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={1} md={1} sx={{color:'text.secondary'}} >
+
+
+                        <Button
+                          id="demo-customized-button"
+                          aria-controls={openMenu ? 'demo-customized-menu' : undefined}
+                          aria-haspopup="true"
+                          aria-expanded={openMenu ? 'true' : undefined}
+                          // variant="contained"
+                          disableElevation
+                          onClick={handleOptionMenu}
+                          endIcon={<MoreVertIcon />}
+                        >
+                        </Button> 
+                            <OptionMenu currentTarget={currentTarget} handleClose={handleCloseMenu} />
+                        </Grid>
                       </Grid>
-                      <Grid item xs={1} md={1} sx={{color:'text.secondary'}} >
+                    </Box>)
+                })}
+              </Box>
+            </TabPanel>
 
-
-                      <Button
-                        id="demo-customized-button"
-                        aria-controls={openMenu ? 'demo-customized-menu' : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={openMenu ? 'true' : undefined}
-                        // variant="contained"
-                        disableElevation
-                        onClick={handleOptionMenu}
-                        endIcon={<MoreVertIcon />}
-                      >
-                      </Button> 
-                          <OptionMenu currentTarget={currentTarget} handleClose={handleCloseMenu} />
-                      </Grid>
-                    </Grid>
-                  </Box>)
-              })}
-            </Box>
-
+            <TabPanel value={value} index={1}>
+            {/* Item Reports */}
+              <Box>
+                <ItemReports />
+              </Box>
+            </TabPanel>
         </Container>
 
         </Box>
