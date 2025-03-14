@@ -15,6 +15,7 @@ import { suId } from 'src/utils/util';
 import AddCardIcon from '@mui/icons-material/AddCard';
 import SellIcon from '@mui/icons-material/Sell';
 import { AccountBalanceWalletOutlined } from '@mui/icons-material';
+import LocalMallIcon from '@mui/icons-material/LocalMall';
 
 export const items = (user) =>{
 
@@ -93,6 +94,18 @@ export const items = (user) =>{
         </SvgIcon>
       )
     },
+
+    {
+      title: 'All Items',
+      path: '/items',
+      show : true,
+      icon: (
+        <SvgIcon fontSize="small">
+          <LocalMallIcon />
+        </SvgIcon>
+      )
+    },
+  
   
     {
       title: 'Add User',

@@ -1,19 +1,17 @@
 import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
-import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
 import { Alert, Box, Button, Container, Snackbar, Stack, SvgIcon } from '@mui/material';
 import axios from 'axios';
 import Head from 'next/head';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import DialogFormForExcelImport from 'src/layouts/excel/import-excel';
+import { BasicHeaders } from 'src/sections/basic-header';
 import { BasicSearch } from 'src/sections/basic-search';
-import { StoresCard } from 'src/sections/wholesale/stores-table';
 import { ItemsTable } from 'src/sections/wholesale/item-table';
-import { host, rowsPerPageOptions, toTitleCase } from 'src/utils/util';
+import { host, projectName, rowsPerPageOptions, toTitleCase } from 'src/utils/util';
 
 
 
@@ -58,35 +56,6 @@ const Page = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [downloadUrl, setDownloadUrl] = useState('');
 
-    useEffect(()=>{
-        setData((previous)=>({...previous , storeId : wholesale.id}))
-    },[wholesale])
-
-
-
-    /** Get wholesale using user slug. */
-    useEffect(() => {
-        const updateStoreId = async () => {
-            axios.defaults.headers = {
-                Authorization: auth.token
-            }
-            await axios.get(host + '/admin/store/detailbyuser/' + userSlug)
-                .then(res => {
-                    let store = res.data.res;
-                    setWholesale(store)
-                })
-                .catch(err => {
-                    setMessage(!!err.response ? err.response.data.message : err.message)
-                    setFlag('error')
-                    setOpen(true)
-                })
-        }
-        updateStoreId()
-    }, [])
-
-
-
-    
 
 
     useEffect(() => {
@@ -118,7 +87,7 @@ const Page = () => {
         axios.defaults.headers = {
           Authorization: auth.token
         };
-        await axios.post(host + '/admin/item/importExcel/' + wholesale.slug, formData,{
+        await axios.post(host + '/admin/item/importExcel', formData,{
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -163,7 +132,7 @@ const Page = () => {
     const handleDownload = () => {
         const link = document.createElement('a');
         link.href = downloadUrl;
-        link.setAttribute('download', wholesale.storeName + '_itemNotUpdated_items.xlsx');
+        link.setAttribute('download', projectName + '_itemNotUpdated_items.xlsx');
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -252,28 +221,6 @@ const Page = () => {
 
     
 
-
-    const onDeleteStore = (slug) => {
-        axios.defaults.headers = {
-            Authorization: auth.token
-        }
-        axios.post(`${host}/admin/store/delete`,{
-            slug : slug
-        })
-            .then(res => {
-                setFlag("success")
-                setMessage(res.data.message)
-                setOpen(true)
-                router.push('/wholesalers');
-            }).catch(err => {
-                console.log(err)
-                setMessage(!!err.response ? err.response.data.message : err.message)
-                setFlag("error")
-                setOpen(true)
-            })
-    }
-
-
     const onDelete = (slug) => {
         axios.defaults.headers = {
             Authorization: auth.token
@@ -300,16 +247,6 @@ const Page = () => {
     const handleClose = () => {
         setOpen(false)
     };
-
-    const columns = [
-        { title: 'Name', dataIndex: 'name', key: 'name' },
-        { title: 'Label', dataIndex: 'label', key: 'label' },
-        { title: 'Slug', dataIndex: 'slug', key: 'slug' },
-        { title: 'Capacity', dataIndex: 'capacity', key: 'capacity' },
-        { title: 'Price', dataIndex: 'price', key: 'price' },
-        { title: 'Discount', dataIndex: 'discount', key: 'discount' },
-        { title: 'Stock', dataIndex: 'stock', key: 'stock' },
-    ];
 
 
     const handlePageChange = useCallback(
@@ -352,13 +289,13 @@ const Page = () => {
         axios.defaults.headers = {
             Authorization: auth.token
         }
-        await axios.post(host + '/admin/item/exportExcel/' + wholesale.slug, {...data, size: totalElements}, { responseType: 'blob' })
+        await axios.post(host + '/admin/item/exportExcel', {...data, size: totalElements}, { responseType: 'blob' })
             .then(response => {
                 const url = window.URL.createObjectURL(new Blob([response.data], 
                     { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', wholesale.storeName + '_items.xlsx');
+                link.setAttribute('download',projectName + '_items.xlsx');
                 document.body.appendChild(link);
                 link.click();
                 link.remove();
@@ -402,7 +339,7 @@ const Page = () => {
             />
             <Head>
                 <title>
-                    {toTitleCase(wholesale.storeName)} | Swami Sales
+                    {projectName}
                 </title>
             </Head>
             <Box
@@ -422,9 +359,10 @@ const Page = () => {
                             xl : 5
                         } 
                     }}>
-                    <Stack spacing={3}>
 
-                        <StoresCard deleteStore={onDeleteStore} store={wholesale} visit={false} delete={false} />
+
+                    <Stack spacing={3}>
+                    <BasicHeaders headerTitle={toTitleCase("All Items")} userType="I" />    
 
                         <Stack
                             direction="row"
@@ -450,31 +388,9 @@ const Page = () => {
                                     Export
                                 </Button>
                             </Stack>
-                            <div>
-                                <Link
-                                    href={{
-                                        pathname: '/item/create/[slug]/[us]',
-                                        query: {
-                                            slug: wholesale.slug,
-                                            us: userSlug
-                                        },
-                                    }}>
-                                    <Button
-                                        startIcon={(
-                                            <SvgIcon fontSize="small">
-                                                <PlusIcon />
-                                            </SvgIcon>
-                                        )}
-                                        variant="contained"
-                                    >
-                                        Add
-                                    </Button>
-                                </Link>
-                            </div>
                         </Stack>
 
                         
-                    
                         <BasicSearch onSearch={onSearch} type="item" />
                         <ItemsTable
                             count={totalElements}

@@ -39,6 +39,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import { itemImage, rowsPerPageOptions, toTitleCase } from 'src/utils/util';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { CopyOutlined } from '@ant-design/icons';
+import CommentIcon from '@mui/icons-material/Comment';
+import {ItemReports} from 'src/sections/wholesale/item-reports';
+import ReportGmailerrorredOutlinedIcon from '@mui/icons-material/ReportGmailerrorredOutlined';
 
 export const ItemsTable = (props) => {
   const {
@@ -65,6 +68,7 @@ export const ItemsTable = (props) => {
   const [isCopied, setIsCopied] = useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  
 
   async function copyTextToClipboard(text) {
     if ('clipboard' in navigator) {
@@ -173,6 +177,14 @@ export const ItemsTable = (props) => {
                 </TableCell>
 
                 <TableCell>
+                  Total Comments
+                </TableCell>
+
+                <TableCell>
+                  Total Reports
+                </TableCell>
+
+                <TableCell>
                   Stock
                 </TableCell>
 
@@ -230,8 +242,8 @@ export const ItemsTable = (props) => {
                     </TableCell>
 
                     <TableCell align='center'>
-                        {item.label === "O" && <Badge color="error" badgeContent={'Old'} />}
-                        {item.label === "N" && <Badge color="success" badgeContent={'New'} />}
+                        {item.label === "O" && <Badge color="error" badgeContent={'Old'} title="Old Items" />}
+                        {item.label === "N" && <Badge color="success" badgeContent={'New'} title="New Items" />}
                     </TableCell>
 
                     <TableCell align='center'>
@@ -245,7 +257,14 @@ export const ItemsTable = (props) => {
                     </TableCell>
 
                     <TableCell>
-                        <Rating name="read-only" value={item.rating} readOnly />
+                      <Stack
+                          alignItems="center"
+                          direction="row"
+                          spacing={2}
+                        >
+                          <Rating name="read-only" value={item.rating} readOnly titleAccess="Rating" />
+                          <span title='Total Ratings'>{!!item.totalRatingCount ? item.totalRatingCount : 0}</span>
+                        </Stack>
                     </TableCell>
 
                     <TableCell>
@@ -268,7 +287,7 @@ export const ItemsTable = (props) => {
                       >
                             <span>{item.discount} </span>
                       <CurrencyRupeeIcon sx={{fontSize:'15px',mt:'20px'}}/>
-                      <DiscountIcon sx={{color:'red',fontSize:'20px',mt:'20px',px:'0px'}} />
+                      <DiscountIcon sx={{color:'red',fontSize:'20px',mt:'20px',px:'0px'}} titleAccess='Discounts'/>
 
                       </Stack>
                     </TableCell>
@@ -294,9 +313,34 @@ export const ItemsTable = (props) => {
                         spacing={2}
                       >
                         {item.price-item.discount}
-                      <CurrencyRupeeIcon sx={{fontSize:'15px',mt:'20px'}}/>
+                      <CurrencyRupeeIcon sx={{fontSize:'15px',mt:'20px'}} titleAccess='Actual Prifce'/>
                       </Stack>
                     </TableCell>
+
+
+                    {/* Total Comments */}
+                    <TableCell>
+                      <Stack
+                          alignItems="center"
+                          direction="row"
+                          spacing={2}
+                        >
+                            <span>{!!item.totalComments ? item.totalComments : 0}</span>
+                          <CommentIcon sx={{fontSize:'15px',mt:'20px'}} titleAccess='Comments'/>
+                        </Stack>
+                    </TableCell>
+                    {/* Total reports */}
+                    <TableCell>
+                        <Stack
+                              alignItems="center"
+                              direction="row"
+                              spacing={2}
+                            >
+                              <span> {!!item.totalReportsCount ? item.totalReportsCount : 0}</span>
+                            <ReportGmailerrorredOutlinedIcon sx={{fontSize:'15px',mt:'20px',color : 'red'}} titleAccess='Reports'/>
+                        </Stack>
+                    </TableCell>
+
 
                     
                     <TableCell>
@@ -334,7 +378,7 @@ export const ItemsTable = (props) => {
                         marginX : '2px',
                         color : 'Red'
                         
-                        } }  titleAccess='activate' onClick={(e)=> {
+                        } }  titleAccess='Activate' onClick={(e)=> {
                           setMessage("We are going to activate this user.")
                           setSlug(item.slug)
                           setStatus('A')
@@ -347,7 +391,7 @@ export const ItemsTable = (props) => {
                         marginX : '2px',
                         color : 'Green'
                         
-                        } } titleAccess='deactivate' onClick={(e)=> {
+                        } } titleAccess='Deactivate' onClick={(e)=> {
                           setMessage("We are going to deactivate this user.")
                           setSlug(item.slug)
                           setStatus('D')
@@ -374,7 +418,7 @@ export const ItemsTable = (props) => {
                                   marginX : '5px',
                                   color : '#111927'
                             }}
-                            titleAccess='Edit'
+                            titleAccess='View Item Details'
                             />   
                       </Link>
 
@@ -397,7 +441,7 @@ export const ItemsTable = (props) => {
                         marginX : '5px',
                         color : 'Red'
                         
-                        } }  titleAccess='delete' onClick={(e)=>{
+                        } }  titleAccess='Delete' onClick={(e)=>{
                           setSlug(item.slug)
                           setRowIndex(index)
                           setMessage("We are going to delete this item if you agree press agree otherwise press disagree.")
