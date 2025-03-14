@@ -8,31 +8,31 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "item_report")
+@Table(name = "item_ratings")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class ItemReport {
-
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@NoArgsConstructor
+public class ItemRating {
     @Id
-    int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    long id ;
 
     @Column(name = "item_id")
     Long itemId;
 
-    @OneToOne(fetch =FetchType.EAGER )
-    @JoinColumn(name = "user_id")
-    User user;
+    @Column(name = "user_id")
+    Integer userId;
 
-    @Column(name = "message")
-    String message;
+    @Column(name = "rating")
+    Integer rating;
 
     @Column(name = "created_at")
     Long createdAt;
 
     @Column(name = "updated_at")
     Long updatedAt;
+
+
 
 }

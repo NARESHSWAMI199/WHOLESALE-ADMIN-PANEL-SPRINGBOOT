@@ -99,7 +99,7 @@ public class ItemController extends ServiceContainer {
 
 
     @PostMapping(value = {"/importExcel/{wholesaleSlug}"})
-    public ResponseEntity<Object> importItemsFromExcelSheet(HttpServletRequest request, @RequestParam("excelfile") MultipartFile excelSheet, @PathVariable("wholesaleSlug") String wholesaleSlug) {
+    public ResponseEntity<Object> importItemsFromExcelSheet(HttpServletRequest request, @RequestParam("excelfile") MultipartFile excelSheet, @PathVariable(value = "wholesaleSlug") String wholesaleSlug) {
         logger.info("Importing items from Excel sheet for wholesaleSlug: {}", wholesaleSlug);
         Map<String,Object> responseObj = new HashMap<>();
         try {
@@ -107,7 +107,10 @@ public class ItemController extends ServiceContainer {
                 Map<String,List<String>> result = readExcel.getExcelDataInJsonFormat(excelSheet);
                 User user = (User) request.getAttribute("user");
                 Integer wholesaleId = storeService.getStoreIdByStoreSlug(wholesaleSlug);
-                if (wholesaleId == null) throw new Exception("Wholesale was not found.");
+                if (wholesaleId == null) {
+                    logger.error("Wholesale not found.");
+                    throw new Exception("Wholesale was not found.");
+                }
                 List<ItemHbRepository.ItemUpdateError> updateItemsError = itemService.updateItemsWithExcel(result, user.getId(), wholesaleId);
                 if(updateItemsError.isEmpty()) {
                     responseObj.put("message", "Items successfully updated.");
@@ -136,15 +139,20 @@ public class ItemController extends ServiceContainer {
     }
 
 
-    @PostMapping(value = {"/exportExcel/{wholesaleSlug}"})
-    public ResponseEntity<Object> exportItemsFromExcel(@PathVariable String wholesaleSlug, @RequestBody ItemSearchFields searchFilters,HttpServletRequest request) {
+    @PostMapping(value = {"/exportExcel/{wholesaleSlug}","exportExcel"})
+    public ResponseEntity<Object> exportItemsFromExcel(@PathVariable(required = false) String wholesaleSlug, @RequestBody ItemSearchFields searchFilters,HttpServletRequest request) {
         logger.info("Exporting items to Excel for wholesaleSlug: {}", wholesaleSlug);
         User loggedUser = (User) request.getAttribute("user");
         Map<String,Object> responseObj = new HashMap<>();
         try {
             Store wholesale = storeService.getStoreDetails(wholesaleSlug);
-            if (wholesale != null) {
-                searchFilters.setStoreId(wholesale.getId());
+            if (wholesale != null || loggedUser.getUserType().equals("S") || loggedUser.getUserType().equals("SA")) {
+                if(wholesale != null) {
+                    searchFilters.setStoreId(wholesale.getId());
+                }else {
+                    logger.info("Wholesale is not found and wholesaleSlug : {} so that's why we using logged user slug : {} instead wholesale slug ",wholesaleSlug,loggedUser.getSlug());
+                    wholesaleSlug = loggedUser.getSlug();
+                }
                 String filePath = itemService.createItemsExcelSheet(searchFilters,wholesaleSlug,loggedUser);
                 Path path = Paths.get(filePath);
                 Resource resource = new UrlResource(path.toUri());

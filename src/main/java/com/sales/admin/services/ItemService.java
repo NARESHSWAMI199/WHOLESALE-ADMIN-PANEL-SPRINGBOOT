@@ -47,6 +47,7 @@ public class ItemService extends RepoContainer{
                 Sort.by(searchFilters.getOrderBy()).descending();
         Specification<Item> specification = Specification.where(
             containsName(searchFilters.getSearchKey().trim())
+                .or(hasSlug(searchFilters.getSearchKey()))
                 .and(isWholesale(searchFilters.getStoreId(),loggedUser.getUserType()))
                 .and(isStatus(searchFilters.getStatus()))
                 .and(inStock(searchFilters.getInStock()))
@@ -92,7 +93,10 @@ public class ItemService extends RepoContainer{
         }
         int totalItem = itemsList.size();
         String [] headers = {"NAME","TOKEN","PRICE", "DISCOUNT","LABEL","CAPACITY","RATING","IN-STOCK","STATUS","CREATED-AT","UPDATED-AT"};
-        String filePath = writeExcel.writeExcel(result, totalItem, Arrays.asList(headers), wholesaleSlug);
+        String folderName  = wholesaleSlug;
+        // When we're creating all items, excel without a specific user wholesale or store from admin pannel
+        if(folderName == null) folderName = loggedUser.getSlug();
+        String filePath = writeExcel.writeExcel(result, totalItem, Arrays.asList(headers), folderName);
         logger.info("Exiting createItemsExcelSheet");
         return filePath;
     }
