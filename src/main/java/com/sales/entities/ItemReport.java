@@ -22,6 +22,10 @@ public class ItemReport {
     @Column(name = "item_id")
     Long itemId;
 
+    @OneToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name = "category_id")
+    ReportCategory reportCategory;
+
     @OneToOne(fetch =FetchType.EAGER )
     @JoinColumn(name = "user_id")
     User user;

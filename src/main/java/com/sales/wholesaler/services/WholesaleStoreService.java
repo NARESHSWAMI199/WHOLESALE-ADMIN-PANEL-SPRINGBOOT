@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-import static com.sales.specifications.ItemCommentSpecifications.isUserId;
-import static com.sales.specifications.ItemCommentSpecifications.isWholesaleId;
+import static com.sales.specifications.ItemReviewSpecifications.isUserId;
+import static com.sales.specifications.ItemReviewSpecifications.isWholesaleId;
 import static com.sales.utils.Utils.getCurrentMillis;
 
 @Service

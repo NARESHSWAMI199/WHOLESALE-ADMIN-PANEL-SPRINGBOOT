@@ -1,8 +1,8 @@
 package com.sales.wholesaler.controller;
 
 
-import com.sales.dto.ItemCommentsFilterDto;
-import com.sales.entities.ItemComments;
+import com.sales.dto.ItemReviewsFilterDto;
+import com.sales.entities.ItemReviews;
 import com.sales.entities.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -18,17 +18,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("wholesale/item/comments")
-public class WholesaleItemCommentController extends WholesaleServiceContainer {
+public class WholesaleItemReviewController extends WholesaleServiceContainer {
 
-    private static final Logger logger = LoggerFactory.getLogger(WholesaleItemCommentController.class);
+    private static final Logger logger = LoggerFactory.getLogger(WholesaleItemReviewController.class);
 
     @PostMapping("all")
-    public ResponseEntity<List<ItemComments>> getAllUsers(@RequestBody ItemCommentsFilterDto itemCommentsFilterDto, HttpServletRequest request) {
+    public ResponseEntity<List<ItemReviews>> getAllReviews(@RequestBody ItemReviewsFilterDto ItemReviewsFilterDto, HttpServletRequest request) {
         logger.info("Starting getAllUsers method");
         User loggedUser = (User) request.getAttribute("user");
-        List<ItemComments> itemCommentsPage = wholesaleItemCommentService.getALlItemComment(itemCommentsFilterDto, loggedUser);
+        List<ItemReviews> ItemReviewsPage = wholesaleItemReviewService.getALlItemReview(ItemReviewsFilterDto, loggedUser);
         logger.info("Completed getAllUsers method");
-        return new ResponseEntity<>(itemCommentsPage, HttpStatus.OK);
+        return new ResponseEntity<>(ItemReviewsPage, HttpStatus.OK);
     }
 
 }

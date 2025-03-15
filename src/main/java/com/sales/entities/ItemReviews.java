@@ -13,15 +13,18 @@ import org.hibernate.annotations.SQLRestriction;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "item_comments")
+@Table(name = "item_reviews")
 @SQLRestriction("is_deleted != 'Y'")
-public class ItemComments {
+public class ItemReviews {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    long id;
 
     @Column(name = "item_id")
     Long itemId;
+
+    @Column(name = "rating")
+    Float rating;
 
     @Column(name = "slug")
     String slug;
@@ -29,8 +32,9 @@ public class ItemComments {
     @Column(name = "store_id")
     Integer storeId;
 
-    @Column(name = "user_id")
-    Integer userId;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    User user;
 
     @Column(name = "likes")
     Long likes= 0L;
@@ -52,5 +56,12 @@ public class ItemComments {
 
     @Transient
     Integer repliesCount;
+
+    @Transient
+    String username;
+    @Transient
+    String avatar;
+    @Transient
+    String userSlug;
 
 }

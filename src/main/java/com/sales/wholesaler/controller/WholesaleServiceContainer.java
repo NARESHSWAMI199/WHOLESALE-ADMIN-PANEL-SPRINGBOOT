@@ -28,7 +28,7 @@ public class WholesaleServiceContainer {
 
 
     @Autowired
-    protected WholesaleItemCommentService wholesaleItemCommentService;
+    protected WholesaleItemReviewService wholesaleItemReviewService;
 
     @Autowired
     protected WholesalePromotionsService wholesalePromotionsService;

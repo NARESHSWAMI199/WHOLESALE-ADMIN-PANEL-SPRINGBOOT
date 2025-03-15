@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = {SalesApplication.class})
 @AutoConfigureMockMvc
-public class ItemCommentControllerTest extends TestUtil {
+public class ItemReviewControllerTest extends TestUtil {
 
     @Autowired
     MockMvc mockMvc;

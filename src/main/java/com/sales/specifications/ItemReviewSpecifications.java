@@ -3,57 +3,57 @@ package com.sales.specifications;
 import com.sales.entities.*;
 import org.springframework.data.jpa.domain.Specification;
 
-public class ItemCommentSpecifications {
+public class ItemReviewSpecifications {
 
-    public static Specification<ItemComments> containsName(String searchKey) {
+    public static Specification<ItemReviews> containsName(String searchKey) {
         return (root, query, criteriaBuilder) -> {
             if (searchKey == null) return null;
-            return criteriaBuilder.like(root.get(ItemComments_.MESSAGE), "%" + searchKey + "%");
+            return criteriaBuilder.like(root.get(ItemReviews_.MESSAGE), "%" + searchKey + "%");
         };
     }
 
 
-    public static Specification<ItemComments> isItemId(Long itemId) {
+    public static Specification<ItemReviews> isItemId(Long itemId) {
         return (root, query, criteriaBuilder) -> {
-            return criteriaBuilder.equal(root.get(ItemComments_.ITEM_ID), itemId);
+            return criteriaBuilder.equal(root.get(ItemReviews_.ITEM_ID), itemId);
         };
     }
 
-    public static Specification<ItemComments> isParentComment(int parentId) {
+    public static Specification<ItemReviews> isParentComment(int parentId) {
         return (root, query, criteriaBuilder) -> {
-            return criteriaBuilder.equal(root.get(ItemComments_.PARENT_ID), parentId);
+            return criteriaBuilder.equal(root.get(ItemReviews_.PARENT_ID), parentId);
         };
     }
 
 
 
-    public static Specification<ItemComments> greaterThanOrEqualFromDate(Long fromDate) {
+    public static Specification<ItemReviews> greaterThanOrEqualFromDate(Long fromDate) {
             return (root, query, criteriaBuilder) -> {
                 if (fromDate == null) return  null;
-                return criteriaBuilder.greaterThanOrEqualTo(root.get(ItemComments_.CREATED_AT), fromDate);
+                return criteriaBuilder.greaterThanOrEqualTo(root.get(ItemReviews_.CREATED_AT), fromDate);
             };
         }
 
-        public static Specification<ItemComments> lessThanOrEqualToToDate(Long toDate) {
+        public static Specification<ItemReviews> lessThanOrEqualToToDate(Long toDate) {
             return (root, query, criteriaBuilder) -> {
                 if (toDate == null) return null;
-                return criteriaBuilder.lessThanOrEqualTo(root.get(ItemComments_.CREATED_AT), toDate);
+                return criteriaBuilder.lessThanOrEqualTo(root.get(ItemReviews_.CREATED_AT), toDate);
             };
         }
 
 
 
-        public static Specification<ItemComments> hasSlug(String slug) {
+        public static Specification<ItemReviews> hasSlug(String slug) {
             return (root, query, criteriaBuilder) -> {
                 if (slug == null || slug.isEmpty()) return null;
-                return criteriaBuilder.equal(root.get(ItemComments_.SLUG), slug.trim());
+                return criteriaBuilder.equal(root.get(ItemReviews_.SLUG), slug.trim());
             };
         }
 
-        public static Specification<ItemComments> notSuperAdmin(User loggedUser) {
+        public static Specification<ItemReviews> notSuperAdmin(User loggedUser) {
             return (root, query, criteriaBuilder) -> {
                 if(loggedUser.getId() == 0) return  null;
-                return criteriaBuilder.notEqual(root.get(ItemComments_.ID), 0);
+                return criteriaBuilder.notEqual(root.get(ItemReviews_.ID), 0);
             };
         }
 

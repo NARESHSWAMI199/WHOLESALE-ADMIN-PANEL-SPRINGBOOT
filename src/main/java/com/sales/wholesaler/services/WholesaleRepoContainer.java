@@ -54,7 +54,7 @@ public class WholesaleRepoContainer {
     protected WholesaleSubCategoryRepository wholesaleSubCategoryRepository;
 
     @Autowired
-    protected WholesaleItemCommentRepository wholesaleItemCommentRepository;
+    protected WholesaleItemReviewRepository wholesaleItemReviewRepository;
 
 
     @Autowired

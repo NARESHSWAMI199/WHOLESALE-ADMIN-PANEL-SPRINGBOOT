@@ -19,7 +19,7 @@ public class ServiceContainer {
     protected ItemService itemService;
 
     @Autowired
-    ItemCommentService itemCommentService;
+    ItemReviewService itemReviewService;
 
     @Autowired
     protected AddressService addressService;
