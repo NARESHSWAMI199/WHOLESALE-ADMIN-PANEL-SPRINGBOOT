@@ -16,6 +16,10 @@ import { host, itemImage, toTitleCase } from 'src/utils/util';
 import ReportIcon from '@mui/icons-material/Report';
 import CommentIcon from '@mui/icons-material/Comment';
 import {ItemReports} from 'src/sections/wholesale/item-reports';
+import { ItemReviews } from 'src/sections/wholesale/item-reviews';
+
+
+
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -50,7 +54,7 @@ const Page = () => {
   const itemCreatedAt =   format(!!item.createdAt ? item.createdAt : 0, 'dd/MM/yyyy')
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [comments,setComments] = useState([])
+  const [itemReviews,setItemReviews] = useState([])
   const [itemReports,setItemReports] = useState([])
   const [currentTarget,setCurrentTarget] = useState(null)
   const openMenu = Boolean(currentTarget);
@@ -61,7 +65,8 @@ const Page = () => {
     size : rowsPerPage
   })
 
-  const [totalElements , setTotalElements] = useState(0)
+  const [totalReviewsElements , setTotalReviesElements] = useState(0)
+  const [totalReportsElements , setTotalReportsElements] = useState(0)
   const [value, setValue] = useState(0);
 
   const handleOptionMenu = (e) =>{
@@ -103,10 +108,11 @@ useEffect( ()=>{
        axios.defaults.headers = {
          Authorization : auth.token
        }
-       await axios.post(host+"/admin/item/comments/all",data)
+       await axios.post(host+"/admin/item/review/all",{...data,itemId : item.id})
        .then(res => {
           const data = res.data;
-           setComments(data);
+           setItemReviews(data.content);
+           setTotalReviesElements(data.totalElements)
            console.log(data)
        })
        .catch(err => {
@@ -131,7 +137,7 @@ useEffect( ()=>{
      .then(res => {
         const data = res.data;
          setItemReports(data.content);
-         setTotalElements(data.totalElements)
+         setTotalReportsElements(data.totalElements)
          console.log("item reports : "+JSON.stringify(data.content))
      })
      .catch(err => {
@@ -250,7 +256,7 @@ useEffect( ()=>{
                               {toTitleCase(item.name)}
                           </Typography>
                           <Typography
-                              variant="subtitle"
+                              variant="h6"
                               component="div"
                               sx={{ color: 'text.secondary',fontSize : 15, my:1 }}
                           >
@@ -266,7 +272,7 @@ useEffect( ()=>{
                           </Typography>
 
                           <Typography
-                              variant="subtitle"
+                              variant="h6"
                               component="div"
                               sx={{ color: 'text.secondary',fontSize : 15, my:1 }}
                           >
@@ -282,7 +288,38 @@ useEffect( ()=>{
 
 
                           <Typography
-                              variant="subtitle"
+                              variant="h6"
+                              component="div"
+                              sx={{ color: 'text.secondary',fontSize : 15, my:1 }}
+                          >
+                              <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              flexWrap: 'wrap',
+                              }}>
+                              <CommentIcon sx={{ mr: 1, padding: 0.2 }} />
+                              <span>{(item.totalComments)} Comments</span>
+                              </div>  
+                          </Typography>
+
+                          <Typography
+                              variant="h6"
+                              component="div"
+                              sx={{ color: 'text.secondary',fontSize : 15, my:1 }}
+                          >
+                              <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              flexWrap: 'wrap',
+                              }}>
+                              <ReportIcon sx={{ mr: 1, padding: 0.2 }} />
+                              <span>{(item.totalReportsCount)} Reports </span>
+                              </div>  
+                          </Typography>
+
+
+                          <Typography
+                              variant="h6"
                               component="div"
                               sx={{ color: 'text.secondary', fontSize: 15, my: 1 }}
                           >
@@ -330,10 +367,15 @@ useEffect( ()=>{
                               </Grid>
                           </Typography>
 
-                          <Rating readOnly value={parseFloat(item.rating)} sx={{my:1}}/>
-
+                        <Box sx={{display : 'flex', alignItems : 'center',my:1}}>
+                          <Rating readOnly value={parseFloat(item.rating)} sx={{mx : 1}}/>
+                            <Typography>
+                                  {item.totalRatingCount} Ratings
+                            </Typography>
+                        </Box>
+                      
                           <Typography
-                                  variant="subtitle"
+                                  variant="h6"
                                   component="div"
                                   sx={{ color: 'text.secondary', fontSize: 15, mt: 1 }}
                               >
@@ -346,7 +388,6 @@ useEffect( ()=>{
                                       <span style={{ color: "green" ,  fontSize : 15}}>Currently {item.inStock == "Y" ? <span style={{color:'green'}}>Avilable</span> : <span>Unavilable</span>}</span>
                                   </div>  
                           </Typography>
-
                         </Box>
                   </Grid>
 
@@ -398,42 +439,17 @@ useEffect( ()=>{
 
             {/* Comments and reviews */}
             <TabPanel value={value} index={0}>
-              <Box sx={{mt : 10, boxShadow : 1}}>
-                <Typography variant='h6' sx={{color : 'text.primary'}}>
-                    Customer Reviews :
-                </Typography>
-                {comments.map((comment,i) => {
-                    return (<Box 
-                    key ={i}
-                    style={{width : '100%' , padding : 20}} sx={{boxShadow : 1, mb: 2}}>
-                      <Grid container spacing={3}>
-                        <Grid item xs={11} md={11} >
-                          <Typography variant='subtitle' sx={{color : "text.primary", fontSize : 15}}>
-                            {comment.message}
-                          </Typography>
-                          <Typography variant='subtitle' component="div" sx={{color : "text.secondary",fontSize : 10}}>
-                            <span>{!!comment.createdAt ? format(parseInt(comment.createdAt),'dd/MM/yyyy') : '01/01/2000'}</span>
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={1} md={1} sx={{color:'text.secondary'}} >
+             {/* Item Reviews */}
+             <Box>
+                <ItemReviews 
+                  count={totalReviewsElements}
+                  itemReviews={itemReviews}
+                  onPageChange={handlePageChange}
+                  onRowsPerPageChange={handleRowsPerPageChange}
+                  page={page}
+                  rowsPerPage={rowsPerPage}
 
-
-                        <Button
-                          id="demo-customized-button"
-                          aria-controls={openMenu ? 'demo-customized-menu' : undefined}
-                          aria-haspopup="true"
-                          aria-expanded={openMenu ? 'true' : undefined}
-                          // variant="contained"
-                          disableElevation
-                          onClick={handleOptionMenu}
-                          endIcon={<MoreVertIcon />}
-                        >
-                        </Button> 
-                            <OptionMenu currentTarget={currentTarget} handleClose={handleCloseMenu} />
-                        </Grid>
-                      </Grid>
-                    </Box>)
-                })}
+                />
               </Box>
             </TabPanel>
 
@@ -441,7 +457,7 @@ useEffect( ()=>{
             {/* Item Reports */}
               <Box>
                 <ItemReports 
-                  count={totalElements}
+                  count={totalReportsElements}
                   itemReports={itemReports}
                   onPageChange={handlePageChange}
                   onRowsPerPageChange={handleRowsPerPageChange}

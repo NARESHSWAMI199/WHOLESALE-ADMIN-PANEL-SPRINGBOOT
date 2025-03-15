@@ -2,6 +2,7 @@ import {
   Avatar,
   Box,
   Card,
+  Rating,
   Stack,
   Table,
   TableBody,
@@ -13,11 +14,11 @@ import {
 } from '@mui/material';
 import { format } from 'date-fns';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getInitials } from 'src/utils/get-initials';
 import { rowsPerPageOptions, toTitleCase, userImage } from 'src/utils/util';
 
-export const ItemReports = (props) => {
+export const ItemReviews = (props) => {
   const {
     count = 0,
 
@@ -27,7 +28,14 @@ export const ItemReports = (props) => {
     rowsPerPage = 0,
     selected = []
   } = props;
-  const [itemReports] = useState(props.itemReports)
+  const [itemReviews,setItemReviews] = useState(props.itemReviews)
+
+  useEffect(()=>{
+    if(!!props.itemReviews)
+    setItemReviews(props.itemReviews)
+  })
+
+
   return ( <>
     <Card sx={{overflowX: 'auto'}}>
         <Box sx={{ minWidth: 800}}>
@@ -40,7 +48,7 @@ export const ItemReports = (props) => {
                   Username
                 </TableCell>
                 <TableCell>
-                  Category
+                  Rating
                 </TableCell>
 
                 <TableCell>
@@ -48,18 +56,18 @@ export const ItemReports = (props) => {
                 </TableCell>
 
                 <TableCell>
-                  Reported At
+                  Commetnd At
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {itemReports.length ?  itemReports.map((itemReport,index) => {
-                const isSelected = selected.includes(itemReport.slug);
-                const createdAt = format(itemReport.createdAt, 'dd/MM/yyyy');
+              {itemReviews.length > 0 ?  itemReviews.map((itemReview,index) => {
+                const isSelected = selected.includes(itemReview.slug);
+                const createdAt = format(parseInt(itemReview.createdAt), 'dd/MM/yyyy');
                 return (
                   <TableRow
                     hover
-                    key={itemReport.id}
+                    key={itemReview.id}
                     selected={isSelected}
                   >
                     <TableCell padding="checkbox">
@@ -71,26 +79,32 @@ export const ItemReports = (props) => {
                         spacing={2}
                       >      
                  
-                    {!!itemReport.user?.avtar ? <Image src={userImage+itemReport.user?.slug+"/"+item.avtar} style={{borderRadius : "50%" , width:"50px", height : "50px" }}/>  : 
-                        <Avatar src={userImage+itemReport.user?.slug+"/"+itemReport.user?.avtar} >
-                          {getInitials(itemReport.user?.username)}
+                    {!!itemReview.user?.avtar ? <Image src={userImage+itemReview.user?.slug+"/"+itemReview.avatar} style={{borderRadius : "50%" , width:"50px", height : "50px" }}/>  : 
+                        <Avatar src={userImage+itemReview.userSlug+"/"+itemReview.user?.avatar} >
+                          {getInitials(itemReview.user?.username)}
                         </Avatar>
                         }
                    
                       <Typography variant="subtitle2">
-                      {toTitleCase(itemReport.user?.username)}
+                      {toTitleCase(itemReview.user?.username)}
                     </Typography>
                          
                       </Stack>
                     </TableCell>
                
        
-                    <TableCell sx={{color:'text.secondary'}}>
-                        {itemReport?.reportCategory?.categoryTitle}
-                    </TableCell>
-
+                   <TableCell>
+                    <Stack
+                        alignItems="center"
+                        direction="row"
+                        spacing={2}
+                      >
+                        <Rating name="read-only" value={itemReview.rating} readOnly titleAccess="Rating" />
+                      </Stack>
+                  </TableCell>
+              
                     <TableCell>
-                        {itemReport.message}
+                        {itemReview.message}
                     </TableCell>
 
                     <TableCell>
@@ -101,7 +115,7 @@ export const ItemReports = (props) => {
             :
             <TableRow>
               <TableCell colSpan={5} align="center">
-                No Item Reports Found
+                No Item Reviews Found
               </TableCell>
             </TableRow>
             }
@@ -124,7 +138,7 @@ export const ItemReports = (props) => {
   );
 };
 
-ItemReports.propTypes = {
+ItemReviews.propTypes = {
   count: PropTypes.number,
   items: PropTypes.array,
   onDeselectAll: PropTypes.func,

@@ -49,7 +49,8 @@ const Page = () => {
     
     const [data, setData] = useState({
         pageNumber: page,
-       size: !!rowsPerPage ? rowsPerPage : rowsPerPageOptions[0]
+       size: !!rowsPerPage ? rowsPerPage : rowsPerPageOptions[0],
+       orderBy : 'totalReportsCount',
     })
 
 
@@ -81,49 +82,6 @@ const Page = () => {
     }, [data, page, rowsPerPage])
 
 
-
-    const importItemExcelSheet = async (formData) => {
-        let success = false;
-        axios.defaults.headers = {
-          Authorization: auth.token
-        };
-        await axios.post(host + '/admin/item/importExcel', formData,{
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        }).then(res => {
-            let  resData = res.data;
-            setMessage(resData.message);
-            setFlag("success");
-            if(res.status === 201) {
-                let fileUrl = resData.fileUrl;
-                axios.get(fileUrl, { responseType: 'blob' })
-                .then(response => {
-                    const url = window.URL.createObjectURL(new Blob([response.data], 
-                        { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
-                    setDownloadUrl(url);
-                })
-                .catch(err => {
-                    console.log(err);
-                    setMessage("woops! something went wrong during excel file opening.");
-                    setFlag("error");
-                    setOpen(true);
-                });
-                setFlag("warning");
-                setSnackbarOpen(true);
-            }          
-          success = true;
-        })
-        .catch(err => {
-            console.log(err);
-            setMessage(!!err.response ? err.response.data.message : err.message);
-            setFlag("error");
-            setOpen(true);
-        });
-        setOpen(true);
-        return success;
-      }
-    
 
     const handleSnackbarClose = () => {
         setSnackbarOpen(false);
@@ -375,7 +333,8 @@ const Page = () => {
                                 direction="row"
                                 spacing={1}
                             >
-                                <DialogFormForExcelImport importExcelSheet={importItemExcelSheet} />
+                                {/* Currently we disable this feature due to security reasion becasue here we don't have a fix wholeslae token */}
+                                {/* <DialogFormForExcelImport importExcelSheet={importItemExcelSheet} />  */}
                                 <Button
                                     color="inherit"
                                     onClick={exportExcelSheet}
