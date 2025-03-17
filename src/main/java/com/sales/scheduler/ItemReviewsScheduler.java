@@ -39,7 +39,7 @@ public class ItemReviewsScheduler {
         String hql = """
                 UPDATE Item i
                     SET i.totalComments = COALESCE(
-                        (SELECT COUNT(ic.id) FROM ItemReviews ic WHERE ic.itemId = i.id),0
+                        (SELECT COUNT(ir.id) FROM ItemReviews ir WHERE ir.itemId = i.id),0
                     )
                 """;
         Query query = entityManager.createQuery(hql);
