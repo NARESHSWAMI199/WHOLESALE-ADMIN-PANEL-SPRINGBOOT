@@ -43,8 +43,8 @@ public class Item implements Serializable {
     Float rating;
     @Column(name = "total_rating_count")
     Integer totalRatingCount;
-    @Column(name = "total_comments")
-    Integer totalComments;
+    @Column(name = "total_reviews")
+    Integer totalReviews;
     @Column(name = "total_reports_count")
     Integer totalReportsCount;
     @Column(name = "status")

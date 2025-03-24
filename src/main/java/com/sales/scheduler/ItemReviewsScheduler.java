@@ -38,7 +38,7 @@ public class ItemReviewsScheduler {
     public void updateCommentCounts(){
         String hql = """
                 UPDATE Item i
-                    SET i.totalComments = COALESCE(
+                    SET i.totalReviews = COALESCE(
                         (SELECT COUNT(ir.id) FROM ItemReviews ir WHERE ir.itemId = i.id),0
                     )
                 """;
