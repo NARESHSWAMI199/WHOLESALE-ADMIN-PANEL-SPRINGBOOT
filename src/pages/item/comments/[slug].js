@@ -57,7 +57,6 @@ const Page = () => {
   const [itemReviews,setItemReviews] = useState([])
   const [itemReports,setItemReports] = useState([])
   const [currentTarget,setCurrentTarget] = useState(null)
-  const openMenu = Boolean(currentTarget);
 
   // filter data
   const [data,setData] = useState({
@@ -65,19 +64,9 @@ const Page = () => {
     size : rowsPerPage
   })
 
-  const [totalReviewsElements , setTotalReviesElements] = useState(0)
+  const [totalReviewsElements , setTotalReviwesElements] = useState(0)
   const [totalReportsElements , setTotalReportsElements] = useState(0)
   const [value, setValue] = useState(0);
-
-  const handleOptionMenu = (e) =>{
-    setCurrentTarget(e.currentTarget)
-  }
-
-  const handleCloseMenu = () => {
-    setCurrentTarget(null);
-  };
-
-
 
   // Getting item details
   useEffect(() => {
@@ -102,7 +91,7 @@ const Page = () => {
 }, [])
 
 
-// Getting item comments */
+// Getting item reviews */
 useEffect( ()=>{
     const getData = async () => {
        axios.defaults.headers = {
@@ -112,7 +101,7 @@ useEffect( ()=>{
        .then(res => {
           const data = res.data;
            setItemReviews(data.content);
-           setTotalReviesElements(data.totalElements)
+           setTotalReviwesElements(data.totalElements)
            console.log(data)
        })
        .catch(err => {

@@ -33,7 +33,7 @@ export const ItemReviews = (props) => {
   useEffect(()=>{
     if(!!props.itemReviews)
     setItemReviews(props.itemReviews)
-  })
+  },[props.itemReviews])
 
 
   return ( <>
