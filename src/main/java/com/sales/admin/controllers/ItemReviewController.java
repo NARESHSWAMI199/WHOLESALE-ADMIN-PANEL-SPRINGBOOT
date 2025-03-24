@@ -22,7 +22,7 @@ public class ItemReviewController extends ServiceContainer {
     @PostMapping("all")
     public ResponseEntity<Page<ItemReviews>> getAllReviews(@RequestBody ItemReviewsFilterDto ItemReviewsFilterDto, HttpServletRequest httpServletRequest) {
         logger.info("Fetching all item comments with filters: {}", ItemReviewsFilterDto);
-        Page<ItemReviews > itemReviewsPage = itemReviewService.getALlItemReview(ItemReviewsFilterDto);
+        Page<ItemReviews > itemReviewsPage = itemReviewService.getAllItemReview(ItemReviewsFilterDto);
         return new ResponseEntity<>(itemReviewsPage, HttpStatus.OK);
     }
 

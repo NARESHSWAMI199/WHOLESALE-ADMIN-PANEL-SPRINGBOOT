@@ -29,9 +29,6 @@ public class ItemReviews {
     @Column(name = "slug")
     String slug;
 
-    @Column(name = "store_id")
-    Integer storeId;
-
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     User user;

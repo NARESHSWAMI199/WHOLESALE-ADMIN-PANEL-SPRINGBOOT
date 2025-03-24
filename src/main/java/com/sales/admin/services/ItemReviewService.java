@@ -17,7 +17,7 @@ public class ItemReviewService extends  RepoContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(ItemReviewService.class);
 
-    public Page<ItemReviews> getALlItemReview(ItemReviewsFilterDto filters) {
+    public Page<ItemReviews> getAllItemReview(ItemReviewsFilterDto filters) {
         logger.info("Entering getALlItemReview with filters: {}", filters);
         Specification<ItemReviews> specification = Specification.where(
                 (containsName(filters.getSearchKey()))

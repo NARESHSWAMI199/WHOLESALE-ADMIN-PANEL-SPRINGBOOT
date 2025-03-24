@@ -10,8 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 import static com.sales.specifications.ItemReviewSpecifications.*;
 
 
@@ -20,7 +18,7 @@ public class WholesaleItemReviewService extends WholesaleRepoContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(WholesaleItemReviewService.class);
 
-    public List<ItemReviews> getALlItemReview(ItemReviewsFilterDto filters, User loggedUser) {
+    public Page<ItemReviews> getAllItemReview(ItemReviewsFilterDto filters, User loggedUser) {
         logger.info("Starting getALlItemReview method with filters: {}, loggedUser: {}", filters, loggedUser);
         if(filters.getItemId() == 0) {
             logger.error("Invalid itemId provided");
@@ -35,11 +33,7 @@ public class WholesaleItemReviewService extends WholesaleRepoContainer {
                         .and(isParentComment(filters.getParentId()))
         );
         Pageable pageable = getPageable(filters);
-        Page<ItemReviews> ItemReviews = wholesaleItemReviewRepository.findAll(specification,pageable);
-        List<ItemReviews> content = ItemReviews.getContent();
-//        for(ItemReviews comment : content) comment.setRepliesCount(wholesaleItemReviewRepository.totalReplies(comment.getId()));
-//        logger.info("Completed getALlItemReview method");
-        return content;
+        return wholesaleItemReviewRepository.findAll(specification,pageable);
     }
 
 
