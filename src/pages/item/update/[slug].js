@@ -59,8 +59,8 @@ const UpdateItem = () => {
                     const data = res.data.res;
                     setValues({
                         ...data,
-                        category : data.itemCategory.id, 
-                        subcategory : data.itemSubCategory.id , 
+                        category : data.itemCategory?.id, 
+                        subcategory : data.itemSubCategory?.id , 
                         unit : data.itemSubCategory.unit
                     })
                     
@@ -138,8 +138,8 @@ const UpdateItem = () => {
         (event) => {
             if ([event.target.name] == 'subcategory'){
                 for(let subcategory of subcategories){
-                    console.log(subcategory.id + " "+event.target.value )
-                    if(subcategory.id ==  event.target.value){
+                    console.log(subcategory?.id + " "+event.target.value )
+                    if(subcategory?.id ==  event.target.value){
                         setValues((prevState) => ({
                             ...prevState,
                             unit : subcategory.unit,
@@ -337,8 +337,8 @@ const UpdateItem = () => {
                                                 onChange={handleChange}
                                             >
                                             {categories.map((categroyObj , i) => {
-                                                if(categroyObj.id !=0)
-                                                return ( <MenuItem key={i} value={categroyObj.id}>{categroyObj.category}</MenuItem>
+                                                if(categroyObj?.id !=0)
+                                                return ( <MenuItem key={i} value={categroyObj?.id}>{categroyObj?.category}</MenuItem>
                                                 )})
                                             }
                                             <MenuItem value={0}>{"Other"}</MenuItem>
@@ -364,7 +364,7 @@ const UpdateItem = () => {
                                             >
                                             {subcategories.map((subcategroyObj , i) => {
                                                 if(subcategroyObj.id !=0)
-                                                return ( <MenuItem key={i} value={subcategroyObj.id}>{subcategroyObj.subcategory}</MenuItem>
+                                                return ( <MenuItem key={i} value={subcategroyObj?.id}>{subcategroyObj?.subcategory}</MenuItem>
                                                 )})
                                             }
                                              <MenuItem value={0}>{"Other"}</MenuItem>
