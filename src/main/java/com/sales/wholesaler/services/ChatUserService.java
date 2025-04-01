@@ -22,21 +22,23 @@ public class ChatUserService extends WholesaleRepoContainer {
     protected BlockListService blockListService;
 
     public List<ChatUser> getAllChatUsers(User loggedUser, HttpServletRequest request) {
-        logger.info("Starting getAllChatUsers method");
-        List<ChatUser> chatUserList = chatUserRepository.getChatUserByUserId(loggedUser.getId());
+        logger.info("Starting getAllChatUsers method and the user id : {}",loggedUser.getId());
+        List<ChatUser> chatUserList = chatUserRepository.getChatUserByUserId(loggedUser.getId()).stream().filter(chatUser -> chatUser.getChatUser() !=null).toList();
         List<User> userList = chatUserList.stream().map(ChatUser::getChatUser).toList();
         for (User user : userList) {
-            Integer unSeenChatsCount = chatRepository.getUnSeenChatsCount(user.getSlug(), loggedUser.getSlug());
-            String hostUrl = Utils.getHostUrl(request);
-            user.setAvatar(hostUrl + GlobalConstant.wholesalerImagePath + user.getSlug() + "/" + user.getAvatar());
-            user.setChatNotification(unSeenChatsCount);
+            if(user != null) {
+                Integer unSeenChatsCount = chatRepository.getUnSeenChatsCount(user.getSlug(), loggedUser.getSlug());
+                String hostUrl = Utils.getHostUrl(request);
+                user.setAvatar(hostUrl + GlobalConstant.wholesalerImagePath + user.getSlug() + "/" + user.getAvatar());
+                user.setChatNotification(unSeenChatsCount);
+            }
         }
         logger.info("Completed getAllChatUsers method");
         return chatUserList;
     }
 
     public ChatUser addNewChatUser(User sender, User receiver, String status) {
-        logger.info("Starting addNewChatUser method with User receiver");
+        logger.info("Starting addNewChatUser method with User receiver there the sender is : {} and the receiver is : {} ",sender.getId(),receiver.getId());
         ChatUser userFound = chatUserRepository.findByUserIdAndChatUser(sender.getId(), receiver);
         if (userFound != null) {
             logger.info("ChatUser already exists, returning existing user");
