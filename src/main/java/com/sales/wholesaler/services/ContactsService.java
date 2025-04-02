@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ContactsService extends RepoContainer {
@@ -20,7 +21,7 @@ public class ContactsService extends RepoContainer {
 
     public List<User> getAllContactsByUserId(User loggedUser, HttpServletRequest request) {
         logger.info("Starting getAllContactsByUserId method");
-        List<User> userList = contactRepository.getContactByUserId(loggedUser.getId());
+        List<User> userList = contactRepository.getContactByUserId(loggedUser.getId()).stream().filter(Objects::nonNull).toList();
         for (User user : userList) {
             Integer unSeenChatsCount = chatRepository.getUnSeenChatsCount(user.getSlug(), loggedUser.getSlug());
             String hostUrl = Utils.getHostUrl(request);

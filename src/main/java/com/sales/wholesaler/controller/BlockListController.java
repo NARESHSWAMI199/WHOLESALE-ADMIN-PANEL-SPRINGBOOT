@@ -32,6 +32,6 @@ public class BlockListController extends WholesaleServiceContainer {
             result.put("message","Something went wrong during block user");
             result.put("status", 400);
         }
-        return new ResponseEntity(result, HttpStatus.valueOf((Integer) result.get("status")));
+        return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
 }
