@@ -326,8 +326,7 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         Specification<User> specification = Specification.where(
                 (containsName(filters.getSearchKey()).or(containsEmail(filters.getSearchKey())))
                     .and(isStatus("A"))
-                    .and(hasUserType("W"))
-                    .or(hasUserType("R"))
+                    .and(hasUserType("W").or(hasUserType("R")))
                     .and(notHasSlug(loggedUser.getSlug()))
         );
 

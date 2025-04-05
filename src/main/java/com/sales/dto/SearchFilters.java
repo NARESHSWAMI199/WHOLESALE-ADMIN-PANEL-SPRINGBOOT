@@ -4,22 +4,24 @@ package com.sales.dto;
 import com.sales.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class SearchFilters {
-    String searchKey ="";
-    String name = "";
-    String status;
-    Long fromDate=0L;
-    Long toDate= Utils.getCurrentMillis();
-    String orderBy="id";
-    String order = "desc";
-    int pageNumber = 0;
-    int size = 10;
-    String slug="";
-    int storeId;
-    long itemId;
-    Integer categoryId;
-    Integer subCategoryId;
+    protected String searchKey ="";
+    protected String name = "";
+    protected String status;
+    protected Long fromDate=0L;
+    protected Long toDate= Utils.getCurrentMillis();
+    protected String orderBy="id";
+    protected String order = "desc";
+    protected int pageNumber = 0;
+    protected int size = 10;
+    protected String slug="";
+    protected int storeId;
+    protected long itemId;
+    protected Integer categoryId;
+    protected Integer subCategoryId;
 }
