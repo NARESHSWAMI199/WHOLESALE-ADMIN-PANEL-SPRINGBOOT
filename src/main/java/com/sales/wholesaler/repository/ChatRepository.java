@@ -14,7 +14,7 @@ public interface ChatRepository extends JpaRepository<Chat,Integer> {
     List<Chat> getChatBySenderKeyOrReceiverKey(String sender,String receiver);
 
 
-    @Query(" select count(id) as count from Chat where (sender=:sender and receiver=:receiver) and seen=false ")
+    @Query(" select count(id) as count from Chat where (sender=:sender and receiver=:receiver) and seen=false and isSent='S' ")
     Integer getUnSeenChatsCount(String sender,String receiver);
 
 

@@ -50,6 +50,7 @@ public class ChatService extends RepoContainer {
         List<Chat> chatList = chatRepository.getChatBySenderKeyOrReceiverKey(message.getSender(), message.getReceiver());
 
         for (Chat chat : chatList) {
+            if(chat.getReceiver().equals(message.getSender()) && chat.getIsSent().equals("F")) continue;
             String createAtDate = Utils.getStringDateOnly(chat.getCreatedAt());
             List<Chat> chats;
             if (formatedData.containsKey(createAtDate)) {

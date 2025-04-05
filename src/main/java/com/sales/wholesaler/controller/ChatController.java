@@ -99,6 +99,7 @@ public class ChatController extends WholesaleServiceContainer {
         if (recipient == null) throw new MyException("Please provide a valid recipient");
         /* you need to subscribe like  /user/{userId}/queue/private */
         chatService.updateMessageToSent(savedMessage.getId());
+        savedMessage.setIsSent("S");
         messagingTemplate.convertAndSendToUser(recipient, "/queue/private", savedMessage);
     }
 
@@ -143,11 +144,13 @@ public class ChatController extends WholesaleServiceContainer {
 
         /* ------------------------------- sending message and saving message ------------------------------- */
         message = chatService.addImagesList(message, request, allImagesName, loggedUser, recipient);
+        chatService.updateMessageToSent(message.getId());
+        message.setIsSent("S");
         /*
              You need to subscribe like /user/{userId}/queue/private
              Send a private message to the recipient
          */
-        chatService.updateMessageToSent(message.getId());
+        // going to update a message sent successfully
         messagingTemplate.convertAndSendToUser(recipient, "/queue/private",message);
 
         /*!------------------ message block end ---------------------- */
@@ -195,12 +198,19 @@ public class ChatController extends WholesaleServiceContainer {
 
 
     @MessageMapping("/chats/was-seen/{recipient}")
-    public void isReceiverSeen(@DestinationVariable("recipient") String recipient){
-        logger.info("Message seen by recipient: {}", recipient);
+    public void isReceiverSeen(@DestinationVariable("recipient") String recipient,SimpMessageHeaderAccessor headerAccessor){
+        User loggedUser = (User) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("user");
+        User receiver = wholesaleUserService.findUserBySlug(recipient);
         if (recipient == null) throw new MyException("Please provide a valid recipient");
-        System.err.println("Seen Called.....");
+        logger.info("Seen Called.....");
+        /* Check If you already blocked by receiver or not if blocked, then do nothing eat fivestar */
+        boolean isYouBlockedByReceiver = blockListService.isSenderBlockedGyReceiver(loggedUser,receiver);
+        /* Check you blocked the receiver or not */
+        boolean isYouBlockedReceiver = blockListService.isReceiverBlockedBySender(loggedUser,receiver);
+        boolean seen = !isYouBlockedByReceiver && !isYouBlockedReceiver;
+        logger.info("Message seen or not :  {} ",seen);
         /* you need to subscribe like  /user/{userId}/queue/private/chat/seen */
-        messagingTemplate.convertAndSendToUser(recipient, "/queue/private/chat/seen",true);
+        messagingTemplate.convertAndSendToUser(recipient, "/queue/private/chat/seen",seen);
     }
 
 

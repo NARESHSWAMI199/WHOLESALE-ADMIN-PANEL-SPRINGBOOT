@@ -27,4 +27,5 @@ public class MessageDto {
     private String isSenderDeleted;
     private String isReceiverDeleted;
     private String isDeleted;
+    private String isSent;
 }

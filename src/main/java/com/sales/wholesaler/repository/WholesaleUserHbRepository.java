@@ -97,7 +97,7 @@ public class WholesaleUserHbRepository {
     }
 
     public boolean updateSeenMessage(MessageDto message){
-        String hql = "update Chat set seen=true where sender =:sender and receiver = :receiver";
+        String hql = "update Chat set seen=true where sender =:sender and receiver = :receiver and isSent ='S'";
         Query query = entityManager.createQuery(hql);
         query.setParameter("sender",message.getSender());
         query.setParameter("receiver",message.getReceiver());
