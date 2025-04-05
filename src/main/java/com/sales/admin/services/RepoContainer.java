@@ -4,6 +4,7 @@ package com.sales.admin.services;
 import com.sales.admin.repositories.*;
 import com.sales.dto.SearchFilters;
 import com.sales.utils.WriteExcel;
+import com.sales.wholesaler.repository.ChatHbRepository;
 import com.sales.wholesaler.repository.ChatRepository;
 import com.sales.wholesaler.repository.ChatUserRepository;
 import com.sales.wholesaler.repository.ContactRepository;
@@ -115,6 +116,9 @@ public class RepoContainer {
 
     @Autowired
     protected ItemReportRepository itemReportRepository;
+
+    @Autowired
+    protected ChatHbRepository chatHbRepository;
 
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());

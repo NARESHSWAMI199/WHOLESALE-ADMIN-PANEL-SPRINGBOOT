@@ -22,6 +22,8 @@ public class BlockedUser {
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "chat_user_id")
     User blockedUser;
+    @Column(name = "created_at")
+    Long createdAt;
 
 
 }

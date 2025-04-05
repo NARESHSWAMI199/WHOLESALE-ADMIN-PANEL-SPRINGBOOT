@@ -18,7 +18,7 @@ import java.util.List;
 public class Chat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    Long id;
     @Column(name = "user_id")
     Integer userId;
     @Column(name = "receiver_key")
@@ -39,6 +39,9 @@ public class Chat {
     Boolean seen;
     @Column(name = "images")
     String images;
+    @Column(name = "is_sent")
+    String isSent;
+
     @Transient
     List<String> imagesUrls;
 }

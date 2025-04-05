@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 public class MessageDto {
 
-    private Integer id;
+    private Long id;
     private String message;
     private String sender;
     private String receiver;

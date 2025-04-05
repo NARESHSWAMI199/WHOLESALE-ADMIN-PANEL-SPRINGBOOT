@@ -69,6 +69,9 @@ public class User {
     @Transient
     public Integer chatNotification = 0;
 
+    @Transient
+    boolean isBlocked;
+
     public User (User loggedUser) {
         this.slug = UUID.randomUUID().toString();
         this.createdAt = getCurrentMillis();

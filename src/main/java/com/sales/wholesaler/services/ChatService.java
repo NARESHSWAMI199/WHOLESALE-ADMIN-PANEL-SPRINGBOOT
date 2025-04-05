@@ -25,7 +25,7 @@ public class ChatService extends RepoContainer {
     @Value("${chat.absolute}")
     String chatAbsolutePath;
 
-    public Chat saveMessage(MessageDto message, String commaSeparatedImagesName) {
+    public Chat saveMessage(MessageDto message,String commaSeparatedImagesName) {
         logger.info("Starting saveMessage method");
         Chat chat = Chat.builder()
 //            .userId(loggedUser.getId())
@@ -36,6 +36,7 @@ public class ChatService extends RepoContainer {
             .isSenderDeleted("N")
             .isReceiverDeleted("N")
             .createdAt(message.getCreatedAt())
+            .isSent("F")
             .seen(false)
             .build();
         Chat savedChat = chatRepository.save(chat); // Create operation
@@ -43,8 +44,8 @@ public class ChatService extends RepoContainer {
         return savedChat;
     }
 
-    public Map<String, List<Chat>> getAllChatBySenderAndReceiverKey(MessageDto message, HttpServletRequest request) {
-        logger.info("Starting getAllChatBySenderAndReceiverKey method");
+    public Map<String, List<Chat>> getAllChatBySenderAndReceiverKey(MessageDto message,HttpServletRequest request) {
+        logger.info("Starting getAllChatBySenderAndReceiverKey method with messageDto : {} ",message);
         Map<String, List<Chat>> formatedData = new TreeMap<>();
         List<Chat> chatList = chatRepository.getChatBySenderKeyOrReceiverKey(message.getSender(), message.getReceiver());
 
@@ -99,9 +100,14 @@ public class ChatService extends RepoContainer {
         message.setSender(loggedUser.getSlug());
         message.setReceiver(recipient);
         String imagesNamesString = String.join(",", allImagesName);
-        saveMessage(message, imagesNamesString); // Create operation
+        saveMessage(message,imagesNamesString); // Create operation
         logger.info("Completed addImagesList method");
         return message;
+    }
+
+
+    public boolean updateMessageToSent(Long id){
+        return chatHbRepository.updateMessageToSent(id);
     }
 
 }

@@ -34,4 +34,22 @@ public class BlockListController extends WholesaleServiceContainer {
         }
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
+
+
+
+    @GetMapping("/unblock/{recipient}")
+    public ResponseEntity<Map<String,Object>> removeUserFromBlockList(@PathVariable String recipient, HttpServletRequest request){
+        logger.info("Unblocking user: {}", recipient);
+        Map<String,Object> result = new HashMap<>();
+        User loggedUser = (User) request.getAttribute("user");
+        boolean unblocked = blockListService.removeUserFromBlockList(loggedUser.getId(), recipient);
+        if(unblocked){
+            result.put("message","User has been successfully unblocked");
+            result.put("status",200);
+        }else {
+            result.put("message","Something went wrong during unblock user");
+            result.put("status", 400);
+        }
+        return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
+    }
 }
