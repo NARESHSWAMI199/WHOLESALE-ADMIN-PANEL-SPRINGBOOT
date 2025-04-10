@@ -64,5 +64,8 @@ public class WholesaleServiceContainer {
     @Autowired
     protected ReadExcel readExcel;
 
+    @Autowired
+    protected ChatRoomService chatRoomService;
+
 
 }

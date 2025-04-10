@@ -18,7 +18,10 @@ import java.util.List;
 public class Chat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    long id;
+
+    @Column(name = "parent_id")
+    Long parentId;
     @Column(name = "user_id")
     Integer userId;
     @Column(name = "receiver_key")

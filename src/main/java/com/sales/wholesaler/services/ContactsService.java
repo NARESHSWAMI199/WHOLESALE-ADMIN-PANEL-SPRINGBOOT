@@ -9,6 +9,7 @@ import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +20,9 @@ public class ContactsService extends RepoContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(ContactsService.class);
 
+    @Autowired
+    private BlockListService blockListService;
+
     public List<User> getAllContactsByUserId(User loggedUser, HttpServletRequest request) {
         logger.info("Starting getAllContactsByUserId method");
         List<User> userList = contactRepository.getContactByUserId(loggedUser.getId()).stream().filter(Objects::nonNull).toList();
@@ -27,6 +31,7 @@ public class ContactsService extends RepoContainer {
             String hostUrl = Utils.getHostUrl(request);
             user.setAvatar(hostUrl + GlobalConstant.wholesalerImagePath + user.getSlug() + "/" + user.getAvatar());
             user.setChatNotification(unSeenChatsCount);
+            user.setBlocked(blockListService.isReceiverBlockedBySender(loggedUser,user));
         }
         logger.info("Completed getAllContactsByUserId method");
         return userList;

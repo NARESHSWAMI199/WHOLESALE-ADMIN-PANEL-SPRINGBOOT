@@ -14,6 +14,7 @@ import java.util.List;
 public class MessageDto {
 
     private Long id;
+    private Long parentId;
     private String message;
     private String sender;
     private String receiver;

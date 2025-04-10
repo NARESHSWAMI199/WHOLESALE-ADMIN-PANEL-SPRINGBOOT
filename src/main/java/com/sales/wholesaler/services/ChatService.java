@@ -28,6 +28,7 @@ public class ChatService extends RepoContainer {
     public Chat saveMessage(MessageDto message,String commaSeparatedImagesName) {
         logger.info("Starting saveMessage method");
         Chat chat = Chat.builder()
+            .parentId(message.getParentId())
 //            .userId(loggedUser.getId())
             .sender(message.getSender())
             .receiver(message.getReceiver())

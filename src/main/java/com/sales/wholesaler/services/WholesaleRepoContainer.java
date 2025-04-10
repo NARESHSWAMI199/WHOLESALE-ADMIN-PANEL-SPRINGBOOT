@@ -110,6 +110,9 @@ public class WholesaleRepoContainer {
     @Autowired
     protected BlockListHbRepository blockListHbRepository;
 
+    @Autowired
+    protected ChatRoomRepository chatRoomRepository;
+
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?
