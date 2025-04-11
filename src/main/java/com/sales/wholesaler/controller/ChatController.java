@@ -52,6 +52,16 @@ public class ChatController extends WholesaleServiceContainer {
         return new ResponseEntity<>(formatedChatList, HttpStatus.valueOf(200));
     }
 
+
+    @GetMapping("/chat/message/{parentId}")
+    public ResponseEntity<Chat> getALlUsers(@PathVariable Long parentId , HttpServletRequest request){
+        logger.info("Fetching all users for parentId: {}", parentId);
+        Chat parentChat = chatService.getParentMessageById(parentId,request);
+        return new ResponseEntity<>(parentChat, HttpStatus.valueOf(200));
+    }
+
+
+
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
     public MessageDto sendMessage(MessageDto message, SimpMessageHeaderAccessor headerAccessor) {

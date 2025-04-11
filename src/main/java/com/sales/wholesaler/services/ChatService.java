@@ -72,6 +72,24 @@ public class ChatService extends RepoContainer {
         return formatedData;
     }
 
+
+    public Chat getParentMessageById(Long parentId,HttpServletRequest request){
+        logger.info("Starting getAllChatBySenderAndReceiverKey method with parentId : {} ",parentId);
+        Optional<Chat> chatOptional = chatRepository.findById(parentId);
+        if (chatOptional.isPresent()){
+            Chat chat = chatOptional.get();
+            String images = chat.getImages();
+            if (images != null) {
+                String[] imagesList = images.split(",", -1);
+                List<String> list = Arrays.stream(imagesList).map(name -> Utils.getHostUrl(request) + "/chat/images/" + chat.getSender() + "/" + chat.getReceiver() + "/" + name).collect(Collectors.toList());
+                chat.setImagesUrls(list);
+            }
+            logger.info("Completed getAllChatBySenderAndReceiverKey method");
+            return chat;
+        }
+        return  null;
+    }
+
     public List<String> saveAllImages(MessageDto messageDto, User loggedUser) {
         logger.info("Starting saveAllImages method");
         List<String> imagesNames = new ArrayList<>();

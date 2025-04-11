@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ChatRepository extends JpaRepository<Chat,Integer> {
+public interface ChatRepository extends JpaRepository<Chat,Long> {
 
     @Query(" from Chat where (sender=:sender and receiver=:receiver) or (sender=:receiver and receiver=:sender)")
     List<Chat> getChatBySenderKeyOrReceiverKey(String sender,String receiver);
