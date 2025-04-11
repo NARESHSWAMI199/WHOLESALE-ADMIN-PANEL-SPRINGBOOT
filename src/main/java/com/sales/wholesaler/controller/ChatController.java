@@ -81,11 +81,11 @@ public class ChatController extends WholesaleServiceContainer {
         User receiver = wholesaleUserService.findUserBySlug(recipient);
         if (receiver == null) throw new MyException("Please provide a valid recipient");
 
-        /* Added new user in to sender's chat list*/
+        /* Added new user in to sender's chat list  -> sender = loggedUser | receiver = who receive this message | status = sender Accepted or not default it's A  */
         chatUserService.addNewChatUser(sender, receiver,"A");
 
         /* Check you are blocked by receiver or not */
-        boolean isYouBlockedByReceiver = blockListService.isSenderBlockedGyReceiver(sender,receiver);
+        boolean isYouBlockedByReceiver = blockListService.isSenderBlockedByReceiver(sender,receiver);
         if (isYouBlockedByReceiver) return; //  If isBlocked == true, that's mean. Receiver already blocked you
 
         /* Check you blocked the receiver or not */
@@ -93,8 +93,8 @@ public class ChatController extends WholesaleServiceContainer {
         if (isYouBlockedReceiver) return; //  If isYouBlockedReceiver == true, that's mean.
         // Receiver already blocked by you
 
-        /* Added sender in to the recipient chat list*/
-        chatUserService.addNewChatUser(receiver, sender,"S");
+        /* Added sender in to the recipient chat list  -> sender = loggedUser | receiver = who receive this message | status = receiver accepted or not default it's P */
+        chatUserService.addNewChatUser(receiver, sender,"P");
 
         if (recipient == null) throw new MyException("Please provide a valid recipient");
         /* you need to subscribe like  /user/{userId}/queue/private */
@@ -119,7 +119,7 @@ public class ChatController extends WholesaleServiceContainer {
         chatUserService.addNewChatUser(loggedUser, receiver,"A");
 
         /* Check If you already blocked by receiver or not if blocked, then do nothing eat fivestar */
-        boolean isYouBlockedByReceiver = blockListService.isSenderBlockedGyReceiver(loggedUser,receiver);
+        boolean isYouBlockedByReceiver = blockListService.isSenderBlockedByReceiver(loggedUser,receiver);
         if (isYouBlockedByReceiver) {
             return new ResponseEntity<>(new HashMap<>(),HttpStatus.OK);
         }
@@ -131,7 +131,7 @@ public class ChatController extends WholesaleServiceContainer {
         }
 
         /* Added sender in to the recipient chat list*/
-        chatUserService.addNewChatUser(receiver, loggedUser,"S");
+        chatUserService.addNewChatUser(receiver, loggedUser,"P");
 
         List<String> allImagesName = chatService.saveAllImages(message, loggedUser);
         if(allImagesName.size() == message.getImages().size()){
@@ -204,7 +204,7 @@ public class ChatController extends WholesaleServiceContainer {
         if (recipient == null) throw new MyException("Please provide a valid recipient");
         logger.info("Seen Called.....");
         /* Check If you already blocked by receiver or not if blocked, then do nothing eat fivestar */
-        boolean isYouBlockedByReceiver = blockListService.isSenderBlockedGyReceiver(loggedUser,receiver);
+        boolean isYouBlockedByReceiver = blockListService.isSenderBlockedByReceiver(loggedUser,receiver);
         /* Check you blocked the receiver or not */
         boolean isYouBlockedReceiver = blockListService.isReceiverBlockedBySender(loggedUser,receiver);
         boolean seen = !isYouBlockedByReceiver && !isYouBlockedReceiver;

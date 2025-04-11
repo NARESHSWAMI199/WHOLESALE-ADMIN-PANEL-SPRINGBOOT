@@ -47,7 +47,7 @@ public class BlockListService extends WholesaleRepoContainer {
     }
 
 
-    public boolean isSenderBlockedGyReceiver(User loggedUser, User receiver) {
+    public boolean isSenderBlockedByReceiver(User loggedUser, User receiver) {
         logger.info("Starting isSenderBlockedGyReceiver method");
         if (receiver == null) {
             logger.info("Receiver is null, returning false");

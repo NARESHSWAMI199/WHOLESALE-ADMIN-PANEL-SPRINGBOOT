@@ -38,12 +38,13 @@ public class ContactsService extends RepoContainer {
     }
 
     public Contact addNewContact(User loggedUser, String contactSlug) {
-        logger.info("Starting addNewContact method");
-        Integer userFound = chatRepository.isUserExistsInChatList(loggedUser.getSlug(), contactSlug);
-        if (userFound > 0) {
-            logger.info("User already exists in chat list, returning null");
-            return null;
-        }
+        logger.info("Starting addNewContact method loggedUser slug : {} and contactSlug : {}",loggedUser.getSlug(),contactSlug);
+        // TODO : check if user already in contact list not chat list
+//        Integer userFound = chatRepository.isUserExistsInChatList(loggedUser.getSlug(), contactSlug);
+//        if (userFound > 0) {
+//            logger.info("User already exists in chat list, returning null");
+//            return null;
+//        }
         User contactUser = userRepository.findUserBySlug(contactSlug);
         if (contactUser == null) {
             logger.error("Not a valid contact");

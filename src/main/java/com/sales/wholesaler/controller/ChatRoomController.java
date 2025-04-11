@@ -2,6 +2,8 @@ package com.sales.wholesaler.controller;
 
 import com.sales.dto.ChatRoomDto;
 import com.sales.entities.ChatRoom;
+import com.sales.entities.User;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,23 @@ public class ChatRoomController extends WholesaleServiceContainer{
         result.put("roomId",chatRoom.getSlug());
         return new ResponseEntity<>(result,HttpStatus.valueOf(201));
     }
+
+    @PostMapping("update")
+    public ResponseEntity<Map<String, Object>> updateChatRoom(@RequestBody ChatRoomDto chatRoomDto, HttpServletRequest request) {
+        User loggedUser = (User) request.getAttribute("user");
+        Map<String,Object> result = new HashMap<>();
+        int isUpdated = chatRoomService.updateRoom(chatRoomDto, loggedUser);
+        if(isUpdated > 0){
+            result.put("message","Chat room updated successfully");
+            result.put("status",200);
+        }else{
+            result.put("message","No room found for : "+chatRoomDto.getSlug());
+            result.put("status",404);
+        }
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+    }
+
+
 
 
 }

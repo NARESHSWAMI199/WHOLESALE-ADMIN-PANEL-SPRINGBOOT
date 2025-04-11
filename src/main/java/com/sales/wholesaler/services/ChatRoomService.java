@@ -55,5 +55,12 @@ public class ChatRoomService extends WholesaleRepoContainer {
 
 
 
+    @Transactional
+    public int updateRoom(ChatRoomDto chatRoomDto,User loggedUser) {
+        return chatRoomHbRepository.updateChatRoom(chatRoomDto,loggedUser);
+    }
+
+
+
 
 }

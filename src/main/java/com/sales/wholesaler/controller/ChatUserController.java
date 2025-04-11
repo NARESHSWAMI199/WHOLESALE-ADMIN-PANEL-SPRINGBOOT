@@ -24,11 +24,20 @@ public class ChatUserController extends WholesaleServiceContainer {
     private static final Logger logger = LoggerFactory.getLogger(ChatUserController.class);
 
     @GetMapping("all")
-    public ResponseEntity<List<ChatUser>> getAllChatUsers(HttpServletRequest request){
+    public ResponseEntity<List<User>> getAllChatUsers(HttpServletRequest request){
         User loggedUser = (User) request.getAttribute("user");
         logger.info("Fetching all chat users for logged user: {}", loggedUser.getId());
-        List<ChatUser> allContactsByUserId = chatUserService.getAllChatUsers(loggedUser,request);
+        List<User> allContactsByUserId = chatUserService.getAllChatUsers(loggedUser,request);
         return new ResponseEntity<>(allContactsByUserId, HttpStatus.valueOf(200));
+    }
+
+
+    @GetMapping("is-accepted/{receiver}")
+    public ResponseEntity<Boolean> isChatRequestAcceptedByLoggedUser(@PathVariable String receiver, HttpServletRequest request){
+        User loggedUser = (User) request.getAttribute("user");
+        logger.info("Fetching all chat users for logged user: {}", loggedUser.getId());
+        boolean accepted =  chatUserService.isChatRequestAcceptedByLoggedUser(loggedUser,receiver);
+        return new ResponseEntity<>(accepted, HttpStatus.valueOf(200));
     }
 
 

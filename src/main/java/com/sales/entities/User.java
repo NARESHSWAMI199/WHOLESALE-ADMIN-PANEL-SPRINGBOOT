@@ -70,7 +70,10 @@ public class User {
     public Integer chatNotification = 0;
 
     @Transient
-    boolean isBlocked;
+    public boolean isBlocked= false;
+
+    @Transient
+    public String accepted;
 
     public User (User loggedUser) {
         this.slug = UUID.randomUUID().toString();

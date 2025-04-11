@@ -3,9 +3,11 @@ package com.sales.wholesaler.services;
 import com.sales.entities.ChatUser;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
+import com.sales.exceptions.NotFoundException;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,21 +23,26 @@ public class ChatUserService extends WholesaleRepoContainer {
     @Autowired
     protected BlockListService blockListService;
 
-    public List<ChatUser> getAllChatUsers(User loggedUser, HttpServletRequest request) {
+    @Transactional
+    public List<User> getAllChatUsers(User loggedUser, HttpServletRequest request) {
         logger.info("Starting getAllChatUsers method and the user id : {}",loggedUser.getId());
         List<ChatUser> chatUserList = chatUserRepository.getChatUserByUserId(loggedUser.getId()).stream().filter(chatUser -> chatUser.getChatUser() !=null).toList();
         List<User> userList = chatUserList.stream().map(ChatUser::getChatUser).toList();
-        for (User user : userList) {
+
+        for (int i = 0; i < userList.size(); i++){
+            User user = userList.get(i);
+            ChatUser chatUser = chatUserList.get(i);
             if(user != null) {
                 Integer unSeenChatsCount = chatRepository.getUnSeenChatsCount(user.getSlug(), loggedUser.getSlug());
                 String hostUrl = Utils.getHostUrl(request);
                 user.setAvatar(hostUrl + GlobalConstant.wholesalerImagePath + user.getSlug() + "/" + user.getAvatar());
                 user.setChatNotification(unSeenChatsCount);
                 user.setBlocked(blockListService.isReceiverBlockedBySender(loggedUser,user));
+                user.setAccepted(chatUser.getStatus());
             }
         }
         logger.info("Completed getAllChatUsers method");
-        return chatUserList;
+        return userList;
     }
 
     public ChatUser addNewChatUser(User sender, User receiver, String status) {
@@ -86,5 +93,28 @@ public class ChatUserService extends WholesaleRepoContainer {
         logger.info("Completed updateAcceptStatus method");
         return isUpdated;
     }
+
+
+
+    public String isChatRequestAcceptedByLoggedUser(User loggedUser,User receiver) {
+        logger.info("Starting isChatRequestAccepted method with userId : {} and chatUserId : {} ",loggedUser.getId(),receiver.getId());
+        ChatUser chatUser = chatUserRepository.findByUserIdAndChatUser(loggedUser.getId(), receiver);
+        if(chatUser == null) throw new NotFoundException("User not found in your chat users list.");
+        logger.info("Completed isChatRequestAccepted method");
+        return chatUser.getStatus();
+    }
+
+
+    public boolean isChatRequestAcceptedByLoggedUser(User loggedUser,String receiverSlug) {
+        logger.info("Starting isChatRequestAccepted method with userId : {} and chatUser : {} ",loggedUser.getId(),receiverSlug);
+        User receiver = wholesaleUserRepository.findUserBySlug(receiverSlug);
+        if(receiver == null) throw new NotFoundException("Receiver not found.");
+        ChatUser chatUser = chatUserRepository.findByUserIdAndChatUser(loggedUser.getId(),receiver);
+        if(chatUser == null) throw new NotFoundException("Receiver not found.");
+        logger.info("Completed isChatRequestAccepted method");
+        return chatUser.getStatus().equals("A");
+    }
+
+
 
 }
