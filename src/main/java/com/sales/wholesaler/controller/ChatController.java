@@ -82,35 +82,11 @@ public class ChatController extends WholesaleServiceContainer {
     @MessageMapping("/chat/private/{recipient}")
     public void sendPrivateMessage(@DestinationVariable String recipient, MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
         logger.info("Sending private message to recipient: {}", recipient);
-        User sender = (User) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("user");
-        message.setSender(sender.getSlug());
-        message.setReceiver(recipient);
-        //message.setMessage(HtmlUtils.htmlEscape(message.getMessage()));
-        Chat savedMessage = chatService.saveMessage(message, null);
-
-        User receiver = wholesaleUserService.findUserBySlug(recipient);
-        if (receiver == null) throw new MyException("Please provide a valid recipient");
-
-        /* Added new user in to sender's chat list  -> sender = loggedUser | receiver = who receive this message | status = sender Accepted or not default it's A  */
-        chatUserService.addNewChatUser(sender, receiver,"A");
-
-        /* Check you are blocked by receiver or not */
-        boolean isYouBlockedByReceiver = blockListService.isSenderBlockedByReceiver(sender,receiver);
-        if (isYouBlockedByReceiver) return; //  If isBlocked == true, that's mean. Receiver already blocked you
-
-        /* Check you blocked the receiver or not */
-        boolean isYouBlockedReceiver = blockListService.isReceiverBlockedBySender(sender,receiver);
-        if (isYouBlockedReceiver) return; //  If isYouBlockedReceiver == true, that's mean.
-        // Receiver already blocked by you
-
-        /* Added sender in to the recipient chat list  -> sender = loggedUser | receiver = who receive this message | status = receiver accepted or not default it's P */
-        chatUserService.addNewChatUser(receiver, sender,"P");
-
-        if (recipient == null) throw new MyException("Please provide a valid recipient");
+        User loggedUser = (User) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("user");
+        Chat sentMessage = chatService.sendMessage(message,loggedUser,message.getReceiver());
+        if(sentMessage == null) return;
         /* you need to subscribe like  /user/{userId}/queue/private */
-        chatService.updateMessageToSent(savedMessage.getId());
-        savedMessage.setIsSent("S");
-        messagingTemplate.convertAndSendToUser(recipient, "/queue/private", savedMessage);
+        messagingTemplate.convertAndSendToUser(recipient, "/queue/private", sentMessage);
     }
 
 
@@ -125,23 +101,11 @@ public class ChatController extends WholesaleServiceContainer {
         User receiver = wholesaleUserService.findUserBySlug(recipient);
         if (receiver == null) throw new MyException("Please provide a valid recipient");
 
-        /* Added new user in to sender's chat list*/
-        chatUserService.addNewChatUser(loggedUser, receiver,"A");
+        boolean verified = chatService.verifyBeforeSend(loggedUser, recipient);
+        if(!verified) return null;
 
-        /* Check If you already blocked by receiver or not if blocked, then do nothing eat fivestar */
-        boolean isYouBlockedByReceiver = blockListService.isSenderBlockedByReceiver(loggedUser,receiver);
-        if (isYouBlockedByReceiver) {
-            return new ResponseEntity<>(new HashMap<>(),HttpStatus.OK);
-        }
-
-        /* Check you blocked the receiver or not */
-        boolean isYouBlockedReceiver = blockListService.isReceiverBlockedBySender(loggedUser,receiver);
-        if (isYouBlockedReceiver) {
-            return new ResponseEntity<>(new HashMap<>(),HttpStatus.OK);
-        }
-
-        /* Added sender in to the recipient chat list*/
-        chatUserService.addNewChatUser(receiver, loggedUser,"P");
+        chatService.updateMessageToSent(message.getId());
+        message.setIsSent("S");
 
         List<String> allImagesName = chatService.saveAllImages(message, loggedUser);
         if(allImagesName.size() == message.getImages().size()){
@@ -154,8 +118,6 @@ public class ChatController extends WholesaleServiceContainer {
 
         /* ------------------------------- sending message and saving message ------------------------------- */
         message = chatService.addImagesList(message, request, allImagesName, loggedUser, recipient);
-        chatService.updateMessageToSent(message.getId());
-        message.setIsSent("S");
         /*
              You need to subscribe like /user/{userId}/queue/private
              Send a private message to the recipient

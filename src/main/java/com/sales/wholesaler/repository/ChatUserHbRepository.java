@@ -16,10 +16,10 @@ public class ChatUserHbRepository {
     EntityManager entityManager;
 
 
-    public boolean updateAcceptStatus(Integer userId, User chatUser, String status){
-        String hql = "update ChatUser set status=:status where userId=:userId and chatUser =:chatUser ";
+    public boolean updateAcceptStatus(Integer userId, User chatUser, String senderAcceptStatus){
+        String hql = "update ChatUser set senderAcceptStatus=:senderAcceptStatus where userId=:userId and chatUser =:chatUser ";
         Query query = entityManager.createQuery(hql);
-        query.setParameter("status",status);
+        query.setParameter("senderAcceptStatus",senderAcceptStatus);
         query.setParameter("userId",userId);
         query.setParameter("chatUser",chatUser);
         return  query.executeUpdate() > 0;

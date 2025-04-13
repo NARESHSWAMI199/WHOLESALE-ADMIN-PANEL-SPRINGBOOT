@@ -25,8 +25,8 @@ public class ChatUser {
     @JoinColumn(name = "chat_user_id")
     User chatUser;
 
-    @Column(name = "status")
-    String status;
+    @Column(name = "sender_accept_status")
+    String senderAcceptStatus;
 
 
 }

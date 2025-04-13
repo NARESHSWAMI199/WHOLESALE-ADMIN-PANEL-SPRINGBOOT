@@ -1,6 +1,5 @@
 package com.sales.wholesaler.services;
 
-import com.sales.admin.services.RepoContainer;
 import com.sales.dto.MessageDto;
 import com.sales.entities.Chat;
 import com.sales.entities.User;
@@ -9,6 +8,7 @@ import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,12 +18,64 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class ChatService extends RepoContainer {
+public class ChatService extends WholesaleRepoContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatService.class);
 
     @Value("${chat.absolute}")
-    String chatAbsolutePath;
+    private String chatAbsolutePath;
+
+    @Autowired
+    private ChatUserService chatUserService;
+
+
+    @Autowired
+    BlockListService blockListService;
+
+
+
+    public Chat sendMessage(MessageDto message, User loggedUser, String recipient){
+        message.setSender(loggedUser.getSlug());
+        message.setReceiver(recipient);
+        //message.setMessage(HtmlUtils.htmlEscape(message.getMessage()));
+        Chat savedMessage = saveMessage(message, null);
+
+        // verifying user sender or receiver blocked or not.
+        boolean readyToSend = verifyBeforeSend(loggedUser, recipient);
+        if(!readyToSend) return null;
+
+        // Going to update a message
+        updateMessageToSent(savedMessage.getId());
+        savedMessage.setIsSent("S");
+        return savedMessage;
+    }
+
+
+    public boolean verifyBeforeSend(User loggedUser,String recipient) {
+        if (recipient == null) throw new MyException("Please provide a valid recipient");
+
+        User receiver = wholesaleUserRepository.findUserBySlug(recipient);
+        if (receiver == null) throw new MyException("Please provide a valid recipient");
+        /* Added new user in to sender's chat list →
+        sender = loggedUser | receiver = who receives this message | status = sender Accepted
+        or not default it's A  */
+        chatUserService.addNewChatUser(loggedUser, receiver,"A");
+
+        /* Added sender in to the recipient chat list →
+        sender = loggedUser | receiver = who receives this message | status =s
+        receiver accepted or not default it's P */
+        chatUserService.addNewChatUser(receiver, loggedUser,"P");
+
+        /* Check you are blocked by receiver or not */
+        boolean isYouBlockedByReceiver = blockListService.isSenderBlockedByReceiver(loggedUser,receiver);
+        if (isYouBlockedByReceiver) return false; //  If isBlocked == true, that's mean. Receiver already blocked you
+
+        /* Check you blocked the receiver or not */
+        boolean isYouBlockedReceiver = blockListService.isReceiverBlockedBySender(loggedUser,receiver);
+        return !isYouBlockedReceiver; //  If isYouBlockedReceiver == true, that's mean.
+    }
+
+
 
     public Chat saveMessage(MessageDto message,String commaSeparatedImagesName) {
         logger.info("Starting saveMessage method");

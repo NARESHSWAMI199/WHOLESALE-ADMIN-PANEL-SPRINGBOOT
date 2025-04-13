@@ -38,7 +38,7 @@ public class ChatUserService extends WholesaleRepoContainer {
                 user.setAvatar(hostUrl + GlobalConstant.wholesalerImagePath + user.getSlug() + "/" + user.getAvatar());
                 user.setChatNotification(unSeenChatsCount);
                 user.setBlocked(blockListService.isReceiverBlockedBySender(loggedUser,user));
-                user.setAccepted(chatUser.getStatus());
+                user.setAccepted(chatUser.getSenderAcceptStatus());
             }
         }
         logger.info("Completed getAllChatUsers method");
@@ -49,13 +49,13 @@ public class ChatUserService extends WholesaleRepoContainer {
         logger.info("Starting addNewChatUser method with User receiver there the sender is : {} and the receiver is : {} ",sender.getId(),receiver.getId());
         ChatUser userFound = chatUserRepository.findByUserIdAndChatUser(sender.getId(), receiver);
         if (userFound != null) {
-            logger.info("ChatUser already exists, returning existing user");
+            logger.info("ChatUser already exists, returning existing user checking in addNewChatUser method");
             return userFound;
         }
 
         ChatUser chatUser = ChatUser.builder()
             .userId(sender.getId())
-            .status(status)
+            .senderAcceptStatus(status)
             .chatUser(receiver)
             .build();
         ChatUser savedChatUser = chatUserRepository.save(chatUser); // Create operation
@@ -79,7 +79,7 @@ public class ChatUserService extends WholesaleRepoContainer {
         ChatUser chatUser = ChatUser.builder()
             .userId(sender.getId())
             .chatUser(receiver)
-            .status(status)
+            .senderAcceptStatus(status)
             .build();
         ChatUser savedChatUser = chatUserRepository.save(chatUser); // Create operation
         logger.info("Completed addNewChatUser method with receiverSlug");
@@ -101,7 +101,7 @@ public class ChatUserService extends WholesaleRepoContainer {
         ChatUser chatUser = chatUserRepository.findByUserIdAndChatUser(loggedUser.getId(), receiver);
         if(chatUser == null) throw new NotFoundException("User not found in your chat users list.");
         logger.info("Completed isChatRequestAccepted method");
-        return chatUser.getStatus();
+        return chatUser.getSenderAcceptStatus();
     }
 
 
@@ -111,8 +111,8 @@ public class ChatUserService extends WholesaleRepoContainer {
         if(receiver == null) throw new NotFoundException("Receiver not found.");
         ChatUser chatUser = chatUserRepository.findByUserIdAndChatUser(loggedUser.getId(),receiver);
         if(chatUser == null) throw new NotFoundException("Receiver not found.");
-        logger.info("Completed isChatRequestAccepted method");
-        return chatUser.getStatus().equals("A");
+        logger.info("Completed isChatRequestAcceptedByLoggedUser method");
+        return chatUser.getSenderAcceptStatus().equals("A");
     }
 
 
