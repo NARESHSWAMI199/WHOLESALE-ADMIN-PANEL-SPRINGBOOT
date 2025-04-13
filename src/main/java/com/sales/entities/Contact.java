@@ -23,7 +23,7 @@ public class Contact {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "contact_id")
-    User contact;
+    User contactUser;
 
 
 }

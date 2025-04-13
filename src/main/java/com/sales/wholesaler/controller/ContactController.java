@@ -36,12 +36,31 @@ public class ContactController extends WholesaleServiceContainer {
         Contact contact = contactService.addNewContact(loggedUser, contactDto.getContactSlug());
         if(contact != null){
             logger.info("Contact added successfully for user: {}", loggedUser.getId());
-            result.put("message","Your contact has been successfully inserted");
+            result.put("contact",contact.getContactUser());
+            result.put("message","Your contact has been successfully added.");
             result.put("status", 200);
         }else {
             logger.error("Failed to add contact for user: {}", loggedUser.getId());
             result.put("message","Something went wrong during insert your contact");
             result.put("status", 400);
+        }
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+    }
+
+    @PostMapping("remove")
+    public ResponseEntity<Map<String,Object>> removeContactAndHisChat(@RequestBody ContactDto contactDto, HttpServletRequest request){
+        Map<String,Object> result = new HashMap<>();
+        User loggedUser = (User) request.getAttribute("user");
+        logger.info("Removing new contact for logged user: {}", loggedUser.getId());
+        int contact = contactService.removeContact(loggedUser, contactDto.getContactSlug(),contactDto.getDeleteChats());
+        if(contact>0){
+            logger.info("Contact removed successfully for user: {}", loggedUser.getId());
+            result.put("message","Your contact has been successfully removed.");
+            result.put("status", 200);
+        }else {
+            logger.error("Failed to removed contact for user: {}", loggedUser.getId());
+            result.put("message","No contact found to delete.");
+            result.put("status", 404);
         }
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
     }

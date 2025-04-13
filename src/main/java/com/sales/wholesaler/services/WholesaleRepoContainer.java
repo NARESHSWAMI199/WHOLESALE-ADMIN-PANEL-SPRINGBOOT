@@ -119,6 +119,9 @@ public class WholesaleRepoContainer {
     @Autowired
     protected ChatHbRepository chatHbRepository;
 
+    @Autowired
+    protected ContactRepository contactRepository;
+
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?

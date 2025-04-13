@@ -15,6 +15,7 @@ public class ContactDto {
     Integer id;
     Integer userId;
     String contactSlug;
+    Boolean deleteChats;
 
 
 }
