@@ -67,7 +67,7 @@ public class ContactsService extends WholesaleRepoContainer {
         if(contactUser == null) throw new NotFoundException("No contact user found to delete.");
         Integer deleted = contactRepository.deleteContactUserFromContact(loggedUser.getId(), contactUser);
         if (deleted > 0 && deleteChats) {
-            chatHbRepository.moveAndDeleteChat(loggedUser.getSlug(),contactUserSlug);
+            chatHbRepository.deleteChats(loggedUser.getSlug(),contactUserSlug);
         }
         return deleted;
     }

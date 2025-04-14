@@ -116,5 +116,17 @@ public class ChatUserService extends WholesaleRepoContainer {
     }
 
 
+    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
+    public int removeChatUser(User loggedUser,String chatUserSlug,Boolean deleteChats) {
+        logger.info("Going to remove contact from contact list with loggedUser  {} : and chatUserSlug {} ",loggedUser,chatUserSlug);
+        User contactUser = wholesaleUserRepository.findUserBySlug(chatUserSlug);
+        if(contactUser == null) throw new NotFoundException("No contact user found to delete.");
+        Integer deleted = chatUserRepository.deleteChatUserFromChatList(loggedUser.getId(), contactUser);
+        if (deleted > 0 && deleteChats) {
+            chatHbRepository.deleteChats(loggedUser.getSlug(),chatUserSlug);
+        }
+        return deleted;
+    }
+
 
 }
