@@ -29,10 +29,16 @@ public class ChatHbRepository {
 
 
     public void deleteChats(String sender , String receiver){
-        String hql = "update Chat set " +
-                "isSenderDeleted = case when sender = :sender and receiver = :receiver then 'Y' else isSenderDeleted end, " +
-                "isReceiverDeleted = case when receiver = :sender and sender = :receiver then 'Y' else isReceiverDeleted end " +
-                "where sender = :sender or receiver = :sender";
+        String hql = """
+                update Chat set
+                isSenderDeleted = case when sender = :sender and receiver = :receiver 
+                    then 'Y' 
+                    else isSenderDeleted 
+                end, 
+                    isReceiverDeleted = case when receiver = :sender and sender = :receiver 
+                    then 'Y' else isReceiverDeleted 
+                end 
+                """;
         Query query = entityManager.createQuery(hql);
         query.setParameter("sender",sender);
         query.setParameter("receiver",receiver);
