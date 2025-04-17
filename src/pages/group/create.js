@@ -31,7 +31,7 @@ const Page = ()=> {
     }
 
     // Get all permmission 
-    axios.get(host + "/group/permissions/all/")
+    axios.get(host + "/group/permissions/all")
       .then(res => {
         let response = res.data;
         setPermissions(response)
