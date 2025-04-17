@@ -60,6 +60,26 @@ public class ChatUserController extends WholesaleServiceContainer {
     }
 
 
+
+    @PostMapping("remove")
+    public ResponseEntity<Map<String,Object>> removeChatUserAndHisChat(@RequestBody ContactDto contactDto, HttpServletRequest request){
+        Map<String,Object> result = new HashMap<>();
+        User loggedUser = (User) request.getAttribute("user");
+        logger.info("Removing Chat user for logged user: {}", loggedUser.getId());
+        int contact = chatUserService.removeChatUser(loggedUser, contactDto.getContactSlug(),contactDto.getDeleteChats());
+        if(contact>0){
+            logger.info("Chat user removed successfully for user: {}", loggedUser.getId());
+            result.put("message","Your Chat user has been successfully removed.");
+            result.put("status", 200);
+        }else {
+            logger.error("Failed to removed Chat user for user: {}", loggedUser.getId());
+            result.put("message","No Chat user found to delete.");
+            result.put("status", 404);
+        }
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+    }
+
+
     @PostMapping("/accept")
     public ResponseEntity<Map<String,Object>> updateChatAcceptStatus(HttpServletRequest request, @RequestBody ChatUserDto chatUserDto) {
         User loggedUser = (User) request.getAttribute("user");
