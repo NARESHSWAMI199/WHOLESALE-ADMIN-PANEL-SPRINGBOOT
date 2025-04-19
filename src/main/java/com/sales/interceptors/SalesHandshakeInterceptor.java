@@ -23,12 +23,13 @@ public class SalesHandshakeInterceptor implements HandshakeInterceptor {
                                    @NotNull WebSocketHandler wsHandler,
                                    @NotNull Map<String, Object> attributes) {
         // Extract username from request (e.g., from a custom header)
-        String username = extractUsernameFromRequest(request);
-        System.err.println("Username is : "+username);
+//        String username = extractUsernameFromRequest(request);
+        String userSlug = request.getURI().getQuery();
+        System.out.println("user slug from  chat socket  : "+userSlug);
         // Store username in session attributes
-        if (username != null) {
-            attributes.put("username", username);
-            attributes.put("user", wholesaleUserService.findUserBySlug(username));
+        if (userSlug != null) {
+            attributes.put("username", userSlug);
+            attributes.put("user", wholesaleUserService.findUserBySlug(userSlug));
         }
 
         return true; // Proceed with the handshake

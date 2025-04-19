@@ -53,7 +53,7 @@ public class ChatController extends WholesaleServiceContainer {
     }
 
 
-    @GetMapping("/chat/message/{parentId}")
+    @GetMapping("/chats/message/{parentId}")
     public ResponseEntity<Chat> getALlUsers(@PathVariable Long parentId , HttpServletRequest request){
         logger.info("Fetching all users for parentId: {}", parentId);
         Chat parentChat = chatService.getParentMessageById(parentId,request);
@@ -104,9 +104,6 @@ public class ChatController extends WholesaleServiceContainer {
         boolean verified = chatService.verifyBeforeSend(loggedUser, recipient);
         if(!verified) return null;
 
-        chatService.updateMessageToSent(message.getId());
-        message.setIsSent("S");
-
         List<String> allImagesName = chatService.saveAllImages(message, loggedUser);
         if(allImagesName.size() == message.getImages().size()){
             result.put("message","All images successfully sent.");
@@ -118,6 +115,8 @@ public class ChatController extends WholesaleServiceContainer {
 
         /* ------------------------------- sending message and saving message ------------------------------- */
         message = chatService.addImagesList(message, request, allImagesName, loggedUser, recipient);
+        chatService.updateMessageToSent(message.getId());
+        message.setIsSent("S");
         /*
              You need to subscribe like /user/{userId}/queue/private
              Send a private message to the recipient

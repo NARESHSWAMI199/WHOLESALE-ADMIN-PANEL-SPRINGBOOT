@@ -172,7 +172,8 @@ public class ChatService extends WholesaleRepoContainer {
         message.setSender(loggedUser.getSlug());
         message.setReceiver(recipient);
         String imagesNamesString = String.join(",", allImagesName);
-        saveMessage(message,imagesNamesString); // Create operation
+        Chat savedMessage = saveMessage(message,imagesNamesString); // Create operation
+        message.setId(savedMessage.getId());
         logger.info("Completed addImagesList method");
         return message;
     }
