@@ -284,41 +284,6 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         return isUpdated;
     }
 
-    public int deleteMessage(User loggedUser,MessageDto messageDto){
-        logger.info("Starting deleteMessage method with loggedUser: {}, messageDto: {}", loggedUser, messageDto);
-        switch (messageDto.getIsDeleted()){
-            case "S": // delete sender's message
-                if(!messageDto.getSender().equals(loggedUser.getSlug())) return  0;
-                messageDto.setIsSenderDeleted("H");
-                messageDto.setIsReceiverDeleted(null);
-                break;
-            case "SY" : // Force delete sender's message
-                if(!messageDto.getSender().equals(loggedUser.getSlug())) return  0;
-                messageDto.setIsSenderDeleted("Y");
-                messageDto.setIsReceiverDeleted(null);
-                break;
-            case "R": // delete receiver's message
-                if(!messageDto.getReceiver().equals(loggedUser.getSlug())) return 0;
-                messageDto.setIsSenderDeleted(null);
-                messageDto.setIsReceiverDeleted("H");
-                break;
-            case "RY": // Force delete receiver's message
-                if(!messageDto.getReceiver().equals(loggedUser.getSlug())) return 0;
-                messageDto.setIsSenderDeleted(null);
-                messageDto.setIsReceiverDeleted("Y");
-                break;
-            case "B": // Delete from both side
-                if(!messageDto.getReceiver().equals(loggedUser.getSlug()) && !messageDto.getSender().equals(loggedUser.getSlug())) return 0;
-                messageDto.setIsSenderDeleted("H");
-                messageDto.setIsReceiverDeleted("H");
-                break;
-            default:
-                return 0;
-        }
-        int deleteCount = wholesaleUserHbRepository.deleteChat(messageDto); // Update operation
-        logger.info("Completed deleteMessage method");
-        return deleteCount;
-    }
 
     /** Getting all retailers and wholesalers for chat purpose */
     public Page<User> getAllUsers(UserSearchFilters filters, User loggedUser) {

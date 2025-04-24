@@ -87,6 +87,10 @@ public class WholesaleRepoContainer {
 
     @Autowired
     protected ChatRepository chatRepository;
+
+    @Autowired
+    protected ChatHbRepository chatHbRepository;
+
     @Autowired
     protected ChatUserRepository chatUserRepository;
 
@@ -115,9 +119,6 @@ public class WholesaleRepoContainer {
 
     @Autowired
     protected ChatRoomHbRepository chatRoomHbRepository;
-
-    @Autowired
-    protected ChatHbRepository chatHbRepository;
 
     @Autowired
     protected ContactRepository contactRepository;

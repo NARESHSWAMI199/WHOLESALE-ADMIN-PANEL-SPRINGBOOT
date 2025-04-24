@@ -126,7 +126,7 @@ public class ChatService extends WholesaleRepoContainer {
 
 
     public Chat getParentMessageById(Long parentId,HttpServletRequest request){
-        logger.info("Starting getAllChatBySenderAndReceiverKey method with parentId : {} ",parentId);
+        logger.info("Starting getParentMessageById method with parentId : {} ",parentId);
         Optional<Chat> chatOptional = chatRepository.findById(parentId);
         if (chatOptional.isPresent()){
             Chat chat = chatOptional.get();
@@ -136,11 +136,22 @@ public class ChatService extends WholesaleRepoContainer {
                 List<String> list = Arrays.stream(imagesList).map(name -> Utils.getHostUrl(request) + "/chat/images/" + chat.getSender() + "/" + chat.getReceiver() + "/" + name).collect(Collectors.toList());
                 chat.setImagesUrls(list);
             }
-            logger.info("Completed getAllChatBySenderAndReceiverKey method");
+            logger.info("Completed getParentMessageById method");
             return chat;
         }
         return  null;
     }
+
+
+
+    public Integer getParentMessageIdByCreatedAt(MessageDto messageDto, HttpServletRequest request){
+        logger.info("Starting getParentMessageIdByCreatedAt method with messageDto : {}",messageDto);
+        Integer parentMessageId = chatRepository.getParentMessageIdByCreateAt(messageDto.getSender(),messageDto.getReceiver(),messageDto.getCreatedAt());
+        logger.info("Completed getParentMessageIdByCreatedAt method");
+        return parentMessageId;
+    }
+
+
 
     public List<String> saveAllImages(MessageDto messageDto, User loggedUser) {
         logger.info("Starting saveAllImages method");
@@ -181,6 +192,43 @@ public class ChatService extends WholesaleRepoContainer {
 
     public boolean updateMessageToSent(Long id){
         return chatHbRepository.updateMessageToSent(id);
+    }
+
+
+    public int deleteMessage(User loggedUser,MessageDto messageDto){
+        logger.info("Starting deleteMessage method with loggedUser: {}, messageDto: {}", loggedUser, messageDto);
+        switch (messageDto.getIsDeleted()){
+            case "S": // delete sender's message
+                if(!messageDto.getSender().equals(loggedUser.getSlug())) return  0;
+                messageDto.setIsSenderDeleted("H");
+                messageDto.setIsReceiverDeleted(null);
+                break;
+            case "SY" : // Force delete sender's message
+                if(!messageDto.getSender().equals(loggedUser.getSlug())) return  0;
+                messageDto.setIsSenderDeleted("Y");
+                messageDto.setIsReceiverDeleted(null);
+                break;
+            case "R": // delete receiver's message
+                if(!messageDto.getReceiver().equals(loggedUser.getSlug())) return 0;
+                messageDto.setIsSenderDeleted(null);
+                messageDto.setIsReceiverDeleted("H");
+                break;
+            case "RY": // Force delete receiver's message
+                if(!messageDto.getReceiver().equals(loggedUser.getSlug())) return 0;
+                messageDto.setIsSenderDeleted(null);
+                messageDto.setIsReceiverDeleted("Y");
+                break;
+            case "B": // Delete from both side
+                if(!messageDto.getReceiver().equals(loggedUser.getSlug()) && !messageDto.getSender().equals(loggedUser.getSlug())) return 0;
+                messageDto.setIsSenderDeleted("H");
+                messageDto.setIsReceiverDeleted("H");
+                break;
+            default:
+                return 0;
+        }
+        int deleteCount = chatHbRepository.deleteChat(messageDto); // Update operation
+        logger.info("Completed deleteMessage method");
+        return deleteCount;
     }
 
 }

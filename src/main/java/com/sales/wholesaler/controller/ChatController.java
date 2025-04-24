@@ -54,10 +54,18 @@ public class ChatController extends WholesaleServiceContainer {
 
 
     @GetMapping("/chats/message/{parentId}")
-    public ResponseEntity<Chat> getALlUsers(@PathVariable Long parentId , HttpServletRequest request){
-        logger.info("Fetching all users for parentId: {}", parentId);
+    public ResponseEntity<Chat> getParentChatMessageByParentId(@PathVariable Long parentId , HttpServletRequest request){
+        logger.info("Fetching parent chat using parentId: {}", parentId);
         Chat parentChat = chatService.getParentMessageById(parentId,request);
         return new ResponseEntity<>(parentChat, HttpStatus.valueOf(200));
+    }
+
+
+    @PostMapping("/chats/parentId")
+    public ResponseEntity<Integer> getParentChatMessageBySentTime(@RequestBody MessageDto message , HttpServletRequest request){
+        logger.info("Fetching parent chat using createdAt: {} and sender : {} and receiver : {}", message.getCreatedAt(),message.getSender(),message.getReceiver());
+        Integer parentMessageId = chatService.getParentMessageIdByCreatedAt(message,request);
+        return new ResponseEntity<>(parentMessageId, HttpStatus.valueOf(200));
     }
 
 
@@ -243,7 +251,7 @@ public class ChatController extends WholesaleServiceContainer {
         logger.info("Deleting message: {}", messageDto);
         Map<String,Object> result = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
-        int isDeleted = wholesaleUserService.deleteMessage(loggedUser, messageDto);
+        int isDeleted = chatService.deleteMessage(loggedUser, messageDto);
         if(isDeleted > 0){
             result.put("message","deleted successfully");
             result.put("status", 200);
