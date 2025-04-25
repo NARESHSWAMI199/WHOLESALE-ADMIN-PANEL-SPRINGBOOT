@@ -56,7 +56,8 @@ public class ChatController extends WholesaleServiceContainer {
     @GetMapping("/chats/message/{parentId}")
     public ResponseEntity<Chat> getParentChatMessageByParentId(@PathVariable Long parentId , HttpServletRequest request){
         logger.info("Fetching parent chat using parentId: {}", parentId);
-        Chat parentChat = chatService.getParentMessageById(parentId,request);
+        User loggedUser = (User) request.getAttribute("user");
+        Chat parentChat = chatService.getParentMessageById(parentId,loggedUser,request);
         return new ResponseEntity<>(parentChat, HttpStatus.valueOf(200));
     }
 

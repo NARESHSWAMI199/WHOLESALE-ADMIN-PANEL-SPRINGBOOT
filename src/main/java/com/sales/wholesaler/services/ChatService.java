@@ -140,11 +140,18 @@ public class ChatService extends WholesaleRepoContainer {
     }
 
 
-    public Chat getParentMessageById(Long parentId,HttpServletRequest request){
+    public Chat getParentMessageById(Long parentId,User loggedUser,HttpServletRequest request){
         logger.info("Starting getParentMessageById method with parentId : {} ",parentId);
         Optional<Chat> chatOptional = chatRepository.findById(parentId);
         if (chatOptional.isPresent()){
             Chat chat = chatOptional.get();
+            if(chat.getReceiver().equals(loggedUser.getSlug())){
+                // hiding deleted messages.
+                if(chat.getIsReceiverDeleted().equals("Y")  || chat.getIsReceiverDeleted().equals("H")) chat.setMessage("Message was deleted.");;
+            } if(chat.getSender().equals(loggedUser.getSlug())){
+                // hiding deleted messages.
+                if(chat.getIsSenderDeleted().equals("Y") || chat.getIsSenderDeleted().equals("H")) chat.setMessage("Message was deleted.");
+            }
             String images = chat.getImages();
             if (images != null) {
                 String[] imagesList = images.split(",", -1);
