@@ -219,14 +219,9 @@ public class ChatController extends WholesaleServiceContainer {
         Map<String,Object> result = new HashMap<>();
         User  loggedUser = (User) request.getAttribute("user");
         message.setReceiver(loggedUser.getSlug());
-        boolean updated = wholesaleUserService.updateSeenMessages(message);
-        if(updated){
-            result.put("message","Message successfully updated.");
-            result.put("status", 200);
-        }else{
-            result.put("message","Something went wrong during updating all message seen.");
-            result.put("status",  400);
-        }
+        wholesaleUserService.updateSeenMessages(message);
+        result.put("message","Message successfully updated.");
+        result.put("status", 200);
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
     }
 

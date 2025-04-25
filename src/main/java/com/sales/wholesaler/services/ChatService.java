@@ -98,16 +98,31 @@ public class ChatService extends WholesaleRepoContainer {
     }
 
     public Map<String, List<Chat>> getAllChatBySenderAndReceiverKey(MessageDto message,HttpServletRequest request) {
+        // sender is loggedUser
         logger.info("Starting getAllChatBySenderAndReceiverKey method with messageDto : {} ",message);
-        Map<String, List<Chat>> formatedData = new TreeMap<>();
+        Map<String, List<Chat>> formattedData = new TreeMap<>();
         List<Chat> chatList = chatRepository.getChatBySenderKeyOrReceiverKey(message.getSender(), message.getReceiver());
-
         for (Chat chat : chatList) {
+            // checking message sent or not.
             if(chat.getReceiver().equals(message.getSender()) && chat.getIsSent().equals("F")) continue;
+
+
+            if(chat.getReceiver().equals(message.getSender())){
+                // skipping deleted messages.
+                if(chat.getIsReceiverDeleted().equals("Y")) continue;
+                // hiding deleted messages.
+                if(chat.getIsReceiverDeleted().equals("H")) chat.setMessage("Message was deleted.");
+            } if(chat.getSender().equals(message.getSender())){
+                // skipping deleted messages.
+                if(chat.getIsSenderDeleted().equals("Y")) continue;
+                // hiding deleted messages.
+                if(chat.getIsSenderDeleted().equals("H")) chat.setMessage("Message was deleted.");
+            }
+
             String createAtDate = Utils.getStringDateOnly(chat.getCreatedAt());
             List<Chat> chats;
-            if (formatedData.containsKey(createAtDate)) {
-                chats = formatedData.get(createAtDate);
+            if (formattedData.containsKey(createAtDate)) {
+                chats = formattedData.get(createAtDate);
             } else {
                 chats = new ArrayList<>();
             }
@@ -118,10 +133,10 @@ public class ChatService extends WholesaleRepoContainer {
                 chat.setImagesUrls(list);
             }
             chats.add(chat);
-            formatedData.put(createAtDate, chats);
+            formattedData.put(createAtDate, chats);
         }
         logger.info("Completed getAllChatBySenderAndReceiverKey method");
-        return formatedData;
+        return formattedData;
     }
 
 
