@@ -111,12 +111,18 @@ public class ChatService extends WholesaleRepoContainer {
                 // skipping deleted messages.
                 if(chat.getIsReceiverDeleted().equals("Y")) continue;
                 // hiding deleted messages.
-                if(chat.getIsReceiverDeleted().equals("H")) chat.setMessage("Message was deleted.");
+                if(chat.getIsReceiverDeleted().equals("H")) {
+                    chat.setMessage("Message was deleted.");
+                    chat.setImages(null);
+                }
             } if(chat.getSender().equals(message.getSender())){
                 // skipping deleted messages.
                 if(chat.getIsSenderDeleted().equals("Y")) continue;
                 // hiding deleted messages.
-                if(chat.getIsSenderDeleted().equals("H")) chat.setMessage("Message was deleted.");
+                if(chat.getIsSenderDeleted().equals("H")) {
+                    chat.setMessage("Message was deleted.");
+                    chat.setImages(null);
+                }
             }
 
             String createAtDate = Utils.getStringDateOnly(chat.getCreatedAt());
@@ -240,7 +246,7 @@ public class ChatService extends WholesaleRepoContainer {
                 messageDto.setIsSenderDeleted(null);
                 messageDto.setIsReceiverDeleted("Y");
                 break;
-            case "B": // Delete from both side
+            case "B": // Delete it from both sides
                 if(!messageDto.getReceiver().equals(loggedUser.getSlug()) && !messageDto.getSender().equals(loggedUser.getSlug())) return 0;
                 messageDto.setIsSenderDeleted("H");
                 messageDto.setIsReceiverDeleted("H");

@@ -105,14 +105,14 @@ public class ChatUserService extends WholesaleRepoContainer {
     }
 
 
-    public boolean isChatRequestAcceptedByLoggedUser(User loggedUser,String receiverSlug) {
+    public String isChatRequestAcceptedByLoggedUser(User loggedUser,String receiverSlug) {
         logger.info("Starting isChatRequestAccepted method with userId : {} and chatUser : {} ",loggedUser.getId(),receiverSlug);
         User receiver = wholesaleUserRepository.findUserBySlug(receiverSlug);
         if(receiver == null) throw new NotFoundException("Receiver not found.");
         ChatUser chatUser = chatUserRepository.findByUserIdAndChatUser(loggedUser.getId(),receiver);
         if(chatUser == null) throw new NotFoundException("Receiver not found.");
         logger.info("Completed isChatRequestAcceptedByLoggedUser method");
-        return chatUser.getSenderAcceptStatus().equals("A");
+        return chatUser.getSenderAcceptStatus();
     }
 
 

@@ -33,10 +33,10 @@ public class ChatUserController extends WholesaleServiceContainer {
 
 
     @GetMapping("is-accepted/{receiver}")
-    public ResponseEntity<Boolean> isChatRequestAcceptedByLoggedUser(@PathVariable String receiver, HttpServletRequest request){
+    public ResponseEntity<String> isChatRequestAcceptedByLoggedUser(@PathVariable String receiver, HttpServletRequest request){
         User loggedUser = (User) request.getAttribute("user");
-        logger.info("Fetching all chat users for logged user: {}", loggedUser.getId());
-        boolean accepted =  chatUserService.isChatRequestAcceptedByLoggedUser(loggedUser,receiver);
+        logger.info("Fetching isChatRequestAcceptedByLoggedUser for logged user: {}", loggedUser.getId());
+        String accepted =  chatUserService.isChatRequestAcceptedByLoggedUser(loggedUser,receiver);
         return new ResponseEntity<>(accepted, HttpStatus.valueOf(200));
     }
 
