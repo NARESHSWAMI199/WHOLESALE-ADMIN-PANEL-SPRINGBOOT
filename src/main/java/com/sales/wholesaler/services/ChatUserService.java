@@ -23,7 +23,6 @@ public class ChatUserService extends WholesaleRepoContainer {
     @Autowired
     protected BlockListService blockListService;
 
-    @Transactional
     public List<User> getAllChatUsers(User loggedUser, HttpServletRequest request) {
         logger.info("Starting getAllChatUsers method and the user id : {}",loggedUser.getId());
         List<ChatUser> chatUserList = chatUserRepository.getChatUserByUserId(loggedUser.getId()).stream().filter(chatUser -> chatUser.getChatUser() !=null).toList();

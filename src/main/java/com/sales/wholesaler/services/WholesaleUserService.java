@@ -169,7 +169,7 @@ public class WholesaleUserService extends WholesaleRepoContainer {
 
     public Map<String, Object> updateUserProfile(UserDto userDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.info("Starting updateUserProfile method with userDto: {}, loggedUser: {}", userDto, loggedUser);
-        // Validating required fields. If their we found any required field is null, this will throw an Exception
+        // Validating required fields. If there we found any required field is null, this will throw an Exception
         Utils.checkRequiredFields(userDto,List.of("slug","username","email","contact"));
 
         Map<String, Object> responseObj = new HashMap<>();
@@ -234,7 +234,7 @@ public class WholesaleUserService extends WholesaleRepoContainer {
 
     public User addNewUser(UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.info("Starting addNewUser method with userDto: {}", userDto);
-        // Validating required fields. If their we found any required field is null, this will throw an Exception
+        // Validating required fields. If there we found any required field is null, this will throw an Exception
         Utils.checkRequiredFields(userDto,List.of("username","email","password","contact"));
 
         // '_' replaced by actual error message in mobileAndEmailValidation

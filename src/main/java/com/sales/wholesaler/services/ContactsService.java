@@ -33,6 +33,8 @@ public class ContactsService extends WholesaleRepoContainer {
             user.setAvatar(hostUrl + GlobalConstant.wholesalerImagePath + user.getSlug() + "/" + user.getAvatar());
             user.setChatNotification(unSeenChatsCount);
             user.setBlocked(blockListService.isReceiverBlockedBySender(loggedUser,user));
+            // Verifying the contact user existing in chats and sender chat request accepted or not.
+            user.setAccepted(chatUserRepository.getSenderAcceptStatus(loggedUser.getId(),user));
         }
         logger.info("Completed getAllContactsByUserId method");
         return userList;

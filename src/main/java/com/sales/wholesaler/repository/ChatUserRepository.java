@@ -17,6 +17,9 @@ public interface ChatUserRepository extends JpaRepository<ChatUser,Integer> {
     @Query("from ChatUser where userId=:userId")
    List<ChatUser> getChatUserByUserId(Integer userId);
 
+    @Query("select senderAcceptStatus from ChatUser where userId=:userId and chatUser=:chatUser")
+    String getSenderAcceptStatus(Integer userId,User chatUser);
+
 
     ChatUser findByUserIdAndChatUser(Integer userId , User chatUser);
 
