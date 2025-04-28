@@ -63,6 +63,10 @@ public class User {
     @Column(name = "last_seen")
     Long lastSeen;
 
+
+    @Transient
+    private String avatarUrl;
+
     @Transient
     public boolean isOnline =false;
 

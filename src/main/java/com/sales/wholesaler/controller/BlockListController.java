@@ -52,4 +52,14 @@ public class BlockListController extends WholesaleServiceContainer {
         }
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
+
+
+    @GetMapping("is-blocked/{receiverSlug}")
+    public ResponseEntity<Boolean> isReceiverBlocked(@PathVariable String receiverSlug, HttpServletRequest request) {
+        User loggedUser = (User) request.getAttribute("user");
+        User receiver = wholesaleUserService.findUserBySlug(receiverSlug);
+        boolean blocked = blockListService.isReceiverBlockedBySender(loggedUser, receiver);
+        return new ResponseEntity<>(blocked,HttpStatus.valueOf(200));
+    }
+
 }

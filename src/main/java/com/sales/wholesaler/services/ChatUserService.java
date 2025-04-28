@@ -34,10 +34,10 @@ public class ChatUserService extends WholesaleRepoContainer {
             if(user != null) {
                 Integer unSeenChatsCount = chatRepository.getUnSeenChatsCount(user.getSlug(), loggedUser.getSlug());
                 String hostUrl = Utils.getHostUrl(request);
-                user.setAvatar(hostUrl + GlobalConstant.wholesalerImagePath + user.getSlug() + "/" + user.getAvatar());
+                user.setAvatarUrl(hostUrl + GlobalConstant.wholesalerImagePath + user.getSlug() + "/" + user.getAvatar());
                 user.setChatNotification(unSeenChatsCount);
-                user.setBlocked(blockListService.isReceiverBlockedBySender(loggedUser,user));
-                user.setAccepted(chatUser.getSenderAcceptStatus());
+                //user.setBlocked(blockListService.isReceiverBlockedBySender(loggedUser,user));
+                //user.setAccepted(chatUser.getSenderAcceptStatus());
             }
         }
         logger.info("Completed getAllChatUsers method");

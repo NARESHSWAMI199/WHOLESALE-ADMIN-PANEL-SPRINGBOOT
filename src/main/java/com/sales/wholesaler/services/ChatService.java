@@ -68,10 +68,16 @@ public class ChatService extends WholesaleRepoContainer {
 
         /* Check you are blocked by receiver or not */
         boolean isYouBlockedByReceiver = blockListService.isSenderBlockedByReceiver(loggedUser,receiver);
-        if (isYouBlockedByReceiver) return false; //  If isBlocked == true, that's mean. Receiver already blocked you
+        if (isYouBlockedByReceiver) {
+            logger.info("Receiver blocked you ? : {} ", true);
+            return false; //  If isBlocked == true, that's mean. Receiver already blocked you
+        }
 
         /* Check you blocked the receiver or not */
         boolean isYouBlockedReceiver = blockListService.isReceiverBlockedBySender(loggedUser,receiver);
+        if(isYouBlockedReceiver){
+            logger.info("You blocked receiver ? : {} ", true);
+        }
         return !isYouBlockedReceiver; //  If isYouBlockedReceiver == true, that's mean.
     }
 
