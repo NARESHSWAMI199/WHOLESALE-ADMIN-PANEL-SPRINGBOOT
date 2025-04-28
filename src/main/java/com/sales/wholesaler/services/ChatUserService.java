@@ -28,16 +28,12 @@ public class ChatUserService extends WholesaleRepoContainer {
         List<ChatUser> chatUserList = chatUserRepository.getChatUserByUserId(loggedUser.getId()).stream().filter(chatUser -> chatUser.getChatUser() !=null).toList();
         List<User> userList = chatUserList.stream().map(ChatUser::getChatUser).toList();
 
-        for (int i = 0; i < userList.size(); i++){
-            User user = userList.get(i);
-            ChatUser chatUser = chatUserList.get(i);
-            if(user != null) {
+        for (User user : userList) {
+            if (user != null) {
                 Integer unSeenChatsCount = chatRepository.getUnSeenChatsCount(user.getSlug(), loggedUser.getSlug());
                 String hostUrl = Utils.getHostUrl(request);
                 user.setAvatarUrl(hostUrl + GlobalConstant.wholesalerImagePath + user.getSlug() + "/" + user.getAvatar());
                 user.setChatNotification(unSeenChatsCount);
-                //user.setBlocked(blockListService.isReceiverBlockedBySender(loggedUser,user));
-                //user.setAccepted(chatUser.getSenderAcceptStatus());
             }
         }
         logger.info("Completed getAllChatUsers method");

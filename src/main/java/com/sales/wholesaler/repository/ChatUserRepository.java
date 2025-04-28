@@ -14,7 +14,11 @@ import java.util.List;
 @Repository
 public interface ChatUserRepository extends JpaRepository<ChatUser,Integer> {
 
-    @Query("from ChatUser where userId=:userId")
+    @Query("""
+    from ChatUser cu 
+        left join User u on cu.chatUser.id = u.id 
+        left join Chat c on u.slug = c.receiver 
+    where cu.userId=:userId order by c.createdAt desc""")
    List<ChatUser> getChatUserByUserId(Integer userId);
 
     @Query("select senderAcceptStatus from ChatUser where userId=:userId and chatUser=:chatUser")
