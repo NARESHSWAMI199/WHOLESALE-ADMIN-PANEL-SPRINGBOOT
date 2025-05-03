@@ -1,4 +1,4 @@
-package com.sales.wholesaler.services;
+package com.sales.payment.service;
 
 
 import com.phonepe.sdk.pg.Env;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class PhonePeService extends WholesaleRepoContainer {
+public class PhonePeService extends PaymentRepoContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(PhonePeService.class);
 

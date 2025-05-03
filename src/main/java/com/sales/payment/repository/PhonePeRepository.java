@@ -1,4 +1,4 @@
-package com.sales.wholesaler.repository;
+package com.sales.payment.repository;
 
 
 import com.sales.entities.PhonePeTrans;

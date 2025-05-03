@@ -66,13 +66,6 @@ public class WholesaleRepoContainer {
     @Autowired
     protected WholesaleSupportEmailsRepository wholesaleSupportEmailsRepository;
 
-
-    @Autowired
-    protected PhonePeRepository phonePeRepository;
-
-    @Autowired
-    protected PhonePeHbRepository phonePeHbRepository;
-
     @Autowired
     protected WholesaleServicePlanRepository wholesaleServicePlanRepository;
 

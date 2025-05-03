@@ -34,11 +34,11 @@ public class WholesaleServicePlanController extends WholesaleServiceContainer {
     }
 
     @PostMapping("/my-plans")
-    public ResponseEntity<Page<UserPlans>> getAllPlans(HttpServletRequest request, @RequestBody UserPlanDto searchFilters) {
-        logger.info("Starting getAllPlans method");
+    public ResponseEntity<Page<UserPlans>> getMyAllPlans(HttpServletRequest request, @RequestBody UserPlanDto searchFilters) {
+        logger.info("Starting getMyAllPlans method");
         User loggedUser = Utils.getUserFromRequest(request, jwtToken, wholesaleUserService);
         Page<UserPlans> allUserPlans = wholesaleServicePlanService.getAllUserPlans(loggedUser, searchFilters);
-        logger.info("Completed getAllPlans method");
+        logger.info("Completed getMyAllPlans method");
         return new ResponseEntity<>(allUserPlans, HttpStatusCode.valueOf(200));
     }
 

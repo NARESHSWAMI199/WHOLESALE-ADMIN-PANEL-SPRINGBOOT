@@ -1,4 +1,4 @@
-package com.sales.wholesaler.controller;
+package com.sales.payment.controller;
 
 
 import com.google.gson.Gson;
@@ -30,7 +30,7 @@ import java.util.UUID;
 
 @Controller
 @RequestMapping("pg/")
-public class PhonePeGatewayController extends WholesaleServiceContainer {
+public class PhonePeGatewayController extends PaymentServiceContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(PhonePeGatewayController.class);
 
@@ -42,9 +42,9 @@ public class PhonePeGatewayController extends WholesaleServiceContainer {
         logger.info("Initiating payment via PhonePe for user: {}, service plan: {}", loggedUser.getId(), servicePlan.getId());
         Map<String,Object> result = new HashMap<>();
         try {
-            logger.info("user id  : "+loggedUser.getId());
+            logger.info("user id  : {}",loggedUser.getId());
             String merchantTransactionId = UUID.randomUUID().toString().substring(0, 34);
-            logger.info("merchantTransactionId : "+merchantTransactionId);
+            logger.info("merchantTransactionId : {}",merchantTransactionId);
             /* TODO : Must add Extra GST amount */
             long amount = (servicePlan.getPrice()-servicePlan.getDiscount())*100; /* converting in rupees */
             String merchantUserId = UUID.randomUUID().toString().substring(0, 34);

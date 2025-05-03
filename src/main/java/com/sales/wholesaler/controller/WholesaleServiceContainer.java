@@ -33,10 +33,6 @@ public class WholesaleServiceContainer {
     @Autowired
     protected WholesalePromotionsService wholesalePromotionsService;
 
-
-    @Autowired
-    protected  PhonePeService phonePeService;
-
     @Autowired
     protected WholesaleServicePlanService wholesaleServicePlanService;
 
