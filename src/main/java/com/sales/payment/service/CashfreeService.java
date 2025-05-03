@@ -38,8 +38,8 @@ public class CashfreeService extends PaymentRepoContainer {
     }
 
 
-    public int updatePaymentCallback(CashfreeDto cashfreeDto){
-        return cashfreeHbRepository.updateCashfreePaymentDetail(cashfreeDto);
+    public int updatePaymentCallback(CashfreeDto cashfreeDto, Integer userId){
+        return cashfreeHbRepository.updateCashfreePaymentDetail(cashfreeDto,userId);
     }
 
 }

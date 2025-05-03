@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URLDecoder;
 import java.security.Key;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -180,6 +181,28 @@ public class Utils {
         try {
             if (token != null && token.startsWith("Bearer ")) {
                 token = token.substring(7);
+                String slug = jwtToken.getSlugFromToken(token);
+                /* get user by slug. */
+                User user = userService.findUserBySlug(slug);
+                if (user.getIsDeleted().equals("Y")) {
+                    throw new NotFoundException("User is not found.");
+                } else if (user.getStatus().equals("D")) {
+                    throw new UserException("User is not active.");
+                }
+                return user;
+            }
+            throw new UserException("Invalid authorization.");
+        }catch (Exception e){
+            throw new UserException(e.getMessage());
+        }
+    }
+
+
+    public static User getUserFromRequest(HttpServletRequest request,String token,JwtToken jwtToken, WholesaleUserService userService){
+        System.out.println("request url : "+request.getRequestURI());
+        token = token != null ? URLDecoder.decode(token) : token;
+        try {
+            if (token != null) {
                 String slug = jwtToken.getSlugFromToken(token);
                 /* get user by slug. */
                 User user = userService.findUserBySlug(slug);

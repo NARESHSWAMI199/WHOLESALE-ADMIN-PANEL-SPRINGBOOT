@@ -8,12 +8,8 @@
 
 </head>
 <body>
-
-
-    <input type="hidden" id="mobile" th:value="${mobile}">
-    <input type="hidden" id="amount" th:value="${amount}">
-    <input type="hidden" id="servicePlanId" th:value="${servicePlanId}">
-
+    <input type="hidden" id="servicePlanSlug" th:value="${servicePlanSlug}">
+    <input type="hidden" id="userSlug" th:value="${userSlug}">
 <script>
     const cashfree = Cashfree({
         mode: "sandbox",
@@ -36,13 +32,11 @@
 
 
     const requestForPaymentSessionId = async () =>{
-        let mobile = document.getElementById("mobile").value;
-        let amount = document.getElementById("amount").value;
-        let servicePlanId = document.getElementById("servicePlanId").value;
+        let userSlug = document.getElementById("userSlug").value;
+        let servicePlanSlug = document.getElementById("servicePlanSlug").value;
         let data = JSON.stringify({
-            "amount" : amount,
-            "mobileNumber" : mobile,
-            "servicePlanId" : servicePlanId
+            "servicePlanSlug" : servicePlanSlug,
+            "userSlug" : userSlug
         });
         let paymentSessionId = null;
         await fetch("http://localhost:8080/cashfree/sessionId",{

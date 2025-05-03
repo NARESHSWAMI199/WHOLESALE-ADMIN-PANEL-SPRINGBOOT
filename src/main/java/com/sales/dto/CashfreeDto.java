@@ -9,7 +9,8 @@ import lombok.Setter;
 @Setter
 @Builder
 public class CashfreeDto {
-    String servicePlanId;
+    String userSlug;
+    String servicePlanSlug;
     String orderId;
     Double amount;
     String mobileNumber;

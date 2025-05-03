@@ -8,9 +8,11 @@ import com.cashfree.model.CreateOrderRequest;
 import com.cashfree.model.CustomerDetails;
 import com.cashfree.model.OrderEntity;
 import com.cashfree.model.OrderMeta;
+import com.google.gson.Gson;
 import com.sales.dto.CashfreeDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
+import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -37,17 +39,22 @@ public class CashFreePgController extends PaymentServiceContainer {
 
     @Value("${cashfree.test.mid}")
     public String testMid;
+
+    @Value("${cashfree.mobile}")
+    String mobileNumber;
+
     @ResponseBody
-    @PostMapping("sessionId/{servicePlanSlug}")
-    public ResponseEntity<Map<String,Object>> getPaymentSessionId (@PathVariable  String servicePlanSlug, HttpServletRequest httpRequest, @RequestBody CashfreeDto cashfreeDto) {
-        User loggedUser = (User) httpRequest.getAttribute("user");
-        logger.info("Received request to get payment session ID for mobile number: {}", cashfreeDto.getMobileNumber());
+    @PostMapping("sessionId")
+    public ResponseEntity<Map<String,Object>> getPaymentSessionId (@RequestBody CashfreeDto cashfreeDto) {
+        User loggedUser = wholesaleUserService.findUserBySlug(cashfreeDto.getUserSlug());
+        logger.info("Received request to get payment session ID for service slug : {} and username : {} and user slug : {}",cashfreeDto.getServicePlanSlug(),loggedUser.getUsername(),loggedUser.getSlug());
         String slug = UUID.randomUUID().toString();
         cashfreeService.insertPaymentDetail(cashfreeDto,slug); // saving only slug amd amount before payment.
-        ServicePlan servicePlan = servicePlanService.findBySlug(servicePlanSlug);
+        ServicePlan servicePlan = servicePlanService.findBySlug(cashfreeDto.getServicePlanSlug());
+        long amount = (servicePlan.getPrice()-servicePlan.getDiscount());
         Map<String,Object> result = new HashMap<>();
         try {
-            logger.info(" mobile number {} : amount {}",cashfreeDto.getMobileNumber(),cashfreeDto.getAmount());
+            logger.info("amount {}",amount);
             String mid = testMid;
             String key = testSaltKey;
             Cashfree.XClientId = mid;
@@ -56,14 +63,14 @@ public class CashFreePgController extends PaymentServiceContainer {
 
             CustomerDetails customerDetails = new CustomerDetails();
             customerDetails.setCustomerId(UUID.randomUUID().toString());
-            customerDetails.setCustomerPhone(cashfreeDto.getMobileNumber());
+            customerDetails.setCustomerPhone(mobileNumber);
 
             CreateOrderRequest request = new CreateOrderRequest();
             OrderMeta orderMeta = new OrderMeta();
             orderMeta.setReturnUrl("http://localhost:8080/cashfree/home");
             orderMeta.setNotifyUrl("http://localhost:8080/cashfree/callback/"+slug+"/"+loggedUser.getId()+"/"+servicePlan.getId());
             request.setOrderMeta(orderMeta);
-            request.setOrderAmount(cashfreeDto.getAmount());
+            request.setOrderAmount((double) amount);
             request.setOrderCurrency("INR");
             request.setCustomerDetails(customerDetails);
             Cashfree cashfree = new Cashfree();
@@ -83,24 +90,24 @@ public class CashFreePgController extends PaymentServiceContainer {
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
 
-    @GetMapping("pay")
-    public String redirectPaymentPage(@RequestBody CashfreeDto cashfreeDto,Model model) {
-        logger.info("Redirecting to payment page for mobile number: {}", cashfreeDto.getMobileNumber());
-        model.addAttribute("mobile",cashfreeDto.getMobileNumber());
-        model.addAttribute("amount",cashfreeDto.getAmount());
-        model.addAttribute("servicePlanId",cashfreeDto.getServicePlanId());
+    @GetMapping("pay/{servicePlanSlug}/{token}")
+    public String redirectPaymentPage(HttpServletRequest request,@PathVariable String servicePlanSlug, @PathVariable String token, Model model) {
+        User loggedUser = Utils.getUserFromRequest(request,token,jwtToken,wholesaleUserService);
+        logger.info("Redirecting to payment page for servicePlanSlug : {} user : {} and user slug : {}", servicePlanSlug,loggedUser.getUsername(),loggedUser.getSlug());
+        model.addAttribute("servicePlanSlug",servicePlanSlug);
+        model.addAttribute("userSlug",loggedUser.getSlug());
         return "cashfree";
     }
 
 
 
     @RequestMapping("callback/{slug}/{userId}/{servicePlanId}")
-    public ResponseEntity<Map<String,Object>> saveCashfreeCallback(@PathVariable String slug, @PathVariable Integer userId, Integer servicePlanId, @RequestBody Map<String,Object> data) {
+    public ResponseEntity<Map<String,Object>> saveCashfreeCallback(@PathVariable String slug, @PathVariable Integer userId, @PathVariable  Integer servicePlanId, @RequestBody Map<String,Object> data) {
         Map<String,Object> result = new HashMap<>();
         try {
-            String paymentResponseStr = (String) data.get("data");
-            JSONObject paymentDetails = new JSONObject(paymentResponseStr);
             logger.info("Response getting from callback  : {} ", data.toString());
+            String paymentResponseStr = new Gson().toJson(data.get("data"));
+            JSONObject paymentDetails = new JSONObject(paymentResponseStr);
             JSONObject order = null;
             JSONObject payment = null;
 
@@ -113,13 +120,13 @@ public class CashFreePgController extends PaymentServiceContainer {
             String orderId = (String) order.get("order_id");
             String cfPaymentId = (String) payment.get("cf_payment_id");
             String paymentStatus = payment.getString("payment_status");
-            String paymentAmount = (String) payment.get("payment_amount");
+            String paymentAmount = String.valueOf(payment.get("payment_amount"));
             String paymentCurrency = payment.getString("payment_currency");
             String paymentMessage = payment.getString("payment_message");
             String paymentTime = (String) payment.get("payment_time");
             String bankReference = (String) payment.get("bank_reference");
             String paymentGroup = payment.getString("payment_group");
-            String paymentMethod = payment.getString("payment_method");
+            String paymentMethod = payment.getJSONObject("payment_method").toString();
 
             CashfreeDto cashfreeDto = CashfreeDto.builder()
                     .orderId(orderId)
@@ -133,13 +140,14 @@ public class CashFreePgController extends PaymentServiceContainer {
                     .bankReference(bankReference)
                     .paymentType(paymentGroup)
                     .paymentMethod(paymentMethod)
+                    .actualResponse(paymentResponseStr)
                     .build();
 
-            int isUpdated = cashfreeService.updatePaymentCallback(cashfreeDto);
+            int isUpdated = cashfreeService.updatePaymentCallback(cashfreeDto,userId);
             wholesaleServicePlanService.assignUserPlan(userId, servicePlanId);
             logger.info("PhonePe callback processed successfully for user: {}", userId);
             result.put("isUpdate", isUpdated > 0);
-            result.put("data", data);
+            result.put("response", data);
             result.put("status", 200);
         }catch (Exception e){
             e.printStackTrace();
