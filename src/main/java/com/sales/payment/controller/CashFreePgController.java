@@ -49,7 +49,6 @@ public class CashFreePgController extends PaymentServiceContainer {
         User loggedUser = wholesaleUserService.findUserBySlug(cashfreeDto.getUserSlug());
         logger.info("Received request to get payment session ID for service slug : {} and username : {} and user slug : {}",cashfreeDto.getServicePlanSlug(),loggedUser.getUsername(),loggedUser.getSlug());
         String slug = UUID.randomUUID().toString();
-        cashfreeService.insertPaymentDetail(cashfreeDto,slug); // saving only slug amd amount before payment.
         ServicePlan servicePlan = servicePlanService.findBySlug(cashfreeDto.getServicePlanSlug());
         long amount = (servicePlan.getPrice()-servicePlan.getDiscount());
         Map<String,Object> result = new HashMap<>();
@@ -77,6 +76,13 @@ public class CashFreePgController extends PaymentServiceContainer {
             ApiResponse<OrderEntity> response = cashfree.PGCreateOrder("2023-08-01", request, null, null, null);
             logger.info("Payment session ID generated successfully: {}", response.getData().getPaymentSessionId());
             logger.info("The order id for payment : {}",response.getData().getOrderId());
+
+            cashfreeDto.setSlug(slug);
+            cashfreeDto.setAmount((double) amount);
+            cashfreeDto.setCurrency("INR");
+            cashfreeDto.setOrderId(response.getData().getOrderId());
+            cashfreeDto.setStatus("VISITED");
+            cashfreeService.insertPaymentDetail(cashfreeDto);
             result.put("res",response.getData());
             result.put("status" , 200);
         }

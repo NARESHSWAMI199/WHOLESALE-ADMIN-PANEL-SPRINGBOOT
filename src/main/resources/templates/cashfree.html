@@ -6,8 +6,31 @@
     <title>Cashfree Checkout Integration</title>
     <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 
+    <style>
+        .center {
+            display: flex;
+            flex-direction : column;
+            justify-content: center;
+            align-items: center;
+            height : 100vh;
+        }
+        .payment-gif {
+            max-width: 80%; /* Ensure image doesn't exceed viewport width */
+            height: auto;
+        }
+    </style>
+
+
 </head>
 <body>
+
+<div class="center">
+    <img class="payment-gif" th:src="@{/images/payment.gif}" alt="Payment in progress"/>
+    <h3 style="opacity:0.5"> Don't refresh page we are redirecting you payment page. </h3>
+</div>
+
+
+
     <input type="hidden" id="servicePlanSlug" th:value="${servicePlanSlug}">
     <input type="hidden" id="userSlug" th:value="${userSlug}">
 <script>

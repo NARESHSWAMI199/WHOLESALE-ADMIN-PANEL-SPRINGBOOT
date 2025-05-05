@@ -28,9 +28,13 @@ public class CashfreeService extends PaymentRepoContainer {
     }
 
 
-    public void insertPaymentDetail(CashfreeDto cashfreeDto, String rowSlug) {
+    public void insertPaymentDetail(CashfreeDto cashfreeDto) {
         CashfreeTrans cashfreeTrans = CashfreeTrans.builder()
-                .slug(rowSlug)
+                .orderId(cashfreeDto.getOrderId())
+                .amount(String.valueOf(cashfreeDto.getAmount()))
+                .status(cashfreeDto.getStatus())
+                .currency(cashfreeDto.getCurrency())
+                .slug(cashfreeDto.getSlug())
                 .amount(String.valueOf(cashfreeDto.getAmount()))
                 .createdAt(Utils.getCurrentMillis())
                 .build();
