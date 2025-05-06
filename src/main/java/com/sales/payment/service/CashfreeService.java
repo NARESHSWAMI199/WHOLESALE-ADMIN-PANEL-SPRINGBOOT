@@ -36,6 +36,7 @@ public class CashfreeService extends PaymentRepoContainer {
                 .currency(cashfreeDto.getCurrency())
                 .slug(cashfreeDto.getSlug())
                 .amount(String.valueOf(cashfreeDto.getAmount()))
+                .userId(cashfreeDto.getUserId())
                 .createdAt(Utils.getCurrentMillis())
                 .build();
         cashfreeRepository.save(cashfreeTrans);

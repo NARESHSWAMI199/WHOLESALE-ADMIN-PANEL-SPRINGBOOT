@@ -20,7 +20,7 @@ public class CashfreeTrans {
     String slug;
 
     @Column(name = "user_id")
-    String userId;
+    Integer userId;
 
     @Column(name = "order_id")
     String orderId;

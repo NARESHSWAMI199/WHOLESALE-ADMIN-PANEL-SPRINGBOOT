@@ -67,7 +67,7 @@ public class CashFreePgController extends PaymentServiceContainer {
             CreateOrderRequest request = new CreateOrderRequest();
             OrderMeta orderMeta = new OrderMeta();
             orderMeta.setReturnUrl("http://localhost:8080/cashfree/home");
-            orderMeta.setNotifyUrl("http://localhost:8080/cashfree/callback/"+slug+"/"+loggedUser.getId()+"/"+servicePlan.getId());
+            orderMeta.setNotifyUrl("https://32d2-202-157-76-122.ngrok-free.app/cashfree/callback/"+slug+"/"+loggedUser.getId()+"/"+servicePlan.getId());
             request.setOrderMeta(orderMeta);
             request.setOrderAmount((double) amount);
             request.setOrderCurrency("INR");
@@ -82,6 +82,7 @@ public class CashFreePgController extends PaymentServiceContainer {
             cashfreeDto.setCurrency("INR");
             cashfreeDto.setOrderId(response.getData().getOrderId());
             cashfreeDto.setStatus("VISITED");
+            cashfreeDto.setUserId(loggedUser.getId());
             cashfreeService.insertPaymentDetail(cashfreeDto);
             result.put("res",response.getData());
             result.put("status" , 200);
@@ -124,7 +125,7 @@ public class CashFreePgController extends PaymentServiceContainer {
             assert payment != null;
 
             String orderId = (String) order.get("order_id");
-            String cfPaymentId = (String) payment.get("cf_payment_id");
+            String cfPaymentId = String.valueOf(payment.get("cf_payment_id"));
             String paymentStatus = payment.getString("payment_status");
             String paymentAmount = String.valueOf(payment.get("payment_amount"));
             String paymentCurrency = payment.getString("payment_currency");

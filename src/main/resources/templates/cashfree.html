@@ -62,7 +62,7 @@
             "userSlug" : userSlug
         });
         let paymentSessionId = null;
-        await fetch("http://localhost:8080/cashfree/sessionId",{
+        await fetch("/cashfree/sessionId",{
             headers  : {
                 "Content-Type" : 'application/json;'
             },

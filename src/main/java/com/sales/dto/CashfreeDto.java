@@ -25,6 +25,7 @@ public class CashfreeDto {
     String paymentMethod; // detailed description about payment
     String actualResponse;
     Long createdAt;
+    Integer userId;
 
 
 
