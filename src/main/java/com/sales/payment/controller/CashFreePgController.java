@@ -43,6 +43,12 @@ public class CashFreePgController extends PaymentServiceContainer {
     @Value("${cashfree.mobile}")
     String mobileNumber;
 
+    @Value("${cashfree.redirect_uri}")
+    String redirectUri;
+
+    @Value("${cashfree.callback_uri}")
+    String callbackUri;
+
     @ResponseBody
     @PostMapping("sessionId")
     public ResponseEntity<Map<String,Object>> getPaymentSessionId (@RequestBody CashfreeDto cashfreeDto) {
@@ -66,8 +72,8 @@ public class CashFreePgController extends PaymentServiceContainer {
 
             CreateOrderRequest request = new CreateOrderRequest();
             OrderMeta orderMeta = new OrderMeta();
-            orderMeta.setReturnUrl("http://localhost:8080/cashfree/home");
-            orderMeta.setNotifyUrl("https://32d2-202-157-76-122.ngrok-free.app/cashfree/callback/"+slug+"/"+loggedUser.getId()+"/"+servicePlan.getId());
+            orderMeta.setReturnUrl(redirectUri);
+            orderMeta.setNotifyUrl(callbackUri+"/cashfree/callback/"+slug+"/"+loggedUser.getId()+"/"+servicePlan.getId());
             request.setOrderMeta(orderMeta);
             request.setOrderAmount((double) amount);
             request.setOrderCurrency("INR");
@@ -124,14 +130,14 @@ public class CashFreePgController extends PaymentServiceContainer {
             assert order != null;
             assert payment != null;
 
-            String orderId = (String) order.get("order_id");
+            String orderId = String.valueOf(order.get("order_id"));
             String cfPaymentId = String.valueOf(payment.get("cf_payment_id"));
             String paymentStatus = payment.getString("payment_status");
             String paymentAmount = String.valueOf(payment.get("payment_amount"));
             String paymentCurrency = payment.getString("payment_currency");
             String paymentMessage = payment.getString("payment_message");
-            String paymentTime = (String) payment.get("payment_time");
-            String bankReference = (String) payment.get("bank_reference");
+            String paymentTime = String.valueOf(payment.get("payment_time"));
+            String bankReference = String.valueOf(payment.get("bank_reference"));
             String paymentGroup = payment.getString("payment_group");
             String paymentMethod = payment.getJSONObject("payment_method").toString();
 
@@ -151,7 +157,10 @@ public class CashFreePgController extends PaymentServiceContainer {
                     .build();
 
             int isUpdated = cashfreeService.updatePaymentCallback(cashfreeDto,userId);
-            wholesaleServicePlanService.assignUserPlan(userId, servicePlanId);
+            // The Active plan is payment status is successful
+            if(paymentStatus.equals("SUCCESS")){
+                wholesaleServicePlanService.assignUserPlan(userId, servicePlanId);
+            }
             logger.info("PhonePe callback processed successfully for user: {}", userId);
             result.put("isUpdate", isUpdated > 0);
             result.put("response", data);

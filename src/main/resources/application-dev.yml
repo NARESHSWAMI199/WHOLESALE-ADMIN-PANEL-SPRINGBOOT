@@ -59,12 +59,15 @@ cashfree :
     mid : M22LJRRT3FAKQ
     key : d021e28d-bc19-4fea-b622-41942867d395
   env : PROD
+  mobile : 9145808226
+  callback_uri : https://e224-45-249-87-187.ngrok-free.app
+  redirect_uri : http://localhost:3000
 #  env : UAT
 
 # ------------------ start public folder path
 public_folder :
-  #  path : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public/
-  absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public
+  absolute : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public
+#  absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public
   get : src/main/resources/public
 
 # ------------------! end public folder path
