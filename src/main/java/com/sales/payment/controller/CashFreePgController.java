@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.sales.dto.CashfreeDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
+import com.sales.exceptions.NotFoundException;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
@@ -53,9 +54,13 @@ public class CashFreePgController extends PaymentServiceContainer {
     @PostMapping("sessionId")
     public ResponseEntity<Map<String,Object>> getPaymentSessionId (@RequestBody CashfreeDto cashfreeDto) {
         User loggedUser = wholesaleUserService.findUserBySlug(cashfreeDto.getUserSlug());
+        if(loggedUser == null) throw new NotFoundException("No logged user found.");
+
         logger.info("Received request to get payment session ID for service slug : {} and username : {} and user slug : {}",cashfreeDto.getServicePlanSlug(),loggedUser.getUsername(),loggedUser.getSlug());
         String slug = UUID.randomUUID().toString();
         ServicePlan servicePlan = servicePlanService.findBySlug(cashfreeDto.getServicePlanSlug());
+        if(servicePlan == null) throw new NotFoundException("No service plan found.");
+
         long amount = (servicePlan.getPrice()-servicePlan.getDiscount());
         Map<String,Object> result = new HashMap<>();
         try {
@@ -130,37 +135,7 @@ public class CashFreePgController extends PaymentServiceContainer {
             assert order != null;
             assert payment != null;
 
-            String orderId = String.valueOf(order.get("order_id"));
-            String cfPaymentId = String.valueOf(payment.get("cf_payment_id"));
-            String paymentStatus = payment.getString("payment_status");
-            String paymentAmount = String.valueOf(payment.get("payment_amount"));
-            String paymentCurrency = payment.getString("payment_currency");
-            String paymentMessage = payment.getString("payment_message");
-            String paymentTime = String.valueOf(payment.get("payment_time"));
-            String bankReference = String.valueOf(payment.get("bank_reference"));
-            String paymentGroup = payment.getString("payment_group");
-            String paymentMethod = payment.getJSONObject("payment_method").toString();
-
-            CashfreeDto cashfreeDto = CashfreeDto.builder()
-                    .orderId(orderId)
-                    .slug(slug)
-                    .cfPaymentId(cfPaymentId)
-                    .status(paymentStatus)
-                    .amount(Double.parseDouble(paymentAmount))
-                    .currency(paymentCurrency)
-                    .message(paymentMessage)
-                    .paymentTime(paymentTime)
-                    .bankReference(bankReference)
-                    .paymentType(paymentGroup)
-                    .paymentMethod(paymentMethod)
-                    .actualResponse(paymentResponseStr)
-                    .build();
-
-            int isUpdated = cashfreeService.updatePaymentCallback(cashfreeDto,userId);
-            // The Active plan is payment status is successful
-            if(paymentStatus.equals("SUCCESS")){
-                wholesaleServicePlanService.assignUserPlan(userId, servicePlanId);
-            }
+            int isUpdated = cashfreeService.updateCashfreeCallback(order, payment, slug, userId,servicePlanId,paymentResponseStr);
             logger.info("PhonePe callback processed successfully for user: {}", userId);
             result.put("isUpdate", isUpdated > 0);
             result.put("response", data);
