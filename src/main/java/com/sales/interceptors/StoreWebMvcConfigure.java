@@ -68,6 +68,8 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
                 "/index",
                 "/chat2",
                 "/chat/images/**",
+                "/js/**",
+                "/css/**",
                 "/images/**",
         };
         /* Paths which need to be authenticated but don't need to check in Interceptor due to some different conditions */

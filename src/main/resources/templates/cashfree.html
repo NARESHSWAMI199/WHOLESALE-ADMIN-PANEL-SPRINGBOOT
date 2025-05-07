@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cashfree Checkout Integration</title>
-    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+    <script th:src="@{/js/cashfree.js}"></script>
+    <script th:src="@{/js/sweetalert2.all.min.js}"></script>
+    <link th:href="@{/css/sweetalert2.min.css}" rel="stylesheet">
 
     <style>
         .center {
@@ -26,7 +28,7 @@
 
 <div class="center">
     <img class="payment-gif" th:src="@{/images/payment.gif}" alt="Payment in progress"/>
-    <h3 style="opacity:0.5"> Don't refresh page we are redirecting you payment page. </h3>
+    <h3 style="opacity:0.5; margin:0px">Redirecting you to the payment page to proceed with your payment. </h3>
 </div>
 
 
@@ -72,8 +74,17 @@
         .then(data => {
             paymentSessionId = data.res.paymentSessionId;
         })
-        .catch(err => console.log(err));
-
+        .catch(err => {
+            console.log(err);
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "Something went wrong! Please contact to administrator.",
+              confirmButtonText: 'Go Back'
+            }).then(result =>{
+               history.back();
+            });
+        });
         return paymentSessionId;
     }
     redirectPaymentPage();
