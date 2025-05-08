@@ -70,7 +70,10 @@
             },
             method : 'post',
             body : data
-        }).then(res => res.json())
+        }).then(res => {
+            if(!res.ok) return res.json().then(data => {throw new Error(data.message)});
+            return res.json();
+        })
         .then(data => {
             paymentSessionId = data.res.paymentSessionId;
         })
@@ -79,7 +82,7 @@
             Swal.fire({
               icon: "error",
               title: "Oops...",
-              text: "Something went wrong! Please contact to administrator.",
+              text: `${err.message}`,
               confirmButtonText: 'Go Back'
             }).then(result =>{
                history.back();

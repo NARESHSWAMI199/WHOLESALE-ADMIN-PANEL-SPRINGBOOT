@@ -2,12 +2,7 @@ package com.sales.payment.controller;
 
 
 import com.cashfree.ApiException;
-import com.cashfree.ApiResponse;
-import com.cashfree.Cashfree;
-import com.cashfree.model.CreateOrderRequest;
-import com.cashfree.model.CustomerDetails;
 import com.cashfree.model.OrderEntity;
-import com.cashfree.model.OrderMeta;
 import com.google.gson.Gson;
 import com.sales.dto.CashfreeDto;
 import com.sales.entities.ServicePlan;
@@ -18,7 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -27,28 +21,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("cashfree")
 public class CashFreePgController extends PaymentServiceContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(CashFreePgController.class);
-
-    @Value("${cashfree.test.key}")
-    String testSaltKey;
-
-    @Value("${cashfree.test.mid}")
-    public String testMid;
-
-    @Value("${cashfree.mobile}")
-    String mobileNumber;
-
-    @Value("${cashfree.redirect_uri}")
-    String redirectUri;
-
-    @Value("${cashfree.callback_uri}")
-    String callbackUri;
 
     @ResponseBody
     @PostMapping("sessionId")
@@ -57,46 +35,13 @@ public class CashFreePgController extends PaymentServiceContainer {
         if(loggedUser == null) throw new NotFoundException("No logged user found.");
 
         logger.info("Received request to get payment session ID for service slug : {} and username : {} and user slug : {}",cashfreeDto.getServicePlanSlug(),loggedUser.getUsername(),loggedUser.getSlug());
-        String slug = UUID.randomUUID().toString();
         ServicePlan servicePlan = servicePlanService.findBySlug(cashfreeDto.getServicePlanSlug());
         if(servicePlan == null) throw new NotFoundException("No service plan found.");
-
-        long amount = (servicePlan.getPrice()-servicePlan.getDiscount());
         Map<String,Object> result = new HashMap<>();
         try {
-            logger.info("amount {}",amount);
-            String mid = testMid;
-            String key = testSaltKey;
-            Cashfree.XClientId = mid;
-            Cashfree.XClientSecret = key;
-            Cashfree.XEnvironment = Cashfree.SANDBOX;
-
-            CustomerDetails customerDetails = new CustomerDetails();
-            customerDetails.setCustomerId(UUID.randomUUID().toString());
-            customerDetails.setCustomerPhone(mobileNumber);
-
-            CreateOrderRequest request = new CreateOrderRequest();
-            OrderMeta orderMeta = new OrderMeta();
-            orderMeta.setReturnUrl(redirectUri);
-            orderMeta.setNotifyUrl(callbackUri+"/cashfree/callback/"+slug+"/"+loggedUser.getId()+"/"+servicePlan.getId());
-            request.setOrderMeta(orderMeta);
-            request.setOrderAmount((double) amount);
-            request.setOrderCurrency("INR");
-            request.setCustomerDetails(customerDetails);
-            Cashfree cashfree = new Cashfree();
-            ApiResponse<OrderEntity> response = cashfree.PGCreateOrder("2023-08-01", request, null, null, null);
-            logger.info("Payment session ID generated successfully: {}", response.getData().getPaymentSessionId());
-            logger.info("The order id for payment : {}",response.getData().getOrderId());
-
-            cashfreeDto.setSlug(slug);
-            cashfreeDto.setAmount((double) amount);
-            cashfreeDto.setCurrency("INR");
-            cashfreeDto.setOrderId(response.getData().getOrderId());
-            cashfreeDto.setStatus("VISITED");
-            cashfreeDto.setUserId(loggedUser.getId());
-            cashfreeService.insertPaymentDetail(cashfreeDto);
-            result.put("res",response.getData());
-            result.put("status" , 200);
+            OrderEntity orderEntity = cashfreeService.getOrderEntityForCashfreePayment(cashfreeDto, loggedUser, servicePlan);
+            result.put("res",orderEntity);
+            result.put("status" , 201);
         }
         catch (ApiException e){
             logger.error("Exception occurred while getting payment session ID : {}", e.getMessage());
@@ -136,7 +81,7 @@ public class CashFreePgController extends PaymentServiceContainer {
             assert payment != null;
 
             int isUpdated = cashfreeService.updateCashfreeCallback(order, payment, slug, userId,servicePlanId,paymentResponseStr);
-            logger.info("PhonePe callback processed successfully for user: {}", userId);
+            logger.info("Cashfree callback processed successfully for user: {} and status isUpdated : {}",userId,isUpdated);
             result.put("isUpdate", isUpdated > 0);
             result.put("response", data);
             result.put("status", 200);
