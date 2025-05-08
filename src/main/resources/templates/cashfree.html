@@ -35,9 +35,14 @@
 
     <input type="hidden" id="servicePlanSlug" th:value="${servicePlanSlug}">
     <input type="hidden" id="userSlug" th:value="${userSlug}">
+    <input type="hidden" id="env" th:value="${env}">
 <script>
+
+    let env = document.getElementById("env")?.value;
+    let paymentMode = "production";
+    if(env === 'TEST' || env === 'test') paymentMode = "sandbox";
     const cashfree = Cashfree({
-        mode: "sandbox",
+        mode: paymentMode,
     });
     const redirectPaymentPage = async () => {
         let paymentSessionId = await requestForPaymentSessionId();

@@ -1,4 +1,4 @@
 spring:
   profiles:
-    active: prod # must change, according environment
+    active: dev # must change, according environment
 

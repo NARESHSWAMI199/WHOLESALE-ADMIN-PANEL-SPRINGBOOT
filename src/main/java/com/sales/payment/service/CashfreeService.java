@@ -36,10 +36,10 @@ public class CashfreeService extends PaymentRepoContainer {
     private static final Logger logger = LoggerFactory.getLogger(CashFreePgController.class);
 
 
-    @Value("${cashfree.test.key}")
+    @Value("${cashfree.key}")
     String key;
 
-    @Value("${cashfree.test.mid}")
+    @Value("${cashfree.mid}")
     public String mid;
 
     @Value("${cashfree.mobile}")
@@ -50,8 +50,6 @@ public class CashfreeService extends PaymentRepoContainer {
 
     @Value("${cashfree.callback_uri}")
     String callbackUri;
-
-
 
     @Autowired
     WholesaleServicePlanService wholesaleServicePlanService;
@@ -122,14 +120,18 @@ public class CashfreeService extends PaymentRepoContainer {
 
 
 
-    public OrderEntity getOrderEntityForCashfreePayment(CashfreeDto cashfreeDto, User loggedUser, ServicePlan servicePlan) throws ApiException {
+    public OrderEntity getOrderEntityForCashfreePayment(CashfreeDto cashfreeDto, User loggedUser, ServicePlan servicePlan,String env) throws ApiException {
+        logger.info("Started getOrderEntityForCashfreePayment with params : cashfreeDto : {} and loggedUser : {} and servicePlan : {} and env : {}",cashfreeDto.toString(),loggedUser.toString(),servicePlan.toString(),env);
         long amount = (servicePlan.getPrice()-servicePlan.getDiscount());
         String slug = UUID.randomUUID().toString();
         logger.info("amount {}",amount);
         Cashfree.XClientId = mid;
         Cashfree.XClientSecret = key;
-        Cashfree.XEnvironment = Cashfree.SANDBOX;
-
+        if(env != null && env.equalsIgnoreCase("TEST")){
+            Cashfree.XEnvironment = Cashfree.SANDBOX;
+        }else {
+            Cashfree.XEnvironment = Cashfree.PRODUCTION;
+        }
         CustomerDetails customerDetails = new CustomerDetails();
         customerDetails.setCustomerId(UUID.randomUUID().toString());
         customerDetails.setCustomerPhone(mobileNumber);
@@ -154,6 +156,7 @@ public class CashfreeService extends PaymentRepoContainer {
         cashfreeDto.setStatus("VISITED");
         cashfreeDto.setUserId(loggedUser.getId());
         insertPaymentDetail(cashfreeDto);
+        logger.info("Ended getOrderEntityForCashfreePayment with -> {}",response.getData());
         return response.getData();
     }
 

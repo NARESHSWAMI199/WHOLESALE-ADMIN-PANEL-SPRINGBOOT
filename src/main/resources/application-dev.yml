@@ -52,22 +52,17 @@ phonepe :
   env : UAT
 
 cashfree :
-  test:
-    key : cfsk_ma_test_4101943cd010dd3f59d86a25d03df53a_cce9da94
-    mid : TEST10390991bf0adc9155492e36f12619909301
-  prod :
-    mid : M22LJRRT3FAKQ
-    key : d021e28d-bc19-4fea-b622-41942867d395
-  env : PROD
-  mobile : 9145808226
-  callback_uri : https://e224-45-249-87-187.ngrok-free.app
-  redirect_uri : http://localhost:3000
-#  env : UAT
+  key : cfsk_ma_test_4101943cd010dd3f59d86a25d03df53a_cce9da94
+  mid : TEST10390991bf0adc9155492e36f12619909301
+  env : TEST
+  mobile : 9999999999
+  callback_uri: https://373d-202-157-76-122.ngrok-free.app
+  redirect_uri: http://localhost:3000
 
 # ------------------ start public folder path
 public_folder :
-  absolute : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public
-#  absolute : C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public
+  #absolute : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public
+  absolute : C:\Users\abc\Documents\demo\sales-backend\src\main\resources\public
   get : src/main/resources/public
 
 # ------------------! end public folder path

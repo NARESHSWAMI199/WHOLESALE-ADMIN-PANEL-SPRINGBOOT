@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -28,6 +29,9 @@ public class CashFreePgController extends PaymentServiceContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(CashFreePgController.class);
 
+    @Value("${cashfree.env}")
+    String env;
+
     @ResponseBody
     @PostMapping("sessionId")
     public ResponseEntity<Map<String,Object>> getPaymentSessionId (@RequestBody CashfreeDto cashfreeDto) {
@@ -39,7 +43,7 @@ public class CashFreePgController extends PaymentServiceContainer {
         if(servicePlan == null) throw new NotFoundException("No service plan found.");
         Map<String,Object> result = new HashMap<>();
         try {
-            OrderEntity orderEntity = cashfreeService.getOrderEntityForCashfreePayment(cashfreeDto, loggedUser, servicePlan);
+            OrderEntity orderEntity = cashfreeService.getOrderEntityForCashfreePayment(cashfreeDto, loggedUser, servicePlan,env);
             result.put("res",orderEntity);
             result.put("status" , 201);
         }
@@ -59,6 +63,7 @@ public class CashFreePgController extends PaymentServiceContainer {
         logger.info("Redirecting to payment page for servicePlanSlug : {} user : {} and user slug : {}", servicePlanSlug,loggedUser.getUsername(),loggedUser.getSlug());
         model.addAttribute("servicePlanSlug",servicePlanSlug);
         model.addAttribute("userSlug",loggedUser.getSlug());
+        model.addAttribute("env",env);
         return "cashfree";
     }
 
