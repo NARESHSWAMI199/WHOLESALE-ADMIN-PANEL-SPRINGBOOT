@@ -36,6 +36,7 @@
     <input type="hidden" id="servicePlanSlug" th:value="${servicePlanSlug}">
     <input type="hidden" id="userSlug" th:value="${userSlug}">
     <input type="hidden" id="env" th:value="${env}">
+    <input type="hidden" id="redirectUri" th:value="${redirectUri}">
 <script>
 
     let env = document.getElementById("env")?.value;
@@ -64,12 +65,16 @@
     const requestForPaymentSessionId = async () =>{
         let userSlug = document.getElementById("userSlug").value;
         let servicePlanSlug = document.getElementById("servicePlanSlug").value;
+        let redirectUri = document.getElementById("redirectUri").value;
         let data = JSON.stringify({
             "servicePlanSlug" : servicePlanSlug,
             "userSlug" : userSlug
         });
         let paymentSessionId = null;
-        await fetch("/cashfree/sessionId",{
+
+        let url = `/cashfree/sessionId`;
+        url = (!!redirectUri) ? `/cashfree/sessionId?redirectUri=${redirectUri}` : url;
+        await fetch(url,{
             headers  : {
                 "Content-Type" : 'application/json;'
             },

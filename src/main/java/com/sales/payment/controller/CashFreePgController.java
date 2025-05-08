@@ -33,8 +33,8 @@ public class CashFreePgController extends PaymentServiceContainer {
     String env;
 
     @ResponseBody
-    @PostMapping("sessionId")
-    public ResponseEntity<Map<String,Object>> getPaymentSessionId (@RequestBody CashfreeDto cashfreeDto) {
+    @PostMapping(value = {"sessionId"})
+    public ResponseEntity<Map<String,Object>> getPaymentSessionId (HttpServletRequest request,@RequestParam(value = "redirectUri", required = false) String redirectUri, @RequestBody CashfreeDto cashfreeDto) {
         User loggedUser = wholesaleUserService.findUserBySlug(cashfreeDto.getUserSlug());
         if(loggedUser == null) throw new NotFoundException("No logged user found.");
 
@@ -43,7 +43,7 @@ public class CashFreePgController extends PaymentServiceContainer {
         if(servicePlan == null) throw new NotFoundException("No service plan found.");
         Map<String,Object> result = new HashMap<>();
         try {
-            OrderEntity orderEntity = cashfreeService.getOrderEntityForCashfreePayment(cashfreeDto, loggedUser, servicePlan,env);
+            OrderEntity orderEntity = cashfreeService.getOrderEntityForCashfreePayment(request,cashfreeDto, loggedUser, servicePlan,redirectUri,env);
             result.put("res",orderEntity);
             result.put("status" , 201);
         }
@@ -57,13 +57,14 @@ public class CashFreePgController extends PaymentServiceContainer {
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
 
-    @GetMapping("pay/{servicePlanSlug}/{token}")
-    public String redirectPaymentPage(HttpServletRequest request,@PathVariable String servicePlanSlug, @PathVariable String token, Model model) {
+    @GetMapping(value = {"pay/{servicePlanSlug}/{token}"})
+    public String redirectPaymentPage(HttpServletRequest request,@PathVariable String servicePlanSlug, @PathVariable String token, @RequestParam(value = "redirectUri", required = false) String redirectUri, Model model) {
         User loggedUser = Utils.getUserFromRequest(request,token,jwtToken,wholesaleUserService);
-        logger.info("Redirecting to payment page for servicePlanSlug : {} user : {} and user slug : {}", servicePlanSlug,loggedUser.getUsername(),loggedUser.getSlug());
+        logger.info("Redirecting to payment page for servicePlanSlug : {} user : {} and user slug : {} and redirect uri : {}", servicePlanSlug,loggedUser.getUsername(),loggedUser.getSlug(),redirectUri);
         model.addAttribute("servicePlanSlug",servicePlanSlug);
         model.addAttribute("userSlug",loggedUser.getSlug());
         model.addAttribute("env",env);
+        model.addAttribute("redirectUri",redirectUri);
         return "cashfree";
     }
 

@@ -16,6 +16,7 @@ import com.sales.entities.User;
 import com.sales.payment.controller.CashFreePgController;
 import com.sales.utils.Utils;
 import com.sales.wholesaler.services.WholesaleServicePlanService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,13 +57,13 @@ public class CashfreeService extends PaymentRepoContainer {
 
     public Page<CashfreeTrans> getAllPaymentHistoryFromCashfree(CashfreeFilters cashfreeFilters) {
         Specification<CashfreeTrans> specification = Specification.where(
-             hasCfPaymentId(cashfreeFilters.getTransactionId())
-            .and( hasPaymentStatus(cashfreeFilters.getPaymentStatus()))
-            .and(greaterThanOrEqualFromDate(cashfreeFilters.getFromDate()))
-            .and(lessThanOrEqualToToDate(cashfreeFilters.getToDate()))
+                hasCfPaymentId(cashfreeFilters.getTransactionId())
+                        .and(hasPaymentStatus(cashfreeFilters.getPaymentStatus()))
+                        .and(greaterThanOrEqualFromDate(cashfreeFilters.getFromDate()))
+                        .and(lessThanOrEqualToToDate(cashfreeFilters.getToDate()))
         );
         Pageable pageable = getPageable(cashfreeFilters);
-        return cashfreeRepository.findAll(specification,pageable);
+        return cashfreeRepository.findAll(specification, pageable);
     }
 
 
@@ -81,8 +82,8 @@ public class CashfreeService extends PaymentRepoContainer {
     }
 
 
-    public int updateCashfreeCallback (JSONObject order,JSONObject payment,String slug,Integer userId,Integer servicePlanId,String paymentResponseStr) {
-        logger.info("started updateCashfreeCallback with params order : {} payment : {} slug : {} userId : {} servicePlanId : {} ",order,payment,slug,userId,servicePlanId);
+    public int updateCashfreeCallback(JSONObject order, JSONObject payment, String slug, Integer userId, Integer servicePlanId, String paymentResponseStr) {
+        logger.info("started updateCashfreeCallback with params order : {} payment : {} slug : {} userId : {} servicePlanId : {} ", order, payment, slug, userId, servicePlanId);
         String orderId = String.valueOf(order.get("order_id"));
         String cfPaymentId = String.valueOf(payment.get("cf_payment_id"));
         String paymentStatus = payment.getString("payment_status");
@@ -109,27 +110,25 @@ public class CashfreeService extends PaymentRepoContainer {
                 .actualResponse(paymentResponseStr)
                 .build();
 
-        int updatedRows =  cashfreeHbRepository.updateCashfreePaymentDetail(cashfreeDto,userId);
-        logger.info("Updated rows in updateCashfreeCallback. return by updatePaymentCallback -> {}",updatedRows);
+        int updatedRows = cashfreeHbRepository.updateCashfreePaymentDetail(cashfreeDto, userId);
+        logger.info("Updated rows in updateCashfreeCallback. return by updatePaymentCallback -> {}", updatedRows);
         // The Active plan is payment status is successful
-        if(paymentStatus.equals("SUCCESS")) wholesaleServicePlanService.assignUserPlan(userId, servicePlanId);
+        if (paymentStatus.equals("SUCCESS")) wholesaleServicePlanService.assignUserPlan(userId, servicePlanId);
         logger.info("Ended updateCashfreeCallback.");
         return updatedRows;
     }
 
 
-
-
-    public OrderEntity getOrderEntityForCashfreePayment(CashfreeDto cashfreeDto, User loggedUser, ServicePlan servicePlan,String env) throws ApiException {
-        logger.info("Started getOrderEntityForCashfreePayment with params : cashfreeDto : {} and loggedUser : {} and servicePlan : {} and env : {}",cashfreeDto.toString(),loggedUser.toString(),servicePlan.toString(),env);
-        long amount = (servicePlan.getPrice()-servicePlan.getDiscount());
+    public OrderEntity getOrderEntityForCashfreePayment(HttpServletRequest httpServletRequest,CashfreeDto cashfreeDto, User loggedUser, ServicePlan servicePlan, String givenRedirectUri, String env) throws ApiException {
+        logger.info("Started getOrderEntityForCashfreePayment with params : cashfreeDto : {} and loggedUser : {} and servicePlan : {} and redirectUri : {} and env : {}", cashfreeDto.toString(), loggedUser.toString(), servicePlan.toString(), givenRedirectUri, env);
+        long amount = (servicePlan.getPrice() - servicePlan.getDiscount());
         String slug = UUID.randomUUID().toString();
-        logger.info("amount {}",amount);
+        logger.info("amount {}", amount);
         Cashfree.XClientId = mid;
         Cashfree.XClientSecret = key;
-        if(env != null && env.equalsIgnoreCase("TEST")){
+        if (env != null && env.equalsIgnoreCase("TEST")) {
             Cashfree.XEnvironment = Cashfree.SANDBOX;
-        }else {
+        } else {
             Cashfree.XEnvironment = Cashfree.PRODUCTION;
         }
         CustomerDetails customerDetails = new CustomerDetails();
@@ -138,7 +137,15 @@ public class CashfreeService extends PaymentRepoContainer {
 
         CreateOrderRequest request = new CreateOrderRequest();
         OrderMeta orderMeta = new OrderMeta();
-        orderMeta.setReturnUrl(redirectUri);
+
+        // we redirect on referred site.
+        if (givenRedirectUri == null || givenRedirectUri.trim().isEmpty()){
+            orderMeta.setReturnUrl(redirectUri);
+        }else {
+            orderMeta.setReturnUrl(givenRedirectUri);
+        }
+        // Updating callback uri if not provided.
+        if(callbackUri == null) callbackUri = httpServletRequest.getRequestURI();
         orderMeta.setNotifyUrl(callbackUri+"/cashfree/callback/"+slug+"/"+loggedUser.getId()+"/"+servicePlan.getId());
         request.setOrderMeta(orderMeta);
         request.setOrderAmount((double) amount);
