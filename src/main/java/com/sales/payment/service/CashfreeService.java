@@ -140,9 +140,9 @@ public class CashfreeService extends PaymentRepoContainer {
 
         // we redirect on referred site.
         if (givenRedirectUri == null || givenRedirectUri.trim().isEmpty()){
-            orderMeta.setReturnUrl(redirectUri);
+            orderMeta.setReturnUrl(redirectUri+"/?congratulation="+servicePlan.getSlug());
         }else {
-            orderMeta.setReturnUrl(givenRedirectUri);
+            orderMeta.setReturnUrl(givenRedirectUri+"?congratulation="+servicePlan.getSlug());
         }
         // Updating callback uri if not provided.
         if(callbackUri == null) callbackUri = httpServletRequest.getRequestURI();

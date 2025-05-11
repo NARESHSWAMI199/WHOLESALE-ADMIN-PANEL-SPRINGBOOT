@@ -33,6 +33,15 @@ public class WholesaleServicePlanController extends WholesaleServiceContainer {
         return response;
     }
 
+
+    @GetMapping("detail/{slug}")
+    public ResponseEntity<ServicePlan> getPlanDetailBySlug(@PathVariable String slug) {
+        logger.info("Starting getPlanDetailBySlug method");
+        ResponseEntity<ServicePlan> response = new ResponseEntity<>(wholesaleServicePlanService.findBySlug(slug), HttpStatusCode.valueOf(200));
+        logger.info("Completed getPlanDetailBySlug method");
+        return response;
+    }
+
     @PostMapping("/my-plans")
     public ResponseEntity<Page<UserPlans>> getMyAllPlans(HttpServletRequest request, @RequestBody UserPlanDto searchFilters) {
         logger.info("Starting getMyAllPlans method");
