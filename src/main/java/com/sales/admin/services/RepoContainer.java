@@ -87,7 +87,7 @@ public class RepoContainer {
 
 
     @Autowired
-    protected UserPlansRepository userPlansRepository;
+    protected WholesalerPlansRepository wholesalerPlansRepository;
 
     @Autowired
     protected ServicePlanHbRepository servicePlanHbRepository;

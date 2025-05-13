@@ -7,7 +7,7 @@ import com.sales.dto.StatusDto;
 import com.sales.dto.UserPlanDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
-import com.sales.entities.UserPlans;
+import com.sales.entities.WholesalerPlans;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,10 +30,10 @@ public class ServicePlanController extends ServiceContainer {
     private static final Logger logger = LoggerFactory.getLogger(ServicePlanController.class);
 
     @PostMapping(value = {"user-plans/{userSlug}","user-plans"})
-    public ResponseEntity< Page<UserPlans>> getUserPlans(@PathVariable(required = false) String userSlug, @RequestBody UserPlanDto searchFilters){
+    public ResponseEntity< Page<WholesalerPlans>> getUserPlans(@PathVariable(required = false) String userSlug, @RequestBody UserPlanDto searchFilters){
         logger.info("Fetching user plans for userSlug: {}", userSlug);
         Integer userId = userService.getUserIdBySlug(userSlug);
-        Page<UserPlans> allUserPlans = servicePlanService.getAllUserPlans(userId, searchFilters);
+        Page<WholesalerPlans> allUserPlans = servicePlanService.getAllUserPlans(userId, searchFilters);
         return new ResponseEntity<>(allUserPlans,HttpStatus.OK);
     }
 

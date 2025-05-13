@@ -1,16 +1,16 @@
 package com.sales.specifications;
 
 import com.sales.entities.User;
-import com.sales.entities.UserPlans;
-import com.sales.entities.UserPlans_;
 import com.sales.entities.User_;
+import com.sales.entities.WholesalerPlans;
+import com.sales.entities.WholesalerPlans_;
 import org.springframework.data.jpa.domain.Specification;
 
 public class PlansSpecifications {
 
 
     /**
-     * there we create some predicates which is use for filters
+     * there we create some predicates that are use for filters
      */
 
 
@@ -22,61 +22,61 @@ public class PlansSpecifications {
     }
 
 
-    public static Specification<UserPlans> greaterThanOrEqualCreatedFromDate(Long createdFromDate) {
+    public static Specification<WholesalerPlans> greaterThanOrEqualCreatedFromDate(Long createdFromDate) {
         return (root, query, criteriaBuilder) -> {
             if (createdFromDate == null) return  null;
-            return criteriaBuilder.greaterThanOrEqualTo(root.get(UserPlans_.CREATED_AT), createdFromDate);
+            return criteriaBuilder.greaterThanOrEqualTo(root.get(WholesalerPlans_.CREATED_AT), createdFromDate);
         };
     }
 
-    public static Specification<UserPlans> lessThanOrEqualToCreatedToDate(Long createdToDate) {
+    public static Specification<WholesalerPlans> lessThanOrEqualToCreatedToDate(Long createdToDate) {
         return (root, query, criteriaBuilder) -> {
             if (createdToDate == null) return null;
-            return criteriaBuilder.lessThanOrEqualTo(root.get(UserPlans_.CREATED_AT), createdToDate);
+            return criteriaBuilder.lessThanOrEqualTo(root.get(WholesalerPlans_.CREATED_AT), createdToDate);
         };
     }
 
 
 
 
-    public static Specification<UserPlans> greaterThanOrEqualExpiredFromDate(Long expiredFromDate) {
+    public static Specification<WholesalerPlans> greaterThanOrEqualExpiredFromDate(Long expiredFromDate) {
         return (root, query, criteriaBuilder) -> {
             if (expiredFromDate == null) return  null;
-            return criteriaBuilder.greaterThanOrEqualTo(root.get(UserPlans_.EXPIRY_DATE), expiredFromDate);
+            return criteriaBuilder.greaterThanOrEqualTo(root.get(WholesalerPlans_.EXPIRY_DATE), expiredFromDate);
         };
     }
 
-    public static Specification<UserPlans> lessThanOrEqualToExpiredToDate(Long expiredToDate) {
+    public static Specification<WholesalerPlans> lessThanOrEqualToExpiredToDate(Long expiredToDate) {
         return (root, query, criteriaBuilder) -> {
             if (expiredToDate == null) return null;
-            return criteriaBuilder.lessThanOrEqualTo(root.get(UserPlans_.EXPIRY_DATE), expiredToDate);
+            return criteriaBuilder.lessThanOrEqualTo(root.get(WholesalerPlans_.EXPIRY_DATE), expiredToDate);
         };
     }
 
 
     /* Expired or not */
-    public static Specification<UserPlans> isStatus(String status) {
+    public static Specification<WholesalerPlans> isStatus(String status) {
         return (root, query, criteriaBuilder) -> {
             if (status == null){
                 return null;
             } else if (status.equals("A")) {
-                return criteriaBuilder.lessThanOrEqualTo(root.get(UserPlans_.createdAt),root.get(UserPlans_.expiryDate));
+                return criteriaBuilder.lessThanOrEqualTo(root.get(WholesalerPlans_.createdAt),root.get(WholesalerPlans_.expiryDate));
             }
-            return criteriaBuilder.greaterThan(root.get(UserPlans_.createdAt),root.get(UserPlans_.expiryDate));
+            return criteriaBuilder.greaterThan(root.get(WholesalerPlans_.createdAt),root.get(WholesalerPlans_.expiryDate));
         };
     }
 
-    public static Specification<UserPlans> hasSlug(String slug) {
+    public static Specification<WholesalerPlans> hasSlug(String slug) {
         return (root, query, criteriaBuilder) -> {
             if (slug == null || slug.isEmpty()) return null;
-            return criteriaBuilder.equal(root.get(UserPlans_.SLUG), slug.trim());
+            return criteriaBuilder.equal(root.get(WholesalerPlans_.SLUG), slug.trim());
         };
     }
 
-    public static Specification<UserPlans> isUserId(Integer userId){
+    public static Specification<WholesalerPlans> isUserId(Integer userId){
         return (root, query, criteriaBuilder) -> {
             if (userId == null) return null;
-            return criteriaBuilder.equal(root.get(UserPlans_.USER_ID), userId);
+            return criteriaBuilder.equal(root.get(WholesalerPlans_.USER_ID), userId);
         };
     }
 

@@ -4,7 +4,7 @@ package com.sales.wholesaler.services;
 import com.sales.dto.UserPlanDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
-import com.sales.entities.UserPlans;
+import com.sales.entities.WholesalerPlans;
 import com.sales.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,9 +42,9 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
     public boolean isPlanActive(Integer userPlanId) {
         logger.info("Starting isPlanActive method with userPlanId: {}", userPlanId);
         if (userPlanId == null) return false;
-        Optional<UserPlans> plan = wholesaleUserPlansRepository.findById(userPlanId);
+        Optional<WholesalerPlans> plan = wholesaleUserPlansRepository.findById(userPlanId);
         if (plan.isPresent()) {
-            UserPlans userPlan = plan.get();
+            WholesalerPlans userPlan = plan.get();
             long expiryDate = userPlan.getExpiryDate();
             long currentDate = Utils.getCurrentMillis();
             boolean isActive = currentDate <= expiryDate;
@@ -64,7 +64,7 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
         calendar.setTimeInMillis(currentMillis);
         calendar.add(Calendar.MONTH, months);
         long expiryDate = calendar.getTimeInMillis();
-        UserPlans userPlans = UserPlans.builder()
+        WholesalerPlans userPlans = WholesalerPlans.builder()
             .slug(UUID.randomUUID().toString())
             .userId(userId)
             .servicePlan(plan)
@@ -72,14 +72,14 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
             .expiryDate(expiryDate)
             .createdBy(userId)
             .build();
-        UserPlans userPlan = wholesaleUserPlansRepository.save(userPlans); // Create operation
+        WholesalerPlans userPlan = wholesaleUserPlansRepository.save(userPlans); // Create operation
         wholesaleUserHbRepository.updateUserActivePlan(userId, userPlan.getId()); // Update operation
         logger.info("Completed assignUserPlan method");
     }
 
-    public Page<UserPlans> getAllUserPlans(User loggedUser, UserPlanDto searchFilters) {
+    public Page<WholesalerPlans> getAllUserPlans(User loggedUser, UserPlanDto searchFilters) {
         logger.info("Starting getAllUserPlans method with loggedUser: {}, searchFilters: {}", loggedUser, searchFilters);
-        Specification<UserPlans> specification = Specification.where(
+        Specification<WholesalerPlans> specification = Specification.where(
                 hasSlug(searchFilters.getSlug())
                 .and(greaterThanOrEqualCreatedFromDate(searchFilters.getCreatedFromDate()))
                 .and(lessThanOrEqualToCreatedToDate(searchFilters.getCreatedToDate()))
@@ -89,7 +89,7 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
                 .and(isUserId(loggedUser.getId()))
         );
         Pageable pageable = getPageable(searchFilters);
-        Page<UserPlans> userPlans = wholesaleUserPlansRepository.findAll(specification, pageable);
+        Page<WholesalerPlans> userPlans = wholesaleUserPlansRepository.findAll(specification, pageable);
         logger.info("Completed getAllUserPlans method");
         return userPlans;
     }

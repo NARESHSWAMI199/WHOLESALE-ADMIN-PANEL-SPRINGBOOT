@@ -4,7 +4,7 @@ package com.sales.wholesaler.controller;
 import com.sales.dto.UserPlanDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
-import com.sales.entities.UserPlans;
+import com.sales.entities.WholesalerPlans;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -43,10 +43,10 @@ public class WholesaleServicePlanController extends WholesaleServiceContainer {
     }
 
     @PostMapping("/my-plans")
-    public ResponseEntity<Page<UserPlans>> getMyAllPlans(HttpServletRequest request, @RequestBody UserPlanDto searchFilters) {
+    public ResponseEntity<Page<WholesalerPlans>> getMyAllPlans(HttpServletRequest request, @RequestBody UserPlanDto searchFilters) {
         logger.info("Starting getMyAllPlans method");
         User loggedUser = Utils.getUserFromRequest(request, jwtToken, wholesaleUserService);
-        Page<UserPlans> allUserPlans = wholesaleServicePlanService.getAllUserPlans(loggedUser, searchFilters);
+        Page<WholesalerPlans> allUserPlans = wholesaleServicePlanService.getAllUserPlans(loggedUser, searchFilters);
         logger.info("Completed getMyAllPlans method");
         return new ResponseEntity<>(allUserPlans, HttpStatusCode.valueOf(200));
     }

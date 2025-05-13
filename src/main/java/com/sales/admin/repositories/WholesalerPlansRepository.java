@@ -1,14 +1,14 @@
 package com.sales.admin.repositories;
 
 
-import com.sales.entities.UserPlans;
+import com.sales.entities.WholesalerPlans;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserPlansRepository extends JpaRepository<UserPlans,Integer> , JpaSpecificationExecutor<UserPlans> {
-    UserPlans findByUserId(Integer userId);
+public interface WholesalerPlansRepository extends JpaRepository<WholesalerPlans,Integer> , JpaSpecificationExecutor<WholesalerPlans> {
+    WholesalerPlans findByUserId(Integer userId);
     /*
     @Query(value = "select " +
             "sp.name as name, " +
@@ -19,8 +19,8 @@ public interface UserPlansRepository extends JpaRepository<UserPlans,Integer> , 
             "up.slug as slug, "+
             "up.createdAt as createdAt, " +
             "up.expiryDate as expiryDate " +
-            "from ServicePlan sp INNER JOIN UserPlans up ON up.planId = sp.id where up.userId = :userId and :specification")
-    List<Map<String,Object>> getAllUserPlansByUserId(Integer userId, Specification<UserPlans> specification , Pageable pageable);
+            "from ServicePlan sp INNER JOIN WholesalerPlans up ON up.planId = sp.id where up.userId = :userId and :specification")
+    List<Map<String,Object>> getAllUserPlansByUserId(Integer userId, Specification<WholesalerPlans> specification , Pageable pageable);
     */
 
 

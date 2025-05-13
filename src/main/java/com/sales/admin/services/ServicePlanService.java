@@ -7,7 +7,7 @@ import com.sales.dto.StatusDto;
 import com.sales.dto.UserPlanDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
-import com.sales.entities.UserPlans;
+import com.sales.entities.WholesalerPlans;
 import com.sales.specifications.PlansSpecifications;
 import com.sales.specifications.ServicePlanSpecification;
 import com.sales.utils.Utils;
@@ -30,7 +30,7 @@ public class ServicePlanService extends  RepoContainer {
 
     public Page<ServicePlan> getALlServicePlan(ServicePlanDto servicePlanDto){
         logger.info("Entering getALlServicePlan with servicePlanDto: {}", servicePlanDto);
-        Specification specification = Specification.where(
+        Specification<ServicePlan> specification = Specification.where(
                 ServicePlanSpecification.containsName(servicePlanDto.getName())
                         .and(ServicePlanSpecification.hasSlug(servicePlanDto.getSlug()))
                         .and(ServicePlanSpecification.isStatus(servicePlanDto.getStatus()))
@@ -53,9 +53,9 @@ public class ServicePlanService extends  RepoContainer {
     public boolean isPlanActive(Integer  userPlanId){
         logger.info("Entering isPlanActive with userPlanId: {}", userPlanId);
         if(userPlanId == null) return false;
-        Optional<UserPlans> plan = userPlansRepository.findById(userPlanId);
+        Optional<WholesalerPlans> plan = wholesalerPlansRepository.findById(userPlanId);
         if (plan.isPresent()){
-            UserPlans userPlan = plan.get();
+            WholesalerPlans userPlan = plan.get();
             long expiryDate = userPlan.getExpiryDate();
             long currentDate =  Utils.getCurrentMillis();
             boolean isActive = currentDate <= expiryDate;
@@ -66,9 +66,9 @@ public class ServicePlanService extends  RepoContainer {
         return false;
     }
 
-    public Page<UserPlans> getAllUserPlans(Integer userId , UserPlanDto searchFilters){
+    public Page<WholesalerPlans> getAllUserPlans(Integer userId , UserPlanDto searchFilters){
         logger.info("Entering getAllUserPlans with userId: {}, searchFilters: {}", userId, searchFilters);
-        Specification<UserPlans> specification = Specification.where(
+        Specification<WholesalerPlans> specification = Specification.where(
                 PlansSpecifications.hasSlug(searchFilters.getSlug())
                 .and(PlansSpecifications.greaterThanOrEqualCreatedFromDate(searchFilters.getCreatedFromDate()))
                 .and(PlansSpecifications.lessThanOrEqualToCreatedToDate(searchFilters.getCreatedToDate()))
@@ -78,7 +78,7 @@ public class ServicePlanService extends  RepoContainer {
                 .and(PlansSpecifications.isUserId(userId))
         );
         Pageable pageable = getPageable(searchFilters);
-        Page<UserPlans> result = userPlansRepository.findAll(specification, pageable);
+        Page<WholesalerPlans> result = wholesalerPlansRepository.findAll(specification, pageable);
         logger.info("Exiting getAllUserPlans");
         return result;
     }

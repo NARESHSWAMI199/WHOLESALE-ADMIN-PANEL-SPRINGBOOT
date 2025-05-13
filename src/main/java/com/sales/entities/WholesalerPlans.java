@@ -5,13 +5,13 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "user_plans")
+@Table(name = "wholesaler_plans")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserPlans{
+public class WholesalerPlans {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;

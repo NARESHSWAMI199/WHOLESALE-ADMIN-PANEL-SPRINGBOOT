@@ -63,5 +63,8 @@ public class WholesaleServiceContainer {
     @Autowired
     protected ChatRoomService chatRoomService;
 
+    @Autowired
+    protected WholesaleFuturePlansService wholesaleFuturePlansService;
+
 
 }

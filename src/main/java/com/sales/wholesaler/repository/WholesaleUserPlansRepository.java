@@ -1,15 +1,15 @@
 package com.sales.wholesaler.repository;
 
 
-import com.sales.entities.UserPlans;
+import com.sales.entities.WholesalerPlans;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface WholesaleUserPlansRepository extends JpaRepository<UserPlans,Integer>, JpaSpecificationExecutor<UserPlans> {
+public interface WholesaleUserPlansRepository extends JpaRepository<WholesalerPlans,Integer>, JpaSpecificationExecutor<WholesalerPlans> {
 
-   UserPlans findByUserId(Integer userId);
+   WholesalerPlans findByUserId(Integer userId);
    /*
    @Query(value = "select " +
            "sp.name as name, " +
@@ -19,7 +19,7 @@ public interface WholesaleUserPlansRepository extends JpaRepository<UserPlans,In
            "up.id as userPlanId, " +
            "up.createdAt as createdAt, " +
            "up.expiryDate as expiryDate " +
-           "from ServicePlan sp INNER JOIN UserPlans up ON up.planId = sp.id where up.userId = :userId order by up.id desc")
+           "from ServicePlan sp INNER JOIN WholesalerPlans up ON up.planId = sp.id where up.userId = :userId order by up.id desc")
    List<Map<String,Object>> getAllUserPlansByUserId(Integer userId);
     */
 
