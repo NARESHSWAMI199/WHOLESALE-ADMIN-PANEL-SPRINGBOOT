@@ -22,7 +22,7 @@ public class WholesaleFuturePlansService extends WholesaleRepoContainer {
 
     public Page<WholesalerFuturePlan> getWholesalerFuturePlans(User loggedUser, SearchFilters filters) {
         Pageable pageable = getPageable(filters);
-       return wholesaleFuturePlansRepository.findWholesalerFuturePlansByUserId(pageable,loggedUser.getId());
+       return wholesaleFuturePlansRepository.findWholesalerFuturePlansByUserIdAndStatus(pageable,loggedUser.getId(),"N"); // Getting only new not old or used.
     }
 
 
@@ -30,7 +30,7 @@ public class WholesaleFuturePlansService extends WholesaleRepoContainer {
     public int activateWholesalerFuturePlans(User loggedUser,String servicePlanSlug){
         ServicePlan servicePlan = wholesaleServicePlanRepository.findBySlug(servicePlanSlug);
         if(servicePlan == null) throw new NotFoundException("There is service plans. Check your parameters.");
-        List<WholesalerFuturePlan> futurePlans = wholesaleFuturePlansRepository.findWholesalerFuturePlansByServicePlan(servicePlan);
+        List<WholesalerFuturePlan> futurePlans = wholesaleFuturePlansRepository.findWholesalerFuturePlansByServicePlanAndUserId(servicePlan,loggedUser.getId());
         List<WholesalerFuturePlan> plans = futurePlans.stream().filter(futurePlan -> futurePlan.getServicePlan() != null && futurePlan.getServicePlan().getSlug().equals(servicePlanSlug)).toList();
         if(!plans.isEmpty()) {
             WholesalerFuturePlan futurePlan = plans.get(0);

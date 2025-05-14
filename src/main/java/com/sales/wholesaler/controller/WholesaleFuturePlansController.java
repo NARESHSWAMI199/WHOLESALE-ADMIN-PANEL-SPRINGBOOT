@@ -38,7 +38,7 @@ public class WholesaleFuturePlansController extends WholesaleServiceContainer {
         Map<String,Object> result = new HashMap<>();
         int activated = wholesaleFuturePlansService.activateWholesalerFuturePlans(loggedUser, slug);
         if(activated > 0){
-            result.put("message","No future plans found to activate.");
+            result.put("message","Future plan activated successfully.");
             result.put("status",200);
         }else {
             result.put("message","No plan found to activate.");

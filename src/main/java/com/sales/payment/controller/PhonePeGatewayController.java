@@ -128,7 +128,7 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
                     .build();
 
             int isUpdated = phonePeService.updatePhonePeTransaction(phonePeTrans);
-            wholesaleServicePlanService.assignUserPlan(userId,servicePlanId);
+            wholesaleServicePlanService.assignOrAddFuturePlans(userId,servicePlanId);
             logger.info("PhonePe callback processed successfully for user: {}", userId);
             result.put("isUpdate", isUpdated > 0);
             result.put("data", new Gson().fromJson(decodedString,Map.class));

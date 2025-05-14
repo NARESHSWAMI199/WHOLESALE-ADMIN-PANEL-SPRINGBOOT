@@ -113,7 +113,7 @@ public class CashfreeService extends PaymentRepoContainer {
         int updatedRows = cashfreeHbRepository.updateCashfreePaymentDetail(cashfreeDto, userId);
         logger.info("Updated rows in updateCashfreeCallback. return by updatePaymentCallback -> {}", updatedRows);
         // The Active plan is payment status is successful
-        if (paymentStatus.equals("SUCCESS")) wholesaleServicePlanService.assignUserPlan(userId, servicePlanId);
+        if (paymentStatus.equals("SUCCESS")) wholesaleServicePlanService.assignOrAddFuturePlans(userId, servicePlanId);
         logger.info("Ended updateCashfreeCallback.");
         return updatedRows;
     }

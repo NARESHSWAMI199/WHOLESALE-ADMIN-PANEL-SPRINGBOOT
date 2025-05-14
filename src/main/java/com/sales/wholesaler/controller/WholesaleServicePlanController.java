@@ -28,7 +28,7 @@ public class WholesaleServicePlanController extends WholesaleServiceContainer {
     @GetMapping("/all")
     public ResponseEntity<List<ServicePlan>> getAllPlans() {
         logger.info("Starting getAllPlans method");
-        ResponseEntity<List<ServicePlan>> response = new ResponseEntity<>(wholesaleServicePlanService.getALlServicePlan(), HttpStatusCode.valueOf(200));
+        ResponseEntity<List<ServicePlan>> response = new ResponseEntity<>(wholesaleServicePlanService.getAllServicePlan(), HttpStatusCode.valueOf(200));
         logger.info("Completed getAllPlans method");
         return response;
     }

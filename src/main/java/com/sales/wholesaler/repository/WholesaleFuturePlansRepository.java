@@ -17,9 +17,9 @@ import java.util.List;
 @Repository
 public interface WholesaleFuturePlansRepository extends JpaRepository<WholesalerFuturePlan, Long>, JpaSpecificationExecutor<WholesalerFuturePlan> {
 
-    Page<WholesalerFuturePlan> findWholesalerFuturePlansByUserId(Pageable pageable, Integer userId);
+    Page<WholesalerFuturePlan> findWholesalerFuturePlansByUserIdAndStatus(Pageable pageable, Integer userId,String status);
 
-    List<WholesalerFuturePlan> findWholesalerFuturePlansByServicePlan(ServicePlan servicePlan);
+    List<WholesalerFuturePlan> findWholesalerFuturePlansByServicePlanAndUserId(ServicePlan servicePlan,Integer userId);
 
 
     @Modifying
