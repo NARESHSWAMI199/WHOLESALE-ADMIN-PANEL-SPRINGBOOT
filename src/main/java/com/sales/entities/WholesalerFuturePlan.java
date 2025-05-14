@@ -11,7 +11,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class WholesalerFuturePlans {
+public class WholesalerFuturePlan {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
