@@ -6,6 +6,7 @@ import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
 import com.sales.entities.WholesalerFuturePlan;
 import com.sales.exceptions.NotFoundException;
+import com.sales.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +35,7 @@ public class WholesaleFuturePlansService extends WholesaleRepoContainer {
         if(!plans.isEmpty()) {
             WholesalerFuturePlan futurePlan = plans.get(0);
             wholesaleServicePlanService.assignUserPlan(loggedUser.getId(), futurePlan.getServicePlan().getId());
-            return wholesaleFuturePlansRepository.updateWholesalerFuturePlans(plans.get(0).getId());
+            return wholesaleFuturePlansRepository.updateWholesalerFuturePlans(plans.get(0).getId(), Utils.getCurrentMillis());
         } else {
             throw new NotFoundException("There is no plans to activate.");
         }

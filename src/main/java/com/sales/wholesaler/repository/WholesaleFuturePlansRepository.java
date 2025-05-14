@@ -24,7 +24,7 @@ public interface WholesaleFuturePlansRepository extends JpaRepository<Wholesaler
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE WholesalerFuturePlan set status = 'O' where id = :id ")
-    int updateWholesalerFuturePlans(@Param("id") Long id);
+    @Query(value = "UPDATE WholesalerFuturePlan set status = 'O', updatedAt =:updatedAt where id = :id ")
+    int updateWholesalerFuturePlans(@Param("id") Long id,Long updatedAt);
 
 }

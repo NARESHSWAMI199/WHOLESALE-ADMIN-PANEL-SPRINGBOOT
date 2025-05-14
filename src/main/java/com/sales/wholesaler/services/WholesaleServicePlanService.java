@@ -76,6 +76,7 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
                     .userId(userId)
                     .servicePlan(plan)
                     .status("N") // It's a new future plan.
+                    .createdAt(Utils.getCurrentMillis())
                     .build();
             wholesaleFuturePlansRepository.save(wholesalerFuturePlan);
         }else { // Going to assign plan directly to user.
