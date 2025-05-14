@@ -78,7 +78,8 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
             "/wholesale/plan/is-active",
             "/pg/pay/**",
             "/wholesale/store/add",
-            "/wholesale/auth/detail"
+            "/wholesale/auth/detail",
+            "/future/plans/**"
         };
 
         List<String> excludingPaths = new ArrayList<>(List.of(unAuthorizePaths));
