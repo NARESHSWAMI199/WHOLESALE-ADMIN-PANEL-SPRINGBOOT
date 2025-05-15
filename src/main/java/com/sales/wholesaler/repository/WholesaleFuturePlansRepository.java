@@ -19,7 +19,7 @@ public interface WholesaleFuturePlansRepository extends JpaRepository<Wholesaler
 
     Page<WholesalerFuturePlan> findWholesalerFuturePlansByUserIdAndStatus(Pageable pageable, Integer userId,String status);
 
-    List<WholesalerFuturePlan> findWholesalerFuturePlansByServicePlanAndUserId(ServicePlan servicePlan,Integer userId);
+    List<WholesalerFuturePlan> findWholesalerFuturePlansByServicePlanAndUserIdAndStatus(ServicePlan servicePlan,Integer userId,String status);
 
 
     @Modifying
