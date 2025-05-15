@@ -119,6 +119,11 @@ public class WholesaleRepoContainer {
     @Autowired
     protected WholesaleFuturePlansRepository wholesaleFuturePlansRepository;
 
+    @Autowired
+    protected WalletRepository walletRepository;
+
+    @Autowired
+    protected WalletTransactionRepository wholesaleTransactionRepository;
 
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());

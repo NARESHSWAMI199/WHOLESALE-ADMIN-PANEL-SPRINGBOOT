@@ -66,5 +66,10 @@ public class WholesaleServiceContainer {
     @Autowired
     protected WholesaleFuturePlansService wholesaleFuturePlansService;
 
+    @Autowired
+    protected WalletTransactionService walletTransactionService;
+
+    @Autowired
+    protected WalletService walletService;
 
 }
