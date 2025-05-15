@@ -45,7 +45,6 @@ public class CashfreeService extends PaymentRepoContainer {
 
     @Value("${cashfree.mobile}")
     String mobileNumber;
-
     @Value("${cashfree.redirect_uri}")
     String redirectUri;
 
@@ -133,7 +132,8 @@ public class CashfreeService extends PaymentRepoContainer {
         }
         CustomerDetails customerDetails = new CustomerDetails();
         customerDetails.setCustomerId(UUID.randomUUID().toString());
-        customerDetails.setCustomerPhone(mobileNumber);
+        String contact = loggedUser.getContact();
+        customerDetails.setCustomerPhone(contact !=null ? contact : mobileNumber );
 
         CreateOrderRequest request = new CreateOrderRequest();
         OrderMeta orderMeta = new OrderMeta();
@@ -184,7 +184,8 @@ public class CashfreeService extends PaymentRepoContainer {
         }
         CustomerDetails customerDetails = new CustomerDetails();
         customerDetails.setCustomerId(UUID.randomUUID().toString());
-        customerDetails.setCustomerPhone(mobileNumber);
+        String contact = loggedUser.getContact();
+        customerDetails.setCustomerPhone(contact !=null ? contact : mobileNumber );
 
         CreateOrderRequest request = new CreateOrderRequest();
         OrderMeta orderMeta = new OrderMeta();
