@@ -56,7 +56,7 @@ cashfree :
   mid : TEST10390991bf0adc9155492e36f12619909301
   env : TEST
   mobile : 9999999999
-  callback_uri: https://f558-202-157-76-122.ngrok-free.app
+  callback_uri: https://373d-202-157-76-122.ngrok-free.app
   redirect_uri: http://localhost:3000
 
 # ------------------ start public folder path
