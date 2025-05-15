@@ -25,6 +25,6 @@ public class Wallet {
     Float amount;
 
     @Column(name = "updated_at")
-    Long updated_at;
+    Long updatedAt;
 
 }

@@ -23,28 +23,39 @@ public class WalletTransactionService extends WholesaleRepoContainer{
 
 
 
-    public Page<WalletTransaction> getAllWalletTransactionByUserId(SearchFilters searchFilters){
+    public Page<WalletTransaction> getAllWalletTransactionByUserId(SearchFilters searchFilters,Integer userId){
         Specification<WalletTransaction> specification = Specification.where(
-                hasSlug(searchFilters.getSlug())
-                        .and(greaterThanOrEqualFromDate(searchFilters.getFromDate()))
-                        .and(lessThanOrEqualToToDate(searchFilters.getToDate()))
-        );
+            hasSlug(searchFilters.getSlug())
+            .and(greaterThanOrEqualFromDate(searchFilters.getFromDate()))
+            .and(lessThanOrEqualToToDate(searchFilters.getToDate())
+            .and(hasUserId(userId))
+        ));
         Pageable pageable = getPageable(searchFilters);
         return walletTransactionRepository.findAll(specification,pageable);
     }
 
 
-    public WalletTransaction addWalletTransaction(WalletTransactionDto walletTransactionDto) {
+
+    public WalletTransaction addWalletTransaction(WalletTransactionDto walletTransactionDto,Integer userId) {
         logger.info("The addWalletTransaction method started with wallTransactionDto : {}",walletTransactionDto);
         WalletTransaction walletTransaction = WalletTransaction.builder()
                 .slug(UUID.randomUUID().toString())
-                .userId(walletTransactionDto.getUserId())
+                .userId(userId)
                 .amount(walletTransactionDto.getAmount())
                 .transactionType(walletTransactionDto.getTransactionType())
                 .createdAt(Utils.getCurrentMillis())
                 .status(walletTransactionDto.getStatus())
                 .build();
         logger.info("The addWalletTransaction method ended with wallTransactionDto : {}",walletTransaction);
+
+        if(!Utils.isEmpty(walletTransactionDto.getTransactionType()) && walletTransactionDto.getTransactionType().equalsIgnoreCase("CR")){
+            Integer added = walletRepository.addMoneyInWallet(walletTransaction.getAmount(), userId, Utils.getCurrentMillis());
+            logger.info("Added money in wallet rows was updated : {} ",added);
+        }else{
+            Integer deducted = walletRepository.deductMoneyFromWallet(walletTransaction.getAmount(), userId, Utils.getCurrentMillis());
+            logger.info("Detected money in wallet rows was updated : {} ",deducted);
+        }
+
         return walletTransactionRepository.save(walletTransaction);
     }
 

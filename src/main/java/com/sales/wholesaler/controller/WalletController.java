@@ -6,5 +6,5 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("wholesale/wallet")
-public class WalletController {
+public class WalletController extends WholesaleServiceContainer {
 }

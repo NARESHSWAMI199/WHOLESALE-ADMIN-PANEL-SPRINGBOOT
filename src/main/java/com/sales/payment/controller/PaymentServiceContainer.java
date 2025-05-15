@@ -5,6 +5,7 @@ import com.sales.admin.services.ServicePlanService;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.payment.service.CashfreeService;
 import com.sales.payment.service.PhonePeService;
+import com.sales.wholesaler.services.WalletTransactionService;
 import com.sales.wholesaler.services.WholesaleServicePlanService;
 import com.sales.wholesaler.services.WholesaleUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,8 @@ public class PaymentServiceContainer {
 
     @Autowired
     protected CashfreeService cashfreeService;
+
+    @Autowired
+    protected WalletTransactionService walletTransactionService;
 
 }

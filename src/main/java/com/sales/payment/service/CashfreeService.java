@@ -119,8 +119,8 @@ public class CashfreeService extends PaymentRepoContainer {
     }
 
 
-    public OrderEntity getOrderEntityForCashfreePayment(HttpServletRequest httpServletRequest,CashfreeDto cashfreeDto, User loggedUser, ServicePlan servicePlan, String givenRedirectUri, String env) throws ApiException {
-        logger.info("Started getOrderEntityForCashfreePayment with params : cashfreeDto : {} and loggedUser : {} and servicePlan : {} and redirectUri : {} and env : {}", cashfreeDto.toString(), loggedUser.toString(), servicePlan.toString(), givenRedirectUri, env);
+    public OrderEntity getOrderEntityForCashfreePaymentForPlans(HttpServletRequest httpServletRequest,CashfreeDto cashfreeDto, User loggedUser, ServicePlan servicePlan, String givenRedirectUri, String env) throws ApiException {
+        logger.info("Started getOrderEntityForCashfreePaymentForPlans with params : cashfreeDto : {} and loggedUser : {} and servicePlan : {} and redirectUri : {} and env : {}", cashfreeDto.toString(), loggedUser.toString(), servicePlan.toString(), givenRedirectUri, env);
         long amount = (servicePlan.getPrice() - servicePlan.getDiscount());
         String slug = UUID.randomUUID().toString();
         logger.info("amount {}", amount);
@@ -163,9 +163,61 @@ public class CashfreeService extends PaymentRepoContainer {
         cashfreeDto.setStatus("VISITED");
         cashfreeDto.setUserId(loggedUser.getId());
         insertPaymentDetail(cashfreeDto);
-        logger.info("Ended getOrderEntityForCashfreePayment with -> {}",response.getData());
+        logger.info("Ended getOrderEntityForCashfreePaymentForPlans with -> {}",response.getData());
         return response.getData();
     }
+
+
+
+
+    public OrderEntity getOrderEntityForCashfreePaymentForWallet(HttpServletRequest httpServletRequest, CashfreeDto cashfreeDto, User loggedUser, Double amount, String givenRedirectUri, String env) throws ApiException {
+        logger.info("Started getOrderEntityForCashfreePaymentForWallet with params : cashfreeDto : {} and loggedUser : {} and redirectUri : {} and env : {}", cashfreeDto.toString(), loggedUser.toString(), givenRedirectUri, env);
+
+        String slug = UUID.randomUUID().toString();
+        logger.info("amount {}", amount);
+        Cashfree.XClientId = mid;
+        Cashfree.XClientSecret = key;
+        if (env != null && env.equalsIgnoreCase("TEST")) {
+            Cashfree.XEnvironment = Cashfree.SANDBOX;
+        } else {
+            Cashfree.XEnvironment = Cashfree.PRODUCTION;
+        }
+        CustomerDetails customerDetails = new CustomerDetails();
+        customerDetails.setCustomerId(UUID.randomUUID().toString());
+        customerDetails.setCustomerPhone(mobileNumber);
+
+        CreateOrderRequest request = new CreateOrderRequest();
+        OrderMeta orderMeta = new OrderMeta();
+
+        // we redirect on referred site.
+        if (givenRedirectUri == null || givenRedirectUri.trim().isEmpty()){
+            orderMeta.setReturnUrl(redirectUri);
+        }else {
+            orderMeta.setReturnUrl(givenRedirectUri);
+        }
+        // Updating callback uri if not provided.
+        if(callbackUri == null) callbackUri = httpServletRequest.getRequestURI();
+        orderMeta.setNotifyUrl(callbackUri+"/cashfree/callback/"+slug+"/"+loggedUser.getId());
+        request.setOrderMeta(orderMeta);
+        request.setOrderAmount(amount);
+        request.setOrderCurrency("INR");
+        request.setCustomerDetails(customerDetails);
+        Cashfree cashfree = new Cashfree();
+        ApiResponse<OrderEntity> response = cashfree.PGCreateOrder("2023-08-01", request, null, null, null);
+        logger.info("Payment session ID generated successfully: {}", response.getData().getPaymentSessionId());
+        logger.info("The order id for payment : {}",response.getData().getOrderId());
+
+        cashfreeDto.setSlug(slug);
+        cashfreeDto.setAmount((double) amount);
+        cashfreeDto.setCurrency("INR");
+        cashfreeDto.setOrderId(response.getData().getOrderId());
+        cashfreeDto.setStatus("VISITED");
+        cashfreeDto.setUserId(loggedUser.getId());
+        insertPaymentDetail(cashfreeDto);
+        logger.info("Ended getOrderEntityForCashfreePaymentForWallet with -> {}",response.getData());
+        return response.getData();
+    }
+
 
 
 

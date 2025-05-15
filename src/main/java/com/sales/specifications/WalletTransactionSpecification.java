@@ -16,11 +16,18 @@ public class WalletTransactionSpecification {
         });
     }
 
+    public static Specification<WalletTransaction> hasUserId(Integer userId){
+        return ((root, query, criteriaBuilder) -> {
+            if(userId == null || userId.equals(0)) return null;
+            return criteriaBuilder.equal(root.get(WalletTransaction_.userId),userId);
+        });
+    }
+
 
     public static Specification<WalletTransaction> hasSlug(Float amount){
         return ((root, query, criteriaBuilder) -> {
             if(amount == null || amount.equals(0) ) return null;
-            return criteriaBuilder.equal(root.get(WalletTransaction_.slug),amount);
+            return criteriaBuilder.equal(root.get(WalletTransaction_.amount),amount);
         });
     }
 
