@@ -63,8 +63,8 @@ public class CashFreePgController extends PaymentServiceContainer {
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
 
-    @GetMapping(value = {"pay/{servicePlanSlug}/{token}","pay/{servicePlanSlug}/{token}/{amount}"})
-    public String redirectPaymentPage(HttpServletRequest request,@PathVariable String servicePlanSlug, @PathVariable String token,@PathVariable(required = false) Float amount,
+    @GetMapping(value = {"pay/{servicePlanSlug}/{token}","pay/{token}"})
+    public String redirectPaymentPage(HttpServletRequest request,@PathVariable(required = false) String servicePlanSlug, @PathVariable String token,@RequestParam(required = false) Float amount,
                                       @RequestParam(value = "redirectUri", required = false) String redirectUri, Model model) {
         User loggedUser = Utils.getUserFromRequest(request,token,jwtToken,wholesaleUserService);
         logger.info("Redirecting to payment page for servicePlanSlug : {} user : {} and user slug : {} and redirect uri : {} and ", servicePlanSlug,loggedUser.getUsername(),loggedUser.getSlug(),redirectUri);
@@ -101,6 +101,7 @@ public class CashFreePgController extends PaymentServiceContainer {
             }else{
                 Float amount =  Float.valueOf(String.valueOf(payment.get("payment_amount")));
                 String paymentStatus = payment.getString("payment_status");
+                paymentStatus = paymentStatus.equals("SUCCESS") ? "S" : "F";
                 WalletTransactionDto walletTransactionDto = WalletTransactionDto.builder()
                         .userId(userId)
                         .amount(amount)

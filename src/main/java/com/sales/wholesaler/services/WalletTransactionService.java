@@ -2,6 +2,7 @@ package com.sales.wholesaler.services;
 
 import com.sales.dto.SearchFilters;
 import com.sales.dto.WalletTransactionDto;
+import com.sales.entities.Wallet;
 import com.sales.entities.WalletTransaction;
 import com.sales.utils.Utils;
 import org.slf4j.Logger;
@@ -51,6 +52,14 @@ public class WalletTransactionService extends WholesaleRepoContainer{
         if(!Utils.isEmpty(walletTransactionDto.getTransactionType()) && walletTransactionDto.getTransactionType().equalsIgnoreCase("CR")){
             Integer added = walletRepository.addMoneyInWallet(walletTransaction.getAmount(), userId, Utils.getCurrentMillis());
             logger.info("Added money in wallet rows was updated : {} ",added);
+            if(added < 1){ // if user not found in wallet.
+                Wallet wallet = Wallet.builder()
+                        .userId(userId)
+                        .amount(walletTransaction.getAmount())
+                        .updatedAt(Utils.getCurrentMillis())
+                        .build();
+                walletRepository.save(wallet);
+            }
         }else{
             Integer deducted = walletRepository.deductMoneyFromWallet(walletTransaction.getAmount(), userId, Utils.getCurrentMillis());
             logger.info("Detected money in wallet rows was updated : {} ",deducted);
