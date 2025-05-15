@@ -18,6 +18,9 @@ public class WalletTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
 
+    @Column(name = "slug")
+    String slug;
+
     @Column(name = "user_id")
     Integer userId;
 
@@ -31,6 +34,6 @@ public class WalletTransaction {
     String transactionType;
 
     @Column(name = "status")
-    String success;
+    String status;
 
 }

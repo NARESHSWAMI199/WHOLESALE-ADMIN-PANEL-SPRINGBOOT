@@ -123,7 +123,7 @@ public class WholesaleRepoContainer {
     protected WalletRepository walletRepository;
 
     @Autowired
-    protected WalletTransactionRepository wholesaleTransactionRepository;
+    protected WalletTransactionRepository walletTransactionRepository;
 
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
