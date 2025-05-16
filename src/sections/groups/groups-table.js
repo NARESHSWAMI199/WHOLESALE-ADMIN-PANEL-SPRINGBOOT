@@ -27,9 +27,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import axios from 'axios';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import CopyButton from 'src/components/CopyButton';
 import { useAuth } from 'src/hooks/use-auth';
 import { host, rowsPerPageOptions } from 'src/utils/util';
-import CopyButton from 'src/components/CopyButton';
 
 
 export const GroupTable = (props) => {
@@ -56,21 +56,6 @@ export const GroupTable = (props) => {
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const auth = useAuth()
   const user = auth.user
-
-
-  const changeStatus = (slug,status) => {
-    let isChanged = props.onStatusChange(slug,status)
-    if(isChanged !=false){
-      setItems((items) => {
-          items.filter((_, index) => {
-            if(_.slug === slug) return _.status = status
-            return _;
-          })
-          return items
-      });
-      }
-     
-  }
 
 
   useEffect( ()=>{

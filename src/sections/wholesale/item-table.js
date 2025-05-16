@@ -36,9 +36,9 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { Image } from 'antd';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import CopyButton from 'src/components/CopyButton';
 import { getInitials } from 'src/utils/get-initials';
 import { itemImage, rowsPerPageOptions, toTitleCase } from 'src/utils/util';
-import CopyButton from 'src/components/CopyButton';
 
 export const ItemsTable = (props) => {
   const {
@@ -193,7 +193,6 @@ export const ItemsTable = (props) => {
                       </Stack>
                     </TableCell>
                
-        
                     <TableCell sx={{ color: 'text.secondary' }}>
                       <span style={{ color: 'green' }}>{item.slug} </span>
                       <CopyButton text={item.slug} />
