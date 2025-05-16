@@ -1,5 +1,7 @@
-import { redirect } from "next/dist/server/api-utils";
 
+const ip = 'localhost'
+const port = '8080'
+export const host = `http://${ip}:${port}`
 
 export const updateObject = (state, updatedObject) => {
     return {
@@ -7,11 +9,6 @@ export const updateObject = (state, updatedObject) => {
         ...updatedObject
     }
 }
-
-export const host = "http://localhost:8080"
-
-// export const host = "http://202.157.82.29:8080"
-// export const host = "http://localhost:8080"
 
 export const toTitleCase = (str) => {
     if (!!str)
