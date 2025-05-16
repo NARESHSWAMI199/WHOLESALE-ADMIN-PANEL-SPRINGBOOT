@@ -3,7 +3,13 @@ import DiscountIcon from '@mui/icons-material/Discount';
 import {
   Badge,
   Box,
+  Button,
   Card,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Stack,
   Table,
   TableBody,
@@ -11,21 +17,15 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle
+  Typography
 } from '@mui/material';
-import { format } from 'date-fns';
-import PropTypes from 'prop-types';
-import { CopyOutlined } from '@ant-design/icons';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { format } from 'date-fns';
+import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { rowsPerPageOptions, toTitleCase } from 'src/utils/util';
+import CopyButton from 'src/components/CopyButton';
 const currentDateTime = new Date().getTime();
 export const PlanTable = (props) => {
   const {
@@ -42,7 +42,6 @@ export const PlanTable = (props) => {
   const [slug, setSlug] = useState(null);
   const [status, setStatus] = useState('');
   const [action, setAction] = useState('');
-  const [isCopied, setIsCopied] = useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 

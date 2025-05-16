@@ -1,12 +1,9 @@
-import { CopyOutlined } from '@ant-design/icons';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DiscountIcon from '@mui/icons-material/Discount';
-import EditIcon from '@mui/icons-material/Edit';
 import {
-    Badge,
     Box,
     Button,
     Card,
@@ -27,10 +24,9 @@ import {
     useTheme
 } from '@mui/material';
 import { format } from 'date-fns';
-import Link from 'next/link';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import { useAuth } from 'src/hooks/use-auth';
+import CopyButton from 'src/components/CopyButton';
 import { rowsPerPageOptions, toTitleCase } from 'src/utils/util';
 
 export const ServicePlansTable = (props) =>{
@@ -49,7 +45,6 @@ export const ServicePlansTable = (props) =>{
     const [rowIndex, setRowIndex] = useState(-1);
     const [status, setStatus] = useState('');
     const [action, setAction] = useState('');
-    const [isCopied, setIsCopied] = useState(false);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 

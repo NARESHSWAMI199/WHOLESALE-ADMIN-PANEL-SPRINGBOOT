@@ -38,6 +38,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { getInitials } from 'src/utils/get-initials';
 import { itemImage, rowsPerPageOptions, toTitleCase } from 'src/utils/util';
+import CopyButton from 'src/components/CopyButton';
 
 export const ItemsTable = (props) => {
   const {
@@ -54,14 +55,11 @@ export const ItemsTable = (props) => {
   } = props;
   const [items,setItems] = useState(props.items)
   const [message,setMessage] = useState("")
-  const selectedSome = (selected.length > 0) && (selected.length < items.length);
-  const selectedAll = (items.length > 0) && (selected.length === items.length);
   const [confirm,setConfirm] = useState(false)
   const [slug,setSlug] = useState(null)
   const [rowIndex,setRowIndex] = useState(-1)
   const [status,setStatus] = useState('')
   const [action,setAction] = useState('')
-  const [isCopied, setIsCopied] = useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   

@@ -37,6 +37,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
 import { getInitials } from 'src/utils/get-initials';
 import { rowsPerPageOptions, toTitleCase, userImage } from 'src/utils/util';
+import CopyButton from 'src/components/CopyButton';
 
 export const CustomersTable = (props) => {
   const {

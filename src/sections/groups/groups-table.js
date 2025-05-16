@@ -29,7 +29,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
 import { host, rowsPerPageOptions } from 'src/utils/util';
-
+import CopyButton from 'src/components/CopyButton';
 
 
 export const GroupTable = (props) => {
@@ -47,15 +47,11 @@ export const GroupTable = (props) => {
   } = props;
   const [items,setItems] = useState(props.items)
   const [message,setMessage] = useState("")
-  const selectedSome = (selected.length > 0) && (selected.length < items.length);
-  const selectedAll = (items.length > 0) && (selected.length === items.length);
   const [confirm,setConfirm] = useState(false)
   const [slug,setSlug] = useState(null)
   const [rowIndex,setRowIndex] = useState(-1)
-  const [status,setStatus] = useState('')
   const [action,setAction] = useState('')
   const [assignGroup,setAssignGroup] = useState([])
-  const [isCopied, setIsCopied] = useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const auth = useAuth()
