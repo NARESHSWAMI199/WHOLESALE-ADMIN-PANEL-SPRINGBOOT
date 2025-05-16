@@ -47,44 +47,6 @@ export const PlanTable = (props) => {
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
 
-  async function copyTextToClipboard(text) {
-    if ('clipboard' in navigator) {
-      return await navigator.clipboard.writeText(text);
-    } else {
-      return document.execCommand('copy', true, text);
-    }
-  }
-
-  const handleCopyClick = (slug) => {
-    copyTextToClipboard(slug)
-      .then(() => {
-        setPlans((plans) =>
-          plans.map((customer) => {
-            if (customer.slug === slug) {
-              customer.isCopied = true;
-              setIsCopied(true);
-            }
-            return customer;
-          })
-        );
-
-        setTimeout(() => {
-          setPlans((plans) =>
-            plans.map((customer) => {
-              if (customer.slug === slug) {
-                customer.isCopied = false;
-                setIsCopied(false);
-              }
-              return customer;
-            })
-          );
-        }, 1500);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
   useEffect(() => {
     setPlans(props.plans);
   }, [props.plans]);
@@ -143,20 +105,10 @@ export const PlanTable = (props) => {
                       </Typography>
                     </TableCell>
 
-                    {/* token */}
-                    <TableCell sx={{ color: 'text.secondary' }}>
-                      <span style={{ color: 'green' }}>{plan.slug}</span>
-                      {!!plan.isCopied && plan.isCopied && isCopied ? (
-                        <Badge
-                          color="primary"
-                          badgeContent="copied"
-                          style={{ marginBottom: '35px' }}
-                        />
-                      ) : (
-                        <></>
-                      )}
-                      <CopyOutlined onClick={() => { handleCopyClick(plan.slug) }} />
-                    </TableCell>
+                  <TableCell sx={{ color: 'text.secondary' }}>
+                    <span style={{ color: 'green' }}>{plan.slug} </span>
+                    <CopyButton text={plan.slug} />
+                  </TableCell>
 
                     {/* Months */}
                     <TableCell>
