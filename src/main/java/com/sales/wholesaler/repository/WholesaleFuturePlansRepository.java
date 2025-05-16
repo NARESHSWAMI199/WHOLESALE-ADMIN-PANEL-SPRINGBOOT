@@ -1,6 +1,5 @@
 package com.sales.wholesaler.repository;
 
-import com.sales.entities.ServicePlan;
 import com.sales.entities.WholesalerFuturePlan;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -12,15 +11,22 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface WholesaleFuturePlansRepository extends JpaRepository<WholesalerFuturePlan, Long>, JpaSpecificationExecutor<WholesalerFuturePlan> {
 
     Page<WholesalerFuturePlan> findWholesalerFuturePlansByUserIdAndStatus(Pageable pageable, Integer userId,String status);
 
-    List<WholesalerFuturePlan> findWholesalerFuturePlansByServicePlanAndUserIdAndStatus(ServicePlan servicePlan,Integer userId,String status);
-
+    @Query(value="""
+        select 
+            wfp.id as wholesalerFuturePlanId,
+            sp.id as servicePlanId
+        from WholesalerFuturePlan wfp 
+            JOIN ServicePlan sp ON sp.id = wfp.servicePlan.id 
+        where wfp.slug=:slug and wfp.userId=:userId and wfp.status = 'N'
+    """)
+    Map<String,Object> getNewFuturePlanByUserIdAndSlug(String slug, Integer userId);
 
     @Modifying
     @Transactional

@@ -74,17 +74,47 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
             logger.info("Going to adding this plan as future plan.");
             WholesalerFuturePlan wholesalerFuturePlan = WholesalerFuturePlan.builder()
                     .userId(userId)
+                    .slug(UUID.randomUUID().toString())
                     .servicePlan(plan)
                     .status("N") // It's a new future plan.
                     .createdAt(Utils.getCurrentMillis())
                     .build();
             wholesaleFuturePlansRepository.save(wholesalerFuturePlan);
         }else { // Going to assign plan directly to user.
-            assignUserPlan(userId,servicePlanId);
+            assignUserPlan(userId,plan);
         }
         logger.info("Completed assignOrAddFuturePlans method");
     }
 
+
+
+    public void assignUserPlan(int userId, ServicePlan plan) {
+        logger.info("Starting assignUserPlan method with userId: {}, servicePlanId: {}", userId, plan.getId());
+        Long currentMillis = Utils.getCurrentMillis();
+        logger.info("Going to assign this plan as user current plan.");
+        Integer months = plan.getMonths();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(currentMillis);
+        calendar.add(Calendar.MONTH, months);
+        long expiryDate = calendar.getTimeInMillis();
+        WholesalerPlans userPlans = WholesalerPlans.builder()
+                .slug(UUID.randomUUID().toString())
+                .userId(userId)
+                .servicePlan(plan)
+                .createdAt(currentMillis)
+                .expiryDate(expiryDate)
+                .createdBy(userId)
+                .build();
+        WholesalerPlans userPlan = wholesaleUserPlansRepository.save(userPlans); // Create operation
+        int updated = wholesaleUserHbRepository.updateUserActivePlan(userId, userPlan.getId());// Update operation
+        if (updated < 1) {
+            throw new NotFoundException("No user found. to assign this plan.");
+        }
+        logger.info("Completed assignUserPlan method");
+    }
+
+
+    // This method is overloaded.
     public void assignUserPlan(int userId, int servicePlanId) {
         logger.info("Starting assignUserPlan method with userId: {}, servicePlanId: {}", userId, servicePlanId);
         Long currentMillis = Utils.getCurrentMillis();

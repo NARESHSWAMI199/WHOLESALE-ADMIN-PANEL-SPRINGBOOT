@@ -2,7 +2,6 @@ package com.sales.wholesaler.services;
 
 
 import com.sales.dto.SearchFilters;
-import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
 import com.sales.entities.WholesalerFuturePlan;
 import com.sales.exceptions.NotFoundException;
@@ -12,7 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Map;
 
 @Service
 public class WholesaleFuturePlansService extends WholesaleRepoContainer {
@@ -27,18 +26,13 @@ public class WholesaleFuturePlansService extends WholesaleRepoContainer {
 
 
 
-    public int activateWholesalerFuturePlans(User loggedUser,String servicePlanSlug){
-        ServicePlan servicePlan = wholesaleServicePlanRepository.findBySlug(servicePlanSlug);
-        if(servicePlan == null) throw new NotFoundException("There is service plans. Check your parameters.");
-        List<WholesalerFuturePlan> futurePlans = wholesaleFuturePlansRepository.findWholesalerFuturePlansByServicePlanAndUserIdAndStatus(servicePlan,loggedUser.getId(),"N");
-        List<WholesalerFuturePlan> plans = futurePlans.stream().filter(futurePlan -> futurePlan.getServicePlan() != null && futurePlan.getServicePlan().getSlug().equals(servicePlanSlug)).toList();
-        if(!plans.isEmpty()) {
-            WholesalerFuturePlan futurePlan = plans.get(0);
-            wholesaleServicePlanService.assignUserPlan(loggedUser.getId(), futurePlan.getServicePlan().getId());
-            return wholesaleFuturePlansRepository.updateWholesalerFuturePlans(plans.get(0).getId(), Utils.getCurrentMillis());
-        } else {
-            throw new NotFoundException("There is no plans to activate.");
-        }
+    public int activateWholesalerFuturePlans(User loggedUser,String futurePlanSlug){
+        Map<String,Object> futurePlan = wholesaleFuturePlansRepository.getNewFuturePlanByUserIdAndSlug(futurePlanSlug,loggedUser.getId());
+        Object servicePlanId = futurePlan.get("servicePlanId");
+        Object wholesalerFuturePlanId = futurePlan.get("wholesalerFuturePlanId");
+        if (servicePlanId == null || wholesalerFuturePlanId == null) throw  new NotFoundException("Not a valid request. Future plan not found.");
+        wholesaleServicePlanService.assignUserPlan(loggedUser.getId(), (Integer) servicePlanId);
+        return wholesaleFuturePlansRepository.updateWholesalerFuturePlans((Long) wholesalerFuturePlanId, Utils.getCurrentMillis());
     }
 
 

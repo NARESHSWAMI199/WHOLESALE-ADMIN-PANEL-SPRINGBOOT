@@ -20,6 +20,9 @@ public class WholesalerFuturePlan {
     @Column(name = "user_id",nullable = false)
     Integer userId;
 
+    @Column(name = "slug" , nullable = false)
+    String slug;
+
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "plan_id",nullable = false)
     ServicePlan servicePlan;
