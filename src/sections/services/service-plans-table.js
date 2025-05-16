@@ -74,39 +74,6 @@ export const ServicePlansTable = (props) =>{
         setConfirm(false);
     };
 
-    async function copyTextToClipboard(text) {
-        if ('clipboard' in navigator) {
-            return await navigator.clipboard.writeText(text);
-        } else {
-            return document.execCommand('copy', true, text);
-        }
-    }
-
-    const handleCopyClick = (slug) => {
-        copyTextToClipboard(slug)
-            .then(() => {
-                setServicePlans((servicePlans).filter(plan => {
-                    if (plan.slug === slug) {
-                        plan.isCopied = true;
-                        setIsCopied(true);
-                    }
-                    return plan;
-                }));
-                setTimeout(() => {
-                    setServicePlans((servicePlans).filter(plan => {
-                        if (plan.slug === slug) {
-                            plan.isCopied = false;
-                            setIsCopied(false);
-                        }
-                        return plan;
-                    }));
-                }, 1500);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
-
     return (
         <>
             <Card sx={{ overflowX: 'auto' }}>
@@ -145,15 +112,9 @@ export const ServicePlansTable = (props) =>{
                                         </TableCell>
                                         {/* Token */}
                                         <TableCell sx={{ color: 'text.secondary' }}>
-                                            <span style={{ color: 'green' }}>{plan.slug}</span>
-                                            {!!plan.isCopied && plan.isCopied && isCopied ? (
-                                                <Badge color="primary" badgeContent="copied" style={{ marginBottom: '35px' }} />
-                                            ) : (
-                                                <></>
-                                            )}
-                                            <CopyOutlined onClick={() => { handleCopyClick(plan.slug) }} />
+                                            <span style={{ color: 'green' }}>{plan.slug} </span>
+                                            <CopyButton text={plan.slug} />
                                         </TableCell>
-
                                         
                                         {/* Months */}
                                         <TableCell>

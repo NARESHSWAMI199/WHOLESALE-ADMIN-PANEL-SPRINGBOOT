@@ -1,14 +1,7 @@
-import PropTypes from 'prop-types';
-import { format } from 'date-fns';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CancelIcon from '@mui/icons-material/Cancel';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import {
-  Avatar,
-  Badge,
   Box,
   Card,
-  Checkbox,
   Stack,
   Table,
   TableBody,
@@ -18,6 +11,8 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
+import { format } from 'date-fns';
+import PropTypes from 'prop-types';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -25,18 +20,15 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-import { Scrollbar } from 'src/components/scrollbar';
-import { getInitials } from 'src/utils/get-initials';
-import React, {useEffect, useState } from 'react';
-import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
-import { host, rowsPerPageOptions } from 'src/utils/util';
-import { useAuth } from 'src/hooks/use-auth';
 import axios from 'axios';
-import { CopyOutlined } from '@ant-design/icons';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useAuth } from 'src/hooks/use-auth';
+import { host, rowsPerPageOptions } from 'src/utils/util';
 
 
 
@@ -123,41 +115,6 @@ export const GroupTable = (props) => {
   }
 
 
-  async function copyTextToClipboard(text) {
-    if ('clipboard' in navigator) {
-      return await navigator.clipboard.writeText(text);
-    } else {
-      return document.execCommand('copy', true, text);
-    }
-  }
-
-  const handleCopyClick = (slug) => {
-    // Asynchronously call copyTextToClipboard
-      copyTextToClipboard(slug)
-      .then(() => {
-        // If successful, update the isCopied state value
-        setItems((items).filter(group => {
-         if(group.slug == slug){
-          group.isCopied = true
-          setIsCopied(true);
-         }
-         return group
-      }))
-        setTimeout(() => {
-          setItems((items).filter(group => {
-            if(group.slug == slug){
-              group.isCopied = false
-             setIsCopied(false);
-            }
-            return group
-         }))
-        }, 1500);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
   return ( <>
     <Card sx={{overflowX: 'auto'}}>
         <Box sx={{ minWidth: 800}}>
@@ -226,11 +183,10 @@ export const GroupTable = (props) => {
                         </Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell sx={{color:'text.secondary'}}>
-                    <span style={{color:'green'}}>{group.slug} </span> 
-                    {!!group.isCopied && group.isCopied && isCopied ? <Badge color="primary"  badgeContent="copied" style={{marginBottom:'35px'}} /> : <></>}
-                    <CopyOutlined onClick={() => { handleCopyClick(group.slug) }} />
-                    </TableCell>
+                   <TableCell sx={{ color: 'text.secondary' }}>
+                    <span style={{ color: 'green' }}>{group.slug} </span>
+                    <CopyButton text={group.slug} />
+                  </TableCell>
         
                     <TableCell>
                       {createdAt}

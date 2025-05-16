@@ -95,42 +95,6 @@ export const CustomersTable = (props) => {
   }
 
 
-  async function copyTextToClipboard(text) {
-    if ('clipboard' in navigator) {
-      return await navigator.clipboard.writeText(text);
-    } else {
-      return document.execCommand('copy', true, text);
-    }
-  }
-
-  const handleCopyClick = (slug) => {
-    // Asynchronously call copyTextToClipboard
-    copyTextToClipboard(slug)
-      .then(() => {
-        // If successful, update the isCopied state value
-        setItems((items).filter(customer => {
-          if (customer.slug == slug) {
-            customer.isCopied = true
-            setIsCopied(true);
-          }
-          return customer
-        }))
-        setTimeout(() => {
-          setItems((items).filter(customer => {
-            if (customer.slug == slug) {
-              customer.isCopied = false
-              setIsCopied(false);
-            }
-            return customer
-          }))
-        }, 1500);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
-
   return (<>
     <Card sx={{ overflowX: 'auto' }}>
       <Box sx={{ minWidth: 800 }}>
@@ -191,11 +155,10 @@ export const CustomersTable = (props) => {
                     </Stack>
                   </TableCell>
                   {/* Token */}
-                  <TableCell sx={{ color: 'text.secondary' }}>
-                    <span style={{ color: 'green' }}>{customer.slug} </span>
-                    {!!customer.isCopied && customer.isCopied && isCopied ? <Badge color="primary" badgeContent="copied" style={{ marginBottom: '35px' }} /> : <></>}
-                    <CopyOutlined onClick={() => { handleCopyClick(customer.slug) }} />
-                  </TableCell>
+                <TableCell sx={{ color: 'text.secondary' }}>
+                  <span style={{ color: 'green' }}>{customer.slug} </span>
+                  <CopyButton text={customer.slug} />
+                </TableCell>
                   {/* user type */}
                   <TableCell>
                     {/* Facing issue with badges position so that's why se given  */}
