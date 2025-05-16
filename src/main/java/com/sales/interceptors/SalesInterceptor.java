@@ -68,7 +68,7 @@ public class SalesInterceptor implements HandlerInterceptor {
                 sendError(response,"User is not active.",401);
                 return false;
             }
-            else if (!wholesaleServicePlanService.isPlanActive(user.getActivePlan()) && user.getUserType().equals("W")){
+            else if (user.getUserType().equals("W") && !wholesaleServicePlanService.isPlanActive(user.getActivePlan())){
                 sendError(response,"You don't have any active plan.",403);
                 return false;
             }
