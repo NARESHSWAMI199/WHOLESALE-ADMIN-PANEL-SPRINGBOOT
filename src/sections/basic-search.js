@@ -83,7 +83,7 @@ export const BasicSearch = (props) => {
       </Grid>
    
 
-      { props.type !== "A" &&  props.type !== "item" &&
+      {/* { props.type !== "A" &&  props.type !== "item" && */}
         <Grid item xs={12} md={2}>
       <OutlinedInput
             onChange={handleChange}
@@ -104,7 +104,8 @@ export const BasicSearch = (props) => {
               </InputAdornment>
             )}
           />
-          </Grid>}
+          </Grid>
+          {/* } */}
 
 
 
