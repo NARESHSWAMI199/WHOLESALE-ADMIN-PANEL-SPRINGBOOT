@@ -153,7 +153,7 @@ public class ItemService extends RepoContainer{
     @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class,})
     public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser,String path) throws InvocationTargetException, NoSuchMethodException, IOException, IllegalAccessException {
         logger.info("Entering createOrUpdateItem with itemDto: {}, loggedUser: {}, path: {}", itemDto, loggedUser, path);
-        // if there is any required field null then this will throw IllegalArgumentException
+        // if there is any required field null, then this will throw IllegalArgumentException
         validateRequiredFields(itemDto);
 
         // Validate inStock
@@ -169,9 +169,7 @@ public class ItemService extends RepoContainer{
 
         // retrieve category and subcategory
         ItemCategory itemCategory = itemCategoryRepository.findById(itemDto.getCategoryId()).get();
-        if(itemCategory == null) throw new IllegalArgumentException("Invalid categoryId.");
         ItemSubCategory itemSubCategory = itemSubCategoryRepository.findById(itemDto.getSubCategoryId()).get();
-        if(itemSubCategory == null) throw new IllegalArgumentException("Invalid subCategoryId.");
         itemDto.setItemCategory(itemCategory);
         itemDto.setItemSubCategory(itemSubCategory);
 
@@ -180,7 +178,7 @@ public class ItemService extends RepoContainer{
         // Going to update item
         if (!Utils.isEmpty(itemDto.getSlug()) || path.contains("update")) {
             logger.info("We are going to update the item.");
-            // if there is any required field null then this will throw IllegalArgumentException
+            // if there is any required field null, then this will throw IllegalArgumentException
             Utils.checkRequiredFields(itemDto,List.of("slug"));
 
             int isUpdated = updateItem(itemDto, loggedUser);
@@ -195,7 +193,7 @@ public class ItemService extends RepoContainer{
             }
         } else { // Going to create item
             logger.info("We are going to create the item.");
-            // if there is any required field null then this will throw IllegalArgumentException
+            // if there is any required field null, then this will throw IllegalArgumentException
             validateRequiredFieldsBeforeCreateItem(itemDto);
             Item createdItem = createItem(itemDto, loggedUser);
             responseObj.put("res", createdItem);

@@ -52,7 +52,7 @@ public class WalletTransactionService extends WholesaleRepoContainer{
         if(!Utils.isEmpty(walletTransactionDto.getTransactionType()) && walletTransactionDto.getTransactionType().equalsIgnoreCase("CR")){
             Integer added = walletRepository.addMoneyInWallet(walletTransaction.getAmount(), userId, Utils.getCurrentMillis());
             logger.info("Added money in wallet rows was updated : {} ",added);
-            if(added < 1){ // if user not found in wallet.
+            if(added < 1){ // if a user isn't found in wallet.
                 Wallet wallet = Wallet.builder()
                         .userId(userId)
                         .amount(walletTransaction.getAmount())

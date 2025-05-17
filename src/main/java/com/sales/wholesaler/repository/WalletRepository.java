@@ -20,7 +20,7 @@ public interface WalletRepository extends JpaRepository<Wallet,Integer>, JpaSpec
 
     @Transactional
     @Modifying
-    @Query(value = "update Wallet set amount = amount - :amount, updatedAt = :updatedAt where userId = :userId")
+    @Query(value = "update Wallet set amount = amount - :amount, updatedAt = :updatedAt where userId = :userId and amount >= :amount")
     Integer deductMoneyFromWallet(@Param("amount") Float amount,@Param("userId") Integer userId, @Param("updatedAt") Long updatedAt);
 
     Wallet findByUserId(Integer userId);
