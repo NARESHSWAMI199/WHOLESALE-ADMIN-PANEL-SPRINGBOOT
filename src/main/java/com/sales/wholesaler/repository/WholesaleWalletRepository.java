@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface WalletRepository extends JpaRepository<Wallet,Integer>, JpaSpecificationExecutor<Wallet> {
+public interface WholesaleWalletRepository extends JpaRepository<Wallet,Integer>, JpaSpecificationExecutor<Wallet> {
 
     @Transactional
     @Modifying

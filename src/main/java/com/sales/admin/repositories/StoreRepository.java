@@ -27,4 +27,8 @@ public interface StoreRepository extends JpaRepository<Store, Integer> , JpaSpec
     @Query(value = "select id from Store where slug=:slug")
     Integer getStoreIdByStoreSlug(String slug);
 
+
+    @Query(value = "select id from store where user_id=:userId",nativeQuery = true)
+    Integer getStoreIdByUserId(@Param("userId")Integer userId);
+
 }

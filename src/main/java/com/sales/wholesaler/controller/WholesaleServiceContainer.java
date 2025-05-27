@@ -2,6 +2,7 @@ package com.sales.wholesaler.controller;
 
 import com.sales.admin.services.AddressService;
 import com.sales.admin.services.ServicePlanService;
+import com.sales.admin.services.WalletService;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.ReadExcel;
 import com.sales.wholesaler.services.*;
@@ -68,6 +69,9 @@ public class WholesaleServiceContainer {
 
     @Autowired
     protected WalletTransactionService walletTransactionService;
+
+    @Autowired
+    protected WholesaleWalletService wholesaleWalletService;
 
     @Autowired
     protected WalletService walletService;

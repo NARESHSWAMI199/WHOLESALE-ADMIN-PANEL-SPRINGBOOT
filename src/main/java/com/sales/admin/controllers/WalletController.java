@@ -1,9 +1,8 @@
-package com.sales.wholesaler.controller;
+package com.sales.admin.controllers;
 
 
-import com.sales.entities.User;
 import com.sales.entities.Wallet;
-import com.sales.utils.Utils;
+import com.sales.wholesaler.controller.WholesaleServiceContainer;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,24 +17,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("wholesale/wallet")
-public class WalletController extends WholesaleServiceContainer {
+@RequestMapping("admin/store/wallet")
+public class WalletController extends ServiceContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(WholesaleServiceContainer.class);
 
-    @GetMapping("/")
-    public ResponseEntity<Wallet> getWalletDetail(HttpServletRequest request){
-        User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
-        Wallet walletDetail = walletService.getWalletDetail(loggedUser.getId());
+    @GetMapping("/{userSlug}")
+    public ResponseEntity<Wallet> getWalletDetail(@PathVariable String userSlug, HttpServletRequest request){
+        Wallet walletDetail = walletService.getWalletDetail(userSlug);
         return new ResponseEntity<>(walletDetail, HttpStatus.OK);
     }
 
 
-    @GetMapping("pay/{servicePlanSlug}")
-    public ResponseEntity<Map<String,Object>> payUsingWallet(@PathVariable String servicePlanSlug,HttpServletRequest request) {
-        User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
+    @GetMapping("pay/{userSlug}/{servicePlanSlug}")
+    public ResponseEntity<Map<String,Object>> payUsingWallet(@PathVariable String userSlug , @PathVariable String servicePlanSlug,HttpServletRequest request) {
         Map<String,Object> result = new HashMap<>();
-        boolean payment = walletService.paymentViaWallet(servicePlanSlug, loggedUser);
+        boolean payment = walletService.paymentViaWallet(servicePlanSlug, userSlug);
         if(payment){
             result.put("message","Plan purchased successfully.");
             result.put("status",200);

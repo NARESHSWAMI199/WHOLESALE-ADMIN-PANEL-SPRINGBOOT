@@ -120,6 +120,13 @@ public class RepoContainer {
     @Autowired
     protected ChatHbRepository chatHbRepository;
 
+    @Autowired
+    protected WalletRepository walletRepository;
+
+
+    @Autowired
+    protected StoreWalletTransactionRepository storeWalletTransactionRepository;
+
     public Pageable getPageable(SearchFilters filters){
         System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?

@@ -14,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class WalletService extends WholesaleRepoContainer {
+public class WholesaleWalletService extends WholesaleRepoContainer {
 
-    private static final Logger logger = LoggerFactory.getLogger(WalletService.class);
+    private static final Logger logger = LoggerFactory.getLogger(WholesaleWalletService.class);
 
     @Autowired
     private WholesaleServicePlanService servicePlanService;
@@ -25,7 +25,7 @@ public class WalletService extends WholesaleRepoContainer {
     private  WalletTransactionService walletTransactionService;
 
     public Wallet getWalletDetail(Integer userId){
-        return walletRepository.findByUserId(userId);
+        return wholesaleWalletRepository.findByUserId(userId);
     }
 
 
@@ -48,7 +48,7 @@ public class WalletService extends WholesaleRepoContainer {
         ServicePlan servicePlan = wholesaleServicePlanRepository.findBySlug(servicePlanSlug);
         if(servicePlan == null) throw new NotFoundException("Service plan not found.");
         Long planPrice = servicePlan.getPrice();
-        Wallet wallet = walletRepository.findByUserId(userId);
+        Wallet wallet = wholesaleWalletRepository.findByUserId(userId);
         float walletAmount = wallet != null ? wallet.getAmount() : 0;
 
         // Preparing wallet transaction.
@@ -62,7 +62,7 @@ public class WalletService extends WholesaleRepoContainer {
         String messageBody = null;
         if(wallet != null && walletAmount >= planPrice){
             wallet.setAmount(walletAmount-planPrice); // Updating wallet amount.
-            walletRepository.save(wallet);
+            wholesaleWalletRepository.save(wallet);
             servicePlanService.assignOrAddFuturePlans(userId,servicePlan.getId());
             title = "Payment of "+planPrice;
             messageBody = "Your plan activated successfully. Plan Name : "+servicePlan.getName() + " for "+servicePlan.getMonths() + "Months.";

@@ -3,7 +3,6 @@ package com.sales.admin.controllers;
 import com.sales.admin.repositories.UserPaginationsRepository;
 import com.sales.admin.services.*;
 import com.sales.utils.ReadExcel;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,8 +22,6 @@ public class ServiceContainer {
 
     @Autowired
     protected AddressService addressService;
-    @Autowired
-    Logger logger;
 
     @Autowired
     protected  ReadExcel readExcel;
@@ -46,5 +43,11 @@ public class ServiceContainer {
 
     @Autowired
     protected ItemReportService itemReportService;
+
+    @Autowired
+    protected WalletService walletService;
+
+    @Autowired
+    protected StoreWalletTransactionService storeWalletTransactionService;
 
 }
