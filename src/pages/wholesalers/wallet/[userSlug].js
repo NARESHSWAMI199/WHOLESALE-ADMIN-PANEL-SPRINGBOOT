@@ -1,7 +1,7 @@
 import { Alert, Box, Button, Card, CardActions, CardContent, CardHeader, Container, Divider, Unstable_Grid2 as Grid, InputAdornment, Snackbar, Stack, TextField, Typography } from "@mui/material";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { useAuth } from 'src/hooks/use-auth';
 import { useSelection } from "src/hooks/use-selection";
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
@@ -21,7 +21,6 @@ const Page = () => {
   const paginations = auth.paginations
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(paginations?.WALLETTRANSACTIONS?.rowsNumber);
-  const itemsSelection = useSelection();
   const [totalElements, setTotalElements] = useState(0)
   const searchParams = useSearchParams();
   const slug = searchParams.get('userSlug');
@@ -134,7 +133,6 @@ const Page = () => {
                       onRowsPerPageChange={handleRowsPerPageChange}
                       page={page}
                       rowsPerPage={rowsPerPage}
-                      selected={itemsSelection.selected}
                   />
                 </Box>
               </CardContent>
