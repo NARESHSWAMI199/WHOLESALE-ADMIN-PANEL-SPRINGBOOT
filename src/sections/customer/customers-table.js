@@ -27,8 +27,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import { CopyOutlined } from '@ant-design/icons';
-import { AccountBalanceWalletOutlined } from '@mui/icons-material';
+import { AccountBalanceWalletOutlined, PaidOutlined, WalletOutlined } from '@mui/icons-material';
 import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
 import EditIcon from '@mui/icons-material/Edit';
 import { Image } from 'antd';
@@ -244,6 +243,8 @@ export const CustomersTable = (props) => {
                     </Link>
                     {customer.userType == "W" &&
                       <>
+
+                        {/* Permission block */}
                         <Link
                           href={{
                             pathname: '/wholesalers/permissions/[slug]',
@@ -258,6 +259,7 @@ export const CustomersTable = (props) => {
                           />
                         </Link>
 
+                        {/* Wholesaler Plans  */}
                         <Link
                           href={{
                             pathname: '/wholesalers/plans/[userSlug]',
@@ -271,6 +273,23 @@ export const CustomersTable = (props) => {
                             titleAccess='Plans'
                           />
                         </Link>
+
+
+                      {/* Wholesaler Wallet transaction  */}
+                        <Link
+                          href={{
+                            pathname: '/wholesalers/wallet/[userSlug]',
+                            query: { userSlug: customer.slug },
+                          }}
+                        >
+                          <PaidOutlined sx={{
+                            marginX: '5px',
+                            color: '#111927'
+                          }}
+                            titleAccess='Wallet Transaction'
+                          />
+                        </Link>
+
                       </>
                     }
                     <DeleteIcon sx={{
