@@ -28,3 +28,4 @@ export const toTitleCase = (str) => {
   export const suId = 0;
   export const projectName= "Swami Sales";
   export const rowsPerPageOptions=[10, 25 , 50]
+  export const ruppeeIcon = "₹";

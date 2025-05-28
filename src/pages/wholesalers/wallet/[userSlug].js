@@ -1,21 +1,19 @@
 import { Alert, Box, Button, Card, CardActions, CardContent, CardHeader, Container, Divider, Unstable_Grid2 as Grid, InputAdornment, Snackbar, Stack, TextField, Typography } from "@mui/material";
 import axios from "axios";
+import { ru } from "date-fns/locale";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState, useMemo } from "react";
 import { useAuth } from 'src/hooks/use-auth';
 import { useSelection } from "src/hooks/use-selection";
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { WalletTransactions } from "src/sections/wholesale/wallet-transaction";
-import { host, rowsPerPageOptions } from 'src/utils/util';
+import { host, rowsPerPageOptions, ruppeeIcon } from 'src/utils/util';
 
 const Page = () => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [flag, setFlag] = useState("success");
   const auth = useAuth();
-  const [values, setValues] = useState({
-    amount: "",
-  });
   const [transactions, setTransactions] = useState([]);
 
   const paginations = auth.paginations
@@ -31,14 +29,6 @@ const Page = () => {
           size: !!rowsPerPage ? parseInt(rowsPerPage) : rowsPerPageOptions[0]
       })
         
-
-  const handleChange = useCallback((event) => {
-    setValues((prevState) => ({
-      ...prevState,
-      [event.target.name]: event.target.value
-    }));
-  }, []);
-
 
   useEffect(() => {
     axios.defaults.headers = {
@@ -80,17 +70,6 @@ const Page = () => {
 
 
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!values.amount) {
-      setMessage("Please fill in all fields");
-      setFlag("error");
-      setOpen(true);
-      return;
-    }
-    
-  };
-
   const handleClose = useCallback(() => {
     setOpen(false);
   });
@@ -118,8 +97,8 @@ const Page = () => {
       <Container maxWidth="xl">
         <Stack spacing={3}>
           <Grid xs={12} md={6} lg={8}>
-            <Typography variant="h6">
-                Current Wallet Balance: {!!walletAmount ? walletAmount : 0}
+            <Typography variant="h6" sx={{ color : 'text.muted' }}>
+                Current Wallet Balance: {(!!walletAmount ? walletAmount : 0) + " "+ruppeeIcon} 
             </Typography>
           <Box>
             <Card sx={{ mt: 3 }}>
