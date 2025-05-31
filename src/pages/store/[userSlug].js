@@ -90,6 +90,7 @@ const Page = () => {
 
 
     useEffect(() => {
+        if(data.storeId === undefined || data.storeId === null) return;
         const getData = async () => {
             axios.defaults.headers = {
                 Authorization: auth.token

@@ -68,7 +68,7 @@ const Page = () => {
        axios.defaults.headers = {
          Authorization : auth.token
        }
-       await axios.post(host+"/admin/auth/A/all",data)
+       await axios.post(`${host}/admin/auth/${!!data?.userType ? data.userType : 'A'}/all`,data)
        .then(res => {
           const response = res.data.content;
            setTotalElements(res.data.totalElements)
@@ -214,7 +214,7 @@ const Page = () => {
                         } 
             }}>
             <Stack spacing={3}>
-              <CustomerHeaders  headerTitle={"All users"} userType="R"/>
+              <CustomerHeaders  headerTitle={"All users"} userType="R" /> {/* User type R for retailers when you click on add button we go form userType Retailer by default. */}
               <BasicSearch onSearch={onSearch} type="A" />
 
             <CustomersTable
