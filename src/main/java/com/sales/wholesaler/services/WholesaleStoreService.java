@@ -40,8 +40,8 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
     public Map<String, Object> updateStoreBySlug(StoreDto storeDto, User loggedUser) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.info("Starting updateStoreBySlug method with storeDto: {}, loggedUser: {}", storeDto, loggedUser);
 
-        // Validating required fields. If their we found any required field is null, this will throw an Exception
-        Utils.checkRequiredFields(storeDto, List.of("storeSlug", "storeName", "storePic", "storeEmail", "storePhone", "categoryId", "subCategoryId"));
+        // Validating required fields. If there we found any required field is null, this will throw an Exception
+        Utils.checkRequiredFields(storeDto, List.of("storeName", "storeEmail", "storePhone", "categoryId", "subCategoryId"));
 
         Map<String, Object> responseObj = new HashMap<>();
         String storeName = Utils.isValidName(storeDto.getStoreName(), "store");

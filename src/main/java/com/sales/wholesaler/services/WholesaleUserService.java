@@ -173,6 +173,13 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         Utils.checkRequiredFields(userDto,List.of("slug","username","email","contact"));
 
         Map<String, Object> responseObj = new HashMap<>();
+
+        Utils.mobileAndEmailValidation(
+                userDto.getEmail(),
+                userDto.getContact(),
+                "Not a valid user's _ recheck your and user's _."
+        );
+
         String username = Utils.isValidName( userDto.getUsername(),"user");
         userDto.setUsername(username);
         int isUpdated = updateUser(userDto, loggedUser); // Update operation

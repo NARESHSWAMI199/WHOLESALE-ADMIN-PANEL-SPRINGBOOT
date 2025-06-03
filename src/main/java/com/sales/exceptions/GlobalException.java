@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.sales.dto.ErrorDto;
 import jakarta.transaction.Transactional;
 import org.hibernate.ObjectNotFoundException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -20,6 +21,8 @@ import org.springframework.web.multipart.MultipartException;
 
 import java.io.FileNotFoundException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestControllerAdvice
 public class GlobalException {
@@ -118,6 +121,16 @@ public class GlobalException {
     }
 
     @Transactional
+    @ExceptionHandler(value = {ConstraintViolationException.class})
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    public ErrorDto sqlExceptionHelper(ConstraintViolationException ex, WebRequest request) {
+        logger.error("ConstraintViolationException : {}", ex.getMessage());
+        String errorMessage = extractDuplicateEntryMessage(ex.getMessage());
+        errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
+        return new ErrorDto(errorMessage,409);
+    }
+
+    @Transactional
     @ExceptionHandler(value = {HttpMessageNotReadableException.class})
     @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
     public ErrorDto httpMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest request) {
@@ -167,7 +180,7 @@ public class GlobalException {
     @ExceptionHandler(value = {Exception.class})
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto resourceNotFoundException(Exception ex, WebRequest request) {
-        logger.error("Exception: {}", ex.getMessage());
+        logger.error("Exception: {}", ex.getMessage(),ex);
         ErrorDto message = null;
         try{
             String errorMessage = getCauseMessage(ex);
@@ -185,4 +198,16 @@ public class GlobalException {
         return t.getCause().getCause().getLocalizedMessage();
     }
 
+    private String extractDuplicateEntryMessage(String errorMessage) {
+        // The regex looks for "Duplicate entry '...' for a key '...'"
+        // It captures the entire string matching this pattern.
+        Pattern pattern = Pattern.compile("Duplicate entry '[^']+' for key '[^']+?'");
+        Matcher matcher = pattern.matcher(errorMessage);
+
+        if (matcher.find()) {
+            return matcher.group(0); // group(0) returns the entire matched sequence
+        } else {
+            return  errorMessage;
+        }
+    }
 }

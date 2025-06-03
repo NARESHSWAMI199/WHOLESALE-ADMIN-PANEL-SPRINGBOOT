@@ -125,6 +125,7 @@ public class WholesaleRepoContainer {
     @Autowired
     protected WholesaleNotificationHbRepository wholesaleNotificationHbRepository;
 
+    @Autowired
     protected WholesaleWalletRepository wholesaleWalletRepository;
 
     public Pageable getPageable(SearchFilters filters){
