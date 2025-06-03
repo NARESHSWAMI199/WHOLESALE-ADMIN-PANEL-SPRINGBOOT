@@ -13,14 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.sales.specifications.PlansSpecifications.*;
 
@@ -89,7 +87,7 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
 
 
     public void assignUserPlan(int userId, ServicePlan plan) {
-        logger.info("Starting assignUserPlan method with userId: {}, servicePlanId: {}", userId, plan.getId());
+        logger.info("Starting assignUserPlan(int userId, ServicePlan plan) method with userId: {}, servicePlanId: {}", userId, plan.getId());
         Long currentMillis = Utils.getCurrentMillis();
         logger.info("Going to assign this plan as user current plan.");
         Integer months = plan.getMonths();
@@ -116,7 +114,7 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
 
     // This method is overloaded.
     public void assignUserPlan(int userId, int servicePlanId) {
-        logger.info("Starting assignUserPlan method with userId: {}, servicePlanId: {}", userId, servicePlanId);
+        logger.info("Starting assignUserPlan(int userId, int servicePlanId) method with userId: {}, servicePlanId: {}", userId, servicePlanId);
         Long currentMillis = Utils.getCurrentMillis();
         ServicePlan plan = wholesaleServicePlanRepository.findById(servicePlanId).get();
             logger.info("Going to assign this plan as user current plan.");
@@ -154,9 +152,14 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
                 .and(isUserId(loggedUser.getId()))
         );
         Pageable pageable = getPageable(searchFilters);
-        Page<WholesalerPlans> userPlans = wholesaleUserPlansRepository.findAll(specification, pageable);
+        Page<WholesalerPlans> userPlans = wholesaleUserPlansRepository.findAll(specification,pageable);
+        List<WholesalerPlans> userPlansList = userPlans.getContent().stream().peek(wholesalerPlan -> {
+            if(Objects.nonNull(wholesalerPlan)) wholesalerPlan.setExpired(wholesalerPlan.getExpiryDate() < Utils.getCurrentMillis());
+        }).toList();;
+        long totalElements = userPlans.getTotalElements();
+        Page<WholesalerPlans> wholesalerPlans = new PageImpl<>(userPlansList,pageable,totalElements);
         logger.info("Completed getAllUserPlans method");
-        return userPlans;
+        return wholesalerPlans;
     }
 
     public ServicePlan getDefaultServicePlan() {
@@ -165,5 +168,16 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
         logger.info("Completed getDefaultServicePlan method");
         return defaultServicePlan;
     }
+
+
+    public int updatedUserCurrentPlan(String plansSlug,User loggedUser) {
+        logger.info("Starting updatedUserCurrentPlan method.");
+        Integer wholesaleUserPlanId = wholesaleUserPlansRepository.getWholesaleUserPlanId(loggedUser.getId(),plansSlug);
+        if(wholesaleUserPlanId == null) throw new IllegalArgumentException("Not a valid active plan.");
+        int isUpdated = wholesaleUserHbRepository.updateUserActivePlan(loggedUser.getId(),wholesaleUserPlanId);
+        logger.info("Completed updatedUserCurrentPlan method with isUpdated  : {}.",isUpdated);
+        return isUpdated;
+    }
+
 
 }

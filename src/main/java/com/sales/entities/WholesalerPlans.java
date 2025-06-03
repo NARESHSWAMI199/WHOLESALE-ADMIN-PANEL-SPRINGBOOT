@@ -28,4 +28,8 @@ public class WholesalerPlans {
     Long expiryDate;
     @Column(name = "created_by")
     Integer createdBy;
+
+    @Transient
+    boolean isExpired;
+
 }

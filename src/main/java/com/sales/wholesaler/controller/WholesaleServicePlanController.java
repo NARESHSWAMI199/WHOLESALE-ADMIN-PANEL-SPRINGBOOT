@@ -63,4 +63,19 @@ public class WholesaleServicePlanController extends WholesaleServiceContainer {
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
 
+    @GetMapping("activate/{planSlug}")
+    public ResponseEntity<Map<String,Object>> updateMyCurrentPlan(HttpServletRequest request , @PathVariable String planSlug){
+        User lopgedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
+        Map<String,Object> result = new HashMap<>();
+        int isUpdated = wholesaleServicePlanService.updatedUserCurrentPlan(planSlug,lopgedUser);
+        if(isUpdated > 0){
+            result.put("message","Your current plan activated successfully");
+            result.put("status",200);
+        }else {
+            result.put("message","No record found to update.");
+            result.put("status",404);
+        }
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+    }
+
 }

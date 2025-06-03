@@ -5,6 +5,7 @@ import com.sales.entities.WholesalerPlans;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,10 +18,16 @@ public interface WholesaleUserPlansRepository extends JpaRepository<WholesalerPl
    default WholesalerPlans findLastPlanByUserId(Integer userId, EntityManager entityManager) {
       jakarta.persistence.Query query = entityManager.createQuery("from WholesalerPlans where userId = :userId order by createdAt desc");
       query.setParameter("userId", userId);
-      query.setMaxResults(1); // Getting only one result something like limit 1 in sql query.
+      query.setMaxResults(1); // Getting only one result something like limit 1 in SQL query.
       List<WholesalerPlans> resultList = query.getResultList();
       return resultList.isEmpty() ? null : resultList.get(0);
    }
+
+   @Query(value = "select id from WholesalerPlans where userId=:userId and slug=:slug")
+   Integer getWholesaleUserPlanId(Integer userId,String slug);
+
+
+
 
    /*
    @Query(value = "select " +
