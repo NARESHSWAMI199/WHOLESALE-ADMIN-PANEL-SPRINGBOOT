@@ -3,8 +3,11 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/test
-    username: root
+#    url: jdbc:mysql://localhost:3306/test
+#    username: root
+#    password: password
+    url: jdbc:mysql://db:3306/sales #docker
+    username: sales
     password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
@@ -13,6 +16,7 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
+        ddl-auto: update
     open-in-view: false
   mvc:
     view:
@@ -56,13 +60,13 @@ cashfree :
   mid : TEST10390991bf0adc9155492e36f12619909301
   env : TEST
   mobile : 9999999999
-  callback_uri: https://373d-202-157-76-122.ngrok-free.app
+  callback_uri: https://ac82-45-249-85-171.ngrok-free.app
   redirect_uri: http://localhost:3000
 
 # ------------------ start public folder path
 public_folder :
-  #absolute : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public
-  absolute : C:\Users\abc\Documents\demo\sales-backend\src\main\resources\public
+  absolute : /Users/nareshswami/Documents/springboot/ADMIN-PANEL-SWAMI-SALES-/src/main/resources/public
+#  absolute : C:\Users\abc\Documents\demo\sales-backend\src\main\resources\public
   get : src/main/resources/public
 
 # ------------------! end public folder path
