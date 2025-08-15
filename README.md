@@ -4,8 +4,17 @@
 
 
 # USERS
-# All Users
+## All Users
 <img width="1920" height="991" alt="users" src="https://github.com/user-attachments/assets/917adfe0-9d2d-4dc6-a359-4092bdbfd959" />
+
+## Retailers
+<img width="1920" height="992" alt="retailers" src="https://github.com/user-attachments/assets/f1fb604e-77cf-4a87-a6bb-704a1a24dd47" />
+
+## Delete User
+<img width="1920" height="993" alt="DeleteUser" src="https://github.com/user-attachments/assets/57d10051-9593-4b7e-96c3-629066c5a0d7" />
+
+## Wholesalers
+<img width="1920" height="991" alt="wholesalers" src="https://github.com/user-attachments/assets/efbdc299-7673-4e38-85d0-4970218cbc0f" />
 
 
 
