@@ -16,6 +16,10 @@
 ## Wholesalers
 <img width="1920" height="991" alt="wholesalers" src="https://github.com/user-attachments/assets/efbdc299-7673-4e38-85d0-4970218cbc0f" />
 
+## Wholesaler Permissions
+<img width="1920" height="991" alt="wholesale-permissions" src="https://github.com/user-attachments/assets/4e60bc98-c254-41dd-8412-e458aa05fde4" />
+
+
 
 
 ## [Material Kit - React](https://material-kit-react.devias.io/) [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&logo=twitter)](https://twitter.com/intent/tweet?text=%F0%9F%9A%A8Devias%20Freebie%20Alert%20-%20An%20awesome%20ready-to-use%20register%20page%20made%20with%20%23material%20%23react%0D%0Ahttps%3A%2F%2Fdevias.io%20%23createreactapp%20%23devias%20%23material%20%23freebie%20%40devias-io)
