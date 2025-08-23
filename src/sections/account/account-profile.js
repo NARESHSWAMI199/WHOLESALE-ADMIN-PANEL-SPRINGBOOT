@@ -41,7 +41,7 @@ export const AccountProfile = (props) => {
       flagStatus = "success"
       setMessage(res.data.message)
       user.avatar = res.data.imageName
-      handleUpdateLoggedUser()
+      handleUpdateLoggedUser(user.slug)
     }).catch(err=>{
         flagStatus = "error"
         setMessage(!!err.response  ? err.response.data.message  : err.message)
@@ -53,8 +53,8 @@ export const AccountProfile = (props) => {
 
 
   const handleUpdateLoggedUser = useCallback(
-    () => {
-      auth.updateUserDetail(user.slug)
+    (slug) => {
+      auth.updateUserDetail(slug)
     },
     [auth]
   );
