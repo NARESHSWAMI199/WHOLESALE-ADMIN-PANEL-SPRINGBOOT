@@ -163,7 +163,7 @@ useEffect( ()=>{
   const handlePageChange = useCallback(
     (event, value) => {
       setPage(value);
-      setData({...data, pageNumber : value})
+      setData((perviouse) => ({...perviouse, pageNumber : value}))
     },
     []
   );
@@ -173,6 +173,7 @@ useEffect( ()=>{
   const handleRowsPerPageChange = useCallback(
       (event) => {
         setRowsPerPage(event.target.value);
+        setData((perviouse) => ({...perviouse,size :event.target.value}))
       },
       []
     );
