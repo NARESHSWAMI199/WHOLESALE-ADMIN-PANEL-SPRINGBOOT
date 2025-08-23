@@ -46,7 +46,6 @@ export const StoresCard = (props) => {
     setStore(props.store)
     setStatus(store.status)
     setSlug(store.slug)
-    console.log(store)
   },[props])
 
   const updateStatus = (slug,status) => {

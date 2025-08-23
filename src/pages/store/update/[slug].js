@@ -183,7 +183,7 @@ const handleSubmit = async (e) =>{
   e.preventDefault()
   const form = e.target;
   const formData = new FormData(form)
-  console.log(store)
+
 
   // don't  want send in request
   delete store.storeCategory

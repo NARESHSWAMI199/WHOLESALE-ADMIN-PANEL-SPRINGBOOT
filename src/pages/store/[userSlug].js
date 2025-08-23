@@ -302,21 +302,10 @@ const Page = () => {
         setOpen(false)
     };
 
-    const columns = [
-        { title: 'Name', dataIndex: 'name', key: 'name' },
-        { title: 'Label', dataIndex: 'label', key: 'label' },
-        { title: 'Slug', dataIndex: 'slug', key: 'slug' },
-        { title: 'Capacity', dataIndex: 'capacity', key: 'capacity' },
-        { title: 'Price', dataIndex: 'price', key: 'price' },
-        { title: 'Discount', dataIndex: 'discount', key: 'discount' },
-        { title: 'Stock', dataIndex: 'stock', key: 'stock' },
-    ];
-
-
     const handlePageChange = useCallback(
         (event, value) => {
             setPage(value);
-            setData({ ...data, pageNumber: value })
+            setData((perviouse) => ({...perviouse, pageNumber : value}))
         },
         []
     );
@@ -324,6 +313,7 @@ const Page = () => {
     const handleRowsPerPageChange = useCallback(
         (event) => {
             setRowsPerPage(event.target.value);
+            setData((perviouse) => ({...perviouse,size :event.target.value}))
         },
         []
     );
