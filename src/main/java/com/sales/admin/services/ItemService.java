@@ -47,7 +47,7 @@ public class ItemService extends RepoContainer{
                 Sort.by(searchFilters.getOrderBy()).descending();
         Specification<Item> specification = Specification.where(
             containsName(searchFilters.getSearchKey().trim())
-                .or(hasSlug(searchFilters.getSearchKey()))
+                .and(hasSlug(searchFilters.getSlug()))
                 .and(isWholesale(searchFilters.getStoreId(),loggedUser.getUserType()))
                 .and(isStatus(searchFilters.getStatus()))
                 .and(inStock(searchFilters.getInStock()))
