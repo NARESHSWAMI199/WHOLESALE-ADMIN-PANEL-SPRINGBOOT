@@ -1,19 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import Head from 'next/head';
-import {  Alert, Box,Container, Snackbar, Stack, SvgIcon, Typography, useMediaQuery } from '@mui/material';
-import { useSelection } from 'src/hooks/use-selection';
-import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { BasicSearch, CustomersSearch } from 'src/sections/basic-search';
+import { Alert, Box, Container, Snackbar, Stack } from '@mui/material';
+import { Pagination } from 'antd';
 import axios from 'axios';
-import { host, rowsPerPageOptions } from 'src/utils/util';
+import Head from 'next/head';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
+import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
+import { BasicSearch } from 'src/sections/basic-search';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
-import { StoresCard } from 'src/sections/wholesale/stores-table';
-import { Divider, Pagination } from 'antd';
-import { useRouter } from 'next/router';
 import Spinner from 'src/sections/spinner';
-import styled from '@emotion/styled';
-import { ro } from 'date-fns/locale';
+import { StoresCard } from 'src/sections/wholesale/stores-table';
+import { host, rowsPerPageOptions } from 'src/utils/util';
 
 const Page = () => {
 

@@ -1,29 +1,24 @@
-import * as React from 'react';
-import { useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
-import { Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Rating, Snackbar, SvgIcon, useMediaQuery } from '@mui/material';
-import { Button, Image } from 'antd';
-import { CheckCircleOutlined, DeleteFilled, EditFilled, EnterOutlined, EyeFilled, RightSquareFilled } from '@ant-design/icons';
-import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
-import EmailIcon from '@mui/icons-material/Email';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import { CheckCircleOutlined, DeleteFilled, EditFilled, RightSquareFilled } from '@ant-design/icons';
+import styled from '@emotion/styled';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import KeyIcon from '@mui/icons-material/Key';
+import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import PersonIcon from '@mui/icons-material/Person';
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
+import { Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Rating, Snackbar, useMediaQuery } from '@mui/material';
+import Box from '@mui/material/Box';
+import CardContent from '@mui/material/CardContent';
+import { useTheme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import { Button } from 'antd';
+import axios from 'axios';
 import { format } from 'date-fns';
 import Link from 'next/link';
-import axios from 'axios';
+import { set } from 'nprogress';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
 import { host, storeImage, toTitleCase } from 'src/utils/util';
-import styled from '@emotion/styled';
-import { useMemo } from 'react';
-import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 
 
 export const StoresCard = (props) => {
@@ -33,7 +28,8 @@ export const StoresCard = (props) => {
   const [message , setMessage] = useState("")
   const [slug , setSlug] = useState(store.slug)
   const [status , setStatus] = useState(store.status)
-  const [confrim , setConfirm] = useState(false)
+  const [confirm , setConfirm] = useState(false)
+  const [action, setAction] = useState("")
 
   const [flag, setFlag] = useState("warning")
   const [open,setOpen] = useState()
@@ -77,12 +73,22 @@ export const StoresCard = (props) => {
     } )
   }
 
-  const confirmBox = () =>{
-    setConfirm(true)
+  const confirmBox = (message,action,slug) =>{
+    setTimeout(()=>{
+      setSlug(slug)
+      setAction(action)
+      setMessage(message)
+      setConfirm(true) // delay to avoid multiple dialog open issue
+    },100)
+    setOpen(false)
   }
 
   const takeAction = () =>{
-      props.deleteStore(slug)
+      if(action === 'delete'){
+        props.deleteStore(slug)
+      }else if(action === 'status'){
+        updateStatus(slug, status === 'A' ? 'D' : 'A')
+      }
       setConfirm(false)
   }
 
@@ -258,16 +264,13 @@ export const StoresCard = (props) => {
               <Box sx={{ display: 'flex', flexDirection: 'column', height : '100%', justifyContent : 'center'}}>
                 { status !== 'A' ?
                 <Button  type='primary' variant="outlined" icon={<CheckCircleOutlined />} style={{background:'#5cb85c'}} onClick={(e)=> {
-                                  setMessage("We are going to activate this store.")
-                                  updateStatus(store.slug,"A")
-
+                                  confirmBox("We are going to activate this store.","status",store.slug)
                                 }} >
                     Active
                 </Button>
                 :
                 <Button  type='primary' variant="outlined" icon={<CheckCircleOutlined />} onClick={(e)=> {
-                                  setMessage("We are going to deactivate this store.")
-                                  updateStatus(store.slug,"D")
+                                  confirmBox("We are going to deactivate this store.","status",store.slug)
                                 }} style={{background:'#ffc107', color : "black"}}>
                     Deactive
                 </Button>
@@ -287,15 +290,13 @@ export const StoresCard = (props) => {
                 <Link title='Store Detail' style={{textDecoration : 'none' , color : 'black'}} href={"/store/"+ store.user?.slug}>
                 { showVisitButton !=false &&
                 <Button type='primary'  style= {{marginTop : '5px',width:'100%'}}  icon={<RightSquareFilled />} primary>
-                      Visit
+                      Visit {confirm + ""}
                   </Button>
     }
                 </Link>
                 <Button type="primary" variant="outlined" style= {{marginTop : '5px'}} icon={<DeleteFilled />} danger 
                   onClick={(e) =>{
-                    setSlug(store.slug)
-                    setMessage(`Are you sure you want delete store ${store.name}`)
-                    confirmBox()
+                    confirmBox(`Are you sure you want delete store ${store.name}`,"delete",store.slug)
                   }}
 
                 >
@@ -306,7 +307,7 @@ export const StoresCard = (props) => {
 
     <Dialog
       fullScreen={fullScreen}
-      open={confrim}
+      open={confirm}
       onClose={handleClose}
       aria-labelledby="responsive-dialog-title"
       >
