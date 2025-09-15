@@ -162,8 +162,10 @@ const Page = () => {
     setData({
       ...data,
       ...searchData,
-      userType : "W"
+      userType : "W",
+      pageNumber : 0 // when search reset the page number
     })
+    setPage(0)
   }else {
     setData({
       slug : slug,

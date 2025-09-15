@@ -27,6 +27,7 @@ import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 
 
 export const StoresCard = (props) => {
+  const {showVisitButton} = props
   const [store , setStore] = useState(props.store)
   const createdAt =   format(!!store.createdAt ? store.createdAt : 0, 'dd/MM/yyyy')
   const [message , setMessage] = useState("")
@@ -284,9 +285,11 @@ export const StoresCard = (props) => {
 
 
                 <Link title='Store Detail' style={{textDecoration : 'none' , color : 'black'}} href={"/store/"+ store.user?.slug}>
+                { showVisitButton !=false &&
                 <Button type='primary'  style= {{marginTop : '5px',width:'100%'}}  icon={<RightSquareFilled />} primary>
                       Visit
                   </Button>
+    }
                 </Link>
                 <Button type="primary" variant="outlined" style= {{marginTop : '5px'}} icon={<DeleteFilled />} danger 
                   onClick={(e) =>{

@@ -170,7 +170,9 @@ const Page = () => {
     setData({
       ...data,
       ...searchData,
+      pageNumber : 0 // when search reset the page number
     })
+    setPage(0)
   }else {
     setData({
       pageNumber : page,

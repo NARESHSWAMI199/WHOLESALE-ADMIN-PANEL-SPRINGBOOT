@@ -14,6 +14,7 @@ import { BasicSearch } from 'src/sections/basic-search';
 import { StoresCard } from 'src/sections/wholesale/stores-table';
 import { ItemsTable } from 'src/sections/wholesale/item-table';
 import { host, rowsPerPageOptions, toTitleCase } from 'src/utils/util';
+import { set } from 'nprogress';
 
 
 
@@ -324,7 +325,9 @@ const Page = () => {
         setData({
           ...data,
           ...searchData,
+            pageNumber : 0 // when search reset the page number
         })
+        setPage(0)
       }else {
         setData({
             pageNumber: page,
@@ -415,7 +418,7 @@ const Page = () => {
                     }}>
                     <Stack spacing={3}>
 
-                        <StoresCard deleteStore={onDeleteStore} store={wholesale} visit={false} delete={false} />
+                        <StoresCard showVisitButton={false} deleteStore={onDeleteStore} store={wholesale} visit={false} delete={false} />
 
                         <Stack
                             direction="row"

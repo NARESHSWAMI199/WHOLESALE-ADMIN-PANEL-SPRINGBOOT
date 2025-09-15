@@ -1,22 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Alert, Box, Container, Snackbar, Stack } from '@mui/material';
+import axios from 'axios';
 import Head from 'next/head';
-import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
-import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
-import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
-import { Alert, Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Snackbar, Stack, SvgIcon, Typography } from '@mui/material';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useAuth } from 'src/hooks/use-auth';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { CustomersTable } from 'src/sections/customer/customers-table';
-import { BasicSearch, CustomersSearch } from 'src/sections/basic-search';
-import { applyPagination } from 'src/utils/apply-pagination';
-import axios, { all } from 'axios';
-import { host, rowsPerPageOptions } from 'src/utils/util';
-import { useAuth } from 'src/hooks/use-auth';
-import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
-import { Card, InputAdornment, OutlinedInput } from '@mui/material';
+import { BasicSearch } from 'src/sections/basic-search';
 import { CustomerHeaders } from 'src/sections/customer/customers-header';
-import { Search } from '@mui/icons-material';
-import { ArrowButtons } from 'src/layouts/arrow-button';
+import { CustomersTable } from 'src/sections/customer/customers-table';
+import { applyPagination } from 'src/utils/apply-pagination';
+import { host, rowsPerPageOptions } from 'src/utils/util';
 
 
 
@@ -183,8 +176,10 @@ const Page = () => {
       setData({
         ...data,
         ...searchData,
-        userType: "R"
+        userType: "R",
+        pageNumber : 0, // when search reset the page number
       })
+      setPage(0)
     } else {
       setData({
         userType: "R",

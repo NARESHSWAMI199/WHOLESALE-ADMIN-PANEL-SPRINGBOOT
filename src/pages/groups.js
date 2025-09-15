@@ -16,6 +16,7 @@ import { GroupTable } from 'src/sections/groups/groups-table';
 import { BasicHeaders } from 'src/sections/basic-header';
 import Link from 'next/link';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
+import { set } from 'nprogress';
 
 
 
@@ -146,7 +147,9 @@ const Page = () => {
     setData({
       ...data,
       ...searchData,
+      pageNumber : 0 // when search reset the page number
     })
+    setPage(0)
   }else {
     setData({
       pageNumber : page,
