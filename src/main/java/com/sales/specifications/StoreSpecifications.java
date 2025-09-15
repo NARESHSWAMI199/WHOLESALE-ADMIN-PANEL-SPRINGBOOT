@@ -4,6 +4,8 @@ import com.sales.entities.Store;
 import com.sales.entities.Store_;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
+
 public class StoreSpecifications {
 
 
@@ -46,8 +48,9 @@ public class StoreSpecifications {
 
 
     public static Specification<Store> isStatus(String status) {
+        List<String> statusList = List.of("A","D");
         return (root, query, criteriaBuilder) -> {
-            if (status == null) return null;
+            if (status == null || !statusList.contains(status)) return null;
             return criteriaBuilder.equal(root.get(Store_.STATUS),status);
         };
     }

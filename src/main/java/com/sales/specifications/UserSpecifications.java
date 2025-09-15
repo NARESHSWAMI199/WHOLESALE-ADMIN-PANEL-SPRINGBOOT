@@ -5,6 +5,8 @@ import com.sales.entities.User_;
 import com.sales.global.GlobalConstant;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
+
 public class UserSpecifications {
 
 
@@ -64,8 +66,9 @@ public class UserSpecifications {
 
 
     public static Specification<User> isStatus(String status) {
+        List<String> statusList = List.of("A","D");
         return (root, query, criteriaBuilder) -> {
-            if (status == null) return null;
+            if (status == null || !statusList.contains(status)) return null;
             return criteriaBuilder.equal(root.get(User_.STATUS),status);
         };
     }

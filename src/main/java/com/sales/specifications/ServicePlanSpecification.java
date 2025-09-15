@@ -4,6 +4,8 @@ import com.sales.entities.ServicePlan;
 import com.sales.entities.ServicePlan_;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
+
 public class ServicePlanSpecification {
 
     public static Specification<ServicePlan> containsName(String name) {
@@ -29,8 +31,9 @@ public class ServicePlanSpecification {
 
 
     public static Specification<ServicePlan> isStatus(String status) {
+        List<String> statusList = List.of("A","D");
         return (root, query, criteriaBuilder) -> {
-            if (status == null || status.trim().equals("")) return null;
+            if (status == null || !statusList.contains(status)) return null;
             return criteriaBuilder.equal(root.get(ServicePlan_.STATUS),status);
         };
     }

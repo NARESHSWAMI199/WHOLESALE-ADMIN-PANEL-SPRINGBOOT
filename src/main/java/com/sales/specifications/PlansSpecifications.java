@@ -6,6 +6,8 @@ import com.sales.entities.WholesalerPlans;
 import com.sales.entities.WholesalerPlans_;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
+
 public class PlansSpecifications {
 
 
@@ -56,8 +58,9 @@ public class PlansSpecifications {
 
     /* Expired or not */
     public static Specification<WholesalerPlans> isStatus(String status) {
+        List<String> statusList = List.of("A","D");
         return (root, query, criteriaBuilder) -> {
-            if (status == null){
+            if (status == null || !statusList.contains(status)){
                 return null;
             } else if (status.equals("A")) {
                 return criteriaBuilder.lessThanOrEqualTo(root.get(WholesalerPlans_.createdAt),root.get(WholesalerPlans_.expiryDate));

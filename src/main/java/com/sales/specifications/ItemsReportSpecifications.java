@@ -7,6 +7,8 @@ import com.sales.entities.Item_;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 
 @Component
 public class ItemsReportSpecifications {
@@ -57,8 +59,9 @@ public class ItemsReportSpecifications {
 
 
     public static Specification<Item> isStatus(String status) {
+        List<String> statusList = List.of("A","D");
         return (root, query, criteriaBuilder) -> {
-            if (status == null || status.trim().equals("")) return null;
+            if (status == null || !statusList.contains(status)) return null;
             return criteriaBuilder.equal(root.get(Item_.STATUS),status);
         };
     }
