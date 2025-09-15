@@ -228,8 +228,11 @@ const Page = () => {
         if(!!searchData){
         setData({
           ...data,
+          pageNumber : 0, // when search reset the page number
           ...searchData,
         })
+        // set page to 0
+        setPage(0)
       }else {
         setData({
             pageNumber: page,
