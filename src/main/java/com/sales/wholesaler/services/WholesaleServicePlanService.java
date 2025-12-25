@@ -9,9 +9,9 @@ import com.sales.entities.WholesalerPlans;
 import com.sales.exceptions.NotFoundException;
 import com.sales.utils.Utils;
 import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -23,11 +23,10 @@ import java.util.*;
 import static com.sales.specifications.PlansSpecifications.*;
 
 @Service
+@RequiredArgsConstructor
 public class WholesaleServicePlanService extends WholesaleRepoContainer {
 
-
-    @Autowired
-    EntityManager entityManager;
+    private final EntityManager entityManager;
 
     private static final Logger logger = LoggerFactory.getLogger(WholesaleServicePlanService.class);
 

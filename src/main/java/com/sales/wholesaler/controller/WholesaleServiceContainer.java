@@ -6,7 +6,6 @@ import com.sales.admin.services.WalletService;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.ReadExcel;
 import com.sales.wholesaler.services.*;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,9 +19,6 @@ public class WholesaleServiceContainer {
 
     @Autowired
     protected WholesaleItemService wholesaleItemService;
-
-    @Autowired
-    protected Logger logger;
 
     @Autowired
     protected AddressService addressService;

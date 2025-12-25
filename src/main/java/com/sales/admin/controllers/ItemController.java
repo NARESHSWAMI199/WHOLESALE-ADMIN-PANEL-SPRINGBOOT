@@ -9,9 +9,9 @@ import com.sales.utils.WriteExcelUtil;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -34,11 +34,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = {"admin/item"})
+@RequiredArgsConstructor
 public class ItemController extends ServiceContainer {
 
 
-    @Autowired
-    private WriteExcelUtil writeExcel;
+    private final WriteExcelUtil writeExcel;
 
     private static final Logger logger = LoggerFactory.getLogger(ItemController.class);
 
