@@ -32,7 +32,7 @@ public class ChatUserService extends WholesaleRepoContainer {
             if (user != null) {
                 Integer unSeenChatsCount = chatRepository.getUnSeenChatsCount(user.getSlug(), loggedUser.getSlug());
                 String hostUrl = Utils.getHostUrl(request);
-                user.setAvatarUrl(hostUrl + GlobalConstant.wholesalerImagePath + user.getSlug() + "/" + user.getAvatar());
+                user.setAvatarUrl(hostUrl + GlobalConstant.wholesalerImagePath + user.getSlug() + GlobalConstant.PATH_SEPARATOR + user.getAvatar());
                 user.setChatNotification(unSeenChatsCount);
             }
         }

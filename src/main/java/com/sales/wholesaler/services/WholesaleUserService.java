@@ -8,6 +8,7 @@ import com.sales.entities.SupportEmail;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -234,7 +235,7 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         String slug = loggedUser.getSlug();
         String imageName = UUID.randomUUID().toString().substring(0,5)+"_"+ Objects.requireNonNull(profileImage.getOriginalFilename()).replaceAll(" ","_");
         if (!Utils.isValidImage(imageName)) throw new IllegalArgumentException("Not a valid Image.");
-        String dirPath = profilePath+slug+"/";
+        String dirPath = profilePath+slug+ GlobalConstant.PATH_SEPARATOR;
         File dir = new File(dirPath);
         if(!dir.exists()) dir.mkdirs();
         profileImage.transferTo(new File(dirPath+imageName));

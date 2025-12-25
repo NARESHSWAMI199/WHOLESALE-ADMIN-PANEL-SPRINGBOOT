@@ -55,7 +55,7 @@ public class RemoveBg {
         File filePath = targetPath.toFile();
         if (!filePath.exists()){
             boolean dirCreated = filePath.getParentFile().mkdirs();
-            if(dirCreated) logger.info("New dir created :{}",file.getName());
+            if(dirCreated) logger.info("New dir created :{}",filePath.getName());
 
         }
 
@@ -78,7 +78,7 @@ public class RemoveBg {
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("input_path", filePath.getAbsolutePath());
-        body.add("output_path", outputPath+user.getSlug()+"/");
+        body.add("output_path", outputPath+user.getSlug()+GlobalConstant.PATH_SEPARATOR);
         body.add("output_filename","result_"+ file.getName());
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);

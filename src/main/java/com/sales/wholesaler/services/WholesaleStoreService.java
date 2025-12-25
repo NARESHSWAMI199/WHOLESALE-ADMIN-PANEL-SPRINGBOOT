@@ -142,7 +142,7 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
                     GlobalConstant.bannerMinHeight, GlobalConstant.bannerMaxWidth, GlobalConstant.bannerMaxHeight,
                     GlobalConstant.allowedAspectRatios, GlobalConstant.allowedFormats)) {
                 String fileOriginalName = Objects.requireNonNull(storeImage.getOriginalFilename()).replaceAll(" ", "_");
-                String dirPath = storeImagePath + slug + "/";
+                String dirPath = storeImagePath + slug + GlobalConstant.PATH_SEPARATOR;
                 File dir = new File(dirPath);
                 if (!dir.exists()) dir.mkdirs();
                 File file = new File(dirPath + fileOriginalName);

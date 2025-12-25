@@ -4,6 +4,7 @@ import com.sales.admin.repositories.ItemHbRepository;
 import com.sales.dto.*;
 import com.sales.entities.*;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
 import com.sales.utils.WriteExcelUtil;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -121,7 +122,10 @@ public class ItemController extends ServiceContainer {
                     // Creating an Excel for which items are not updated
                     String [] headers = {"NAME","TOKEN","PRICE", "DISCOUNT","LABEL","CAPACITY","IN-STOCK","REASON"};
                     String fileName = writeExcel.writeNotUpdatedItemsExcel(updateItemsError, headers, wholesaleSlug);
-                    responseObj.put("fileUrl", Utils.getHostUrl(request)+"/admin/item/notUpdated/"+wholesaleSlug+"/"+fileName);
+                    responseObj.put("fileUrl", Utils.getHostUrl(request)+GlobalConstant.PATH_SEPARATOR+"admin"+GlobalConstant.PATH_SEPARATOR+"item"+
+                            GlobalConstant.PATH_SEPARATOR+"notUpdated"+
+                            GlobalConstant.PATH_SEPARATOR + wholesaleSlug+
+                            GlobalConstant.PATH_SEPARATOR+fileName);
                     responseObj.put("message", "Some items are not updated.");
                     responseObj.put(ConstantResponseKeys.STATUS, 201);
                     logger.info("Some items are not updated : {} ",updateItemsError);
@@ -243,7 +247,7 @@ public class ItemController extends ServiceContainer {
     @GetMapping("/image/{slug}/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename, @PathVariable("slug") String slug ) throws Exception {
         logger.info("Fetching image file: {} for slug: {}", filename, slug);
-        Path path = Paths.get(filePath +slug+ "/"+filename);
+        Path path = Paths.get(filePath +slug+ GlobalConstant.PATH_SEPARATOR+filename);
         Resource resource = new UrlResource(path.toUri());
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
     }

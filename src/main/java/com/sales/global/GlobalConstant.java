@@ -10,7 +10,9 @@ public class GlobalConstant {
     public static int suId =0;
     public  static  int groupId = 0;
     public static String wholesalerImagePath = "/wholesale/auth/profile/";
+    public static String PATH_SEPARATOR = GlobalConstant.PATH_SEPARATOR;
     public static String staffImagePath = "/admin/auth/profile/";
+    public static String CHAT_STATIC_PATH = PATH_SEPARATOR + "chat"+ PATH_SEPARATOR + "images" + PATH_SEPARATOR;
 
     // for normal images
     public static int minWidth = 500;

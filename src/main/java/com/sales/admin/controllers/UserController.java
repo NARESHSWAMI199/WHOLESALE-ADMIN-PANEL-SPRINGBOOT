@@ -280,7 +280,7 @@ public class UserController extends ServiceContainer {
     @GetMapping("/profile/{slug}/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename ,@PathVariable String slug) throws Exception {
         logger.info("Fetching profile image: {} for user with slug: {}", Utils.sanitizeForLog(filename), Utils.sanitizeForLog(slug));
-        Path path = Paths.get(filePath +"/"+slug+"/"+ filename);
+        Path path = Paths.get(filePath +GlobalConstant.PATH_SEPARATOR+slug+GlobalConstant.PATH_SEPARATOR+ filename);
         Resource resource = new UrlResource(path.toUri());
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
     }

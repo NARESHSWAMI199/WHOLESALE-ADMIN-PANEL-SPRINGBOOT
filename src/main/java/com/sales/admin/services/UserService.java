@@ -481,7 +481,7 @@ public class UserService extends RepoContainer {
         Utils.canUpdateAStaff(slug,user.getUserType(),loggedUser);
         String imageName = UUID.randomUUID().toString().substring(0,5)+"_"+ Objects.requireNonNull(profileImage.getOriginalFilename()).replaceAll(" ","_");
         if (!Utils.isValidImage(imageName)) return null;
-        String dirPath = profilePath+slug+"/";
+        String dirPath = profilePath+slug+GlobalConstant.PATH_SEPARATOR;
         File dir = new File(dirPath);
         if(!dir.exists()) dir.mkdirs();
         profileImage.transferTo(new File(dirPath+imageName));

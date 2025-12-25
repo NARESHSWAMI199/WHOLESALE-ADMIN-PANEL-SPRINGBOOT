@@ -448,7 +448,7 @@ public class ItemService extends RepoContainer{
                     GlobalConstant.allowedAspectRatios, GlobalConstant.allowedFormats)) {
 
                     String fileOriginalName = UUID.randomUUID()+itemImage.getOriginalFilename().replaceAll(" ", "_");
-                    String dirPath = itemImagePath+slug+"/";
+                    String dirPath = itemImagePath+slug+GlobalConstant.PATH_SEPARATOR;
                     File dir = new File(dirPath);
                     if(!dir.exists()) dir.mkdirs();
                     String filePath = dirPath+fileOriginalName;

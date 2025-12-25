@@ -4,6 +4,7 @@ import com.sales.dto.MessageDto;
 import com.sales.entities.Chat;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
+import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ public class ChatService extends WholesaleRepoContainer {
 
     @Autowired
     BlockListService blockListService;
-
+    private final String chatImagesPath = GlobalConstant.CHAT_STATIC_PATH;
 
 
     public Chat sendMessage(MessageDto message, User loggedUser, String recipient){
@@ -140,7 +141,7 @@ public class ChatService extends WholesaleRepoContainer {
             String images = chat.getImages();
             if (images != null) {
                 String[] imagesList = images.split(",", -1);
-                List<String> list = Arrays.stream(imagesList).map(name -> Utils.getHostUrl(request) + "/chat/images/" + chat.getSender() + "/" + chat.getReceiver() + "/" + name).toList();
+                List<String> list = Arrays.stream(imagesList).map(name -> Utils.getHostUrl(request) + chatImagesPath + chat.getSender() + GlobalConstant.PATH_SEPARATOR + chat.getReceiver() + GlobalConstant.PATH_SEPARATOR + name).toList();
                 chat.setImagesUrls(list);
             }
             chats.add(chat);
@@ -166,7 +167,11 @@ public class ChatService extends WholesaleRepoContainer {
             String images = chat.getImages();
             if (images != null) {
                 String[] imagesList = images.split(",", -1);
-                List<String> list = Arrays.stream(imagesList).map(name -> Utils.getHostUrl(request) + "/chat/images/" + chat.getSender() + "/" + chat.getReceiver() + "/" + name).toList();
+                List<String> list = Arrays.stream(imagesList).map(name -> Utils.getHostUrl(request) +
+                        chatImagesPath + chat.getSender() +
+                        GlobalConstant.PATH_SEPARATOR + chat.getReceiver() +
+                        GlobalConstant.PATH_SEPARATOR + name
+                ).toList();
                 chat.setImagesUrls(list);
             }
             logger.info("Completed getParentMessageById method");
@@ -216,7 +221,7 @@ public class ChatService extends WholesaleRepoContainer {
     public MessageDto addImagesList(MessageDto message, HttpServletRequest request, List<String> allImagesName, User loggedUser, String recipient) {
         logger.info("Starting addImagesList method");
         message.setImages(null);
-        List<String> imageUrls = allImagesName.stream().map(name -> Utils.getHostUrl(request) + "/chat/images/" + loggedUser.getSlug() + "/" + message.getReceiver() + "/" + name).toList();
+        List<String> imageUrls = allImagesName.stream().map(name -> Utils.getHostUrl(request) + "/chat/images/" + loggedUser.getSlug() + GlobalConstant.PATH_SEPARATOR + message.getReceiver() + GlobalConstant.PATH_SEPARATOR + name).toList();
         message.setImagesUrls(imageUrls);
         message.setSender(loggedUser.getSlug());
         message.setReceiver(recipient);

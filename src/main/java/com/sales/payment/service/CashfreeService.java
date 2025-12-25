@@ -13,6 +13,7 @@ import com.sales.dto.CashfreeFilters;
 import com.sales.entities.CashfreeTrans;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
+import com.sales.global.GlobalConstant;
 import com.sales.payment.controller.CashFreePgController;
 import com.sales.utils.Utils;
 import com.sales.wholesaler.services.WholesaleServicePlanService;
@@ -146,7 +147,7 @@ public class CashfreeService extends PaymentRepoContainer {
         }
         // Updating callback uri if not provided.
         if(callbackUri == null) callbackUri = httpServletRequest.getRequestURI();
-        orderMeta.setNotifyUrl(callbackUri+"/cashfree/callback/"+slug+"/"+loggedUser.getId()+"/"+servicePlan.getId());
+        orderMeta.setNotifyUrl(callbackUri+"/cashfree/callback/"+slug+ GlobalConstant.PATH_SEPARATOR+loggedUser.getId()+GlobalConstant.PATH_SEPARATOR+servicePlan.getId());
         request.setOrderMeta(orderMeta);
         request.setOrderAmount((double) amount);
         request.setOrderCurrency("INR");
@@ -197,7 +198,7 @@ public class CashfreeService extends PaymentRepoContainer {
         }
         // Updating callback uri if not provided.
         if(callbackUri == null) callbackUri = httpServletRequest.getRequestURI();
-        orderMeta.setNotifyUrl(callbackUri+"/cashfree/callback/"+slug+"/"+loggedUser.getId());
+        orderMeta.setNotifyUrl(callbackUri+"/cashfree/callback/"+slug+GlobalConstant.PATH_SEPARATOR+loggedUser.getId());
         request.setOrderMeta(orderMeta);
         request.setOrderAmount(amount);
         request.setOrderCurrency("INR");

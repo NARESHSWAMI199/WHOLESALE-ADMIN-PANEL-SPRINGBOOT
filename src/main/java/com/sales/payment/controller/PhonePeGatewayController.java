@@ -13,6 +13,7 @@ import com.sales.entities.PhonePeTrans;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
@@ -49,7 +50,7 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
             /* TODO : Must add Extra GST amount */
             long amount = (servicePlan.getPrice()-servicePlan.getDiscount())*100; /* converting in rupees */
             String merchantUserId = UUID.randomUUID().toString().substring(0, 34);
-            String callbackUrl = "http://localhost:8080/pg/callback/"+servicePlan.getId() + "/"+loggedUser.getId();
+            String callbackUrl = "http://localhost:8080/pg/callback/"+servicePlan.getId() + GlobalConstant.PATH_SEPARATOR+loggedUser.getId();
             String redirectUrl = "http://localhost:8080/pg/home";
             PhonePeDto phonePeDto = PhonePeDto.builder()
                     .userId(loggedUser.getId())
@@ -58,7 +59,7 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
                     .build();
             PhonePeTrans phonePeTrans =  phonePeService.savePhonePeTransaction(phonePeDto);
             if(phonePeTrans !=null){
-                callbackUrl += "/"+phonePeTrans.getId();
+                callbackUrl += GlobalConstant.PATH_SEPARATOR+phonePeTrans.getId();
             }
             String redirectMode = "REDIRECT";
             String merchentId = phonePeService.mid;
