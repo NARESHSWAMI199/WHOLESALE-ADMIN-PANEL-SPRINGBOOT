@@ -33,7 +33,7 @@ public class PermissionHbRepository {
 
         // update permissions if there provided
         List<Integer> permissions = groupDto.getPermissions();
-        if(permissions !=null && permissions.size() > 0) updatePermissions(groupId,permissions);
+        if(permissions !=null && !permissions.isEmpty()) updatePermissions(groupId,permissions);
         return query.executeUpdate();
     }
 
@@ -53,7 +53,7 @@ public class PermissionHbRepository {
 
 
     public int deleteGroupBySlug(String slug, int groupId){
-        if (groupId == GlobalConstant.groupId) throw new PermissionDeniedDataAccessException("We can't delete this group.",null);
+        if (groupId == GlobalConstant.groupId) throw new PermissionDeniedDataAccessException("We can't delete this group.",new Exception());
         deleteGroupPermissionByGroupId(groupId);
         deleteGroupFromUser(groupId);
         String sql = "delete from `groups` where slug=:slug";
@@ -96,10 +96,10 @@ public class PermissionHbRepository {
         if(groups.contains(GlobalConstant.groupId) && loggedUser.getId() != GlobalConstant.suId) groups.remove((Integer) GlobalConstant.groupId);
         deleteUserGroups(userId);
         if(groups.isEmpty()) throw new MyException("Please provide at least one group.");
-        String values = "";
+        StringBuilder values = new StringBuilder();
         for(int i=0; i < groups.size(); i++){
-            values +="("+userId+","+groups.get(i)+")";
-            if(i < groups.size()-1) values += ",";
+            values.append("(").append(userId).append(",").append(groups.get(i)).append(")");
+            if(i < groups.size()-1) values.append(",");
         }
         System.out.println(values);
         String sql = "insert into user_groups (user_id,group_id) values "+values;
@@ -122,10 +122,10 @@ public class PermissionHbRepository {
         if(permissions.contains(GlobalConstant.suId)) permissions.remove((Integer) GlobalConstant.suId);
         deleteWholesalerPermission(userId);
         if(permissions.isEmpty()) throw new MyException("Please provide at least one permission.");
-        String values = "";
+        StringBuilder values = new StringBuilder();
         for(int i=0; i < permissions.size(); i++){
-            values +="("+userId+","+permissions.get(i)+")";
-            if(i < permissions.size()-1) values += ",";
+            values.append("(").append(userId).append(",").append(permissions.get(i)).append(")");
+            if(i < permissions.size()-1) values.append(",");
         }
         System.out.println(values);
         String sql = "insert into wholesaler_permissions (user_id,permission_id) values "+values;

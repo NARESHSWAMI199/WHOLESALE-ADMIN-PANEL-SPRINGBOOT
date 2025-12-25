@@ -56,7 +56,7 @@ public class CashfreeService extends PaymentRepoContainer {
     WholesaleServicePlanService wholesaleServicePlanService;
 
     public Page<CashfreeTrans> getAllPaymentHistoryFromCashfree(CashfreeFilters cashfreeFilters) {
-        Specification<CashfreeTrans> specification = Specification.where(
+        Specification<CashfreeTrans> specification = Specification.allOf(
                 hasCfPaymentId(cashfreeFilters.getTransactionId())
                         .and(hasPaymentStatus(cashfreeFilters.getPaymentStatus()))
                         .and(greaterThanOrEqualFromDate(cashfreeFilters.getFromDate()))

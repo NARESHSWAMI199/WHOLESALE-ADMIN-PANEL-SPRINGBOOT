@@ -51,7 +51,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         Sort sort = searchFilters.getOrder().equalsIgnoreCase("asc") ?
                 Sort.by(searchFilters.getOrderBy()).ascending() :
                 Sort.by(searchFilters.getOrderBy()).descending();
-        Specification<Item> specification = Specification.where(
+        Specification<Item> specification = Specification.allOf(
                 (containsName(searchFilters.getSearchKey().trim())
                         .or(hasSlug(searchFilters.getSearchKey())))
                         .and(isWholesale(storeId))
@@ -399,7 +399,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
     public String createItemsExcelSheet(ItemSearchFields searchFilters,User loggedUser) throws IOException {
         logger.info("Entering createItemsExcelSheet with searchFilters: {}", searchFilters);
         int wholesaleId = searchFilters.getStoreId();
-        Specification<Item> specification = Specification.where(
+        Specification<Item> specification = Specification.allOf(
                 (containsName(searchFilters.getSearchKey().trim())
                         .or(hasSlug(searchFilters.getSearchKey())))
                         .and(isWholesale(wholesaleId))

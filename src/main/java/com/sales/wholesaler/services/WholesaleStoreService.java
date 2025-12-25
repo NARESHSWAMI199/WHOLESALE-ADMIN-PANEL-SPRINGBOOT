@@ -238,7 +238,7 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
     public Page<StoreNotifications> getAllStoreNotification(SearchFilters filters, User loggedUser) {
         logger.info("Starting getAllStoreNotification method with filters: {}, loggedUser: {}", filters, loggedUser);
         Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(loggedUser.getId());
-        Specification<StoreNotifications> specification = Specification.where(isUserId(loggedUser.getId()).or(isWholesaleId(storeId)));
+        Specification<StoreNotifications> specification = Specification.allOf(isUserId(loggedUser.getId()).or(isWholesaleId(storeId)));
         Pageable pageable = getPageable(filters);
         Page<StoreNotifications> notifications = wholesaleNotificationRepository.findAll(specification, pageable);
         logger.info("Completed getAllStoreNotification method");

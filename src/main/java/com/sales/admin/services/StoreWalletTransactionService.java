@@ -28,7 +28,7 @@ public class StoreWalletTransactionService extends RepoContainer {
     public Page<WalletTransaction> getAllWalletTransactionByUserId(SearchFilters searchFilters,String userSlug){
         Integer userId = userRepository.getUserIdBySlug(userSlug);
         if (userId == null) throw new NotFoundException("User not found.");
-        Specification<WalletTransaction> specification = Specification.where(
+        Specification<WalletTransaction> specification = Specification.allOf(
             hasSlug(searchFilters.getSlug())
             .and(greaterThanOrEqualFromDate(searchFilters.getFromDate()))
             .and(lessThanOrEqualToToDate(searchFilters.getToDate())

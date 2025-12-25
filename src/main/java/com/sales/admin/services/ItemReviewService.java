@@ -19,7 +19,7 @@ public class ItemReviewService extends  RepoContainer {
 
     public Page<ItemReviews> getAllItemReview(ItemReviewsFilterDto filters) {
         logger.info("Entering getALlItemReview with filters: {}", filters);
-        Specification<ItemReviews> specification = Specification.where(
+        Specification<ItemReviews> specification = Specification.allOf(
                 (containsName(filters.getSearchKey()))
                         .and(greaterThanOrEqualFromDate(filters.getFromDate()))
                         .and(lessThanOrEqualToToDate(filters.getToDate()))

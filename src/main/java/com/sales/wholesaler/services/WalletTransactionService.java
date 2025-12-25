@@ -25,7 +25,7 @@ public class WalletTransactionService extends WholesaleRepoContainer{
 
 
     public Page<WalletTransaction> getAllWalletTransactionByUserId(SearchFilters searchFilters,Integer userId){
-        Specification<WalletTransaction> specification = Specification.where(
+        Specification<WalletTransaction> specification = Specification.allOf(
             hasSlug(searchFilters.getSlug())
             .and(greaterThanOrEqualFromDate(searchFilters.getFromDate()))
             .and(lessThanOrEqualToToDate(searchFilters.getToDate())

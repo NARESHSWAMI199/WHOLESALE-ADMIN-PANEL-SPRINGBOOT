@@ -2,10 +2,7 @@ package com.sales.admin.controllers;
 
 
 import com.sales.entities.Wallet;
-import com.sales.wholesaler.controller.WholesaleServiceContainer;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +16,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("admin/store/wallet")
 public class WalletController extends ServiceContainer {
-
-    private static final Logger logger = LoggerFactory.getLogger(WholesaleServiceContainer.class);
 
     @GetMapping("/{userSlug}")
     public ResponseEntity<Wallet> getWalletDetail(@PathVariable String userSlug, HttpServletRequest request){

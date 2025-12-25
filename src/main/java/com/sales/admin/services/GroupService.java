@@ -34,7 +34,7 @@ public class GroupService extends RepoContainer {
 
     public Page<Group> getAllGroups(SearchFilters filters, User loggedUser) {
         logger.info("Entering getAllGroups with filters: {}, loggedUser: {}", filters, loggedUser);
-        Specification<Group> specification = Specification.where(
+        Specification<Group> specification = Specification.allOf(
                 (containsName(filters.getSearchKey()))
                         .and(greaterThanOrEqualFromDate(filters.getFromDate()))
                         .and(lessThanOrEqualToToDate(filters.getToDate()))

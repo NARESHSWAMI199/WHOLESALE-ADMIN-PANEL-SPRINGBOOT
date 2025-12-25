@@ -45,7 +45,7 @@ public class ItemService extends RepoContainer{
         Sort sort = searchFilters.getOrder().equalsIgnoreCase("asc") ?
                 Sort.by(searchFilters.getOrderBy()).ascending() :
                 Sort.by(searchFilters.getOrderBy()).descending();
-        Specification<Item> specification = Specification.where(
+        Specification<Item> specification = Specification.allOf(
             containsName(searchFilters.getSearchKey().trim())
                 .and(hasSlug(searchFilters.getSlug()))
                 .and(isWholesale(searchFilters.getStoreId(),loggedUser.getUserType()))
@@ -63,7 +63,7 @@ public class ItemService extends RepoContainer{
 
     public String createItemsExcelSheet(ItemSearchFields searchFilters,String wholesaleSlug,User loggedUser) throws IOException {
         logger.info("Entering createItemsExcelSheet with searchFilters: {}", searchFilters);
-        Specification<Item> specification = Specification.where(
+        Specification<Item> specification = Specification.allOf(
                 containsName(searchFilters.getSearchKey().trim())
                         .and(isWholesale(searchFilters.getStoreId(),loggedUser.getUserType()))
                         .and(isStatus(searchFilters.getStatus()))

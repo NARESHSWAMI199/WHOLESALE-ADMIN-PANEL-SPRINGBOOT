@@ -304,7 +304,7 @@ public class WholesaleUserService extends WholesaleRepoContainer {
     /** Getting all retailers and wholesalers for chat purpose */
     public Page<User> getAllUsers(UserSearchFilters filters, User loggedUser) {
         logger.info("Starting getAllUsers method with filters: {}, loggedUser: {}", filters, loggedUser);
-        Specification<User> specification = Specification.where(
+        Specification<User> specification = Specification.allOf(
                 (containsName(filters.getSearchKey()).or(containsEmail(filters.getSearchKey())))
                     .and(isStatus("A"))
                     .and(hasUserType("W").or(hasUserType("R")))

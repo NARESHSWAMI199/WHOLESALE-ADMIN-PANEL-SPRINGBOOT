@@ -30,7 +30,7 @@ public class ServicePlanService extends  RepoContainer {
 
     public Page<ServicePlan> getALlServicePlan(ServicePlanDto servicePlanDto){
         logger.info("Entering getALlServicePlan with servicePlanDto: {}", servicePlanDto);
-        Specification<ServicePlan> specification = Specification.where(
+        Specification<ServicePlan> specification = Specification.allOf(
                 ServicePlanSpecification.containsName(servicePlanDto.getName())
                         .and(ServicePlanSpecification.hasSlug(servicePlanDto.getSlug()))
                         .and(ServicePlanSpecification.isStatus(servicePlanDto.getStatus()))
@@ -68,7 +68,7 @@ public class ServicePlanService extends  RepoContainer {
 
     public Page<WholesalerPlans> getAllUserPlans(Integer userId , UserPlanDto searchFilters){
         logger.info("Entering getAllUserPlans with userId: {}, searchFilters: {}", userId, searchFilters);
-        Specification<WholesalerPlans> specification = Specification.where(
+        Specification<WholesalerPlans> specification = Specification.allOf(
                 PlansSpecifications.hasSlug(searchFilters.getSlug())
                 .and(PlansSpecifications.greaterThanOrEqualCreatedFromDate(searchFilters.getCreatedFromDate()))
                 .and(PlansSpecifications.lessThanOrEqualToCreatedToDate(searchFilters.getCreatedToDate()))

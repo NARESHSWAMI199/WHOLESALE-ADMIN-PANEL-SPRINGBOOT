@@ -142,7 +142,7 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
 
     public Page<WholesalerPlans> getAllUserPlans(User loggedUser, UserPlanDto searchFilters) {
         logger.info("Starting getAllUserPlans method with loggedUser: {}, searchFilters: {}", loggedUser, searchFilters);
-        Specification<WholesalerPlans> specification = Specification.where(
+        Specification<WholesalerPlans> specification = Specification.allOf(
                 hasSlug(searchFilters.getSlug())
                 .and(greaterThanOrEqualCreatedFromDate(searchFilters.getCreatedFromDate()))
                 .and(lessThanOrEqualToCreatedToDate(searchFilters.getCreatedToDate()))

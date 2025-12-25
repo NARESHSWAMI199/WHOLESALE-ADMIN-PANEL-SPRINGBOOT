@@ -293,7 +293,7 @@ public class UserController extends ServiceContainer {
             responseObj.put("message", "There is no groups.");
             responseObj.put("status", 400);
         }
-        return new ResponseEntity<Map<String,Object>>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
     }
 
 

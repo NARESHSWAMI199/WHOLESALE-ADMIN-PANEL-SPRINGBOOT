@@ -24,7 +24,7 @@ public class WholesaleItemReviewService extends WholesaleRepoContainer {
             logger.error("Invalid itemId provided");
             throw new IllegalArgumentException("Please provide a valid itemId.");
         }
-        Specification<ItemReviews> specification = Specification.where(
+        Specification<ItemReviews> specification = Specification.allOf(
                 (containsName(filters.getSearchKey()))
                         .and(greaterThanOrEqualFromDate(filters.getFromDate()))
                         .and(lessThanOrEqualToToDate(filters.getToDate()))

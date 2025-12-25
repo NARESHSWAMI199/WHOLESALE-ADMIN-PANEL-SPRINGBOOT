@@ -47,7 +47,7 @@ public class StoreService extends RepoContainer{
 
     public Page<Store> getAllStore(SearchFilters filters) {
         logger.info("Entering getAllStore with filters: {}", filters);
-        Specification<Store> specification = Specification.where(
+        Specification<Store> specification = Specification.allOf(
                 (containsName(filters.getSearchKey()).or(containsEmail(filters.getSearchKey())))
                         .and(greaterThanOrEqualFromDate(filters.getFromDate()))
                         .and(lessThanOrEqualToToDate(filters.getToDate()))
@@ -418,7 +418,7 @@ public class StoreService extends RepoContainer{
 
     public StoreCategory getStoreCategoryById(int categoryId) {
         logger.info("Entering getStoreCategoryById with categoryId: {}", categoryId);
-        StoreCategory result = storeCategoryRepository.findById(categoryId).get();
+        StoreCategory result = storeCategoryRepository.findById(categoryId).orElseThrow(() -> new NotFoundException("Store category not found."));
         logger.info("Exiting getStoreCategoryById");
         return result;
     }

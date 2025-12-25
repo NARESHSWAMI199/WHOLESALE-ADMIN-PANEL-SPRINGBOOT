@@ -15,7 +15,7 @@ public class ItemReportService extends RepoContainer {
 
     public Page<ItemReport> getAllReportByItemId(SearchFilters searchFilters){
         Pageable pageable = getPageable(searchFilters);
-        Specification<ItemReport> specification = Specification.where(hasItemId(searchFilters.getItemId()));
+        Specification<ItemReport> specification = Specification.allOf(hasItemId(searchFilters.getItemId()));
         return itemReportRepository.findAll(specification,pageable);
     }
 

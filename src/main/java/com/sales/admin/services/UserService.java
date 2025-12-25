@@ -195,7 +195,7 @@ public class UserService extends RepoContainer {
             notUserType = "SA";
             filters.setUserType(null);
         }
-        Specification<User> specification = Specification.where(
+        Specification<User> specification = Specification.allOf(
                 (containsName(filters.getSearchKey()).or(containsEmail(filters.getSearchKey())))
             .and(greaterThanOrEqualFromDate(filters.getFromDate()))
             .and(lessThanOrEqualToToDate(filters.getToDate()))
