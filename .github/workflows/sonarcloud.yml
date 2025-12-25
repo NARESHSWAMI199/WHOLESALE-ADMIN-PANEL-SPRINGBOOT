@@ -36,15 +36,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}          # only needed for PR decoration
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        mvn -B verify \
-          org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.projectKey=nareshswami199_WHOLESALE-ADMIN-PANEL-SPRINGBOOT&branch=main \
-          -Dsonar.organization=nareshswami199 \
-          -Dsonar.host.url=https://sonarcloud.io
+        mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
 
     - name: Quality Gate check (optional - fail build if quality gate fails)
       if: always()
-      uses: sonarsource/sonarqube-quality-gate-action@v3
+      uses: sonarsource/sonarqube-quality-gate-action@master
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: https://sonarcloud.io
