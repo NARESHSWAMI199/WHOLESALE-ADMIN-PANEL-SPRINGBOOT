@@ -10,9 +10,9 @@ public class GlobalConstant {
     public static int suId =0;
     public  static  int groupId = 0;
     public static String wholesalerImagePath = "/wholesale/auth/profile/";
-    public static String PATH_SEPARATOR = GlobalConstant.PATH_SEPARATOR;
+    public static String PATH_SEPARATOR = "/";
     public static String staffImagePath = "/admin/auth/profile/";
-    public static String CHAT_STATIC_PATH = PATH_SEPARATOR + "chat"+ PATH_SEPARATOR + "images" + PATH_SEPARATOR;
+    public static String CHAT_STATIC_PATH = "/chat/images/";
 
     // for normal images
     public static int minWidth = 500;
@@ -31,6 +31,10 @@ public class GlobalConstant {
     public static String removeBgUrl = "http://localhost:5000/remove-background";
 
     public static final Map<String, User> onlineUsers = new ConcurrentHashMap<>();
+
+    public static final String ITEMS_NOT_UPDATED_PATH_FOR_ADMIN = "/admin/item/notUpdated/";
+    public static final String ITEMS_NOT_UPDATED_PATH_FOR_WHOLESALE = "/wholesale/item/notUpdated/";
+
 
 
     private GlobalConstant () {

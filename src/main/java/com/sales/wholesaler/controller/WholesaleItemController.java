@@ -184,13 +184,9 @@ public class WholesaleItemController extends WholesaleServiceContainer {
                     // Creating an Excel for which items are not updated
                     String [] headers = {"NAME","TOKEN","PRICE", "DISCOUNT","LABEL","CAPACITY","IN-STOCK","REASON"};
                     String fileName = writeExcel.writeNotUpdatedItemsExcel(updateItemsError, headers, "WHOLESALER_"+user.getSlug());
-                    responseObj.put("fileUrl", Utils.getHostUrl(request)+"GlobalConstant.PATH_SEPARATOR"+"wholesale"+
-                            GlobalConstant.PATH_SEPARATOR+"item"+
-                            GlobalConstant.PATH_SEPARATOR+"notUpdated"+
-                            GlobalConstant.PATH_SEPARATOR+"WHOLESALER_"+user.getSlug()+
-                            GlobalConstant.PATH_SEPARATOR+fileName);
-                    responseObj.put(ConstantResponseKeys.MESSAGE, "Some items are not updated.");
-                    responseObj.put(ConstantResponseKeys.STATUS, 201);
+                    responseObj.put("fileUrl", Utils.getHostUrl(request)+GlobalConstant.ITEMS_NOT_UPDATED_PATH_FOR_WHOLESALE+"WHOLESALER_"+user.getSlug()+"/"+fileName);
+                    responseObj.put("message", "Some items are not updated.");
+                    responseObj.put("status", 201);
                     logger.info("Some items are not updated : {} ",updateItemsError);
                 }
 

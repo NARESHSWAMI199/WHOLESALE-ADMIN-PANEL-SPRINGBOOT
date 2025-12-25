@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -36,6 +37,12 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(PhonePeGatewayController.class);
 
+    @Value("${phonepe.callback_uri}")
+    private String pgCallbackUri;
+
+    @Value("${phonepe.redirect_uri}")
+    private String pgRedirectUri;
+
     @ResponseBody
     @GetMapping("pay/{slug}")
     public ResponseEntity<Map<String,Object>> payViaPhonePe(HttpServletRequest request,@PathVariable String slug){
@@ -50,8 +57,8 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
             /* TODO : Must add Extra GST amount */
             long amount = (servicePlan.getPrice()-servicePlan.getDiscount())*100; /* converting in rupees */
             String merchantUserId = UUID.randomUUID().toString().substring(0, 34);
-            String callbackUrl = "http://localhost:8080/pg/callback/"+servicePlan.getId() + GlobalConstant.PATH_SEPARATOR+loggedUser.getId();
-            String redirectUrl = "http://localhost:8080/pg/home";
+            String callbackUrl = pgCallbackUri+servicePlan.getId() + GlobalConstant.PATH_SEPARATOR+loggedUser.getId();
+            String redirectUrl = pgRedirectUri;
             PhonePeDto phonePeDto = PhonePeDto.builder()
                     .userId(loggedUser.getId())
                     .merchantTransactionId(merchantTransactionId)
