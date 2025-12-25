@@ -66,7 +66,7 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
         Long currentMillis = Utils.getCurrentMillis();
         // Checking user last plan expired or not.
         WholesalerPlans lastPlan = wholesaleUserPlansRepository.findLastPlanByUserId(userId,entityManager);
-        ServicePlan plan = wholesaleServicePlanRepository.findById(servicePlanId).get();
+        ServicePlan plan = wholesaleServicePlanRepository.findById(servicePlanId).orElseThrow(() -> new NotFoundException("Plan not found."));
 
         if(lastPlan !=null && lastPlan.getExpiryDate() > currentMillis){ // if last plans is not expired.
             logger.info("Going to adding this plan as future plan.");
@@ -116,8 +116,8 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
     public void assignUserPlan(int userId, int servicePlanId) {
         logger.info("Starting assignUserPlan(int userId, int servicePlanId) method with userId: {}, servicePlanId: {}", userId, servicePlanId);
         Long currentMillis = Utils.getCurrentMillis();
-        ServicePlan plan = wholesaleServicePlanRepository.findById(servicePlanId).get();
-            logger.info("Going to assign this plan as user current plan.");
+        ServicePlan plan = wholesaleServicePlanRepository.findById(servicePlanId).orElseThrow(() -> new NotFoundException("Service plan not found."));
+            logger.info("Going to assign this plan as user current plan : {}.",servicePlanId);
             Integer months = plan.getMonths();
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(currentMillis);
@@ -136,7 +136,7 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
             if (updated < 1) {
                 throw new NotFoundException("No user found. to assign this plan.");
             }
-        logger.info("Completed assignUserPlan method");
+        logger.info("Completed assignUserPlan method.");
     }
 
 

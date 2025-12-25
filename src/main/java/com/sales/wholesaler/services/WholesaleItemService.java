@@ -191,10 +191,10 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         itemDto.setStoreId(storeId);
 
         // Getting category and subcategory from database behalf on provided Ids.
-        ItemCategory itemCategory = wholesaleItemCategoryRepository.findById(itemDto.getCategoryId()).get();
+        ItemCategory itemCategory = wholesaleItemCategoryRepository.findById(itemDto.getCategoryId()).orElseThrow(() -> new NotFoundException("Store item category not found."));
         if(itemCategory == null) throw new IllegalArgumentException("Invalid categoryId.");
         itemDto.setItemCategory(itemCategory);
-        ItemSubCategory itemSubCategory = wholesaleItemSubCategoryRepository.findById(itemDto.getSubCategoryId()).get();
+        ItemSubCategory itemSubCategory = wholesaleItemSubCategoryRepository.findById(itemDto.getSubCategoryId()).orElseThrow(() -> new NotFoundException("Store item subcategory not found."));
         if(itemSubCategory == null) throw new IllegalArgumentException("Invalid subCategoryId.");
         itemDto.setItemSubCategory(itemSubCategory);
 
