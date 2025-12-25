@@ -38,7 +38,7 @@ public class UserController extends ServiceContainer {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
-    JwtToken jwtToken;
+    private JwtToken jwtToken;
 
     @PostMapping("/{userType}/all")
     public ResponseEntity<Page<User>> getAllUsers(HttpServletRequest request,@RequestBody UserSearchFilters searchFilters, @PathVariable(required = true) String userType) {

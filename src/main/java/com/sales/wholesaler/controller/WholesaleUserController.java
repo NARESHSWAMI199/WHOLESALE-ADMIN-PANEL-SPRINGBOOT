@@ -8,7 +8,6 @@ import com.sales.entities.Store;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
-import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,7 +15,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -39,12 +37,6 @@ import java.util.Map;
 public class WholesaleUserController extends WholesaleServiceContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(WholesaleUserController.class);
-
-    @Autowired
-    JwtToken jwtToken;
-
-
-
 
     @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(
             example = """
@@ -75,10 +67,10 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put("paginations",paginations);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         }else {
-            responseObj.put("message", "You are blocked by admin");
+            responseObj.put("message", "You are blocked by admin.");
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         }
-        logger.info("Completed loginWholesaler method");
+        logger.info("Completed loginWholesaler method.");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 

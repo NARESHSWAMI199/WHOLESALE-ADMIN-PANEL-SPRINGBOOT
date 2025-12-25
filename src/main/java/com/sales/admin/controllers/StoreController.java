@@ -66,7 +66,7 @@ public class StoreController extends ServiceContainer{
 
     @GetMapping("/detail/{slug}")
     public ResponseEntity<Map<String,Object>> getStoreDetailBySlug(@PathVariable String slug) {
-        logger.info("Fetching store details for slug: {}", slug);
+        logger.info("Fetching store details for params: {}", slug);
         Map<String,Object> responseObj = new HashMap<>();
         Store store = storeService.getStoreDetails(slug);
         if (store!= null){

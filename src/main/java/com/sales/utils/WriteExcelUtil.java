@@ -1,11 +1,11 @@
 package com.sales.utils;
 
 import com.sales.admin.repositories.ItemHbRepository;
-import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,11 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class WriteExcel {
+public class WriteExcelUtil {
 
-    @Autowired
-    Logger logger;
-
+    private final Logger logger = LoggerFactory.getLogger(WriteExcelUtil.class);
 
     @Value("${excel.export.absolute}")
     String excelExportAbsolutePath;
@@ -89,12 +87,14 @@ public class WriteExcel {
             }
 
             File file = new File(excelExportAbsolutePath+folderName);
-            if(!file.exists()) file.mkdirs();
+            if(!file.exists()) {
+                boolean created = file.mkdirs();
+                if(created) logger.info("The file is created at : {}",file.getAbsolutePath());
+            }
             String path = file.getAbsolutePath();
             String fileLocation = path +File.separator + "temp.xlsx";
             FileOutputStream outputStream = new FileOutputStream(fileLocation);
             workbook.write(outputStream);
-            logger.info(fileLocation);
             return fileLocation;
         }
     }

@@ -4,7 +4,7 @@ package com.sales.wholesaler.services;
 import com.sales.admin.repositories.AddressHbRepository;
 import com.sales.admin.repositories.AddressRepository;
 import com.sales.dto.SearchFilters;
-import com.sales.utils.WriteExcel;
+import com.sales.utils.WriteExcelUtil;
 import com.sales.wholesaler.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,7 +106,7 @@ public class WholesaleRepoContainer {
     protected WholesalePaginationHbRepository wholesalePaginationHbRepository;
 
     @Autowired
-    protected WriteExcel writeExcel;
+    protected WriteExcelUtil writeExcel;
 
     @Autowired
     protected BlockListHbRepository blockListHbRepository;

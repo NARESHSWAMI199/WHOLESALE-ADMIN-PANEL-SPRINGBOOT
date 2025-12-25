@@ -39,7 +39,7 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
     }
 
     public ServicePlan findBySlug(String slug) {
-        logger.info("Starting findBySlug method with slug: {}", slug);
+        logger.info("Starting findBySlug method with params: {}", slug);
         ServicePlan servicePlan = wholesaleServicePlanRepository.findBySlug(slug);
         logger.info("Completed findBySlug method");
         return servicePlan;
