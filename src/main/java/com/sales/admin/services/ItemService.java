@@ -493,7 +493,7 @@ public class ItemService extends RepoContainer{
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
         String slug = deleteDto.getSlug();
         // only super admin can delete it subcategory
-        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("Only super admin can delete item's category.",null);
+        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("Only super admin can delete item's category.",new Exception());
         Integer categoryId = itemCategoryRepository.getItemCategoryIdBySlug(slug);
         if (categoryId == null) throw new NotFoundException("Category not found.");
         itemHbRepository.switchCategoryToOther(categoryId); // before delete category, assign item to another category.
@@ -509,7 +509,7 @@ public class ItemService extends RepoContainer{
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
         String slug = deleteDto.getSlug();
         // only super admin can delete it subcategory
-        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("Only super admin can delete subcategory.",null);
+        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("Only super admin can delete subcategory.",new Exception());
         Integer subCategoryId = itemSubCategoryRepository.getItemSubCategoryIdBySlug(slug);
         if (subCategoryId == null) throw new NotFoundException("Subcategory not found.");
         itemHbRepository.switchSubCategoryToOther(subCategoryId); // before delete category assign item to other subcategory.

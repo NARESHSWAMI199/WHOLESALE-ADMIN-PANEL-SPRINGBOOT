@@ -223,7 +223,7 @@ public class StoreService extends RepoContainer{
 
         /** @END inserting  address during create a wholesale */
         Optional<User> storeOwner = userRepository.findByWholesalerSlug(storeDto.getUserSlug());
-        if (storeOwner.isEmpty())  throw new PermissionDeniedDataAccessException("User must be wholesaler.",null);
+        if (storeOwner.isEmpty())  throw new PermissionDeniedDataAccessException("User must be wholesaler.",new Exception());
 
 
         // Saving the store data
@@ -429,7 +429,7 @@ public class StoreService extends RepoContainer{
         logger.info("Entering deleteStoreCategory with deleteDto: {}, user: {}", deleteDto, user);
         // Validating required fields if they are null, this will throw an Exception
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
-        if (!user.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("Only super admin can delete a store category.",null);
+        if (!user.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("Only super admin can delete a store category.",new Exception());
         String slug = deleteDto.getSlug();
         Integer categoryId = storeHbRepository.getStoreCategoryIdBySLug(slug);
         if (categoryId == null) throw new NotFoundException("Store's category not found.");
@@ -444,7 +444,7 @@ public class StoreService extends RepoContainer{
         // Validating required fields if they are null this will throw an Exception
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
         String slug = deleteDto.getSlug();
-        if (!user.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("Only super admin can delete a store subcategory.",null);
+        if (!user.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("Only super admin can delete a store subcategory.",new Exception());
         Integer subCategoryId = storeSubCategoryRepository.getStoreSubCategoryIdBySlug(slug);
         if (subCategoryId == null) throw new NotFoundException("Store's subcategory not found.");
         storeHbRepository.switchSubCategoryToOther(subCategoryId);

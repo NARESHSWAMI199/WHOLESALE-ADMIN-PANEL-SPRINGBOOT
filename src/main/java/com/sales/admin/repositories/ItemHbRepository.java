@@ -103,7 +103,6 @@ public class ItemHbRepository{
                     .append("'").append(UUID.randomUUID()).append("',").append("'").append(in_stock).append("'").append(")");
             if (i != nameList.size()-1) dataList.append(",");
         }
-        System.out.println(dataList);
 
         String qs = """
                 insert into item (

@@ -5,6 +5,8 @@ import com.sales.exceptions.MyException;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -15,7 +17,9 @@ import java.io.IOException;
 
 
 public class UploadImageValidator {
-        public static boolean isValidImage(MultipartFile imageFile, int minWidth, int minHeight, int maxWidth, int maxHeight, double[] allowedAspectRatios, String[] allowedFormats) {
+    private static final Logger log = LoggerFactory.getLogger(UploadImageValidator.class);
+
+    public static boolean isValidImage(MultipartFile imageFile, int minWidth, int minHeight, int maxWidth, int maxHeight, double[] allowedAspectRatios, String[] allowedFormats) {
             try {
 
                 BufferedImage image =ImageIO.read(imageFile.getInputStream());
@@ -25,7 +29,7 @@ public class UploadImageValidator {
                 int width = image.getWidth();
                 int height = image.getHeight();
 
-                System.out.println("image width : "+width + " : "+height);
+                log.info("image width : "+width + " : "+height);
                 // Check dimensions
                 if (width < minWidth || width > maxWidth || height < minHeight || height > maxHeight) {
                     if(width < minWidth || height < minHeight) {
@@ -37,7 +41,7 @@ public class UploadImageValidator {
 
                 // Check aspect ratio
                 double aspectRatio = (double) width / height;
-                System.out.println("image aspectRatio : "+aspectRatio);
+                log.info("image aspectRatio : "+aspectRatio);
                 boolean validAspectRatio = false;
                 for (double allowedRatio : allowedAspectRatios) {
                     if (Math.abs(aspectRatio - allowedRatio) < 0.01) {
@@ -64,7 +68,7 @@ public class UploadImageValidator {
 
                 return true;
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("The exception is : {}",e.getMessage());
                 return false;
             }
         }

@@ -44,7 +44,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
                 .replace("{email}",email)
                 .replace("{password}","123456");
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/wholesale/auth/login")
+        mockMvc.perform(MockMvcRequestBuilders.post("/wholesale/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
                 ).andExpectAll(
@@ -59,7 +59,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
     public void validateOtp(String slug) throws Exception {
         User user = wholesaleUserRepository.findUserBySlug(slug);
         String otp = user.getOtp();
-        System.err.println("THE OTP ================== > "+otp);
+        log.error("THE OTP ================== > "+otp);
         String json = """
                 {
                     "slug" : "{slug}",
@@ -168,11 +168,6 @@ public class WholesaleUserControllerTest  extends TestUtil {
 
     @Test
     public void testChatUsersWithoutLogin() throws Exception {
-        String json = """
-                {
-                
-                }
-                """;
         mockMvc.perform(MockMvcRequestBuilders.post("/wholesale/auth/chat/users")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpectAll(
@@ -183,11 +178,6 @@ public class WholesaleUserControllerTest  extends TestUtil {
 
     @Test
     public void testUpdatePasswordWithoutLogin() throws Exception {
-            String json = """
-                    {
-                        "password" : "mocktest"
-                    }
-                    """;
             mockMvc.perform(MockMvcRequestBuilders.post("/wholesale/password")
                     .contentType(MediaType.APPLICATION_JSON)
             ).andExpectAll(

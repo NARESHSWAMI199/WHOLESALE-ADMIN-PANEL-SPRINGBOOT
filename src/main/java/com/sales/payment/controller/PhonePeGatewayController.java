@@ -137,8 +137,7 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
             logger.error("Exception occurred during PhonePe callback: {}", e.getMessage());
             result.put("message", "Something went wrong during phonepe callback. please contact to administrator.");
             result.put(ConstantResponseKeys.STATUS,500);
-            logger.info( "Exception occur in  phonePeCallbackResponse :: "+ e.getMessage());
-            e.printStackTrace();
+            logger.error("Exception occur in  phonePeCallbackResponse :: {}", e.getMessage());
         }
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
@@ -158,8 +157,7 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
             logger.error("Exception occurred during refund: {}", e.getMessage());
             result.put("message", "Something went wrong during phonepe callback. please contact to administrator.");
             result.put(ConstantResponseKeys.STATUS,500);
-            logger.info( "Exception occur in  getRefund :: "+ e.getMessage());
-            e.printStackTrace();
+            logger.error("Exception occur in  getRefund :: {}", e.getMessage());
         }
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }

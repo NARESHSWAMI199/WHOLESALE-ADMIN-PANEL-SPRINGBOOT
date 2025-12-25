@@ -59,7 +59,6 @@ public class CashFreePgController extends PaymentServiceContainer {
                 result.put("message", "Something went wrong during getPaymentSessionId payment. please contact to administrator.");
                 result.put(ConstantResponseKeys.STATUS, 500);
                 logger.info("Exception occur in  getPaymentSessionId :: {}", e.getMessage());
-                e.printStackTrace();
             }
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
@@ -115,8 +114,7 @@ public class CashFreePgController extends PaymentServiceContainer {
             result.put("response", data);
             result.put(ConstantResponseKeys.STATUS, 200);
         }catch (Exception e){
-            e.printStackTrace();
-            logger.error("Exception during cashfree callback");
+            logger.error("Exception during cashfree callback : {}",e.getMessage());
             result.put("message", "Something went wrong during cashfree callback. please contact to administrator.");
             result.put(ConstantResponseKeys.STATUS,500);
         }

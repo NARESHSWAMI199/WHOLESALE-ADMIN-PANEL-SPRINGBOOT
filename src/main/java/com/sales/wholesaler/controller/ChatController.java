@@ -143,9 +143,10 @@ public class ChatController extends WholesaleServiceContainer {
     @MessageMapping("/chat/connect/{slug}")
     public void userConnected(@DestinationVariable String slug, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
         logger.info("User connected with slug: {}", slug);
-        System.err.println("Connected");
+        logger.info("Connected");
         try{
-            String sender = simpMessageHeaderAccessor.getSessionAttributes().get("username").toString();
+            String sender = Objects.requireNonNull(simpMessageHeaderAccessor.getSessionAttributes()).get("username").toString();
+            logger.info("The sender is : {}",sender);
             User user = wholesaleUserService.findUserBySlug(slug);
             if(user == null) throw new MyException("Not valid user to connect for chat.");
             user.setOnline(true);
@@ -163,7 +164,7 @@ public class ChatController extends WholesaleServiceContainer {
     @MessageMapping("/chat/deactivate/{slug}")
     public void disconnectUser(@DestinationVariable String slug) {
         logger.info("User disconnected with slug: {}", slug);
-        System.err.println("Disconnected");
+        logger.info("Disconnected");
         try{
             User user = GlobalConstant.onlineUsers.get(slug);
             if(user == null) throw new MyException("Not valid user to connect for chat.");
@@ -197,8 +198,7 @@ public class ChatController extends WholesaleServiceContainer {
     @MessageMapping("/chat/{slug}/userStatus")
     public void getUserStatus(@DestinationVariable String slug, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
         logger.info("Checking user status for slug: {}", slug);
-        System.err.println("Status checking." + slug);
-        String sender = (String) simpMessageHeaderAccessor.getSessionAttributes().get("username");
+        String sender = (String) Objects.requireNonNull(simpMessageHeaderAccessor.getSessionAttributes()).get("username");
         /* you need to subscribe like  /user/{userId}/queue/private/status */
         messagingTemplate.convertAndSendToUser(sender, "/queue/private/status",GlobalConstant.onlineUsers.getOrDefault(slug,new User()));
     }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -25,6 +27,9 @@ import java.util.Map;
 import java.util.Random;
 
 public class TestUtil {
+
+    private final Logger logger = LoggerFactory.getLogger(TestUtil.class);
+
     @Autowired
     protected MockMvc mockMvc;
 
@@ -153,7 +158,7 @@ public class TestUtil {
         String imageFolder = GlobalConstantTest.IMAGE_FOLDER_PATH_TEST;
         String imageName = GlobalConstantTest.IMAGE_NAME_TEST;
         Path path = Paths.get(imageFolder + imageName);
-        System.err.println("The image path ================= "+path);
+        logger.error("The image path ================= "+path);
         if (!Files.exists(path)) throw new FileNotFoundException(path + " not found ");
         byte[] imageBytes = Files.readAllBytes(path);
         MockMultipartFile file = new MockMultipartFile(

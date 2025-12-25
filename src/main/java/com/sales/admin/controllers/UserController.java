@@ -255,11 +255,11 @@ public class UserController extends ServiceContainer {
             User loggedUser = (User) request.getAttribute("user");
             String  imageName = userService.updateProfileImage(profileImage,slug,loggedUser);
             if(imageName!=null) {
-                responseObj.put("status" , 200);
+                responseObj.put(ConstantResponseKeys.STATUS , 200);
                 responseObj.put("imageName",imageName);
                 responseObj.put("message" , "Profile image successfully updated");
             }else {
-                responseObj.put("status" , 406);
+                responseObj.put(ConstantResponseKeys.STATUS  , 406);
                 responseObj.put("message" , "Not a valid profile image");
             }
         } catch (Exception e) {
@@ -333,7 +333,7 @@ public class UserController extends ServiceContainer {
         logger.info("Updating permissions for wholesaler with slug: {}", userDto.getSlug());
         User loggedUser =  (User)request.getAttribute("user");
         Map<String,Object> response= userService.updateWholesalerPermissions(userDto,loggedUser);
-        return new ResponseEntity<>(response, HttpStatus.valueOf((Integer) response.get("status")));
+        return new ResponseEntity<>(response, HttpStatus.valueOf((Integer) response.get(ConstantResponseKeys.STATUS )));
     }
 
 

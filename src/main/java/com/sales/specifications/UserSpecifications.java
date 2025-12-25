@@ -30,9 +30,7 @@ public class UserSpecifications {
 
 
     public static Specification<User> isUserId(Integer wholesaleId) {
-        return (root, query, criteriaBuilder) -> {
-            return criteriaBuilder.equal(root.get(User_.ID), wholesaleId);
-        };
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(User_.ID), wholesaleId);
     }
 
 
@@ -88,9 +86,7 @@ public class UserSpecifications {
     }
 
     public static Specification<User> notSuperAdmin() {
-        return (root, query, criteriaBuilder) -> {
-            return criteriaBuilder.notEqual(root.get(User_.id), GlobalConstant.suId);
-        };
+        return (root, query, criteriaBuilder) ->  criteriaBuilder.notEqual(root.get(User_.id), GlobalConstant.suId);
     }
 
 

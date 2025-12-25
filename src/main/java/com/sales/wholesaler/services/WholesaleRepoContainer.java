@@ -6,6 +6,8 @@ import com.sales.admin.repositories.AddressRepository;
 import com.sales.dto.SearchFilters;
 import com.sales.utils.WriteExcel;
 import com.sales.wholesaler.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class WholesaleRepoContainer {
+
+    private final Logger logger = LoggerFactory.getLogger(WholesaleRepoContainer.class);
 
     @Autowired
     protected WholesaleStoreRepository wholesaleStoreRepository;
@@ -129,7 +133,7 @@ public class WholesaleRepoContainer {
     protected WholesaleWalletRepository wholesaleWalletRepository;
 
     public Pageable getPageable(SearchFilters filters){
-        System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
+        logger.error("page : "+ filters.getPageNumber() + " "+filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?
                 Sort.by(filters.getOrderBy()).ascending() :  Sort.by(filters.getOrderBy()).descending();
         Pageable pageable = PageRequest.of(filters.getPageNumber(), filters.getSize(),sort);

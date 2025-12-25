@@ -93,7 +93,7 @@ public class ItemController extends ServiceContainer {
         logger.info("Adding or updating item: {}", itemDto);
         User loggedUser = (User) request.getAttribute("user");
         String path = request.getRequestURI();
-        System.err.println(itemDto.toString());
+        logger.error(itemDto.toString());
         Map<String,Object> responseObj = itemService.createOrUpdateItem(itemDto, loggedUser,path);
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }

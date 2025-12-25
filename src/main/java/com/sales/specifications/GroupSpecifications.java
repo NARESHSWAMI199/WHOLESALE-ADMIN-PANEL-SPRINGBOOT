@@ -9,9 +9,7 @@ public class GroupSpecifications {
 
 
     public static Specification<Group> isGroupId(Integer groupId) {
-        return (root, query, criteriaBuilder) -> {
-            return criteriaBuilder.equal(root.get(Group_.ID), groupId);
-        };
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Group_.ID), groupId);
     }
 
 

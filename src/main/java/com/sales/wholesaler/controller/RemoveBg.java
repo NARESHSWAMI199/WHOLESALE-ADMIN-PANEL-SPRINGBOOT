@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -44,7 +45,9 @@ public class RemoveBg {
         String baseUrl = GlobalConstant.removeBgUrl; // Replace with your Flask API URL
         File filePath = new File(outputPath+user.getSlug()+"/"+file.getOriginalFilename());
         if (!filePath.exists()){
-            filePath.mkdirs();
+            boolean dirCreated = filePath.mkdirs();
+            if(dirCreated) logger.info("New dir created :{}",file.getName());
+
         }
 
         file.transferTo(filePath);
@@ -79,14 +82,15 @@ public class RemoveBg {
         String outputPathRes = responseEntity.getBody();
         Map<String,String> result = new HashMap<>();
         result.put("downloadPath","/removebg/"+outputPathRes);
-        filePath.delete();
+        boolean delete = filePath.delete();
+        if (delete) logger.info("File : {} successfully deleted",filePath.getAbsolutePath());
         logger.info("Completed uploadImage method");
         return new ResponseEntity<>(result, responseEntity.getStatusCode());
     }
 
 
     @GetMapping("/{filename}")
-    public ResponseEntity<Resource> getFile( HttpServletRequest request, @PathVariable(required = true) String filename) throws Exception {
+    public ResponseEntity<Resource> getFile( HttpServletRequest request, @PathVariable(required = true) String filename) throws MalformedURLException {
         logger.info("Starting getFile method");
         User user = (User) request.getAttribute("user");
         Path path = Paths.get(relativePath +user.getSlug()+ "/"+filename);

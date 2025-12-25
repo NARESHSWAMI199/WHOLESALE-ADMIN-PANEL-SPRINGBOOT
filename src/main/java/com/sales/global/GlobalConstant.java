@@ -30,4 +30,8 @@ public class GlobalConstant {
 
     public static final Map<String, User> onlineUsers = new ConcurrentHashMap<>();
 
+
+    private GlobalConstant () {
+    }
+
 }

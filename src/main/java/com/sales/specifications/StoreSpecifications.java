@@ -12,9 +12,7 @@ public class StoreSpecifications {
 
 
     public static Specification<Store> isStoreId(Integer wholesaleId) {
-        return (root, query, criteriaBuilder) -> {
-            return criteriaBuilder.equal(root.get(Store_.ID), wholesaleId);
-        };
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Store_.ID), wholesaleId);
     }
 
 

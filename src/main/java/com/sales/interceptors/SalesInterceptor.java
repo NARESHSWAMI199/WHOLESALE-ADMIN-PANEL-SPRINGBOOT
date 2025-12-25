@@ -8,12 +8,15 @@ import com.sales.admin.repositories.UserRepository;
 import com.sales.cachemanager.services.UserCacheService;
 import com.sales.dto.ErrorDto;
 import com.sales.entities.User;
+import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;
 import com.sales.wholesaler.services.WholesaleServicePlanService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -24,7 +27,7 @@ import java.util.Set;
 
 @Component
 public class SalesInterceptor implements HandlerInterceptor {
-
+    private final Logger logger = LoggerFactory.getLogger(SalesInterceptor.class);
 
     private final JwtToken jwtToken;
     private final UserRepository userRepository;
@@ -48,7 +51,7 @@ public class SalesInterceptor implements HandlerInterceptor {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         // Token from swagger because swagger not sends Authorization header in request.
         token = token == null ? request.getHeader("authToken") : token;
-        System.out.println("request url : "+request.getRequestURI());
+        logger.info("request url : {}", request.getRequestURI());
         try {
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
@@ -86,10 +89,10 @@ public class SalesInterceptor implements HandlerInterceptor {
                     break;
                 }
             }
-//            if (!isPermitted && user.getId() != GlobalConstant.suId) {
-//                sendError(response, "You don't permissions to access "+requestUrI+".Please contact your administrator.", 400);
-//                return false;
-//            }
+            if (!isPermitted && user.getId() != GlobalConstant.suId) {
+                sendError(response, "You don't permissions to access "+requestUrI+".Please contact your administrator.", 400);
+                return false;
+            }
             request.setAttribute("user",user);
             return true;
         }

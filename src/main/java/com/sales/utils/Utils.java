@@ -9,6 +9,8 @@ import com.sales.jwtUtils.JwtToken;
 import com.sales.wholesaler.services.WholesaleUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -30,6 +33,7 @@ import java.util.regex.Pattern;
 @Component
 public class Utils {
 
+    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
     public static Long getCurrentMillis(){
         long millis = new java.util.Date().getTime();
@@ -63,11 +67,9 @@ public class Utils {
             Cipher cipher = Cipher.getInstance("AES"); // Default uses ECB PKCS5Padding
             cipher.init(Cipher.ENCRYPT_MODE, key);
             byte[] encVal = cipher.doFinal(Data.getBytes());
-            String encryptedValue = java.util.Base64.getEncoder().encodeToString(encVal);
-            return encryptedValue;
+            return Base64.getEncoder().encodeToString(encVal);
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error while encrypting: " + e.getMessage());
+            logger.error("Error while encrypting : {} " , e.getMessage());
         }
         return null;
     }
@@ -79,8 +81,8 @@ public class Utils {
             cipher.init(Cipher.DECRYPT_MODE, key);
             return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error while encrypting: " + e.getMessage());
+            logger.error("The exception during aesDecrypt : {}",e.getMessage());
+            logger.info("Error while encrypting: {}",e.getMessage());
         }
         return null;
     }
@@ -116,7 +118,7 @@ public class Utils {
             loggedUser.getId() != GlobalConstant.suId) &&  // if user not owner
             userType.equals("S") && // but user is a staff
             !loggedUser.getSlug().equals(slug)) { // request slug equals self slug
-            throw new PermissionDeniedDataAccessException("You don't have permissions to create or update a staff contact to administrator.",null);
+            throw new PermissionDeniedDataAccessException("You don't have permissions to create or update a staff contact to administrator.",new Exception());
         }
     }
 
@@ -125,7 +127,7 @@ public class Utils {
                 loggedUser.getId() != GlobalConstant.suId) &&  // if user not owner
                 userType.equals("S") && // but user is a staff
                 loggedUser.getSlug().equals(slug)) { // request slug equals logged user's slug
-            throw new PermissionDeniedDataAccessException("You don't have permissions to create or update a staff contact to administrator.",null);
+            throw new PermissionDeniedDataAccessException("You don't have permissions to create or update a staff contact to administrator.",new Exception());
         }
     }
 
@@ -146,17 +148,17 @@ public class Utils {
         }
         Pattern pattern = Pattern.compile(NAME_PATTERN);
         Matcher matcher = pattern.matcher(name);
-        System.out.println(matcher.matches());
+        logger.info("{}",matcher.matches());
         if(!matcher.matches()){
             String message ="";
             String neededSyntax = "Special symbols like : ^*$+?[]()| are not allowed.";
             if(flag.equals("user")){
                 message = "Not a valid username";
-                System.out.println(message);
+                logger.info(message);
                 throw  new MyException(message + " "+neededSyntax  );
             }
             message = "Not a valid "+flag+" name.";
-            System.out.println(message);
+            logger.info(message);
             throw new IllegalArgumentException(message + " "+neededSyntax);
         }
         return name;
@@ -177,7 +179,7 @@ public class Utils {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         // Token from swagger because swagger not sends Authorization header in request.
         token = token == null ? request.getHeader("authToken") : token;
-        System.out.println("request url : "+request.getRequestURI());
+        logger.info("request url : {}", request.getRequestURI());
         try {
             if (token != null && token.startsWith("Bearer ")) {
                 token = token.substring(7);
@@ -199,8 +201,8 @@ public class Utils {
 
 
     public static User getUserFromRequest(HttpServletRequest request,String token,JwtToken jwtToken, WholesaleUserService userService){
-        System.out.println("request url : "+request.getRequestURI());
-        token = token != null ? URLDecoder.decode(token) : token;
+        logger.info("[getUserFromRequest] request url : {}", request.getRequestURI());
+        token = token != null ? URLDecoder.decode(token, StandardCharsets.UTF_8) : token;
         try {
             if (token != null) {
                 String slug = jwtToken.getSlugFromToken(token);

@@ -8,6 +8,7 @@ import com.sales.wholesaler.repository.ChatHbRepository;
 import com.sales.wholesaler.repository.ChatRepository;
 import com.sales.wholesaler.repository.ChatUserRepository;
 import com.sales.wholesaler.repository.ContactRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class RepoContainer {
 
     @Autowired
@@ -128,7 +130,7 @@ public class RepoContainer {
     protected StoreWalletTransactionRepository storeWalletTransactionRepository;
 
     public Pageable getPageable(SearchFilters filters){
-        System.err.println("page : "+ filters.getPageNumber() + " "+filters.getSize());
+        log.info("page : "+ filters.getPageNumber() + " "+filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?
                 Sort.by(filters.getOrderBy()).ascending() :  Sort.by(filters.getOrderBy()).descending();
         Pageable pageable = PageRequest.of(filters.getPageNumber(), filters.getSize(),sort);

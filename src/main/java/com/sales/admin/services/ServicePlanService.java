@@ -89,7 +89,7 @@ public class ServicePlanService extends  RepoContainer {
     @Transactional
     public ServicePlan insertServicePlan(User loggedUser, ServicePlanDto servicePlanDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.info("Entering insertServicePlan with loggedUser: {}, servicePlanDto: {}", loggedUser, servicePlanDto);
-        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("You don't have permission to perform this action. Contact to your administrator.",null);
+        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("You don't have permission to perform this action. Contact to your administrator.",new Exception());
 
         // Validating required fields if there we found any required field is null, then it will throw an Exception
         Utils.checkRequiredFields(servicePlanDto, List.of("planName","price","discount","months","description"));
@@ -124,7 +124,7 @@ public class ServicePlanService extends  RepoContainer {
         String status = statusDto.getStatus();
         Map<String, Object> result = new HashMap<>();
         if (!loggedUser.getUserType().equals("SA"))
-            throw new PermissionDeniedDataAccessException("You don't have permission to perform this action.Contact to your administrator",null);
+            throw new PermissionDeniedDataAccessException("You don't have permission to perform this action.Contact to your administrator",new Exception());
 
         switch (status) {
             case "A", "D":
@@ -153,7 +153,7 @@ public class ServicePlanService extends  RepoContainer {
         Utils.checkRequiredFields(deleteDto, List.of("slug"));
         String slug = deleteDto.getSlug();
         Map<String,Object> result = new HashMap<>();
-        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("You don't have permission to perform this action.Contact to your administrator.",null);
+        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("You don't have permission to perform this action.Contact to your administrator.",new Exception());
         int isUpdated = servicePlanHbRepository.deleteServicePlan(slug, loggedUser);
         if(isUpdated > 0){
             result.put("message","Service plan successfully deleted.");

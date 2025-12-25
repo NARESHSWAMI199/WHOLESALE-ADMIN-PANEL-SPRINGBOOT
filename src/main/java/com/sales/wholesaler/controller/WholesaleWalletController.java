@@ -6,8 +6,6 @@ import com.sales.entities.Wallet;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +19,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("wholesale/wallet")
 public class WholesaleWalletController extends WholesaleServiceContainer {
-
-    private static final Logger logger = LoggerFactory.getLogger(WholesaleServiceContainer.class);
 
     @GetMapping("/")
     public ResponseEntity<Wallet> getWalletDetail(HttpServletRequest request){

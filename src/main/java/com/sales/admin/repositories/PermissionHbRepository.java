@@ -8,6 +8,7 @@ import com.sales.global.GlobalConstant;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Component
 @Transactional
+@Slf4j
 public class PermissionHbRepository {
 
     @Autowired
@@ -45,7 +47,7 @@ public class PermissionHbRepository {
             values +="("+groupId+","+permissions.get(i)+")";
             if(i < permissions.size()-1) values += ",";
         }
-        System.out.println(values);
+        log.info(values);
         String sql = "insert into group_permissions (group_id,permission_id) values "+values;
         Query query = entityManager.createNativeQuery(sql);
         return query.executeUpdate();
@@ -101,7 +103,6 @@ public class PermissionHbRepository {
             values.append("(").append(userId).append(",").append(groups.get(i)).append(")");
             if(i < groups.size()-1) values.append(",");
         }
-        System.out.println(values);
         String sql = "insert into user_groups (user_id,group_id) values "+values;
         Query query = entityManager.createNativeQuery(sql);
         return query.executeUpdate();
@@ -127,7 +128,6 @@ public class PermissionHbRepository {
             values.append("(").append(userId).append(",").append(permissions.get(i)).append(")");
             if(i < permissions.size()-1) values.append(",");
         }
-        System.out.println(values);
         String sql = "insert into wholesaler_permissions (user_id,permission_id) values "+values;
         Query query = entityManager.createNativeQuery(sql);
         return query.executeUpdate();

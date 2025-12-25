@@ -14,15 +14,11 @@ public class ItemReviewSpecifications {
 
 
     public static Specification<ItemReviews> isItemId(Long itemId) {
-        return (root, query, criteriaBuilder) -> {
-            return criteriaBuilder.equal(root.get(ItemReviews_.ITEM_ID), itemId);
-        };
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(ItemReviews_.ITEM_ID), itemId);
     }
 
     public static Specification<ItemReviews> isParentComment(int parentId) {
-        return (root, query, criteriaBuilder) -> {
-            return criteriaBuilder.equal(root.get(ItemReviews_.PARENT_ID), parentId);
-        };
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(ItemReviews_.PARENT_ID), parentId);
     }
 
 

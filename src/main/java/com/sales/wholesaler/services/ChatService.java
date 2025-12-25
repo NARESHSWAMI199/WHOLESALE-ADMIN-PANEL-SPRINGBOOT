@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ChatService extends WholesaleRepoContainer {
@@ -141,7 +140,7 @@ public class ChatService extends WholesaleRepoContainer {
             String images = chat.getImages();
             if (images != null) {
                 String[] imagesList = images.split(",", -1);
-                List<String> list = Arrays.stream(imagesList).map(name -> Utils.getHostUrl(request) + "/chat/images/" + chat.getSender() + "/" + chat.getReceiver() + "/" + name).collect(Collectors.toList());
+                List<String> list = Arrays.stream(imagesList).map(name -> Utils.getHostUrl(request) + "/chat/images/" + chat.getSender() + "/" + chat.getReceiver() + "/" + name).toList();
                 chat.setImagesUrls(list);
             }
             chats.add(chat);
@@ -167,7 +166,7 @@ public class ChatService extends WholesaleRepoContainer {
             String images = chat.getImages();
             if (images != null) {
                 String[] imagesList = images.split(",", -1);
-                List<String> list = Arrays.stream(imagesList).map(name -> Utils.getHostUrl(request) + "/chat/images/" + chat.getSender() + "/" + chat.getReceiver() + "/" + name).collect(Collectors.toList());
+                List<String> list = Arrays.stream(imagesList).map(name -> Utils.getHostUrl(request) + "/chat/images/" + chat.getSender() + "/" + chat.getReceiver() + "/" + name).toList();
                 chat.setImagesUrls(list);
             }
             logger.info("Completed getParentMessageById method");
@@ -192,17 +191,22 @@ public class ChatService extends WholesaleRepoContainer {
         List<String> imagesNames = new ArrayList<>();
         String folderPath = chatAbsolutePath + loggedUser.getSlug() + "_" + messageDto.getReceiver() + File.separator;
         File directory = new File(folderPath);
-        if (!directory.exists()) directory.mkdirs();
+        if (!directory.exists()) {
+            boolean dirCreated = directory.mkdirs();
+            if(dirCreated) logger.info("New dir created :{}",directory.getName());
+
+        }
         try {
             for (MultipartFile multipartFile : messageDto.getImages()) {
-                String originalFilename = multipartFile.getOriginalFilename().replaceAll(" ", "_");
+                String originalFilename = Objects.requireNonNull(multipartFile.getOriginalFilename()).replaceAll(" ", "_");
                 boolean validImage = Utils.isValidImage(originalFilename);
                 if (!validImage) throw new MyException("Not valid images.");
                 multipartFile.transferTo(new File(folderPath + originalFilename));
                 imagesNames.add(originalFilename);
             }
         } catch (Exception e) {
-            new File(folderPath).delete();
+            boolean deleted = directory.delete();
+            if (deleted) logger.info("The folder was deleted : {}", folderPath);
             throw new MyException(e.getMessage());
         }
         logger.info("Completed saveAllImages method");
@@ -212,7 +216,7 @@ public class ChatService extends WholesaleRepoContainer {
     public MessageDto addImagesList(MessageDto message, HttpServletRequest request, List<String> allImagesName, User loggedUser, String recipient) {
         logger.info("Starting addImagesList method");
         message.setImages(null);
-        List<String> imageUrls = allImagesName.stream().map(name -> Utils.getHostUrl(request) + "/chat/images/" + loggedUser.getSlug() + "/" + message.getReceiver() + "/" + name).collect(Collectors.toList());
+        List<String> imageUrls = allImagesName.stream().map(name -> Utils.getHostUrl(request) + "/chat/images/" + loggedUser.getSlug() + "/" + message.getReceiver() + "/" + name).toList();
         message.setImagesUrls(imageUrls);
         message.setSender(loggedUser.getSlug());
         message.setReceiver(recipient);

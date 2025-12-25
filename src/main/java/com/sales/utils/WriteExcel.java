@@ -94,7 +94,6 @@ public class WriteExcel {
             String fileLocation = path +File.separator + "temp.xlsx";
             FileOutputStream outputStream = new FileOutputStream(fileLocation);
             workbook.write(outputStream);
-            workbook.close();
             logger.info(fileLocation);
             return fileLocation;
         }
@@ -148,7 +147,6 @@ public class WriteExcel {
             if (!file.exists()) file.mkdirs();
             String path = file.getAbsolutePath();
             String fileName = "temp.xlsx";
-            ;
             String fileLocation = path + File.separator + fileName;
             FileOutputStream outputStream = new FileOutputStream(fileLocation);
             workbook.write(outputStream);

@@ -330,7 +330,7 @@ public class UserService extends RepoContainer {
 
             User updatedUser = createUser(userDto, loggedUser);
             userDto.setUserId(updatedUser.getId());
-            System.out.println(userDto.getUserType() + " : "+userDto.getUserSlug());
+            logger.info("{} : {}", userDto.getUserType(), userDto.getUserSlug());
 
             // if logged user not same to request user and make sure request user must be Wholesaler
             if((userDto.getUserId() != loggedUser.getId()) &&  userDto.getUserType().equals("W"))

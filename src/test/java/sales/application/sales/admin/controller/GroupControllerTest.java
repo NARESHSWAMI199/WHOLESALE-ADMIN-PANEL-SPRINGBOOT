@@ -34,7 +34,6 @@ public class GroupControllerTest extends TestUtil {
     public void testCreateGroupWithoutParams () throws Exception {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get("token");
-        String slug = loggedUserResponse.get("slug");
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization" , token);
         String json = """
@@ -55,7 +54,6 @@ public class GroupControllerTest extends TestUtil {
     public void testCreateGroupWithStaffAccount () throws Exception {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get("token");
-        String slug = loggedUserResponse.get("slug");
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization" , token);
 
@@ -132,15 +130,15 @@ public class GroupControllerTest extends TestUtil {
                 """
                 .replace("{random}", UUID.randomUUID().toString().substring(0,6))
                 ;
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/group/update")
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .headers(headers)
-                )
-                .andExpectAll(
-                        status().is(406)
-                ).andDo(print())
-                .andReturn();
+        mockMvc.perform(MockMvcRequestBuilders.post("/group/update")
+                    .content(json)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .headers(headers)
+            )
+            .andExpectAll(
+                    status().is(406)
+            ).andDo(print())
+            .andReturn();
     }
 
 

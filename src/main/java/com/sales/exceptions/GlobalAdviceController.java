@@ -25,9 +25,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RestControllerAdvice
-public class GlobalException {
+public class GlobalAdviceController {
 
-    private static final Logger logger = LoggerFactory.getLogger(GlobalException.class);
+    private static final Logger logger = LoggerFactory.getLogger(GlobalAdviceController.class);
 
     @Transactional
     @ExceptionHandler(value = PermissionDeniedDataAccessException.class)

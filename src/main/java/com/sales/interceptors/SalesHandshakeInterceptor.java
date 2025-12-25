@@ -25,7 +25,6 @@ public class SalesHandshakeInterceptor implements HandshakeInterceptor {
         // Extract username from request (e.g., from a custom header)
 //        String username = extractUsernameFromRequest(request);
         String userSlug = request.getURI().getQuery();
-        System.out.println("user slug from  chat socket  : "+userSlug);
         // Store username in session attributes
         if (userSlug != null) {
             attributes.put("username", userSlug);
@@ -47,7 +46,7 @@ public class SalesHandshakeInterceptor implements HandshakeInterceptor {
         // Implement your logic here to extract username from the request
         // For example, from a custom header:
 
-//        request.getHeaders().forEach((key, value) -> System.out.println(key + " : " + value));
+//        request.getHeaders().forEach((key, value) -> log.info(key + " : " + value));
         String cookieString = request.getHeaders().getFirst("cookie");
         if (cookieString != null) {
             String[] cookies = cookieString.split("; ");
