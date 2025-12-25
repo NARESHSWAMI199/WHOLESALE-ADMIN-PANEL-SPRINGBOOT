@@ -144,9 +144,9 @@ public class StoreService extends RepoContainer{
             // if there is any required field null, then this will throw IllegalArgumentException
             validateRequiredFieldsForStore(storeDto);
             try {
-                StoreCategory storeCategory = storeCategoryRepository.findById(storeDto.getCategoryId()).get();
+                StoreCategory storeCategory = storeCategoryRepository.findById(storeDto.getCategoryId()).orElseThrow(() -> new NotFoundException("Store category not found."));
                 storeDto.setStoreCategory(storeCategory);
-                StoreSubCategory storeSubCategory = storeSubCategoryRepository.findById(storeDto.getSubCategoryId()).get();
+                StoreSubCategory storeSubCategory = storeSubCategoryRepository.findById(storeDto.getSubCategoryId()).orElseThrow(() -> new NotFoundException("Store subcategory not found."));
                 storeDto.setStoreSubCategory(storeSubCategory);
             } catch (Exception e){
                 throw new IllegalArgumentException("Invalid arguments for category and subcategory");

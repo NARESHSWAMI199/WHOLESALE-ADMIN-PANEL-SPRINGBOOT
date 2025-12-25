@@ -168,8 +168,8 @@ public class ItemService extends RepoContainer{
         itemDto.setName(itemName);
 
         // retrieve category and subcategory
-        ItemCategory itemCategory = itemCategoryRepository.findById(itemDto.getCategoryId()).get();
-        ItemSubCategory itemSubCategory = itemSubCategoryRepository.findById(itemDto.getSubCategoryId()).get();
+        ItemCategory itemCategory = itemCategoryRepository.findById(itemDto.getCategoryId()).orElseThrow(() -> new NotFoundException("Item category not found."));
+        ItemSubCategory itemSubCategory = itemSubCategoryRepository.findById(itemDto.getSubCategoryId()).orElseThrow(() -> new NotFoundException("Item subcategory not found."));
         itemDto.setItemCategory(itemCategory);
         itemDto.setItemSubCategory(itemSubCategory);
 
@@ -481,7 +481,7 @@ public class ItemService extends RepoContainer{
 
     public ItemCategory getItemCategoryById(int categoryId) {
         logger.info("Entering getItemCategoryById with categoryId: {}", categoryId);
-        ItemCategory result = itemCategoryRepository.findById(categoryId).get();
+        ItemCategory result = itemCategoryRepository.findById(categoryId).orElseThrow(()-> new NotFoundException("Item category not found."));
         logger.info("Exiting getItemCategoryById with result: {}", result);
         return result;
     }

@@ -26,7 +26,7 @@ public class WalletTransactionSpecification {
 
     public static Specification<WalletTransaction> hasSlug(Float amount){
         return ((root, query, criteriaBuilder) -> {
-            if(amount == null || amount.equals(0) ) return null;
+            if(amount == null || amount == 0 ) return null;
             return criteriaBuilder.equal(root.get(WalletTransaction_.amount),amount);
         });
     }
