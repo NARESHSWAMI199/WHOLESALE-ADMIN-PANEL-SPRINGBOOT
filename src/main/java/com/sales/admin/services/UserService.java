@@ -316,10 +316,10 @@ public class UserService extends RepoContainer {
                 storeService.createOrUpdateStore(storeDto, loggedUser,path);
             }
             if (isUpdated > 0) {
-                responseObj.put("message", "Successfully updated.");
+                responseObj.put(ConstantResponseKeys.MESSAGE, "Successfully updated.");
                 responseObj.put(ConstantResponseKeys.STATUS, 200);
             } else {
-                responseObj.put("message", "Nothing to updated. may be something went wrong");
+                responseObj.put(ConstantResponseKeys.MESSAGE, "Nothing to updated. may be something went wrong");
                 responseObj.put(ConstantResponseKeys.STATUS, 404);
                 // return responseObj;
             }
@@ -353,10 +353,10 @@ public class UserService extends RepoContainer {
 
             if (updatedUser.getId() > 0) {
                 responseObj.put("res", updatedUser);
-                responseObj.put("message", "Successfully inserted.");
+                responseObj.put(ConstantResponseKeys.MESSAGE, "Successfully inserted.");
                 responseObj.put(ConstantResponseKeys.STATUS, 201);
             } else {
-                responseObj.put("message", "Nothing to save. may be something went wrong please contact to administrator.");
+                responseObj.put(ConstantResponseKeys.MESSAGE, "Nothing to save. may be something went wrong please contact to administrator.");
                 responseObj.put(ConstantResponseKeys.STATUS, 500);
             }
         }
@@ -543,10 +543,10 @@ public class UserService extends RepoContainer {
         if (user == null) throw new NotFoundException("User not found.");
         int isUpdated = permissionHbRepository.assignPermissionsToWholesaler(user.getId(), userDto.getStorePermissions());
         if (isUpdated > 0) {
-            responseObject.put("message", "All permissions have been updated successfully.");
+            responseObject.put(ConstantResponseKeys.MESSAGE, "All permissions have been updated successfully.");
             responseObject.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObject.put("message", "We don't found any user to update");
+            responseObject.put(ConstantResponseKeys.MESSAGE, "We don't found any user to update");
             responseObject.put(ConstantResponseKeys.STATUS, 404);
         }
         return responseObject;

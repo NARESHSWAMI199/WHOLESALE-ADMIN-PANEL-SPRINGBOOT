@@ -4,6 +4,7 @@ package com.sales.wholesaler.controller;
 import com.sales.dto.SearchFilters;
 import com.sales.entities.User;
 import com.sales.entities.WholesalerFuturePlan;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,13 +45,13 @@ public class WholesaleFuturePlansController extends WholesaleServiceContainer {
         Map<String,Object> result = new HashMap<>();
         int activated = wholesaleFuturePlansService.activateWholesalerFuturePlans(loggedUser, slug);
         if(activated > 0){
-            result.put("message","Future plan activated successfully.");
-            result.put("status",200);
+            result.put(ConstantResponseKeys.MESSAGE,"Future plan activated successfully.");
+            result.put(ConstantResponseKeys.STATUS,200);
         }else {
-            result.put("message","No plan found to activate.");
-            result.put("status",400); // it's bad request.
+            result.put(ConstantResponseKeys.MESSAGE,"No plan found to activate.");
+            result.put(ConstantResponseKeys.STATUS,400); // it's bad request.
         }
-        return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
+        return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
     }
 
 

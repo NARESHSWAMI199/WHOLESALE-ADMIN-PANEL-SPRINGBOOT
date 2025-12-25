@@ -215,10 +215,10 @@ public class WholesaleItemService extends WholesaleRepoContainer {
             updateStoreImage(itemDto.getPreviousItemImages(),itemDto.getNewItemImages(), itemDto.getSlug(),"update");
             int isUpdated = updateItem(itemDto, loggedUser); // Update operation
             if (isUpdated > 0) {
-                responseObj.put("message", "successfully updated.");
+                responseObj.put(ConstantResponseKeys.MESSAGE, "successfully updated.");
                 responseObj.put(ConstantResponseKeys.STATUS, 200);
             } else {
-                responseObj.put("message", "No item found to update.");
+                responseObj.put(ConstantResponseKeys.MESSAGE, "No item found to update.");
                 responseObj.put(ConstantResponseKeys.STATUS, 404);
             }
         } else {  // Going to crate Item
@@ -227,7 +227,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
 
             Item createdItem = createItem(itemDto, loggedUser); // Create operation
             responseObj.put("res", createdItem);
-            responseObj.put("message", "Successfully inserted.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Successfully inserted.");
             responseObj.put(ConstantResponseKeys.STATUS, 201);
         }
         logger.info("Completed createOrUpdateItem method");

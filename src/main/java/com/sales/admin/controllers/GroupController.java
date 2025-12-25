@@ -69,10 +69,10 @@ public class GroupController extends ServiceContainer {
         User loggedUser = (User) request.getAttribute("user");
         int isUpdated = groupService.deleteGroupBySlug(deleteDto, loggedUser);
         if (isUpdated > 0) {
-            responseObj.put("message", "User has been successfully deleted.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "User has been successfully deleted.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "No group found to delete");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No group found to delete");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));

@@ -40,10 +40,10 @@ public class ChatRoomController extends WholesaleServiceContainer{
         Map<String,Object> result = new HashMap<>();
         int isUpdated = chatRoomService.updateRoom(chatRoomDto, loggedUser);
         if(isUpdated > 0){
-            result.put("message","Chat room updated successfully");
+            result.put(ConstantResponseKeys.MESSAGE,"Chat room updated successfully");
             result.put(ConstantResponseKeys.STATUS,200);
         }else{
-            result.put("message","No room found for : "+chatRoomDto.getSlug());
+            result.put(ConstantResponseKeys.MESSAGE,"No room found for : "+chatRoomDto.getSlug());
             result.put("status",404);
         }
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));

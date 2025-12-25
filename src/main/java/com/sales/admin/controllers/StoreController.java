@@ -54,10 +54,10 @@ public class StoreController extends ServiceContainer{
         User loggedUser = (User) request.getAttribute("user");
         int isUpdated = storeService.deleteStoreBySlug(deleteDto,loggedUser);
         if (isUpdated > 0) {
-            responseObj.put("message", "Store has been successfully deleted.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Store has been successfully deleted.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         }else{
-            responseObj.put("message", "No store found to delete");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No store found to delete");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -74,7 +74,7 @@ public class StoreController extends ServiceContainer{
             responseObj.put("res", store);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         }else {
-            responseObj.put("message", "No store found.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No store found.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -90,7 +90,7 @@ public class StoreController extends ServiceContainer{
             responseObj.put("res", store);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         }else {
-            responseObj.put("message", "No record found.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No record found.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -137,16 +137,16 @@ public class StoreController extends ServiceContainer{
         try {
             int isUpdated = storeService.updateStoreImage(storeImage, slug);
             if (isUpdated > 0){
-                responseObj.put("message","successfully updated");
+                responseObj.put(ConstantResponseKeys.MESSAGE,"successfully updated");
                 responseObj.put(ConstantResponseKeys.STATUS,200);
             }else{
-                responseObj.put("message","No record found.");
+                responseObj.put(ConstantResponseKeys.MESSAGE,"No record found.");
                 responseObj.put(ConstantResponseKeys.STATUS,404);
             }
 
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();;
-            responseObj.put("message",e.getMessage());
+            responseObj.put(ConstantResponseKeys.MESSAGE,e.getMessage());
             responseObj.put(ConstantResponseKeys.STATUS,500);
         }
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -163,10 +163,10 @@ public class StoreController extends ServiceContainer{
         Map<String,Object> responseObj = new HashMap<>();
         int isUpdated = storeService.updateStatusBySlug(statusDto);
         if (isUpdated > 0) {
-            responseObj.put("message", "Store's status has been successfully updated.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Store's status has been successfully updated.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         }else{
-            responseObj.put("message", "No store found.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No store found.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -204,10 +204,10 @@ public class StoreController extends ServiceContainer{
         if(updatedStoreCategory != null) {
              result.put("res",updatedStoreCategory);
             if(categoryDto.getId() !=null && categoryDto.getId() != 0) {
-                result.put("message", "Category successfully updated.");
+                result.put(ConstantResponseKeys.MESSAGE, "Category successfully updated.");
                 result.put(ConstantResponseKeys.STATUS, 200);
             }else {
-                result.put("message", "Category successfully inserted.");
+                result.put(ConstantResponseKeys.MESSAGE, "Category successfully inserted.");
                 result.put(ConstantResponseKeys.STATUS, 201);
             }
         }
@@ -230,10 +230,10 @@ public class StoreController extends ServiceContainer{
         User user = (User) request.getAttribute("user");
         int isUpdated = storeService.deleteStoreCategory(deleteDto,user);
         if (isUpdated > 0) {
-            responseObj.put("message", "Store's category was successfully deleted.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Store's category was successfully deleted.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "No category found to delete.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No category found to delete.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -256,10 +256,10 @@ public class StoreController extends ServiceContainer{
         User user = (User) request.getAttribute("user");
         int isUpdated = storeService.deleteStoreSubCategory(deleteDto,user);
         if (isUpdated > 0) {
-            responseObj.put("message", "Store's subcategory successfully deleted.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Store's subcategory successfully deleted.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "No subcategory found to delete.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No subcategory found to delete.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -274,10 +274,10 @@ public class StoreController extends ServiceContainer{
         if(updatedStoreSubCategory != null) {
             result.put("res",updatedStoreSubCategory);
             if(subCategoryDto.getId() != null) {
-                result.put("message", "Subcategory successfully updated.");
+                result.put(ConstantResponseKeys.MESSAGE, "Subcategory successfully updated.");
                 result.put(ConstantResponseKeys.STATUS, 200);
             }else {
-                result.put("message", "Subcategory successfully inserted.");
+                result.put(ConstantResponseKeys.MESSAGE, "Subcategory successfully inserted.");
                 result.put(ConstantResponseKeys.STATUS, 201);
             }
         }

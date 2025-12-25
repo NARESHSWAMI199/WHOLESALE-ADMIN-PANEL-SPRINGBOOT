@@ -5,6 +5,7 @@ import com.sales.dto.ChatUserDto;
 import com.sales.dto.ContactDto;
 import com.sales.entities.ChatUser;
 import com.sales.entities.User;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -49,12 +50,12 @@ public class ChatUserController extends WholesaleServiceContainer {
         ChatUser chatUser = chatUserService.addNewChatUser(loggedUser, contactDto.getContactSlug(),"A");
         if(chatUser != null){
             logger.info("Chat user added successfully for user: {}", loggedUser.getId());
-            result.put("message","Your chat user has been successfully inserted");
-            result.put("status", 200);
+            result.put(ConstantResponseKeys.MESSAGE,"Your chat user has been successfully inserted");
+            result.put(ConstantResponseKeys.STATUS, 200);
         }else {
             logger.error("Failed to add chat user for user: {}", loggedUser.getId());
-            result.put("message","Something went wrong during insert your chat user");
-            result.put("status", 400);
+            result.put(ConstantResponseKeys.MESSAGE,"Something went wrong during insert your chat user");
+            result.put(ConstantResponseKeys.STATUS, 400);
         }
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
     }
@@ -69,11 +70,11 @@ public class ChatUserController extends WholesaleServiceContainer {
         int contact = chatUserService.removeChatUser(loggedUser, contactDto.getContactSlug(),contactDto.getDeleteChats());
         if(contact>0){
             logger.info("Chat user removed successfully for user: {}", loggedUser.getId());
-            result.put("message","Your Chat user has been successfully removed.");
+            result.put(ConstantResponseKeys.MESSAGE,"Your Chat user has been successfully removed.");
             result.put("status", 200);
         }else {
             logger.error("Failed to removed Chat user for user: {}", loggedUser.getId());
-            result.put("message","No Chat user found to delete.");
+            result.put(ConstantResponseKeys.MESSAGE,"No Chat user found to delete.");
             result.put("status", 404);
         }
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
@@ -93,11 +94,11 @@ public class ChatUserController extends WholesaleServiceContainer {
         }
         if(accepted){
             logger.info("Chat {} successfully for user: {}", status, loggedUser.getId());
-            result.put("message","Chat "+status+" .");
+            result.put(ConstantResponseKeys.MESSAGE,"Chat "+status+" .");
             result.put("status",200);
         }else {
             logger.error("Failed to {} chat for user: {}", status, loggedUser.getId());
-            result.put("message","Something went wrong during "+status+" chat.");
+            result.put(ConstantResponseKeys.MESSAGE,"Something went wrong during "+status+" chat.");
             result.put("status",400);
         }
 

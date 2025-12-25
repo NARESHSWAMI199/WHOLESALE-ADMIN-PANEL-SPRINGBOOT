@@ -23,10 +23,10 @@ public class WholesalePromotionsService extends WholesaleRepoContainer {
         storePromotionDto.setStoreId(storeId);
         int isInserted = wholesaleHbPromotion.insertStorePromotions(storePromotionDto,loggedUser); // Create operation
         if(isInserted > 0){
-            response.put("message","Your item is going to promote.");
+            response.put(ConstantResponseKeys.MESSAGE,"Your item is going to promote.");
             response.put(ConstantResponseKeys.STATUS,200);
         }else {
-            response.put("message","Something went wrong during promote item. if your money was deducted contact to administrator");
+            response.put(ConstantResponseKeys.MESSAGE,"Something went wrong during promote item. if your money was deducted contact to administrator");
             response.put(ConstantResponseKeys.STATUS,400);
         }
         logger.info("Completed insertItemPromotion method");

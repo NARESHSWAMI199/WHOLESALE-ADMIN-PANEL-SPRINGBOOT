@@ -3,6 +3,7 @@ package com.sales.wholesaler.controller;
 import com.sales.dto.ContactDto;
 import com.sales.entities.Contact;
 import com.sales.entities.User;
+import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,14 +38,14 @@ public class ContactController extends WholesaleServiceContainer {
         if(contact != null){
             logger.info("Contact added successfully for user: {}", loggedUser.getId());
             result.put("contact",contact.getContactUser());
-            result.put("message","Your contact has been successfully added.");
-            result.put("status", 200);
+            result.put(ConstantResponseKeys.MESSAGE,"Your contact has been successfully added.");
+            result.put(ConstantResponseKeys.STATUS, 200);
         }else {
             logger.error("Failed to add contact for user: {}", loggedUser.getId());
-            result.put("message","Something went wrong during insert your contact");
-            result.put("status", 400);
+            result.put(ConstantResponseKeys.MESSAGE,"Something went wrong during insert your contact");
+            result.put(ConstantResponseKeys.STATUS, 400);
         }
-        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
     }
 
     @PostMapping("remove")
@@ -55,14 +56,14 @@ public class ContactController extends WholesaleServiceContainer {
         int contact = contactService.removeContact(loggedUser, contactDto.getContactSlug(),contactDto.getDeleteChats());
         if(contact>0){
             logger.info("Contact removed successfully for user: {}", loggedUser.getId());
-            result.put("message","Your contact has been successfully removed.");
-            result.put("status", 200);
+            result.put(ConstantResponseKeys.MESSAGE,"Your contact has been successfully removed.");
+            result.put(ConstantResponseKeys.STATUS, 200);
         }else {
             logger.error("Failed to removed contact for user: {}", loggedUser.getId());
-            result.put("message","No contact found to delete.");
-            result.put("status", 404);
+            result.put(ConstantResponseKeys.MESSAGE,"No contact found to delete.");
+            result.put(ConstantResponseKeys.STATUS, 404);
         }
-        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
     }
 
 }

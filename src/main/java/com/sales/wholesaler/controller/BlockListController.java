@@ -2,6 +2,7 @@ package com.sales.wholesaler.controller;
 
 import com.sales.entities.BlockedUser;
 import com.sales.entities.User;
+import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,13 +27,13 @@ public class BlockListController extends WholesaleServiceContainer {
         User loggedUser = (User) request.getAttribute("user");
         BlockedUser blockedUser = blockListService.addAUserInBlockList(loggedUser, recipient);
         if(blockedUser.getId() > 0){
-            result.put("message","User has been successfully blocked");
-            result.put("status",200);
+            result.put(ConstantResponseKeys.MESSAGE,"User has been successfully blocked");
+            result.put(ConstantResponseKeys.STATUS,200);
         }else {
-            result.put("message","Something went wrong during block user");
-            result.put("status", 400);
+            result.put(ConstantResponseKeys.MESSAGE,"Something went wrong during block user");
+            result.put(ConstantResponseKeys.STATUS, 400);
         }
-        return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
+        return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -44,13 +45,13 @@ public class BlockListController extends WholesaleServiceContainer {
         User loggedUser = (User) request.getAttribute("user");
         boolean unblocked = blockListService.removeUserFromBlockList(loggedUser.getId(), recipient);
         if(unblocked){
-            result.put("message","User has been successfully unblocked");
-            result.put("status",200);
+            result.put(ConstantResponseKeys.MESSAGE,"User has been successfully unblocked");
+            result.put(ConstantResponseKeys.STATUS,200);
         }else {
-            result.put("message","Something went wrong during unblock user");
-            result.put("status", 400);
+            result.put(ConstantResponseKeys.MESSAGE,"Something went wrong during unblock user");
+            result.put(ConstantResponseKeys.STATUS, 400);
         }
-        return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
+        return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
     }
 
 

@@ -77,10 +77,10 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         }
         int isUpdated = updateStore(storeDto, loggedUser); // Update operation
         if (isUpdated > 0) {
-            responseObj.put("message", "successfully updated.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "successfully updated.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "No store found to update");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No store found to update");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         logger.info("Completed updateStoreBySlug method");

@@ -171,10 +171,10 @@ public class StoreService extends RepoContainer{
 
                 int isUpdated = updateStore(storeDto, loggedUser);
                 if (isUpdated > 0) {
-                    responseObj.put("message", "Successfully updated.");
+                    responseObj.put(ConstantResponseKeys.MESSAGE, "Successfully updated.");
                     responseObj.put(ConstantResponseKeys.STATUS, 200);
                 } else {
-                    responseObj.put("message", "Nothing found to updated.");
+                    responseObj.put(ConstantResponseKeys.MESSAGE, "Nothing found to updated.");
                     responseObj.put(ConstantResponseKeys.STATUS, 404);
                 }
             } else {  // We are going to create a store.
@@ -193,7 +193,7 @@ public class StoreService extends RepoContainer{
                 storeDto.setStoreName(storeName);
                 Store createdStore = createStore(storeDto, loggedUser);
                 responseObj.put("res", createdStore);
-                responseObj.put("message", "Successfully inserted.");
+                responseObj.put(ConstantResponseKeys.MESSAGE, "Successfully inserted.");
                 responseObj.put(ConstantResponseKeys.STATUS, 201);
             }
         logger.info("Exiting createOrUpdateStore");

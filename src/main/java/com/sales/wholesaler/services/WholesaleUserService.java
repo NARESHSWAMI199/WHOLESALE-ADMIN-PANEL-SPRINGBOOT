@@ -193,10 +193,10 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         userDto.setUsername(username);
         int isUpdated = updateUser(userDto, loggedUser); // Update operation
         if (isUpdated > 0) {
-            responseObj.put("message", "Successfully updated.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Successfully updated.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "No user found to update.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No user found to update.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         logger.info("Completed updateUserProfile method");

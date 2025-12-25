@@ -131,13 +131,13 @@ public class ServicePlanService extends  RepoContainer {
                 int isUpdated = servicePlanHbRepository.updateServicePlansStatus(status, statusDto.getSlug(), loggedUser);
                 if (isUpdated > 0) {
                     if (status.equals("A")) {
-                        result.put("message", "Successfully Activated.");
+                        result.put(ConstantResponseKeys.MESSAGE, "Successfully Activated.");
                     } else {
-                        result.put("message", "Successfully Deactivated.");
+                        result.put(ConstantResponseKeys.MESSAGE, "Successfully Deactivated.");
                     }
                     result.put(ConstantResponseKeys.STATUS, 200);
                 } else {
-                    result.put("message", "No plan found to update.");
+                    result.put(ConstantResponseKeys.MESSAGE, "No plan found to update.");
                     result.put(ConstantResponseKeys.STATUS, 404);
                 }
                 logger.info("Exiting updateServicePlanStatus with result: {}", result);
@@ -156,10 +156,10 @@ public class ServicePlanService extends  RepoContainer {
         if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("You don't have permission to perform this action.Contact to your administrator.",new Exception());
         int isUpdated = servicePlanHbRepository.deleteServicePlan(slug, loggedUser);
         if(isUpdated > 0){
-            result.put("message","Service plan successfully deleted.");
+            result.put(ConstantResponseKeys.MESSAGE,"Service plan successfully deleted.");
             result.put(ConstantResponseKeys.STATUS, 200);
         }else{
-            result.put("message","No service plan found to delete.");
+            result.put(ConstantResponseKeys.MESSAGE,"No service plan found to delete.");
             result.put(ConstantResponseKeys.STATUS,404);
         }
         logger.info("Exiting deletedServicePlan with result: {}", result);

@@ -32,10 +32,10 @@ public class WholesalePaginationController extends WholesaleServiceContainer {
         userPaginationDto.setUserId(loggedUser.getId());
         int updated = wholesalePaginationService.updateUserPaginationRowsNumber(userPaginationDto);
         if(updated > 0) {
-            responseObj.put("message","Pagination updated successfully");
+            responseObj.put(ConstantResponseKeys.MESSAGE,"Pagination updated successfully");
             responseObj.put(ConstantResponseKeys.STATUS,200);
         }else{
-            responseObj.put("message","No record found to update.");
+            responseObj.put(ConstantResponseKeys.MESSAGE,"No record found to update.");
             responseObj.put(ConstantResponseKeys.STATUS,404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));

@@ -8,6 +8,7 @@ import com.sales.dto.UserPlanDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
 import com.sales.entities.WholesalerPlans;
+import com.sales.global.ConstantResponseKeys;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
@@ -63,18 +64,18 @@ public class ServicePlanController extends ServiceContainer {
         Map<String,Object> result = new HashMap<>();
         ServicePlan servicePlan = servicePlanService.insertServicePlan(loggedUser,servicePlanDto);
         result.put("res",servicePlan);
-        result.put("message","Service plan added successfully.");
-        result.put("status" , 201);
-        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+        result.put(ConstantResponseKeys.MESSAGE,"Service plan added successfully.");
+        result.put(ConstantResponseKeys.STATUS , 201);
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
     }
 
 
-    @PostMapping("status")
+    @PostMapping(ConstantResponseKeys.STATUS)
     public ResponseEntity<Map<String,Object>> updateStatus(HttpServletRequest request, @RequestBody StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.info("Updating status for service plan: {}", statusDto);
         User loggedUser = (User) request.getAttribute("user");
         Map<String, Object> result = servicePlanService.updateServicePlanStatus(statusDto, loggedUser);
-        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -83,7 +84,7 @@ public class ServicePlanController extends ServiceContainer {
         logger.info("Deleting service plan: {}", deleteDto);
         User loggedUser = (User) request.getAttribute("user");
         Map<String, Object> result = servicePlanService.deletedServicePlan(deleteDto,loggedUser);
-        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
     }
 
 }

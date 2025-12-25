@@ -79,13 +79,13 @@ public class GroupService extends RepoContainer {
             // Going to update existing group.
             int isUpdated = permissionHbRepository.updateGroup(groupDto, group.getId());
             if (isUpdated > 0 && group.getId() == 0) {
-                responseObject.put("message", "The group has been updated successfully. But dear " + loggedUser.getUsername() + " ji We are not able to remove permissions. from " + group.getName() + " New permissions updated.");
+                responseObject.put(ConstantResponseKeys.MESSAGE, "The group has been updated successfully. But dear " + loggedUser.getUsername() + " ji We are not able to remove permissions. from " + group.getName() + " New permissions updated.");
                 responseObject.put(ConstantResponseKeys.STATUS, 200);
             } else if (isUpdated > 0) {
-                responseObject.put("message", "The group has been updated successfully.");
+                responseObject.put(ConstantResponseKeys.MESSAGE, "The group has been updated successfully.");
                 responseObject.put(ConstantResponseKeys.STATUS, 200);
             } else {
-                responseObject.put("message", "No record found to update.");
+                responseObject.put(ConstantResponseKeys.MESSAGE, "No record found to update.");
                 responseObject.put(ConstantResponseKeys.STATUS, 404);
             }
         } else { // Going to insert a new group
@@ -96,7 +96,7 @@ public class GroupService extends RepoContainer {
             // Updating given permissions.
             permissionHbRepository.updatePermissions(insertedGroup.getId(), groupDto.getPermissions());
             responseObject.put("res", insertedGroup);
-            responseObject.put("message", groupDto.getName() + " successfully created.");
+            responseObject.put(ConstantResponseKeys.MESSAGE, groupDto.getName() + " successfully created.");
             responseObject.put(ConstantResponseKeys.STATUS, 201);
         }
         logger.info("Exiting createOrUpdateGroup with responseObject: {}", responseObject);

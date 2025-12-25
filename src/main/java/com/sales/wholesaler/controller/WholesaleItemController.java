@@ -62,11 +62,11 @@ public class WholesaleItemController extends WholesaleServiceContainer {
         Map<String, Object> responseObj = new HashMap<>();
         Item alItems = wholesaleItemService.findItemBySLug(slug);
         if (alItems != null) {
-            responseObj.put("message", "success");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "success");
             responseObj.put("res", alItems);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "Item Not Found");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Item Not Found");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         logger.info("Completed getItem method");
@@ -111,10 +111,10 @@ public class WholesaleItemController extends WholesaleServiceContainer {
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
         int isUpdated = wholesaleItemService.deleteItem(deleteDto,storeId);
         if (isUpdated > 0) {
-            responseObj.put("message", "Item has been successfully deleted.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Item has been successfully deleted.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         }else{
-            responseObj.put("message", "No item found to delete.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No item found to delete.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         logger.info("Completed deleteItemBySlug method");
@@ -137,10 +137,10 @@ public class WholesaleItemController extends WholesaleServiceContainer {
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
         int isUpdated = wholesaleItemService.updateStock(params,storeId);
         if (isUpdated > 0) {
-            responseObj.put("message", "Item's stock has been successfully updated.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Item's stock has been successfully updated.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         }else{
-            responseObj.put("message", "No item found to update.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No item found to update.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         logger.info("Completed updateItemStock method");
@@ -177,7 +177,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
                 Map<String,List<String>> result = readExcel.getExcelDataInJsonFormat(excelSheet);
                 List<ItemHbRepository.ItemUpdateError> updateItemsError = wholesaleItemService.updateItemsWithExcel(result, user.getId());
                 if(updateItemsError.isEmpty()) {
-                    responseObj.put("message", "Items successfully updated.");
+                    responseObj.put(ConstantResponseKeys.MESSAGE, "Items successfully updated.");
                     responseObj.put(ConstantResponseKeys.STATUS, 200);
                     logger.info("Items successfully updated : {} ",updateItemsError);
                 }else{
@@ -189,18 +189,18 @@ public class WholesaleItemController extends WholesaleServiceContainer {
                             GlobalConstant.PATH_SEPARATOR+"notUpdated"+
                             GlobalConstant.PATH_SEPARATOR+"WHOLESALER_"+user.getSlug()+
                             GlobalConstant.PATH_SEPARATOR+fileName);
-                    responseObj.put("message", "Some items are not updated.");
+                    responseObj.put(ConstantResponseKeys.MESSAGE, "Some items are not updated.");
                     responseObj.put(ConstantResponseKeys.STATUS, 201);
                     logger.info("Some items are not updated : {} ",updateItemsError);
                 }
 
             } else {
-                responseObj.put("message", "Please add a proper file.");
+                responseObj.put(ConstantResponseKeys.MESSAGE, "Please add a proper file.");
                 responseObj.put(ConstantResponseKeys.STATUS, 400);
             }
 //            User loggedUser = (User) request.getAttribute("user");
         } catch (Exception e) {
-            responseObj.put("message", e.getMessage());
+            responseObj.put(ConstantResponseKeys.MESSAGE, e.getMessage());
             responseObj.put(ConstantResponseKeys.STATUS, 500);
             logger.error("Facing Exception during updating or importing item from excel sheet  ; {}",e.getMessage());
         }
@@ -218,7 +218,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
             String filePath = wholesaleItemService.createItemsExcelSheet(searchFilters,user);
             Path path = Paths.get(filePath);
             Resource resource = new UrlResource(path.toUri());
-            responseObj.put("message", "File successfully downloaded.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "File successfully downloaded.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
             logger.info("Response during export items excel sheet : {} ",responseObj);
             HttpHeaders headers = new HttpHeaders();
@@ -226,7 +226,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
             headers.setContentDispositionFormData("attachment", "myItemsExcelFile.xlsx");
             return new ResponseEntity<>(resource.getContentAsByteArray(), headers, org.springframework.http.HttpStatus.OK);
         } catch (Exception e) {
-            responseObj.put("message", e.getMessage());
+            responseObj.put(ConstantResponseKeys.MESSAGE, e.getMessage());
             responseObj.put(ConstantResponseKeys.STATUS, 500);
             logger.error("Exception during export excel : {}",e.getMessage(),e);
         }

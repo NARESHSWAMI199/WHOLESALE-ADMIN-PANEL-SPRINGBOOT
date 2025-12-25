@@ -1,0 +1,113 @@
+server:
+  port: 8080
+
+
+spring:
+  application:
+    redis:
+      host: localhost
+      port: 6379
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/test
+    username: root
+    password: password
+    #    url: jdbc:mysql://db:3306/sales #docker
+    #    username: sales
+    #    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+        ddl-auto: update
+    open-in-view: false
+  mvc:
+    view:
+      prefix: '/'
+      suffix: '.html'
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+default:
+  password: saleispower
+
+jwt:
+  secret: saleispower
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+
+    health:
+      show-details=always:
+
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+logging:
+  level:
+    org:
+      springframework:
+        cache:
+          interceptor: TRACE
+
+
+
+phonepe :
+  key : 96434309-7796-489d-8924-ab56988a6076
+  mid : PGTESTPAYUAT86
+  env : UAT
+
+cashfree :
+  key : cfsk_ma_test_4101943cd010dd3f59d86a25d03df53a_cce9da94
+  mid : TEST10390991bf0adc9155492e36f12619909301
+  env : TEST
+  mobile : 9999999999
+  callback_uri: https://ac82-45-249-85-171.ngrok-free.app
+  redirect_uri: http://localhost:3000
+
+# ------------------ start public folder path
+public_folder :
+  absolute : /Users/nareshswami/Documents/springboot/backend/sales-admin/src/main/resources/public
+  #  absolute : C:\Users\abc\Documents\demo\sales-backend\src\main\resources\public
+  get : /Users/nareshswami/Documents/springboot/backend/sales-admin/src/main/resources/public
+
+# ------------------! end public folder path
+
+profile :
+  absolute  : ${public_folder.absolute}/profiles/
+  get : ${public_folder.get}/profiles/
+
+store :
+  absolute  :  ${public_folder.absolute}/stores/
+  get :  ${public_folder.get}/stores/
+
+item:
+  absolute:  ${public_folder.absolute}/items/
+  get:  ${public_folder.get}/items/
+
+removebg :
+  absolute : ${public_folder.absolute}/removebg/
+  get :  ${public_folder.get}/removebg/
+
+chat :
+  absolute  : ${public_folder.absolute}/chat/
+  get:  ${public_folder.get}/chat/
+
+excel:
+  export :
+    absolute :  ${public_folder.absolute}/items_excels/
+  update :
+    template : ${public_folder.get}/items_excels/update_items/update_item_template.xlsx
+  notUpdated:
+    absolute:  ${public_folder.absolute}/items_excels/not_updated_items/

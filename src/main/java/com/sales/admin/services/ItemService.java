@@ -185,10 +185,10 @@ public class ItemService extends RepoContainer{
             // updating item images
             updateStoreImage(itemDto.getPreviousItemImages(),itemDto.getNewItemImages(),itemDto.getSlug(),"update");
             if (isUpdated > 0) {
-                responseObj.put("message", "successfully updated.");
+                responseObj.put(ConstantResponseKeys.MESSAGE, "successfully updated.");
                 responseObj.put(ConstantResponseKeys.STATUS, 200);
             } else {
-                responseObj.put("message", "No item found to update.");
+                responseObj.put(ConstantResponseKeys.MESSAGE, "No item found to update.");
                 responseObj.put(ConstantResponseKeys.STATUS, 404);
             }
         } else { // Going to create item
@@ -197,7 +197,7 @@ public class ItemService extends RepoContainer{
             validateRequiredFieldsBeforeCreateItem(itemDto);
             Item createdItem = createItem(itemDto, loggedUser);
             responseObj.put("res", createdItem);
-            responseObj.put("message", "Successfully inserted.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Successfully inserted.");
             responseObj.put(ConstantResponseKeys.STATUS, 201);
         }
         logger.info("Exiting createOrUpdateItem");

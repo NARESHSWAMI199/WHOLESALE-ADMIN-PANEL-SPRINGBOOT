@@ -100,18 +100,18 @@ public class UserController extends ServiceContainer {
         Map<String, Object> responseObj = new HashMap<>();
         User user = userService.findUserByOtpAndEmail(userDetails);
         if (user == null) {
-            responseObj.put("message", "Wrong otp password.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Wrong otp password.");
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
             Map<String, Object> paginations = paginationService.findUserPaginationsByUserId(user);
             responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
-            responseObj.put("message", "Successfully logged in.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Successfully logged in.");
             responseObj.put("user", user);
             responseObj.put("paginations",paginations);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
             userService.resetOtp(user.getEmail());
         } else {
-            responseObj.put("message", "You are blocked by admin.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "You are blocked by admin.");
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -133,10 +133,10 @@ public class UserController extends ServiceContainer {
         boolean sendOtp = userService.sendOtp(userDto);
         if(sendOtp)  {
             responseObj.put(ConstantResponseKeys.STATUS,200);
-            responseObj.put("message", "Otp sent successfully");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Otp sent successfully");
         }else {
             responseObj.put(ConstantResponseKeys.STATUS,400);
-            responseObj.put("message", "We facing some issue to send otp to this mail ->"+userDto.getEmail());
+            responseObj.put(ConstantResponseKeys.MESSAGE, "We facing some issue to send otp to this mail ->"+userDto.getEmail());
         }
         return  new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
@@ -188,7 +188,7 @@ public class UserController extends ServiceContainer {
             responseObj.put("res", user);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "User not found.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "User not found.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -202,10 +202,10 @@ public class UserController extends ServiceContainer {
         User loggedUser = (User) request.getAttribute("user");
         int isUpdated = userService.deleteUserBySlug(deleteDto,loggedUser);
         if (isUpdated > 0) {
-            responseObj.put("message", "User has been successfully deleted.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "User has been successfully deleted.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "No user found to delete");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No user found to delete");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -219,10 +219,10 @@ public class UserController extends ServiceContainer {
         User loggedUser = (User) request.getAttribute("user");
         int isUpdated = userService.resetPasswordByUserSlug(passwordDto,loggedUser);
         if (isUpdated > 0 || loggedUser.getId() == GlobalConstant.suId) {
-            responseObj.put("message", "User password has been successfully updated.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "User password has been successfully updated.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "There is nothing to update.recheck you parameters");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "There is nothing to update.recheck you parameters");
             responseObj.put(ConstantResponseKeys.STATUS, 400);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -236,10 +236,10 @@ public class UserController extends ServiceContainer {
         User loggedUser = (User) request.getAttribute("user");
         int isUpdated = userService.updateStatusBySlug(statusDto,loggedUser);
         if (isUpdated > 0) {
-            responseObj.put("message", "User's status updated successfully.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "User's status updated successfully.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "No user found to update.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No user found to update.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -260,13 +260,13 @@ public class UserController extends ServiceContainer {
             if(imageName!=null) {
                 responseObj.put(ConstantResponseKeys.STATUS , 200);
                 responseObj.put("imageName",imageName);
-                responseObj.put("message" , "Profile image successfully updated");
+                responseObj.put(ConstantResponseKeys.MESSAGE , "Profile image successfully updated");
             }else {
                 responseObj.put(ConstantResponseKeys.STATUS  , 406);
-                responseObj.put("message" , "Not a valid profile image");
+                responseObj.put(ConstantResponseKeys.MESSAGE , "Not a valid profile image");
             }
         } catch (Exception e) {
-            responseObj.put("message", e.getMessage());
+            responseObj.put(ConstantResponseKeys.MESSAGE, e.getMessage());
             responseObj.put(ConstantResponseKeys.STATUS, 500);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
@@ -294,7 +294,7 @@ public class UserController extends ServiceContainer {
             responseObj.put("content", groupsIds);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "There is no groups.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "There is no groups.");
             responseObj.put(ConstantResponseKeys.STATUS, 400);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -314,7 +314,7 @@ public class UserController extends ServiceContainer {
             responseObj.put("allPermissions", wholesalerAllPermissions);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "There is no permission for this user.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "There is no permission for this user.");
             responseObj.put(ConstantResponseKeys.STATUS, 400);
         }
         return new ResponseEntity<>(responseObj,  HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));

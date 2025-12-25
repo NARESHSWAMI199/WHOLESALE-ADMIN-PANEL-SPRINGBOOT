@@ -30,10 +30,10 @@ public class WalletController extends ServiceContainer {
         Map<String,Object> result = new HashMap<>();
         boolean payment = walletService.paymentViaWallet(servicePlanSlug, userSlug);
         if(payment){
-            result.put("message","Plan purchased successfully.");
+            result.put(ConstantResponseKeys.MESSAGE,"Plan purchased successfully.");
             result.put(ConstantResponseKeys.STATUS,200);
         }else{
-            result.put("message","Inefficient amount in wallet.");
+            result.put(ConstantResponseKeys.MESSAGE,"Inefficient amount in wallet.");
             result.put(ConstantResponseKeys.STATUS,400);
         }
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));

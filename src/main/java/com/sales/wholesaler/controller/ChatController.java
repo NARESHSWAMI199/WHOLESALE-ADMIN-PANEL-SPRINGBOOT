@@ -4,6 +4,7 @@ import com.sales.dto.MessageDto;
 import com.sales.entities.Chat;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -115,11 +116,11 @@ public class ChatController extends WholesaleServiceContainer {
 
         List<String> allImagesName = chatService.saveAllImages(message, loggedUser);
         if(allImagesName.size() == message.getImages().size()){
-            result.put("message","All images successfully sent.");
-            result.put("status" , 200);
+            result.put(ConstantResponseKeys.MESSAGE,"All images successfully sent.");
+            result.put(ConstantResponseKeys.STATUS , 200);
         }else{
-            result.put("message","Something went wrong during save images.");
-            result.put("status" , 400);
+            result.put(ConstantResponseKeys.MESSAGE,"Something went wrong during save images.");
+            result.put(ConstantResponseKeys.STATUS , 400);
         }
 
         /* ------------------------------- sending message and saving message ------------------------------- */
@@ -221,9 +222,9 @@ public class ChatController extends WholesaleServiceContainer {
         User  loggedUser = (User) request.getAttribute("user");
         message.setReceiver(loggedUser.getSlug());
         wholesaleUserService.updateSeenMessages(message);
-        result.put("message","Message successfully updated.");
-        result.put("status", 200);
-        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+        result.put(ConstantResponseKeys.MESSAGE,"Message successfully updated.");
+        result.put(ConstantResponseKeys.STATUS, 200);
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -249,17 +250,17 @@ public class ChatController extends WholesaleServiceContainer {
         User loggedUser = (User) request.getAttribute("user");
         int isDeleted = chatService.deleteMessage(loggedUser, messageDto);
         if(isDeleted > 0){
-            result.put("message","deleted successfully");
-            result.put("status", 200);
+            result.put(ConstantResponseKeys.MESSAGE,"deleted successfully");
+            result.put(ConstantResponseKeys.STATUS, 200);
         }else{
-            result.put("message","Something went wrong due to message deleted");
-            result.put("status", 400);
+            result.put(ConstantResponseKeys.MESSAGE,"Something went wrong due to message deleted");
+            result.put(ConstantResponseKeys.STATUS, 400);
         }
         if(messageDto.getIsDeleted().equals("B")){
             /* you need to subscribe like  /user/{userId}/queue/private/deleted */
             messagingTemplate.convertAndSendToUser(messageDto.getReceiver(), "/queue/private/deleted",messageDto);
         }
-        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
 
     }
 

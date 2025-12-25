@@ -57,11 +57,11 @@ public class ItemController extends ServiceContainer {
         Map<String, Object> responseObj = new HashMap<>();
         Item alItems = itemService.findItemBySLug(slug);
         if (alItems != null) {
-            responseObj.put("message", "success");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "success");
             responseObj.put("res", alItems);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "Item Not Found");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Item Not Found");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -115,7 +115,7 @@ public class ItemController extends ServiceContainer {
                 }
                 List<ItemHbRepository.ItemUpdateError> updateItemsError = itemService.updateItemsWithExcel(result, user.getId(), wholesaleId);
                 if(updateItemsError.isEmpty()) {
-                    responseObj.put("message", "Items successfully updated.");
+                    responseObj.put(ConstantResponseKeys.MESSAGE, "Items successfully updated.");
                     responseObj.put(ConstantResponseKeys.STATUS, 200);
                     logger.info("Items successfully updated : {} ",updateItemsError);
                 }else{
@@ -126,17 +126,17 @@ public class ItemController extends ServiceContainer {
                             GlobalConstant.PATH_SEPARATOR+"notUpdated"+
                             GlobalConstant.PATH_SEPARATOR + wholesaleSlug+
                             GlobalConstant.PATH_SEPARATOR+fileName);
-                    responseObj.put("message", "Some items are not updated.");
+                    responseObj.put(ConstantResponseKeys.MESSAGE, "Some items are not updated.");
                     responseObj.put(ConstantResponseKeys.STATUS, 201);
                     logger.info("Some items are not updated : {} ",updateItemsError);
                 }
 
             } else {
-                responseObj.put("message", "Please add a proper file.");
+                responseObj.put(ConstantResponseKeys.MESSAGE, "Please add a proper file.");
                 responseObj.put(ConstantResponseKeys.STATUS, 400);
             }
         } catch (Exception e) {
-            responseObj.put("message", "Not a valid sheet or something went. Recheck your sheet otherwise contact to administrator.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Not a valid sheet or something went. Recheck your sheet otherwise contact to administrator.");
             responseObj.put(ConstantResponseKeys.STATUS, 500);
             logger.error("Facing Exception during updating or importing item from excel sheet  ; {}",e.getMessage());
         }
@@ -161,17 +161,17 @@ public class ItemController extends ServiceContainer {
                 String filePath = itemService.createItemsExcelSheet(searchFilters,wholesaleSlug,loggedUser);
                 Path path = Paths.get(filePath);
                 Resource resource = new UrlResource(path.toUri());
-                responseObj.put("message", "File successfully downloaded.");
+                responseObj.put(ConstantResponseKeys.MESSAGE, "File successfully downloaded.");
                 responseObj.put(ConstantResponseKeys.STATUS, 200);
                 MediaType mediaType = MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
                 return ResponseEntity.ok().contentType(mediaType).body(resource);
             } else {
                 logger.info("wholeSlug : " + wholesaleSlug);
-                responseObj.put("message", "Store not exist.");
+                responseObj.put(ConstantResponseKeys.MESSAGE, "Store not exist.");
                 responseObj.put(ConstantResponseKeys.STATUS, 500);
             }
         } catch (Exception e) {
-            responseObj.put("message", e.getMessage());
+            responseObj.put(ConstantResponseKeys.MESSAGE, e.getMessage());
             responseObj.put(ConstantResponseKeys.STATUS, 500);
             logger.error("Exception during export excel : {}",e.getMessage(),e);
         }
@@ -187,10 +187,10 @@ public class ItemController extends ServiceContainer {
         User user = (User) request.getAttribute("user");
         int isUpdated = itemService.deleteItem(deleteDto,user);
         if (isUpdated > 0) {
-            responseObj.put("message", "Item has been successfully deleted.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Item has been successfully deleted.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "No item found to delete.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No item found to delete.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -214,10 +214,10 @@ public class ItemController extends ServiceContainer {
         Map<String,Object> responseObj = new HashMap<>();
         int isUpdated = itemService.updateStock(params.get("stock"), params.get("slug"));
         if (isUpdated > 0) {
-            responseObj.put("message", "Item's stock has been successfully updated.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Item's stock has been successfully updated.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "No item found to update.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No item found to update.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -231,10 +231,10 @@ public class ItemController extends ServiceContainer {
         User user = (User) request.getAttribute("user");
         int isUpdated = itemService.updateStatusBySlug(statusDto,user);
         if (isUpdated > 0) {
-            responseObj.put("message", "Item's status has been successfully updated.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Item's status has been successfully updated.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "No item found to update.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No item found to update.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -272,10 +272,10 @@ public class ItemController extends ServiceContainer {
         if(updatedItemCategory != null) {
             result.put("res",updatedItemCategory); // during update and inserted for both
             if(categoryDto.getId() != null && categoryDto.getId() != 0) {
-                result.put("message", "Category successfully updated.");
+                result.put(ConstantResponseKeys.MESSAGE, "Category successfully updated.");
                 result.put(ConstantResponseKeys.STATUS, 200);
             }else {
-                result.put("message", "Category successfully inserted.");
+                result.put(ConstantResponseKeys.MESSAGE, "Category successfully inserted.");
                 result.put(ConstantResponseKeys.STATUS, 201);
             }
         }
@@ -290,10 +290,10 @@ public class ItemController extends ServiceContainer {
         User user = (User) request.getAttribute("user");
         int isUpdated = itemService.deleteItemCategory(deleteDto,user);
         if (isUpdated > 0) {
-            responseObj.put("message", "Item's category delete successfully.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Item's category delete successfully.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "No category to found.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No category to found.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -326,10 +326,10 @@ public class ItemController extends ServiceContainer {
         if(updateItemSubCategory != null) {
             result.put("res",updateItemSubCategory); // during update and inserted for both
             if(subCategoryDto.getId() != null) {
-                result.put("message", "Category successfully updated.");
+                result.put(ConstantResponseKeys.MESSAGE, "Category successfully updated.");
                 result.put(ConstantResponseKeys.STATUS, 200);
             }else {
-                result.put("message", "Category successfully inserted.");
+                result.put(ConstantResponseKeys.MESSAGE, "Category successfully inserted.");
                 result.put(ConstantResponseKeys.STATUS, 201);
             }
         }
@@ -344,10 +344,10 @@ public class ItemController extends ServiceContainer {
         User user = (User) request.getAttribute("user");
         int isUpdated = itemService.deleteItemSubCategory(deleteDto,user);
         if (isUpdated > 0) {
-            responseObj.put("message", "Item's subcategory deleted successfully");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "Item's subcategory deleted successfully");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "No subcategory found to delete.");
+            responseObj.put(ConstantResponseKeys.MESSAGE, "No subcategory found to delete.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));

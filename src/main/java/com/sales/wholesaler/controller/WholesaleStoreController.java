@@ -132,10 +132,10 @@ public class WholesaleStoreController extends WholesaleServiceContainer {
         User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         Store isInserted = wholesaleStoreService.createStore(storeDto,loggedUser);
         if(isInserted.getId() > 0){
-            result.put("message","Store created successfully. Welcome in Swami Sales");
+            result.put(ConstantResponseKeys.MESSAGE,"Store created successfully. Welcome in Swami Sales");
             result.put(ConstantResponseKeys.STATUS,200);
         }else{
-            result.put("message","Something went wrong");
+            result.put(ConstantResponseKeys.MESSAGE,"Something went wrong");
             result.put(ConstantResponseKeys.STATUS,400);
         }
         logger.info("Completed addNewStore method");
