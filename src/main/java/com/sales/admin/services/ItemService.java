@@ -78,7 +78,6 @@ public class ItemService extends RepoContainer{
             Gson itemsGson = new GsonBuilder().serializeNulls().create();
             String items = itemsGson.toJson(item);
             Map<String,Object> itemMap = new Gson().fromJson(items,Map.class);
-            logger.info("item map : {}",itemMap);
             itemMap.forEach((key,value)->{
                 if(key.equals("wholesale")){
                     // skip...
@@ -97,7 +96,7 @@ public class ItemService extends RepoContainer{
         String folderName  = wholesaleSlug;
         // When we're creating all items, excel without a specific user wholesale or store from admin pannel
         if(folderName == null) folderName = loggedUser.getSlug();
-        String filePath = writeExcel.writeExcel(result, totalItem, Arrays.asList(headers), folderName);
+        String filePath = writeExcel.createExcelSheet(result, totalItem, Arrays.asList(headers), folderName);
         logger.info("Exiting createItemsExcelSheet");
         return filePath;
     }

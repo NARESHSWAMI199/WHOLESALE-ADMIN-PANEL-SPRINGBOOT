@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,7 @@ public class WriteExcelUtil {
     @Value("${excel.notUpdated.absolute}")
     String getExcelNotUpdateItemsFolderPath;
 
-    public String writeExcel(Map<String, List<Object>> data, int totalRow, List<String> headers,String folderName) throws IOException {
+    public String createExcelSheet(Map<String, List<Object>> data, int totalRow, List<String> headers,String folderName) throws IOException {
         try(XSSFWorkbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Items");
             sheet.setColumnWidth(0, 6000);
@@ -86,7 +87,10 @@ public class WriteExcelUtil {
                 rowNo++;
             }
 
-            File file = new File(excelExportAbsolutePath+folderName);
+            Path absoluteExcelPath = Path.of(excelExportAbsolutePath);
+            Path resolve = absoluteExcelPath.resolve(folderName).normalize();
+            File file = new File(String.valueOf(resolve.toAbsolutePath()));
+
             if(!file.exists()) {
                 boolean created = file.mkdirs();
                 if(created) logger.info("The file is created at : {}",file.getAbsolutePath());

@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -239,8 +240,10 @@ public class WholesaleUserController extends WholesaleServiceContainer {
     String filePath;
 
     @GetMapping("/profile/{slug}/{filename}")
-    public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename , @PathVariable String slug) throws Exception {
-        Path path = Paths.get(filePath +"/"+slug+"/"+ filename);
+    public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename , @PathVariable String slug) throws MalformedURLException {
+        Path filePathFolder = Paths.get(filePath);
+        Path userSlug = filePathFolder.resolve(slug).normalize();
+        Path path = userSlug.resolve(filename).normalize();
         Resource resource = new UrlResource(path.toUri());
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
     }
