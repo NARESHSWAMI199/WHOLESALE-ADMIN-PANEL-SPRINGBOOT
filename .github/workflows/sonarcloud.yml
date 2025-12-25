@@ -44,7 +44,7 @@ jobs:
 
     - name: Quality Gate check (optional - fail build if quality gate fails)
       if: always()
-      uses: sonarsource/sonarqube-quality-gate-action@v3
+      uses: sonarsource/sonarqube-quality-gate-action@master
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: https://sonarcloud.io
