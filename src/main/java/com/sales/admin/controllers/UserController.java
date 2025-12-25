@@ -72,7 +72,7 @@ public class UserController extends ServiceContainer {
         } else if (user.getStatus().equalsIgnoreCase("A")) {
             message = "success";
             Map<String, Object> paginations = paginationService.findUserPaginationsByUserId(user);
-            responseObj.put(ConstantResponseKeys.TOKEN, "GlobalConstant.AUTH_TOKEN_PREFIX" + jwtToken.generateToken(user));
+            responseObj.put(ConstantResponseKeys.TOKEN, GlobalConstant.AUTH_TOKEN_PREFIX + jwtToken.generateToken(user));
             responseObj.put("user", user);
             responseObj.put(ConstantResponseKeys.PAGINATIONS,paginations);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
@@ -104,7 +104,7 @@ public class UserController extends ServiceContainer {
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
             Map<String, Object> paginations = paginationService.findUserPaginationsByUserId(user);
-            responseObj.put(ConstantResponseKeys.TOKEN, "GlobalConstant.AUTH_TOKEN_PREFIX" + jwtToken.generateToken(user));
+            responseObj.put(ConstantResponseKeys.TOKEN, GlobalConstant.AUTH_TOKEN_PREFIX + jwtToken.generateToken(user));
             responseObj.put(ConstantResponseKeys.MESSAGE, "Successfully logged in.");
             responseObj.put("user", user);
             responseObj.put(ConstantResponseKeys.PAGINATIONS,paginations);

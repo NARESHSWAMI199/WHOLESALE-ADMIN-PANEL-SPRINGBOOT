@@ -34,7 +34,7 @@ public class GlobalConstant {
 
     public static final String ITEMS_NOT_UPDATED_PATH_FOR_ADMIN = "/admin/item/notUpdated/";
     public static final String ITEMS_NOT_UPDATED_PATH_FOR_WHOLESALE = "/wholesale/item/notUpdated/";
-    public static final String AUTH_TOKEN_PREFIX = "GlobalConstant.AUTH_TOKEN_PREFIX";
+    public static final String AUTH_TOKEN_PREFIX = GlobalConstant.AUTH_TOKEN_PREFIX;
     public static final String AUTHORIZATION = "Authorization";
 
 

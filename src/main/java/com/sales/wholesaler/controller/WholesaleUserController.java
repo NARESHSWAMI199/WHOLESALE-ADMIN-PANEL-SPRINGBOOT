@@ -61,7 +61,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         }else if (user.getStatus().equalsIgnoreCase("A")) {
             message = "success";
-            responseObj.put(ConstantResponseKeys.TOKEN, "GlobalConstant.AUTH_TOKEN_PREFIX" + jwtToken.generateToken(user));
+            responseObj.put(ConstantResponseKeys.TOKEN, GlobalConstant.AUTH_TOKEN_PREFIX + jwtToken.generateToken(user));
             Store storeDetails = wholesaleStoreService.getStoreByUserId(user.getId());
             Map<String,Object> paginationsObj = wholesalePaginationService.findUserPaginationsByUserId(user);
             responseObj.put("user", user);
@@ -88,7 +88,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put(ConstantResponseKeys.MESSAGE, "Wrong otp password.");
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
-            responseObj.put(ConstantResponseKeys.TOKEN, "GlobalConstant.AUTH_TOKEN_PREFIX" + jwtToken.generateToken(user));
+            responseObj.put(ConstantResponseKeys.TOKEN, GlobalConstant.AUTH_TOKEN_PREFIX + jwtToken.generateToken(user));
             Store store = wholesaleStoreService.getStoreByUserId(user.getId());
             Map<String,Object> paginations = wholesalePaginationService.findUserPaginationsByUserId(user);
             responseObj.put(ConstantResponseKeys.MESSAGE, "success");
@@ -126,7 +126,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         } else if (user.getStatus().equalsIgnoreCase("A")) {
             Store store = wholesaleStoreService.getStoreByUserId(user.getId());
             Map<String,Object> paginations = wholesalePaginationService.findUserPaginationsByUserId(user);
-            responseObj.put(ConstantResponseKeys.TOKEN, "GlobalConstant.AUTH_TOKEN_PREFIX" + jwtToken.generateToken(user));
+            responseObj.put(ConstantResponseKeys.TOKEN, GlobalConstant.AUTH_TOKEN_PREFIX + jwtToken.generateToken(user));
             responseObj.put(ConstantResponseKeys.MESSAGE, "success");
             responseObj.put("user", user);
             responseObj.put(ConstantResponseKeys.STORE, store);
