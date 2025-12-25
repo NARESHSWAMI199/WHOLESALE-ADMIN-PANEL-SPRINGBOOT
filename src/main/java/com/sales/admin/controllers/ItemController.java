@@ -5,7 +5,7 @@ import com.sales.dto.*;
 import com.sales.entities.*;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;
-import com.sales.utils.WriteExcel;
+import com.sales.utils.WriteExcelUtil;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,7 +38,7 @@ public class ItemController extends ServiceContainer {
 
 
     @Autowired
-    WriteExcel writeExcel;
+    private WriteExcelUtil writeExcel;
 
     private static final Logger logger = LoggerFactory.getLogger(ItemController.class);
 

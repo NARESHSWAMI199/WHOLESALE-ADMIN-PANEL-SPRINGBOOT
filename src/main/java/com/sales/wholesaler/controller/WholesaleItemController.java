@@ -10,7 +10,7 @@ import com.sales.entities.ItemSubCategory;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;
-import com.sales.utils.WriteExcel;
+import com.sales.utils.WriteExcelUtil;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,7 +42,7 @@ import java.util.Map;
 public class WholesaleItemController extends WholesaleServiceContainer {
 
     @Autowired
-    WriteExcel writeExcel;
+    private  WriteExcelUtil writeExcel;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleItemController.class);
 
     @PostMapping("/all")

@@ -3,7 +3,7 @@ package com.sales.admin.services;
 
 import com.sales.admin.repositories.*;
 import com.sales.dto.SearchFilters;
-import com.sales.utils.WriteExcel;
+import com.sales.utils.WriteExcelUtil;
 import com.sales.wholesaler.repository.ChatHbRepository;
 import com.sales.wholesaler.repository.ChatRepository;
 import com.sales.wholesaler.repository.ChatUserRepository;
@@ -48,7 +48,7 @@ public class RepoContainer {
     protected  AddressHbRepository addressHbRepository;
 
     @Autowired
-    protected WriteExcel writeExcel;
+    protected WriteExcelUtil writeExcel;
 
 
     @Autowired
