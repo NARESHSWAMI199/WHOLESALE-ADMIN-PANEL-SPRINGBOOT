@@ -1,43 +1,30 @@
-# .github/workflows/ci-sonar.yml
-name: CI with SonarCloud + Build & Test
+name: CI with SonarCloud
 
 on:
   push:
-    branches: [ main, develop, feature/*, bugfix/* ]
+    branches: [ main, develop ]
   pull_request:
-    types: [opened, synchronize, reopened]
 
 jobs:
-  sonarqube:
-    name: SonarCloud Analysis + Build
+  sonar:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # Important for SonarQube differential analysis
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
 
-    - name: Cache Maven packages
-      uses: actions/cache@v4
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
-
-    - name: Build and analyze with SonarCloud
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}          # only needed for PR decoration
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: |
-        mvn -B verify \
-          org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.projectKey=nareshswami199_WHOLESALE-ADMIN-PANEL-SPRINGBOOT \
-          -Dsonar.organization=nareshswami199 \
-          -Dsonar.host.url=https://sonarcloud.io
+      - name: Build + SonarCloud Scan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn clean verify sonar:sonar \
+            -Dsonar.projectKey=nareshswami199_WHOLESALE-ADMIN-PANEL-SPRINGBOOT \
+            -Dsonar.organization=nareshswami199 \
+            -Dsonar.host.url=https://sonarcloud.io
