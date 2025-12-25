@@ -423,8 +423,6 @@ public class UserControllerTest extends TestUtil {
                 .replace("{contact}", randomPhone)
                 ;
 
-        log.error(json);
-
         mockMvc.perform(post("/admin/auth/update")
                         .headers(staffHeader)
                         .contentType(MediaType.APPLICATION_JSON)
