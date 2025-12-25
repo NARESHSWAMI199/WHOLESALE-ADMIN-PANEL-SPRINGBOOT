@@ -83,8 +83,7 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
             logger.error("Exception occurred during payment via PhonePe: {}", e.getMessage());
             result.put("message", "Something went wrong during payment. please contact to administrator.");
             result.put("status",500);
-            logger.info( "Exception occur in  payViaPhonePe :: "+ e.getMessage());
-            e.printStackTrace();
+            logger.error("Exception occur in  payViaPhonePe :: {}", e.getMessage());
         }
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
