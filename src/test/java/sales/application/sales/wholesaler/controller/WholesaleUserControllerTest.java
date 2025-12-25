@@ -5,6 +5,8 @@ import com.sales.SalesApplication;
 import com.sales.entities.User;
 import com.sales.wholesaler.repository.WholesaleUserRepository;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = {SalesApplication.class})
 @AutoConfigureMockMvc
 public class WholesaleUserControllerTest  extends TestUtil {
+
+    private final Logger logger  = LoggerFactory.getLogger(WholesaleStoreControllerTest.class);
 
     @Autowired
     MockMvc mockMvc;
@@ -59,7 +63,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
     public void validateOtp(String slug) throws Exception {
         User user = wholesaleUserRepository.findUserBySlug(slug);
         String otp = user.getOtp();
-        log.error("THE OTP ================== > "+otp);
+        logger.error("THE OTP ================== > "+otp);
         String json = """
                 {
                     "slug" : "{slug}",
