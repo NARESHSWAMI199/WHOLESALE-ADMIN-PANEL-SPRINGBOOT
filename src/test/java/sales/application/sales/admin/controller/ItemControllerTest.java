@@ -3,6 +3,7 @@ package sales.application.sales.admin.controller;
 
 import com.sales.SalesApplication;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.global.GlobalConstant;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -47,7 +48,7 @@ public class ItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                     {}
                 """;
@@ -73,7 +74,7 @@ public class ItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         MockMultipartFile file = getImageMultipartFileToUpload("newItemImages");
         List<MockMultipartFile> imageFiles = List.of(file);
         MockMultipartHttpServletRequestBuilder requestBuilder = multipart("/admin/item/add");
@@ -116,7 +117,7 @@ public class ItemControllerTest extends TestUtil {
         Map<String, String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", token);
+        headers.set(GlobalConstant.AUTHORIZATION, token);
         MockMultipartFile file = getImageMultipartFileToUpload("newItemImages");
         List<MockMultipartFile> imageFiles = List.of(file);
         MockMultipartHttpServletRequestBuilder requestBuilder = multipart("/admin/item/update");
@@ -149,7 +150,7 @@ public class ItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
 
         String json = """
                 {
@@ -175,7 +176,7 @@ public class ItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
 //        String slug = "c626ff4b-0118-47d9-964a-a8b7f6ac8569";
 
         String json = """
@@ -202,7 +203,7 @@ public class ItemControllerTest extends TestUtil {
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         String slug = "sdfsdfs";
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                 {
                 "slug" : "{slug}"
@@ -226,7 +227,7 @@ public class ItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                 {
                 "slug" : "{slug}"
@@ -250,7 +251,7 @@ public class ItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                   {
                   }
@@ -270,7 +271,7 @@ public class ItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                   {
                   }
@@ -291,7 +292,7 @@ public class ItemControllerTest extends TestUtil {
             Integer categoryId = (Integer) categoryDto.get("id");
 
             // Getting subcategories also
-            headers.set("Authorization", token);
+            headers.set(GlobalConstant.AUTHORIZATION, token);
             String subCategoryJson = """
                   {
                     "categoryId" : {categoryId}
@@ -313,7 +314,7 @@ public class ItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                   {
                   "category" : "Mock Test Category {random}",
@@ -336,7 +337,7 @@ public class ItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                   {
                   "id" : 17,
@@ -366,7 +367,7 @@ public class ItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                   {
                     "categoryId" : 0,
@@ -392,7 +393,7 @@ public class ItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                   {
                     "id" : 31,
@@ -427,7 +428,7 @@ public class ItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                 {
                     "slug" : "{slug}"
@@ -449,7 +450,7 @@ public class ItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                 {
                     "slug" : "{slug}"
@@ -469,7 +470,7 @@ public class ItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                 {
                     "slug" : "{slug}"

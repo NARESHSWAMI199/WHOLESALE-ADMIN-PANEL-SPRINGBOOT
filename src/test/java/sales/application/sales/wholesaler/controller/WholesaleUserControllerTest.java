@@ -4,6 +4,7 @@ package sales.application.sales.wholesaler.controller;
 import com.sales.SalesApplication;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.global.GlobalConstant;
 import com.sales.wholesaler.repository.WholesaleUserRepository;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -205,7 +206,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization" , token);
+        headers.set(GlobalConstant.AUTHORIZATION , token);
         String randomEmail = UUID.randomUUID().toString().substring(0,6) + "@mocktest.in";
         String randomPhone = getRandomMobileNumber();
         String json = """
@@ -236,7 +237,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization" , token);
+        headers.set(GlobalConstant.AUTHORIZATION , token);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/auth/detail")
                 .headers(headers)
@@ -253,7 +254,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization" , token);
+        headers.set(GlobalConstant.AUTHORIZATION , token);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/auth/detail/"+GlobalConstantTest.WHOLESALER_SLUG)
                 .headers(headers)
@@ -270,7 +271,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization" , token);
+        headers.set(GlobalConstant.AUTHORIZATION , token);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/auth/last-seen")
                 .headers(headers)
@@ -287,7 +288,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization" , token);
+        headers.set(GlobalConstant.AUTHORIZATION , token);
 
         String json = """
                 {
@@ -309,7 +310,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization" , token);
+        headers.set(GlobalConstant.AUTHORIZATION , token);
 
         String json = """
                 {

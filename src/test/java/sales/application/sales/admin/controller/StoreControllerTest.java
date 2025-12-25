@@ -4,6 +4,7 @@ package sales.application.sales.admin.controller;
 import com.google.gson.Gson;
 import com.sales.SalesApplication;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.global.GlobalConstant;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -46,7 +47,7 @@ public class StoreControllerTest extends TestUtil {
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         String slug = loggedUserResponse.get("slug");
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization" , token);
+        headers.set(GlobalConstant.AUTHORIZATION , token);
         String json = """
                 {
                     "userSlug" : "{userSlug}",
@@ -88,7 +89,7 @@ public class StoreControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization" , token);
+        headers.set(GlobalConstant.AUTHORIZATION , token);
         String json = """
                 {
                     "storeSlug" : "{storeSlug}",
@@ -128,7 +129,7 @@ public class StoreControllerTest extends TestUtil {
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
 
-        headers.set("Authorization" , token);
+        headers.set(GlobalConstant.AUTHORIZATION , token);
         String json = """
                     {
                     }
@@ -154,7 +155,7 @@ public class StoreControllerTest extends TestUtil {
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
 
-        headers.set("Authorization" , token);
+        headers.set(GlobalConstant.AUTHORIZATION , token);
         mockMvc.perform(get("/admin/store/detail/"+GlobalConstantTest.TEST_STORE_SLUG)
                 .headers(headers)
         ).andExpectAll(
@@ -170,7 +171,7 @@ public class StoreControllerTest extends TestUtil {
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
 
-        headers.set("Authorization" , token);
+        headers.set(GlobalConstant.AUTHORIZATION , token);
         mockMvc.perform(get("/admin/store/detail/"+GlobalConstantTest.TEST_STORE_SLUG+"ddsf")
                 .headers(headers)
         ).andExpectAll(
@@ -187,7 +188,7 @@ public class StoreControllerTest extends TestUtil {
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
 
-        headers.set("Authorization" , token);
+        headers.set(GlobalConstant.AUTHORIZATION , token);
         mockMvc.perform(get("/admin/store/detailbyuser/"+GlobalConstantTest.WHOLESALER_SLUG+"ddsf")
                 .headers(headers)
         ).andExpectAll(
@@ -203,7 +204,7 @@ public class StoreControllerTest extends TestUtil {
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
 
-        headers.set("Authorization" , token);
+        headers.set(GlobalConstant.AUTHORIZATION , token);
         mockMvc.perform(get("/admin/store/detailbyuser/"+GlobalConstantTest.WHOLESALER_SLUG)
                 .headers(headers)
         ).andExpectAll(
@@ -218,7 +219,7 @@ public class StoreControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization" , token);
+        headers.set(GlobalConstant.AUTHORIZATION , token);
 
         String json = """
                 {
@@ -246,7 +247,7 @@ public class StoreControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization" , token);
+        headers.set(GlobalConstant.AUTHORIZATION , token);
 
         String json = """
                 {
@@ -270,7 +271,7 @@ public class StoreControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization" , token);
+        headers.set(GlobalConstant.AUTHORIZATION , token);
 
         // Make sure by default status is deactivated
         String json = """
@@ -301,7 +302,7 @@ public class StoreControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                   {
                   }
@@ -321,7 +322,7 @@ public class StoreControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                   {
                   }
@@ -342,7 +343,7 @@ public class StoreControllerTest extends TestUtil {
             Integer categoryId = (Integer) categoryDto.get("id");
 
             // Getting subcategories also
-            headers.set("Authorization", token);
+            headers.set(GlobalConstant.AUTHORIZATION, token);
             String subCategoryJson = """
                       {
                         "categoryId" : {categoryId}
@@ -364,7 +365,7 @@ public class StoreControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                   {
                   "category" : "Mock Test Store Category {random}",
@@ -387,7 +388,7 @@ public class StoreControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                   {
                   "id" : 1,
@@ -418,7 +419,7 @@ public class StoreControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                 {
                     "slug" : "{slug}"
@@ -440,7 +441,7 @@ public class StoreControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                 {
                     "slug" : "{slug}"
@@ -460,7 +461,7 @@ public class StoreControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                 {
                     "slug" : "{slug}"
@@ -481,7 +482,7 @@ public class StoreControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                 {
                     "slug" : "{slug}"
@@ -505,7 +506,7 @@ public class StoreControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                   {
                     "categoryId" : 0,
@@ -530,7 +531,7 @@ public class StoreControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                   {
                     "id" : 31,

@@ -6,6 +6,7 @@ import com.sales.admin.services.UserService;
 import com.sales.dto.UserDto;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.global.GlobalConstant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,7 +155,7 @@ public class UserControllerTest extends TestUtil {
                 .andExpect(jsonPath("$.token", notNullValue()))
 //                .andDo(print())
                 .andReturn();
-                headers.set("Authorization", extractTokenFromResponse(result));
+                headers.set(GlobalConstant.AUTHORIZATION, extractTokenFromResponse(result));
 
     }
 
@@ -227,7 +228,7 @@ public class UserControllerTest extends TestUtil {
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
 
         HttpHeaders staffHeader = new HttpHeaders();
-        staffHeader.set("Authorization",token);
+        staffHeader.set(GlobalConstant.AUTHORIZATION,token);
         // Creating wholesaler
         String json = """
                 {
@@ -403,7 +404,7 @@ public class UserControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders staffHeader = new HttpHeaders();
-        staffHeader.set("Authorization",token);
+        staffHeader.set(GlobalConstant.AUTHORIZATION,token);
 
         String randomEmail = UUID.randomUUID().toString().substring(0,6) + "@mocktest.in";
         String randomPhone = getRandomMobileNumber();
@@ -642,7 +643,7 @@ public void updateUserWrongStatus() throws Exception {
         String  slug = loggedUserResponse.get("slug");
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders requestHeader = new HttpHeaders();
-        requestHeader.set("Authorization",token);
+        requestHeader.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                 {
                 "slug" : "{self_slug}", 
@@ -779,7 +780,7 @@ public void updateUserWrongStatus() throws Exception {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                 {
                     "slug" : "{slug}"
@@ -803,7 +804,7 @@ public void updateUserWrongStatus() throws Exception {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                 {
                     "slug" : "{slug}"
@@ -827,7 +828,7 @@ public void updateUserWrongStatus() throws Exception {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                 {
                     "slug" : "{slug}"
@@ -849,7 +850,7 @@ public void updateUserWrongStatus() throws Exception {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                 {
                     "slug" : "{slug}"

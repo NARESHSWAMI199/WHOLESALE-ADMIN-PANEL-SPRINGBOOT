@@ -3,6 +3,7 @@ package sales.application.sales.admin.controller;
 
 import com.sales.SalesApplication;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.global.GlobalConstant;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -37,7 +38,7 @@ public class ServicePlanController extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
               {
                 "planName": "Mock test",
@@ -65,7 +66,7 @@ public class ServicePlanController extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
               {
                 "planName": "Mock test {random}",
@@ -109,7 +110,7 @@ public class ServicePlanController extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                     {}
                 """;
@@ -129,7 +130,7 @@ public class ServicePlanController extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                     {}
                 """;
@@ -150,7 +151,7 @@ public class ServicePlanController extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                     {}
                 """;
@@ -172,7 +173,7 @@ public class ServicePlanController extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         //By default status id deactivate
         String json = """
                     {
@@ -196,7 +197,7 @@ public void testServicePlansStatusWithSuperAdminAccount(String slug) throws Exce
     Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
     String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
     HttpHeaders headers = new HttpHeaders();
-    headers.set("Authorization",token);
+    headers.set(GlobalConstant.AUTHORIZATION,token);
     String json = """
                 {
                 "slug" : "{slug}",
@@ -222,7 +223,7 @@ public void testServicePlansStatusWithSuperAdminAccount(String slug) throws Exce
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         //By default status id deactivate
         String json = """
                     {
@@ -247,7 +248,7 @@ public void testServicePlansStatusWithSuperAdminAccount(String slug) throws Exce
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         //By default status id deactivate
         String json = """
                     {

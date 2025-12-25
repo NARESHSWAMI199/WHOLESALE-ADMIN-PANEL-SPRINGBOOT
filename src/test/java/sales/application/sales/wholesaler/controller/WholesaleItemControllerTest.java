@@ -2,6 +2,7 @@ package sales.application.sales.wholesaler.controller;
 
 import com.sales.SalesApplication;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.global.GlobalConstant;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -41,7 +42,7 @@ public class WholesaleItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                     {}
                 """;
@@ -65,7 +66,7 @@ public class WholesaleItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         MockMultipartFile file = getImageMultipartFileToUpload("newItemImages");
         List<MockMultipartFile> imageFiles = List.of(file);
         MockMultipartHttpServletRequestBuilder requestBuilder = multipart("/wholesale/item/add");
@@ -105,7 +106,7 @@ public class WholesaleItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", token);
+        headers.set(GlobalConstant.AUTHORIZATION, token);
         MockMultipartFile file = getImageMultipartFileToUpload("newItemImages");
         List<MockMultipartFile> imageFiles = List.of(file);
         MockMultipartHttpServletRequestBuilder requestBuilder = multipart("/wholesale/item/update");
@@ -134,7 +135,7 @@ public class WholesaleItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
 
         String json = """
                 {
@@ -159,7 +160,7 @@ public class WholesaleItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                 {
                 "slug" : "{slug}"
@@ -185,7 +186,7 @@ public class WholesaleItemControllerTest extends TestUtil {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set(GlobalConstant.AUTHORIZATION,token);
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/item/category")
                         .headers(headers)
@@ -201,7 +202,7 @@ public class WholesaleItemControllerTest extends TestUtil {
             Integer categoryId = (Integer) categoryDto.get("id");
 
             // Getting subcategories also
-            headers.set("Authorization", token);
+            headers.set(GlobalConstant.AUTHORIZATION, token);
             mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/item/subcategory/"+categoryId)
                     .headers(headers)
             ).andExpectAll(

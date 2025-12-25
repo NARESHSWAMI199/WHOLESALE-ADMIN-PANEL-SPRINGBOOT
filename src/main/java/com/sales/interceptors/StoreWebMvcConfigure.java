@@ -4,6 +4,7 @@ import com.sales.admin.repositories.PermissionRepository;
 import com.sales.admin.repositories.StorePermissionsRepository;
 import com.sales.admin.repositories.UserRepository;
 import com.sales.cachemanager.services.UserCacheService;
+import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.wholesaler.services.WholesaleServicePlanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,9 +101,9 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000","http://localhost:3001,http://192.168.1.3:3000,http://192.168.1.3:3001") // Replace with your React app's origin
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Add OPTIONS for preflight requests
-                .allowedHeaders("*", "Authorization","X-Username") // Allow all headers and specifically 'Authorization'
+                .allowedHeaders("*", GlobalConstant.AUTHORIZATION,"X-Username") // Allow all headers and specifically 'Authorization'
                 .allowCredentials(true)
-                .exposedHeaders("Authorization"); // Expose 'Authorization' header in response
+                .exposedHeaders(GlobalConstant.AUTHORIZATION); // Expose 'Authorization' header in response
     }
 
     @Override

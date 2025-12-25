@@ -3,6 +3,7 @@ package sales.application.sales.wholesaler.controller;
 
 import com.sales.SalesApplication;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.global.GlobalConstant;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -34,7 +35,7 @@ public class WholesalePlanController extends TestUtil {
         Map<String, String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", token);
+        headers.set(GlobalConstant.AUTHORIZATION, token);
 
         mockMvc.perform(get("/wholesale/plan/all")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -51,7 +52,7 @@ public class WholesalePlanController extends TestUtil {
         Map<String, String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", token);
+        headers.set(GlobalConstant.AUTHORIZATION, token);
 
         mockMvc.perform(get("/wholesale/plan/is-active")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -101,7 +102,7 @@ public class WholesalePlanController extends TestUtil {
         Map<String, String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
         String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", token);
+        headers.set(GlobalConstant.AUTHORIZATION, token);
         String json = """
                     {}
                 """;
