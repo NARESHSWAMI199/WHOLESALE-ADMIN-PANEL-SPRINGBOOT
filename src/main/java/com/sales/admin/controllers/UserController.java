@@ -3,6 +3,7 @@ package com.sales.admin.controllers;
 
 import com.sales.dto.*;
 import com.sales.entities.User;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -65,19 +66,19 @@ public class UserController extends ServiceContainer {
         User user = userService.findByEmailAndPassword(userDetails);
         if (user == null) {
             responseObj.put("message", "Invalid credentials.");
-            responseObj.put("status", 401);
+            responseObj.put(ConstantResponseKeys.STATUS, 401);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
             Map<String, Object> paginations = paginationService.findUserPaginationsByUserId(user);
             responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
             responseObj.put("message", "success");
             responseObj.put("user", user);
             responseObj.put("paginations",paginations);
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
             responseObj.put("message", "You are blocked by admin");
-            responseObj.put("status", 401);
+            responseObj.put(ConstantResponseKeys.STATUS, 401);
         }
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -97,20 +98,20 @@ public class UserController extends ServiceContainer {
         User user = userService.findUserByOtpAndEmail(userDetails);
         if (user == null) {
             responseObj.put("message", "Wrong otp password.");
-            responseObj.put("status", 401);
+            responseObj.put(ConstantResponseKeys.STATUS, 401);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
             Map<String, Object> paginations = paginationService.findUserPaginationsByUserId(user);
             responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
             responseObj.put("message", "Successfully logged in.");
             responseObj.put("user", user);
             responseObj.put("paginations",paginations);
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
             userService.resetOtp(user.getEmail());
         } else {
             responseObj.put("message", "You are blocked by admin.");
-            responseObj.put("status", 401);
+            responseObj.put(ConstantResponseKeys.STATUS, 401);
         }
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -128,13 +129,13 @@ public class UserController extends ServiceContainer {
         Map<String,Object> responseObj = new HashMap<>();
         boolean sendOtp = userService.sendOtp(userDto);
         if(sendOtp)  {
-            responseObj.put("status",200);
+            responseObj.put(ConstantResponseKeys.STATUS,200);
             responseObj.put("message", "Otp sent successfully");
         }else {
-            responseObj.put("status",400);
+            responseObj.put(ConstantResponseKeys.STATUS,400);
             responseObj.put("message", "We facing some issue to send otp to this mail ->"+userDto.getEmail());
         }
-        return  new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return  new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -170,7 +171,7 @@ public class UserController extends ServiceContainer {
         User loggedUser = (User) request.getAttribute("user");
         String path = request.getRequestURI();
         Map<String,Object> responseObj = userService.createOrUpdateUser(userDto, loggedUser,path);
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
 
     }
 
@@ -182,12 +183,12 @@ public class UserController extends ServiceContainer {
         User user = userService.getUserDetail(slug,loggedUser);
         if (user != null) {
             responseObj.put("res", user);
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
             responseObj.put("message", "User not found.");
-            responseObj.put("status", 404);
+            responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
     @Transactional
@@ -199,12 +200,12 @@ public class UserController extends ServiceContainer {
         int isUpdated = userService.deleteUserBySlug(deleteDto,loggedUser);
         if (isUpdated > 0) {
             responseObj.put("message", "User has been successfully deleted.");
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
             responseObj.put("message", "No user found to delete");
-            responseObj.put("status", 404);
+            responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
     @Transactional
@@ -216,12 +217,12 @@ public class UserController extends ServiceContainer {
         int isUpdated = userService.resetPasswordByUserSlug(passwordDto,loggedUser);
         if (isUpdated > 0 || loggedUser.getId() == GlobalConstant.suId) {
             responseObj.put("message", "User password has been successfully updated.");
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
             responseObj.put("message", "There is nothing to update.recheck you parameters");
-            responseObj.put("status", 400);
+            responseObj.put(ConstantResponseKeys.STATUS, 400);
         }
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -233,12 +234,12 @@ public class UserController extends ServiceContainer {
         int isUpdated = userService.updateStatusBySlug(statusDto,loggedUser);
         if (isUpdated > 0) {
             responseObj.put("message", "User's status updated successfully.");
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
             responseObj.put("message", "No user found to update.");
-            responseObj.put("status", 404);
+            responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -263,10 +264,10 @@ public class UserController extends ServiceContainer {
             }
         } catch (Exception e) {
             responseObj.put("message", e.getMessage());
-            responseObj.put("status", 500);
+            responseObj.put(ConstantResponseKeys.STATUS, 500);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
 
     }
 
@@ -288,12 +289,12 @@ public class UserController extends ServiceContainer {
         List<Integer> groupsIds = userService.getUserGroupsIdBySlug(slug);
         if (!groupsIds.isEmpty()) {
             responseObj.put("content", groupsIds);
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
             responseObj.put("message", "There is no groups.");
-            responseObj.put("status", 400);
+            responseObj.put(ConstantResponseKeys.STATUS, 400);
         }
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -308,12 +309,12 @@ public class UserController extends ServiceContainer {
         if (permissions != null ) {
             responseObj.put("assigned", permissions);
             responseObj.put("allPermissions", wholesalerAllPermissions);
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
             responseObj.put("message", "There is no permission for this user.");
-            responseObj.put("status", 400);
+            responseObj.put(ConstantResponseKeys.STATUS, 400);
         }
-        return new ResponseEntity<>(responseObj,  HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj,  HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 

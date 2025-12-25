@@ -12,6 +12,7 @@ import com.sales.dto.PhonePeDto;
 import com.sales.entities.PhonePeTrans;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
@@ -82,7 +83,7 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
         catch (Exception e){
             logger.error("Exception occurred during payment via PhonePe: {}", e.getMessage());
             result.put("message", "Something went wrong during payment. please contact to administrator.");
-            result.put("status",500);
+            result.put(ConstantResponseKeys.STATUS,500);
             logger.error("Exception occur in  payViaPhonePe :: {}", e.getMessage());
         }
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
@@ -131,11 +132,11 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
             logger.info("PhonePe callback processed successfully for user: {}", userId);
             result.put("isUpdate", isUpdated > 0);
             result.put("data", new Gson().fromJson(decodedString,Map.class));
-            result.put("status",200);
+            result.put(ConstantResponseKeys.STATUS,200);
         }  catch (Exception e){
             logger.error("Exception occurred during PhonePe callback: {}", e.getMessage());
             result.put("message", "Something went wrong during phonepe callback. please contact to administrator.");
-            result.put("status",500);
+            result.put(ConstantResponseKeys.STATUS,500);
             logger.info( "Exception occur in  phonePeCallbackResponse :: "+ e.getMessage());
             e.printStackTrace();
         }
@@ -152,11 +153,11 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
             PhonePeResponse phonePeResponse = phonePeService.takeRefund(phonePeDto,notifyUrl);
             logger.info("Refund processed successfully for transaction: {}", phonePeDto);
             result.put("data", phonePeResponse);
-            result.put("status",200);
+            result.put(ConstantResponseKeys.STATUS,200);
         } catch (PhonePeException e){
             logger.error("Exception occurred during refund: {}", e.getMessage());
             result.put("message", "Something went wrong during phonepe callback. please contact to administrator.");
-            result.put("status",500);
+            result.put(ConstantResponseKeys.STATUS,500);
             logger.info( "Exception occur in  getRefund :: "+ e.getMessage());
             e.printStackTrace();
         }

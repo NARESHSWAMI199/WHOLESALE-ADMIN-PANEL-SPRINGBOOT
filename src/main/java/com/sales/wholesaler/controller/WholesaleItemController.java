@@ -8,6 +8,7 @@ import com.sales.entities.Item;
 import com.sales.entities.ItemCategory;
 import com.sales.entities.ItemSubCategory;
 import com.sales.entities.User;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;
 import com.sales.utils.WriteExcel;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -62,13 +63,13 @@ public class WholesaleItemController extends WholesaleServiceContainer {
         if (alItems != null) {
             responseObj.put("message", "success");
             responseObj.put("res", alItems);
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
             responseObj.put("message", "Item Not Found");
-            responseObj.put("status", 404);
+            responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         logger.info("Completed getItem method");
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
     @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(
@@ -98,7 +99,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
         String path = request.getRequestURI();
         Map<String,Object> responseObj = wholesaleItemService.createOrUpdateItem(itemDto, loggedUser,path);
         logger.info("Completed addOrUpdateItems method");
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
     @PostMapping("/delete")
@@ -110,13 +111,13 @@ public class WholesaleItemController extends WholesaleServiceContainer {
         int isUpdated = wholesaleItemService.deleteItem(deleteDto,storeId);
         if (isUpdated > 0) {
             responseObj.put("message", "Item has been successfully deleted.");
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
         }else{
             responseObj.put("message", "No item found to delete.");
-            responseObj.put("status", 404);
+            responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         logger.info("Completed deleteItemBySlug method");
-        return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
     @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(
@@ -136,13 +137,13 @@ public class WholesaleItemController extends WholesaleServiceContainer {
         int isUpdated = wholesaleItemService.updateStock(params,storeId);
         if (isUpdated > 0) {
             responseObj.put("message", "Item's stock has been successfully updated.");
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
         }else{
             responseObj.put("message", "No item found to update.");
-            responseObj.put("status", 404);
+            responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         logger.info("Completed updateItemStock method");
-        return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
     @GetMapping("category")
@@ -176,7 +177,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
                 List<ItemHbRepository.ItemUpdateError> updateItemsError = wholesaleItemService.updateItemsWithExcel(result, user.getId());
                 if(updateItemsError.isEmpty()) {
                     responseObj.put("message", "Items successfully updated.");
-                    responseObj.put("status", 200);
+                    responseObj.put(ConstantResponseKeys.STATUS, 200);
                     logger.info("Items successfully updated : {} ",updateItemsError);
                 }else{
                     // Creating an Excel for which items are not updated
@@ -184,21 +185,21 @@ public class WholesaleItemController extends WholesaleServiceContainer {
                     String fileName = writeExcel.writeNotUpdatedItemsExcel(updateItemsError, headers, "WHOLESALER_"+user.getSlug());
                     responseObj.put("fileUrl", Utils.getHostUrl(request)+"/wholesale/item/notUpdated/"+"WHOLESALER_"+user.getSlug()+"/"+fileName);
                     responseObj.put("message", "Some items are not updated.");
-                    responseObj.put("status", 201);
+                    responseObj.put(ConstantResponseKeys.STATUS, 201);
                     logger.info("Some items are not updated : {} ",updateItemsError);
                 }
 
             } else {
                 responseObj.put("message", "Please add a proper file.");
-                responseObj.put("status", 400);
+                responseObj.put(ConstantResponseKeys.STATUS, 400);
             }
 //            User loggedUser = (User) request.getAttribute("user");
         } catch (Exception e) {
             responseObj.put("message", e.getMessage());
-            responseObj.put("status", 500);
+            responseObj.put(ConstantResponseKeys.STATUS, 500);
             logger.error("Facing Exception during updating or importing item from excel sheet  ; {}",e.getMessage());
         }
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -213,7 +214,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
             Path path = Paths.get(filePath);
             Resource resource = new UrlResource(path.toUri());
             responseObj.put("message", "File successfully downloaded.");
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
             logger.info("Response during export items excel sheet : {} ",responseObj);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")); // For .xlsx
@@ -221,11 +222,11 @@ public class WholesaleItemController extends WholesaleServiceContainer {
             return new ResponseEntity<>(resource.getContentAsByteArray(), headers, org.springframework.http.HttpStatus.OK);
         } catch (Exception e) {
             responseObj.put("message", e.getMessage());
-            responseObj.put("status", 500);
+            responseObj.put(ConstantResponseKeys.STATUS, 500);
             logger.error("Exception during export excel : {}",e.getMessage(),e);
         }
         logger.info("ENDED exportItemsFromExcel.");
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 

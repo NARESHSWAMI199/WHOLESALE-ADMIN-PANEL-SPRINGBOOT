@@ -3,6 +3,7 @@ package com.sales.wholesaler.controller;
 
 import com.sales.dto.UserPaginationDto;
 import com.sales.entities.User;
+import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,12 +33,12 @@ public class WholesalePaginationController extends WholesaleServiceContainer {
         int updated = wholesalePaginationService.updateUserPaginationRowsNumber(userPaginationDto);
         if(updated > 0) {
             responseObj.put("message","Pagination updated successfully");
-            responseObj.put("status",200);
+            responseObj.put(ConstantResponseKeys.STATUS,200);
         }else{
             responseObj.put("message","No record found to update.");
-            responseObj.put("status",404);
+            responseObj.put(ConstantResponseKeys.STATUS,404);
         }
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 

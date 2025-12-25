@@ -6,6 +6,7 @@ import com.sales.dto.UserDto;
 import com.sales.dto.UserSearchFilters;
 import com.sales.entities.Store;
 import com.sales.entities.User;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;
@@ -60,10 +61,10 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         User user = wholesaleUserService.findByEmailAndPassword(param);
         if (user == null) {
             responseObj.put("message", "invalid credentials.");
-            responseObj.put("status", 401);
+            responseObj.put(ConstantResponseKeys.STATUS, 401);
         }else if(!Utils.isEmpty(user.getOtp())) {
             responseObj.put("message", "User exist but not verified. You can login via otp.");
-            responseObj.put("status", 401);
+            responseObj.put(ConstantResponseKeys.STATUS, 401);
         }else if (user.getStatus().equalsIgnoreCase("A")) {
             responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
             Store store = wholesaleStoreService.getStoreByUserId(user.getId());
@@ -72,13 +73,13 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put("user", user);
             responseObj.put("store", store);
             responseObj.put("paginations",paginations);
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
         }else {
             responseObj.put("message", "You are blocked by admin");
-            responseObj.put("status", 401);
+            responseObj.put(ConstantResponseKeys.STATUS, 401);
         }
         logger.info("Completed loginWholesaler method");
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -90,7 +91,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         User user = wholesaleUserService.findUserByOtpAndEmail(userDetails);
         if (user == null) {
             responseObj.put("message", "Wrong otp password.");
-            responseObj.put("status", 401);
+            responseObj.put(ConstantResponseKeys.STATUS, 401);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
             responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
             Store store = wholesaleStoreService.getStoreByUserId(user.getId());
@@ -99,14 +100,14 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put("user", user);
             responseObj.put("store", store);
             responseObj.put("paginations",paginations);
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
             wholesaleUserService.resetOtp(user.getEmail());
         } else {
             responseObj.put("message", "You are blocked by admin");
-            responseObj.put("status", 401);
+            responseObj.put(ConstantResponseKeys.STATUS, 401);
         }
         logger.info("Completed loginUserViaOtp method");
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -126,7 +127,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         User user = wholesaleUserService.findUserByOtpAndSlug(userDetails);
         if (user == null) {
             responseObj.put("message", "Wrong otp password.");
-            responseObj.put("status", 401);
+            responseObj.put(ConstantResponseKeys.STATUS, 401);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
             Store store = wholesaleStoreService.getStoreByUserId(user.getId());
             Map<String,Object> paginations = wholesalePaginationService.findUserPaginationsByUserId(user);
@@ -135,15 +136,15 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put("user", user);
             responseObj.put("store", store);
             responseObj.put("paginations",paginations);
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
             // setting blank otp
             wholesaleUserService.resetOtp(user.getEmail());
         } else {
             responseObj.put("message", "You are blocked by admin");
-            responseObj.put("status", 401);
+            responseObj.put(ConstantResponseKeys.STATUS, 401);
         }
         logger.info("Completed validateUserOtp method");
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -153,14 +154,14 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         Map<String,Object> responseObj = new HashMap<>();
         boolean sendOtp = wholesaleUserService.sendOtp(userDto);
         if(sendOtp)  {
-            responseObj.put("status",200);
+            responseObj.put(ConstantResponseKeys.STATUS,200);
             responseObj.put("message", "Otp sent successfully");
         }else {
-            responseObj.put("status",400);
+            responseObj.put(ConstantResponseKeys.STATUS,400);
             responseObj.put("message", "We facing some issue to send otp to this mail ->"+userDto.getEmail());
         }
         logger.info("Completed sendOtp method");
-        return  new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return  new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
     // For add and update user
@@ -181,7 +182,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         User loggedUser = (User) request.getAttribute("user");
         Map<String,Object> responseObj = wholesaleUserService.updateUserProfile(userDto, loggedUser);
         logger.info("Completed updateAuth method");
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
 
     }
 
@@ -200,9 +201,9 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put("store", store);
         }
         responseObj.put("user", user);
-        responseObj.put("status", 200);
+        responseObj.put(ConstantResponseKeys.STATUS, 200);
         logger.info("Completed getDetailUser method");
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -216,9 +217,9 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         User updatedUser = wholesaleUserService.resetPasswordByUserSlug(passwordDto,loggedUser);
         responseObj.put("res",updatedUser);
         responseObj.put("message", "User password has been successfully updated.");
-        responseObj.put("status", 200);
+        responseObj.put(ConstantResponseKeys.STATUS, 200);
         logger.info("Completed resetUserPasswordBySlug method");
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -232,13 +233,13 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         if(imageName!=null) {
             responseObj.put("imageName",imageName);
             responseObj.put("message" , "Profile image successfully updated");
-            responseObj.put("status" , 200);
+            responseObj.put(ConstantResponseKeys.STATUS , 200);
         }else {
-            responseObj.put("status" , 406);
+            responseObj.put(ConstantResponseKeys.STATUS , 406);
             responseObj.put("message" , "Not a valid profile image");
         }
         logger.info("Completed updateProfileImage method");
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
 
     }
 
@@ -272,9 +273,9 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         User insertedUser = wholesaleUserService.addNewUser(userDto);
         result.put("user",insertedUser);
         result.put("message", "User created successfully");
-        result.put("status", 201);
+        result.put(ConstantResponseKeys.STATUS, 201);
         logger.info("Completed addNewUser method");
-        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -289,13 +290,13 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         GlobalConstant.onlineUsers.put(loggedUser.getSlug(), loggedUser);
         if(isUpdated > 0){
             result.put("message", "User's last seen successfully updated.");
-            result.put("status", 200);
+            result.put(ConstantResponseKeys.STATUS, 200);
         }else{
             result.put("message","Something went wrong during updating last seen of user");
-            result.put("status",500);
+            result.put(ConstantResponseKeys.STATUS,500);
         }
         logger.info("Completed updateUserLastSeen method");
-        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
 
     }
 

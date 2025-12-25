@@ -8,6 +8,7 @@ import com.sales.dto.UserPermissionsDto;
 import com.sales.entities.Group;
 import com.sales.entities.User;
 import com.sales.exceptions.NotFoundException;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
@@ -79,13 +80,13 @@ public class GroupService extends RepoContainer {
             int isUpdated = permissionHbRepository.updateGroup(groupDto, group.getId());
             if (isUpdated > 0 && group.getId() == 0) {
                 responseObject.put("message", "The group has been updated successfully. But dear " + loggedUser.getUsername() + " ji We are not able to remove permissions. from " + group.getName() + " New permissions updated.");
-                responseObject.put("status", 200);
+                responseObject.put(ConstantResponseKeys.STATUS, 200);
             } else if (isUpdated > 0) {
                 responseObject.put("message", "The group has been updated successfully.");
-                responseObject.put("status", 200);
+                responseObject.put(ConstantResponseKeys.STATUS, 200);
             } else {
                 responseObject.put("message", "No record found to update.");
-                responseObject.put("status", 404);
+                responseObject.put(ConstantResponseKeys.STATUS, 404);
             }
         } else { // Going to insert a new group
             logger.info("We are going to create the group.");
@@ -96,7 +97,7 @@ public class GroupService extends RepoContainer {
             permissionHbRepository.updatePermissions(insertedGroup.getId(), groupDto.getPermissions());
             responseObject.put("res", insertedGroup);
             responseObject.put("message", groupDto.getName() + " successfully created.");
-            responseObject.put("status", 201);
+            responseObject.put(ConstantResponseKeys.STATUS, 201);
         }
         logger.info("Exiting createOrUpdateGroup with responseObject: {}", responseObject);
         return responseObject;

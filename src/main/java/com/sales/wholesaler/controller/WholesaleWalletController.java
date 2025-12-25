@@ -3,6 +3,7 @@ package com.sales.wholesaler.controller;
 
 import com.sales.entities.User;
 import com.sales.entities.Wallet;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class WholesaleWalletController extends WholesaleServiceContainer {
         boolean payment = wholesaleWalletService.paymentViaWallet(servicePlanSlug, loggedUser);
         if(payment){
             result.put("message","Plan purchased successfully.");
-            result.put("status",200);
+            result.put(ConstantResponseKeys.STATUS,200);
         }else{
             result.put("message","Inefficient amount in wallet.");
             result.put("status",400);

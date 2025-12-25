@@ -5,7 +5,6 @@ import com.sales.entities.Item_;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.List;
 
 

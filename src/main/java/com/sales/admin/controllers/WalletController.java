@@ -2,6 +2,7 @@ package com.sales.admin.controllers;
 
 
 import com.sales.entities.Wallet;
+import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +31,10 @@ public class WalletController extends ServiceContainer {
         boolean payment = walletService.paymentViaWallet(servicePlanSlug, userSlug);
         if(payment){
             result.put("message","Plan purchased successfully.");
-            result.put("status",200);
+            result.put(ConstantResponseKeys.STATUS,200);
         }else{
             result.put("message","Inefficient amount in wallet.");
-            result.put("status",400);
+            result.put(ConstantResponseKeys.STATUS,400);
         }
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
     }

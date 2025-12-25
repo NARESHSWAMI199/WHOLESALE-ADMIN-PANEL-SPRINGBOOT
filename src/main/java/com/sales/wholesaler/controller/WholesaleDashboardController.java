@@ -3,6 +3,7 @@ package com.sales.wholesaler.controller;
 
 import com.sales.dto.GraphDto;
 import com.sales.entities.User;
+import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +31,9 @@ public class WholesaleDashboardController extends WholesaleServiceContainer {
         responseObj.put("oldItems" , wholesaleItemService.getItemCountsForOldLabel(storeId) );
         responseObj.put("inStock" , wholesaleItemService.getItemCountsForInStock(storeId));
         responseObj.put("outStock" , wholesaleItemService.getItemCountsForOutStock(storeId));
-        responseObj.put("status", 200);
+        responseObj.put(ConstantResponseKeys.STATUS, 200);
         logger.info("Completed getAllDashboardCount method");
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
     @PostMapping("graph/months/")
@@ -42,8 +43,8 @@ public class WholesaleDashboardController extends WholesaleServiceContainer {
         User loggedUser = (User) request.getAttribute("user");
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
         responseObj.put("res" ,wholesaleItemService.getItemCountByMonths(graphDto,storeId));
-        responseObj.put("status", 200);
+        responseObj.put(ConstantResponseKeys.STATUS, 200);
         logger.info("Completed getAllGraphData method");
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 }

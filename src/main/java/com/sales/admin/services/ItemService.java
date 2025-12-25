@@ -8,6 +8,7 @@ import com.sales.dto.*;
 import com.sales.entities.*;
 import com.sales.exceptions.MyException;
 import com.sales.exceptions.NotFoundException;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
@@ -186,10 +187,10 @@ public class ItemService extends RepoContainer{
             updateStoreImage(itemDto.getPreviousItemImages(),itemDto.getNewItemImages(),itemDto.getSlug(),"update");
             if (isUpdated > 0) {
                 responseObj.put("message", "successfully updated.");
-                responseObj.put("status", 200);
+                responseObj.put(ConstantResponseKeys.STATUS, 200);
             } else {
                 responseObj.put("message", "No item found to update.");
-                responseObj.put("status", 404);
+                responseObj.put(ConstantResponseKeys.STATUS, 404);
             }
         } else { // Going to create item
             logger.info("We are going to create the item.");
@@ -198,7 +199,7 @@ public class ItemService extends RepoContainer{
             Item createdItem = createItem(itemDto, loggedUser);
             responseObj.put("res", createdItem);
             responseObj.put("message", "Successfully inserted.");
-            responseObj.put("status", 201);
+            responseObj.put(ConstantResponseKeys.STATUS, 201);
         }
         logger.info("Exiting createOrUpdateItem");
         return responseObj;

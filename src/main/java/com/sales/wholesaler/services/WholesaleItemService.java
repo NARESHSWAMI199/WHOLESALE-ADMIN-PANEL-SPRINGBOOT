@@ -13,6 +13,7 @@ import com.sales.entities.ItemSubCategory;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.exceptions.NotFoundException;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
@@ -215,10 +216,10 @@ public class WholesaleItemService extends WholesaleRepoContainer {
             int isUpdated = updateItem(itemDto, loggedUser); // Update operation
             if (isUpdated > 0) {
                 responseObj.put("message", "successfully updated.");
-                responseObj.put("status", 200);
+                responseObj.put(ConstantResponseKeys.STATUS, 200);
             } else {
                 responseObj.put("message", "No item found to update.");
-                responseObj.put("status", 404);
+                responseObj.put(ConstantResponseKeys.STATUS, 404);
             }
         } else {  // Going to crate Item
             // if there is any required field null then this will throw IllegalArgumentException
@@ -227,7 +228,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
             Item createdItem = createItem(itemDto, loggedUser); // Create operation
             responseObj.put("res", createdItem);
             responseObj.put("message", "Successfully inserted.");
-            responseObj.put("status", 201);
+            responseObj.put(ConstantResponseKeys.STATUS, 201);
         }
         logger.info("Completed createOrUpdateItem method");
         return responseObj;

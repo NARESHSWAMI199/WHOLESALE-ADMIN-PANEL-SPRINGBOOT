@@ -1,6 +1,7 @@
 package com.sales.admin.controllers;
 
 import com.sales.dto.GraphDto;
+import com.sales.global.ConstantResponseKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -27,8 +28,7 @@ public class AdminDashboardController extends ServiceContainer {
         responseObj.put("admins", userService.getAdminsCounts());
         // responseObj.put("items", itemService.getItemCounts());
         // responseObj.put("wholesales", storeService.getWholesaleCounts());
-        responseObj.put("status", 200);
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.OK );
     }
 
     @PostMapping("graph/months/")
@@ -36,7 +36,7 @@ public class AdminDashboardController extends ServiceContainer {
         logger.info("Fetching graph data for months with filters: {}", graphDto);
         Map<String, Object> responseObj = new HashMap<>();
         responseObj.put("res", storeService.getStoreCountByMonths(graphDto));
-        responseObj.put("status", 200);
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        responseObj.put(ConstantResponseKeys.STATUS, 200);
+        return new ResponseEntity<>(responseObj,HttpStatus.OK);
     }
 }

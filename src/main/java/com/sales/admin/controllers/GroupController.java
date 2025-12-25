@@ -6,6 +6,7 @@ import com.sales.dto.GroupDto;
 import com.sales.dto.SearchFilters;
 import com.sales.entities.Group;
 import com.sales.entities.User;
+import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -47,7 +48,7 @@ public class GroupController extends ServiceContainer {
         User loggedUser = (User) request.getAttribute("user");
         String path = request.getRequestURI();
         Map<String, Object> response = groupService.createOrUpdateGroup(groupDto, loggedUser, path);
-        return new ResponseEntity<>(response, HttpStatus.valueOf((Integer) response.get("status")));
+        return new ResponseEntity<>(response, HttpStatus.valueOf((Integer) response.get(ConstantResponseKeys.STATUS)));
     }
 
     @GetMapping("/detail/{slug}")
@@ -56,7 +57,7 @@ public class GroupController extends ServiceContainer {
         Map<String, Object> responseObj = new HashMap<>();
         Map<String, Object> group = groupService.findGroupBySlug(slug);
         responseObj.put("res", group);
-        responseObj.put("status", 200);
+        responseObj.put(ConstantResponseKeys.STATUS, 200);
         return new ResponseEntity<>(responseObj, HttpStatus.OK);
     }
 
@@ -69,12 +70,12 @@ public class GroupController extends ServiceContainer {
         int isUpdated = groupService.deleteGroupBySlug(deleteDto, loggedUser);
         if (isUpdated > 0) {
             responseObj.put("message", "User has been successfully deleted.");
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
             responseObj.put("message", "No group found to delete");
-            responseObj.put("status", 404);
+            responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 }

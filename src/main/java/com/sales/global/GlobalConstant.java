@@ -29,4 +29,5 @@ public class GlobalConstant {
     public static String removeBgUrl = "http://localhost:5000/remove-background";
 
     public static final Map<String, User> onlineUsers = new ConcurrentHashMap<>();
+
 }

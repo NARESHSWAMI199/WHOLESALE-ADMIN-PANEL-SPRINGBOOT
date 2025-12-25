@@ -8,6 +8,7 @@ import com.sales.dto.UserPlanDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
 import com.sales.entities.WholesalerPlans;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.specifications.PlansSpecifications;
 import com.sales.specifications.ServicePlanSpecification;
 import com.sales.utils.Utils;
@@ -134,10 +135,10 @@ public class ServicePlanService extends  RepoContainer {
                     } else {
                         result.put("message", "Successfully Deactivated.");
                     }
-                    result.put("status", 200);
+                    result.put(ConstantResponseKeys.STATUS, 200);
                 } else {
                     result.put("message", "No plan found to update.");
-                    result.put("status", 404);
+                    result.put(ConstantResponseKeys.STATUS, 404);
                 }
                 logger.info("Exiting updateServicePlanStatus with result: {}", result);
                 return result;
@@ -156,10 +157,10 @@ public class ServicePlanService extends  RepoContainer {
         int isUpdated = servicePlanHbRepository.deleteServicePlan(slug, loggedUser);
         if(isUpdated > 0){
             result.put("message","Service plan successfully deleted.");
-            result.put("status", 200);
+            result.put(ConstantResponseKeys.STATUS, 200);
         }else{
             result.put("message","No service plan found to delete.");
-            result.put("status",404);
+            result.put(ConstantResponseKeys.STATUS,404);
         }
         logger.info("Exiting deletedServicePlan with result: {}", result);
         return result;

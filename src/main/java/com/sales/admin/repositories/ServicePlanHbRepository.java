@@ -1,6 +1,7 @@
 package com.sales.admin.repositories;
 
 import com.sales.entities.User;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -18,7 +19,7 @@ public class ServicePlanHbRepository {
     public int updateServicePlansStatus(String status, String slug, User loggedUser){
         String hql = "update ServicePlan set status =:status ,updatedAt=:updatedAt, updatedBy=:updatedBy where slug=:slug";
         Query query = entityManager.createQuery(hql);
-        query.setParameter("status",status);
+        query.setParameter(ConstantResponseKeys.STATUS,status);
         query.setParameter("updatedAt", Utils.getCurrentMillis());
         query.setParameter("updatedBy",loggedUser.getId());
         query.setParameter("slug", slug);

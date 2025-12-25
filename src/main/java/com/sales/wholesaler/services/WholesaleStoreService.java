@@ -5,6 +5,7 @@ import com.sales.dto.SearchFilters;
 import com.sales.dto.StoreDto;
 import com.sales.entities.*;
 import com.sales.exceptions.MyException;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
@@ -76,10 +77,10 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         int isUpdated = updateStore(storeDto, loggedUser); // Update operation
         if (isUpdated > 0) {
             responseObj.put("message", "successfully updated.");
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
             responseObj.put("message", "No store found to update");
-            responseObj.put("status", 404);
+            responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         logger.info("Completed updateStoreBySlug method");
         return responseObj;

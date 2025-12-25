@@ -4,6 +4,7 @@ package com.sales.wholesaler.controller;
 import com.sales.dto.SearchFilters;
 import com.sales.dto.StoreDto;
 import com.sales.entities.*;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -54,7 +55,7 @@ public class WholesaleStoreController extends WholesaleServiceContainer {
         User loggedUser = (User) request.getAttribute("user");
         Map<String,Object> responseObj = wholesaleStoreService.updateStoreBySlug(storeDto, loggedUser);
         logger.info("Completed updateStore method");
-        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get("status")));
+        return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -132,10 +133,10 @@ public class WholesaleStoreController extends WholesaleServiceContainer {
         Store isInserted = wholesaleStoreService.createStore(storeDto,loggedUser);
         if(isInserted.getId() > 0){
             result.put("message","Store created successfully. Welcome in Swami Sales");
-            result.put("status",200);
+            result.put(ConstantResponseKeys.STATUS,200);
         }else{
             result.put("message","Something went wrong");
-            result.put("status",400);
+            result.put(ConstantResponseKeys.STATUS,400);
         }
         logger.info("Completed addNewStore method");
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));

@@ -10,6 +10,7 @@ import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
 import com.sales.entities.WalletTransaction;
 import com.sales.exceptions.NotFoundException;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
@@ -52,11 +53,11 @@ public class CashFreePgController extends PaymentServiceContainer {
                     orderEntity = cashfreeService.getOrderEntityForCashfreePaymentForWallet(request, cashfreeDto, loggedUser,cashfreeDto.getAmount(), redirectUri, env);
                 }
                 result.put("res", orderEntity);
-                result.put("status", 201);
+                result.put(ConstantResponseKeys.STATUS, 201);
             } catch (ApiException e) {
                 logger.error("Exception occurred while getting payment session ID : {}", e.getMessage());
                 result.put("message", "Something went wrong during getPaymentSessionId payment. please contact to administrator.");
-                result.put("status", 500);
+                result.put(ConstantResponseKeys.STATUS, 500);
                 logger.info("Exception occur in  getPaymentSessionId :: {}", e.getMessage());
                 e.printStackTrace();
             }
@@ -112,12 +113,12 @@ public class CashFreePgController extends PaymentServiceContainer {
                 logger.info("Cashfree callback processed successfully for user: {} and walletTransaction : {}",userId,walletTransaction);
             }
             result.put("response", data);
-            result.put("status", 200);
+            result.put(ConstantResponseKeys.STATUS, 200);
         }catch (Exception e){
             e.printStackTrace();
             logger.error("Exception during cashfree callback");
             result.put("message", "Something went wrong during cashfree callback. please contact to administrator.");
-            result.put("status",500);
+            result.put(ConstantResponseKeys.STATUS,500);
         }
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
     }

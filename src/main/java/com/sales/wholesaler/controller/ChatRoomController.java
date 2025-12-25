@@ -3,6 +3,7 @@ package com.sales.wholesaler.controller;
 import com.sales.dto.ChatRoomDto;
 import com.sales.entities.ChatRoom;
 import com.sales.entities.User;
+import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -40,7 +41,7 @@ public class ChatRoomController extends WholesaleServiceContainer{
         int isUpdated = chatRoomService.updateRoom(chatRoomDto, loggedUser);
         if(isUpdated > 0){
             result.put("message","Chat room updated successfully");
-            result.put("status",200);
+            result.put(ConstantResponseKeys.STATUS,200);
         }else{
             result.put("message","No room found for : "+chatRoomDto.getSlug());
             result.put("status",404);

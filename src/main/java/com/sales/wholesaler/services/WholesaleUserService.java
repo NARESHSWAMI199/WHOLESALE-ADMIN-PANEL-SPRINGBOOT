@@ -7,6 +7,7 @@ import com.sales.entities.ServicePlan;
 import com.sales.entities.SupportEmail;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -192,10 +193,10 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         int isUpdated = updateUser(userDto, loggedUser); // Update operation
         if (isUpdated > 0) {
             responseObj.put("message", "Successfully updated.");
-            responseObj.put("status", 200);
+            responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
             responseObj.put("message", "No user found to update.");
-            responseObj.put("status", 404);
+            responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
         logger.info("Completed updateUserProfile method");
         return responseObj;

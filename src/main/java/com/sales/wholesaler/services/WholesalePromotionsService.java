@@ -3,6 +3,7 @@ package com.sales.wholesaler.services;
 
 import com.sales.dto.StorePromotionDto;
 import com.sales.entities.User;
+import com.sales.global.ConstantResponseKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,10 +24,10 @@ public class WholesalePromotionsService extends WholesaleRepoContainer {
         int isInserted = wholesaleHbPromotion.insertStorePromotions(storePromotionDto,loggedUser); // Create operation
         if(isInserted > 0){
             response.put("message","Your item is going to promote.");
-            response.put("status",200);
+            response.put(ConstantResponseKeys.STATUS,200);
         }else {
             response.put("message","Something went wrong during promote item. if your money was deducted contact to administrator");
-            response.put("status",400);
+            response.put(ConstantResponseKeys.STATUS,400);
         }
         logger.info("Completed insertItemPromotion method");
         return response;

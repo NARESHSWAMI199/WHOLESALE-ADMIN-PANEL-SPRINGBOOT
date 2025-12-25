@@ -5,6 +5,7 @@ import com.sales.dto.UserPlanDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
 import com.sales.entities.WholesalerPlans;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -70,10 +71,10 @@ public class WholesaleServicePlanController extends WholesaleServiceContainer {
         int isUpdated = wholesaleServicePlanService.updatedUserCurrentPlan(planSlug,lopgedUser);
         if(isUpdated > 0){
             result.put("message","Your current plan activated successfully");
-            result.put("status",200);
+            result.put(ConstantResponseKeys.STATUS,200);
         }else {
             result.put("message","No record found to update.");
-            result.put("status",404);
+            result.put(ConstantResponseKeys.STATUS,404);
         }
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
     }
