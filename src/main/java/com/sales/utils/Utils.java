@@ -35,9 +35,10 @@ public class Utils {
 
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
+    private Utils() {}
+
     public static Long getCurrentMillis(){
-        long millis = new java.util.Date().getTime();
-        return millis;
+        return new Date().getTime();
     }
 
     public static String mobileRegex = "^[6789]\\d{9}$";
@@ -245,6 +246,11 @@ public class Utils {
                 throw new IllegalArgumentException(field + " cannot be null");
             }
         }
+    }
+
+    public static String sanitizeForLog(String input) {
+        if (input == null) return "null";
+        return input.replaceAll("[^a-zA-Z0-9-]", "_");
     }
 
 }

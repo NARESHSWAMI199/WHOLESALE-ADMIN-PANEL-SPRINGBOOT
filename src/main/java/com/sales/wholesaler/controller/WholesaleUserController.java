@@ -52,25 +52,27 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         logger.info("Starting loginWholesaler method");
         Map<String, Object> responseObj = new HashMap<>();
         User user = wholesaleUserService.findByEmailAndPassword(param);
+        String message;
         if (user == null) {
-            responseObj.put("message", "invalid credentials.");
+            message = "invalid credentials.";
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         }else if(!Utils.isEmpty(user.getOtp())) {
-            responseObj.put("message", "User exist but not verified. You can login via otp.");
+            message = "User exist but not verified. You can login via otp.";
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         }else if (user.getStatus().equalsIgnoreCase("A")) {
+            message = "success";
             responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
-            Store store = wholesaleStoreService.getStoreByUserId(user.getId());
-            Map<String,Object> paginations = wholesalePaginationService.findUserPaginationsByUserId(user);
-            responseObj.put("message", "success");
+            Store storeDetails = wholesaleStoreService.getStoreByUserId(user.getId());
+            Map<String,Object> paginationsObj = wholesalePaginationService.findUserPaginationsByUserId(user);
             responseObj.put("user", user);
-            responseObj.put("store", store);
-            responseObj.put("paginations",paginations);
+            responseObj.put("store", storeDetails);
+            responseObj.put("paginations",paginationsObj);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         }else {
-            responseObj.put("message", "You are blocked by admin.");
+            message = "You are blocked by admin.";
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         }
+        responseObj.put(ConstantResponseKeys.MESSAGE, message);
         logger.info("Completed loginWholesaler method.");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }

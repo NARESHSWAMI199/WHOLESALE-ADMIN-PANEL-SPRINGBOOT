@@ -38,7 +38,7 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
     }
 
     public ServicePlan findBySlug(String slug) {
-        logger.info("Starting findBySlug method with params: {}", slug);
+        logger.info("Starting findBySlug method with params: {}", Utils.sanitizeForLog(slug));
         ServicePlan servicePlan = wholesaleServicePlanRepository.findBySlug(slug);
         logger.info("Completed findBySlug method");
         return servicePlan;
@@ -152,9 +152,12 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
         );
         Pageable pageable = getPageable(searchFilters);
         Page<WholesalerPlans> userPlans = wholesaleUserPlansRepository.findAll(specification,pageable);
-        List<WholesalerPlans> userPlansList = userPlans.getContent().stream().peek(wholesalerPlan -> {
-            if(Objects.nonNull(wholesalerPlan)) wholesalerPlan.setExpired(wholesalerPlan.getExpiryDate() < Utils.getCurrentMillis());
-        }).toList();;
+        List<WholesalerPlans> userPlansList = userPlans.getContent().stream().map(wholesalerPlan -> {
+            if(Objects.nonNull(wholesalerPlan)) {
+                wholesalerPlan.setExpired(wholesalerPlan.getExpiryDate() < Utils.getCurrentMillis());
+            }
+            return wholesalerPlan;
+        }).toList();
         long totalElements = userPlans.getTotalElements();
         Page<WholesalerPlans> wholesalerPlans = new PageImpl<>(userPlansList,pageable,totalElements);
         logger.info("Completed getAllUserPlans method");

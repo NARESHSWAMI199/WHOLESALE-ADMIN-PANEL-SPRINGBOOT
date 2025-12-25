@@ -6,13 +6,14 @@ import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
+import com.sales.utils.Utils;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -33,16 +34,16 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("admin/auth")
+@RequiredArgsConstructor
 public class UserController extends ServiceContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    @Autowired
-    private JwtToken jwtToken;
+    private final JwtToken jwtToken;
 
     @PostMapping("/{userType}/all")
     public ResponseEntity<Page<User>> getAllUsers(HttpServletRequest request,@RequestBody UserSearchFilters searchFilters, @PathVariable(required = true) String userType) {
-        logger.info("Fetching all users of type: {}", userType);
+        logger.info("Fetching all users of type: {}", Utils.sanitizeForLog(userType));
         searchFilters.setUserType(userType);
         User loggedUser = (User) request.getAttribute("user");
         Page<User> userPage = userService.getAllUser(searchFilters,loggedUser);
@@ -64,20 +65,22 @@ public class UserController extends ServiceContainer {
         logger.info("Admin login attempt with email: {}", userDetails.getEmail());
         Map<String, Object> responseObj = new HashMap<>();
         User user = userService.findByEmailAndPassword(userDetails);
+        String message;
         if (user == null) {
-            responseObj.put("message", "Invalid credentials.");
+            message = "Invalid credentials.";
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
+            message = "success";
             Map<String, Object> paginations = paginationService.findUserPaginationsByUserId(user);
             responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
-            responseObj.put("message", "success");
             responseObj.put("user", user);
             responseObj.put("paginations",paginations);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
-            responseObj.put("message", "You are blocked by admin");
+            message =  "You are blocked by admin";
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         }
+        responseObj.put(ConstantResponseKeys.MESSAGE,message);
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
@@ -177,7 +180,7 @@ public class UserController extends ServiceContainer {
 
     @GetMapping("/detail/{slug}")
     public ResponseEntity<Map<String, Object>> getDetailUser(HttpServletRequest request,@PathVariable String slug) {
-        logger.info("Fetching details for user with slug: {}", slug);
+        logger.info("Fetching details for user with slug: {}", Utils.sanitizeForLog(slug));
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         User user = userService.getUserDetail(slug,loggedUser);
@@ -249,7 +252,7 @@ public class UserController extends ServiceContainer {
     @Transactional
     @PostMapping("/update_profile/{slug}")
     public ResponseEntity<Map<String, Object>> updateProfileImage(HttpServletRequest request, @RequestPart MultipartFile profileImage, @PathVariable String slug ) {
-        logger.info("Updating profile image for user with slug: {}", slug);
+        logger.info("Updating profile image for user with slug: {}", Utils.sanitizeForLog(slug));
         Map<String,Object> responseObj = new HashMap<>();
         try {
             User loggedUser = (User) request.getAttribute("user");
@@ -276,7 +279,7 @@ public class UserController extends ServiceContainer {
 
     @GetMapping("/profile/{slug}/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename ,@PathVariable String slug) throws Exception {
-        logger.info("Fetching profile image: {} for user with slug: {}", filename, slug);
+        logger.info("Fetching profile image: {} for user with slug: {}", Utils.sanitizeForLog(filename), Utils.sanitizeForLog(slug));
         Path path = Paths.get(filePath +"/"+slug+"/"+ filename);
         Resource resource = new UrlResource(path.toUri());
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
@@ -284,7 +287,7 @@ public class UserController extends ServiceContainer {
 
     @GetMapping("/groups/{slug}")
     public ResponseEntity<Map<String,Object>> getUserGroupsIdsBySlug(HttpServletRequest request,@PathVariable String slug){
-        logger.info("Fetching group IDs for user with slug: {}", slug);
+        logger.info("Fetching group IDs for user with slug: {}", Utils.sanitizeForLog(slug));
         Map<String,Object> responseObj = new HashMap<>();
         List<Integer> groupsIds = userService.getUserGroupsIdBySlug(slug);
         if (!groupsIds.isEmpty()) {
@@ -302,7 +305,7 @@ public class UserController extends ServiceContainer {
 
     @GetMapping("wholesale/permissions/{slug}")
     public ResponseEntity<Map<String,Object>> getAllAssignedPermissionsForWholesaler(HttpServletRequest request,@PathVariable String slug){
-        logger.info("Fetching all assigned permissions for wholesaler with slug: {}", slug);
+        logger.info("Fetching all assigned permissions for wholesaler with slug: {}", Utils.sanitizeForLog(slug));
         Map<String, Object> wholesalerAllPermissions = userService.getWholesalerAllPermissions();
         List<Integer> permissions =  userService.getWholesalerAllAssignedPermissions(slug);
         Map<String,Object> responseObj = new HashMap<>();

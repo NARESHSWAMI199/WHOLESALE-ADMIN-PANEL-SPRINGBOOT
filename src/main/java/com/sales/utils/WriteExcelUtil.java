@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -87,7 +88,7 @@ public class WriteExcelUtil {
                 rowNo++;
             }
 
-            Path absoluteExcelPath = Path.of(excelExportAbsolutePath);
+            Path absoluteExcelPath = Paths.get(excelExportAbsolutePath);
             Path resolve = absoluteExcelPath.resolve(folderName).normalize();
             File file = new File(String.valueOf(resolve.toAbsolutePath()));
 

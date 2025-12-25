@@ -7,6 +7,7 @@ import com.sales.entities.StoreSubCategory;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.utils.Utils;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,7 +49,7 @@ public class StoreController extends ServiceContainer{
     @Transactional
     @PostMapping("delete")
     public ResponseEntity<Map<String,Object>> deleteStore(HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Deleting store with slug: {}", deleteDto.getSlug());
+        logger.info("Deleting store with slug: {}", Utils.sanitizeForLog(deleteDto.getSlug()));
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         int isUpdated = storeService.deleteStoreBySlug(deleteDto,loggedUser);
@@ -66,7 +67,7 @@ public class StoreController extends ServiceContainer{
 
     @GetMapping("/detail/{slug}")
     public ResponseEntity<Map<String,Object>> getStoreDetailBySlug(@PathVariable String slug) {
-        logger.info("Fetching store details for params: {}", slug);
+        logger.info("Fetching store details for params: {}", Utils.sanitizeForLog(slug));
         Map<String,Object> responseObj = new HashMap<>();
         Store store = storeService.getStoreDetails(slug);
         if (store!= null){
@@ -82,7 +83,7 @@ public class StoreController extends ServiceContainer{
 
     @GetMapping("/detailbyuser/{userSLug}")
     public ResponseEntity<Map<String,Object>> getUserDetailByUserSlug(@PathVariable("userSLug") String slug) throws Exception {
-        logger.info("Fetching store details for user slug: {}", slug);
+        logger.info("Fetching store details for user slug: {}", Utils.sanitizeForLog(slug));
         Map<String,Object> responseObj = new HashMap<>();
         Store store = storeService.getStoreByUserSlug(slug);
         if (store!= null){
@@ -131,7 +132,7 @@ public class StoreController extends ServiceContainer{
     @Transactional
     @PostMapping("profile/{slug}")
     public ResponseEntity<Map<String,Object>> uploadStoreImage(HttpServletRequest request, @RequestPart MultipartFile storeImage , @PathVariable String slug) {
-        logger.info("Uploading store image for slug: {}", slug);
+        logger.info("Uploading store image for slug: {}", Utils.sanitizeForLog(slug));
         Map<String,Object> responseObj = new HashMap<>();
         try {
             int isUpdated = storeService.updateStoreImage(storeImage, slug);
@@ -158,7 +159,7 @@ public class StoreController extends ServiceContainer{
     @Transactional
     @PostMapping("/status")
     public ResponseEntity<Map<String,Object>> updateStoreStatus (@RequestBody StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Updating store status for slug: {}", statusDto.getSlug());
+        logger.info("Updating store status for slug: {}", Utils.sanitizeForLog(statusDto.getSlug()));
         Map<String,Object> responseObj = new HashMap<>();
         int isUpdated = storeService.updateStatusBySlug(statusDto);
         if (isUpdated > 0) {
@@ -178,8 +179,10 @@ public class StoreController extends ServiceContainer{
 
     @GetMapping("/image/{slug}/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename , @PathVariable String slug) throws Exception {
-        logger.info("Fetching store image: {} for slug: {}", filename, slug);
-        Path path = Paths.get(filePath +slug+"/"+ filename);
+        logger.info("Fetching store image: {} for slug: {}", Utils.sanitizeForLog(filename), Utils.sanitizeForLog(slug));
+        Path filePathObj = Paths.get(filePath);
+        Path userSlug = filePathObj.resolve(slug).normalize();
+        Path path = userSlug.resolve(filename).normalize();
         Resource resource = new UrlResource(path.toUri());
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
     }
@@ -222,7 +225,7 @@ public class StoreController extends ServiceContainer{
 
     @PostMapping("category/delete")
     public ResponseEntity<Map<String,Object>> deleteItemCategoryById(HttpServletRequest request ,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Deleting store category with slug: {}", deleteDto.getSlug());
+        logger.info("Deleting store category with slug: {}", Utils.sanitizeForLog(deleteDto.getSlug()));
         Map<String,Object> responseObj = new HashMap<>();
         User user = (User) request.getAttribute("user");
         int isUpdated = storeService.deleteStoreCategory(deleteDto,user);
@@ -248,7 +251,7 @@ public class StoreController extends ServiceContainer{
 
     @PostMapping("subcategory/delete")
     public ResponseEntity<Map<String,Object>> deleteItemSubCategoryById(HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Deleting store subcategory with slug: {}", deleteDto.getSlug());
+        logger.info("Deleting store subcategory with slug: {}", Utils.sanitizeForLog(deleteDto.getSlug()));
         Map<String,Object> responseObj = new HashMap<>();
         User user = (User) request.getAttribute("user");
         int isUpdated = storeService.deleteStoreSubCategory(deleteDto,user);
