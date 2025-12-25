@@ -1,8 +1,9 @@
-name: SonarCloud First Scan
+name: SonarCloud Analysis
 
 on:
   push:
     branches: [ main ]
+  pull_request:
 
 jobs:
   sonar:
@@ -18,7 +19,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: First SonarCloud Analysis
+      - name: SonarCloud Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
