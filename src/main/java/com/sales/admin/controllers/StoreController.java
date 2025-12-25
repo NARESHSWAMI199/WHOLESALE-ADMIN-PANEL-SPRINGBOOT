@@ -71,7 +71,7 @@ public class StoreController extends ServiceContainer{
         Map<String,Object> responseObj = new HashMap<>();
         Store store = storeService.getStoreDetails(slug);
         if (store!= null){
-            responseObj.put("res", store);
+            responseObj.put(ConstantResponseKeys.RES, store);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         }else {
             responseObj.put(ConstantResponseKeys.MESSAGE, "No store found.");
@@ -87,7 +87,7 @@ public class StoreController extends ServiceContainer{
         Map<String,Object> responseObj = new HashMap<>();
         Store store = storeService.getStoreByUserSlug(slug);
         if (store!= null){
-            responseObj.put("res", store);
+            responseObj.put(ConstantResponseKeys.RES, store);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         }else {
             responseObj.put(ConstantResponseKeys.MESSAGE, "No record found.");
@@ -202,7 +202,7 @@ public class StoreController extends ServiceContainer{
         Map<String,Object> result = new HashMap<>();
         StoreCategory updatedStoreCategory = storeService.saveOrUpdateStoreCategory(categoryDto);
         if(updatedStoreCategory != null) {
-             result.put("res",updatedStoreCategory);
+             result.put(ConstantResponseKeys.RES,updatedStoreCategory);
             if(categoryDto.getId() !=null && categoryDto.getId() != 0) {
                 result.put(ConstantResponseKeys.MESSAGE, "Category successfully updated.");
                 result.put(ConstantResponseKeys.STATUS, 200);
@@ -272,7 +272,7 @@ public class StoreController extends ServiceContainer{
         Map<String,Object> result = new HashMap<>();
         StoreSubCategory updatedStoreSubCategory = storeService.saveOrUpdateStoreSubCategory(subCategoryDto);
         if(updatedStoreSubCategory != null) {
-            result.put("res",updatedStoreSubCategory);
+            result.put(ConstantResponseKeys.RES,updatedStoreSubCategory);
             if(subCategoryDto.getId() != null) {
                 result.put(ConstantResponseKeys.MESSAGE, "Subcategory successfully updated.");
                 result.put(ConstantResponseKeys.STATUS, 200);

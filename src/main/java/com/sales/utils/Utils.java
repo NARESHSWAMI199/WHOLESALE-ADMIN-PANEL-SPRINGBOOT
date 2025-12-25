@@ -182,7 +182,7 @@ public class Utils {
         token = token == null ? request.getHeader("authToken") : token;
         logger.info("request url : {}", request.getRequestURI());
         try {
-            if (token != null && token.startsWith("Bearer ")) {
+            if (token != null && token.startsWith("GlobalConstant.AUTH_TOKEN_PREFIX")) {
                 token = token.substring(7);
                 String slug = jwtToken.getSlugFromToken(token);
                 /* get user by slug. */

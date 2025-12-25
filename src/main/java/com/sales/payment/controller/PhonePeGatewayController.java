@@ -84,7 +84,7 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
             PayPageInstrumentResponse payPageInstrumentResponse = (PayPageInstrumentResponse) payResponse.getData().getInstrumentResponse();
             String url = payPageInstrumentResponse.getRedirectInfo().getUrl();
             logger.info("Payment URL generated successfully for user: {}", loggedUser.getId());
-            result.put("res",payResponse);
+            result.put(ConstantResponseKeys.RES,payResponse);
             result.put("url",url);
             result.put("status" , 200);
         }

@@ -2,6 +2,7 @@ package sales.application.sales.wholesaler.controller;
 
 
 import com.sales.SalesApplication;
+import com.sales.global.ConstantResponseKeys;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -31,7 +32,7 @@ public class WholesalePlanController extends TestUtil {
     @Test
     public void testGetAllServicePlans() throws Exception {
         Map<String, String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String token = loggedUserResponse.get("token");
+        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);
 
@@ -48,7 +49,7 @@ public class WholesalePlanController extends TestUtil {
     @Test
     public void testIsMyPlanActive() throws Exception {
         Map<String, String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String token = loggedUserResponse.get("token");
+        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);
 
@@ -98,7 +99,7 @@ public class WholesalePlanController extends TestUtil {
     @Test
     public void testGetAllMyPlans() throws Exception {
         Map<String, String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get("token");
+        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);
         String json = """

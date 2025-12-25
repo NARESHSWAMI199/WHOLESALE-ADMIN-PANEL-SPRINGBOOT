@@ -58,7 +58,7 @@ public class ItemController extends ServiceContainer {
         Item alItems = itemService.findItemBySLug(slug);
         if (alItems != null) {
             responseObj.put(ConstantResponseKeys.MESSAGE, "success");
-            responseObj.put("res", alItems);
+            responseObj.put(ConstantResponseKeys.RES, alItems);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
             responseObj.put(ConstantResponseKeys.MESSAGE, "Item Not Found");
@@ -268,7 +268,7 @@ public class ItemController extends ServiceContainer {
         Map<String,Object> result = new HashMap<>();
         ItemCategory updatedItemCategory = itemService.saveOrUpdateItemCategory(categoryDto);
         if(updatedItemCategory != null) {
-            result.put("res",updatedItemCategory); // during update and inserted for both
+            result.put(ConstantResponseKeys.RES,updatedItemCategory); // during update and inserted for both
             if(categoryDto.getId() != null && categoryDto.getId() != 0) {
                 result.put(ConstantResponseKeys.MESSAGE, "Category successfully updated.");
                 result.put(ConstantResponseKeys.STATUS, 200);
@@ -322,7 +322,7 @@ public class ItemController extends ServiceContainer {
         Map<String,Object> result = new HashMap<>();
         ItemSubCategory updateItemSubCategory = itemService.saveOrUpdateItemSubCategory(subCategoryDto);
         if(updateItemSubCategory != null) {
-            result.put("res",updateItemSubCategory); // during update and inserted for both
+            result.put(ConstantResponseKeys.RES,updateItemSubCategory); // during update and inserted for both
             if(subCategoryDto.getId() != null) {
                 result.put(ConstantResponseKeys.MESSAGE, "Category successfully updated.");
                 result.put(ConstantResponseKeys.STATUS, 200);

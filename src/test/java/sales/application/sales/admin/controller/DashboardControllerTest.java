@@ -1,6 +1,7 @@
 package sales.application.sales.admin.controller;
 
 import com.sales.SalesApplication;
+import com.sales.global.ConstantResponseKeys;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -43,7 +44,7 @@ public class DashboardControllerTest extends TestUtil {
     @Test
     public void testGraphData() throws Exception {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String token = loggedUserResponse.get("token");
+        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization" , token);
         String json = """
@@ -72,7 +73,7 @@ public class DashboardControllerTest extends TestUtil {
     @Test
     public void testCounts() throws Exception {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String token = loggedUserResponse.get("token");
+        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization" , token);
         mockMvc.perform(MockMvcRequestBuilders.get("/admin/dashboard/counts")

@@ -352,7 +352,7 @@ public class UserService extends RepoContainer {
             }
 
             if (updatedUser.getId() > 0) {
-                responseObj.put("res", updatedUser);
+                responseObj.put(ConstantResponseKeys.RES, updatedUser);
                 responseObj.put(ConstantResponseKeys.MESSAGE, "Successfully inserted.");
                 responseObj.put(ConstantResponseKeys.STATUS, 201);
             } else {

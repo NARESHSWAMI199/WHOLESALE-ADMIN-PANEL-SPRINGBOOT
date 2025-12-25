@@ -63,7 +63,7 @@ public class ServicePlanController extends ServiceContainer {
         User loggedUser = (User) request.getAttribute("user");
         Map<String,Object> result = new HashMap<>();
         ServicePlan servicePlan = servicePlanService.insertServicePlan(loggedUser,servicePlanDto);
-        result.put("res",servicePlan);
+        result.put(ConstantResponseKeys.RES,servicePlan);
         result.put(ConstantResponseKeys.MESSAGE,"Service plan added successfully.");
         result.put(ConstantResponseKeys.STATUS , 201);
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));

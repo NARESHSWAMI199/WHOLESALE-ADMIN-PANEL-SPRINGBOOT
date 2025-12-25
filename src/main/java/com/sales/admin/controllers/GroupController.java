@@ -56,7 +56,7 @@ public class GroupController extends ServiceContainer {
         logger.info("Fetching group details for slug: {}", slug);
         Map<String, Object> responseObj = new HashMap<>();
         Map<String, Object> group = groupService.findGroupBySlug(slug);
-        responseObj.put("res", group);
+        responseObj.put(ConstantResponseKeys.RES, group);
         responseObj.put(ConstantResponseKeys.STATUS, 200);
         return new ResponseEntity<>(responseObj, HttpStatus.OK);
     }

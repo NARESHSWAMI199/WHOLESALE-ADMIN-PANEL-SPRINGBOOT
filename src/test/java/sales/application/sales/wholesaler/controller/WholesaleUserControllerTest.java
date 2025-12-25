@@ -3,6 +3,7 @@ package sales.application.sales.wholesaler.controller;
 
 import com.sales.SalesApplication;
 import com.sales.entities.User;
+import com.sales.global.ConstantResponseKeys;
 import com.sales.wholesaler.repository.WholesaleUserRepository;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -202,7 +203,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
 //    @Test
     public void testUpdateUser(String slug) throws Exception {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get("token");
+        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization" , token);
         String randomEmail = UUID.randomUUID().toString().substring(0,6) + "@mocktest.in";
@@ -233,7 +234,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
     @Test
     public void testDetailUser() throws Exception {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get("token");
+        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization" , token);
 
@@ -250,7 +251,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
     @Test
     public void testDetailUserWithSlug() throws Exception {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get("token");
+        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization" , token);
 
@@ -267,7 +268,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
     @Test
     public void testUpdateLastSeenUser() throws Exception {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get("token");
+        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization" , token);
 
@@ -284,7 +285,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
     @Test
     public void testChatUsers() throws Exception {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get("token");
+        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization" , token);
 
@@ -306,7 +307,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
     @Test
     public void testUpdatePassword() throws Exception {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get("token");
+        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization" , token);
 

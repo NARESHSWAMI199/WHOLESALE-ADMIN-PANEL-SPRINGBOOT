@@ -2,6 +2,7 @@ package sales.application.sales.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sales.global.ConstantResponseKeys;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -111,7 +112,7 @@ public class TestUtil {
 
         Map<String,String> response = new HashMap<>();
         response.put("slug", extractSlugFromResponseViaUser(result));
-        response.put("token", extractTokenFromResponse(result));
+        response.put(ConstantResponseKeys.TOKEN, extractTokenFromResponse(result));
         return response;
     }
 
@@ -136,7 +137,7 @@ public class TestUtil {
 
         Map<String,String> response = new HashMap<>();
         response.put("slug", extractSlugFromResponseViaUser(result));
-        response.put("token", extractTokenFromResponse(result));
+        response.put(ConstantResponseKeys.TOKEN, extractTokenFromResponse(result));
         return response;
     }
 

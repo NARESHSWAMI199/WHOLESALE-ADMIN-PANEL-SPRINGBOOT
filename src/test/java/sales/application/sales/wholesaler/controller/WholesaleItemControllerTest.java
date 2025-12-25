@@ -1,6 +1,7 @@
 package sales.application.sales.wholesaler.controller;
 
 import com.sales.SalesApplication;
+import com.sales.global.ConstantResponseKeys;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -38,7 +39,7 @@ public class WholesaleItemControllerTest extends TestUtil {
     @Test
     public void testGetAllItems() throws Exception {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get("token");
+        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization",token);
         String json = """
@@ -62,7 +63,7 @@ public class WholesaleItemControllerTest extends TestUtil {
     @Test
     public void testAddItem() throws Exception {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String  token = loggedUserResponse.get("token");
+        String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization",token);
         MockMultipartFile file = getImageMultipartFileToUpload("newItemImages");
@@ -102,7 +103,7 @@ public class WholesaleItemControllerTest extends TestUtil {
 
     public void testUpdateItem(String slug) throws Exception {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get("token");
+        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);
         MockMultipartFile file = getImageMultipartFileToUpload("newItemImages");
@@ -131,7 +132,7 @@ public class WholesaleItemControllerTest extends TestUtil {
 
     public void testUpdateStock(String slug) throws Exception {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String  token = loggedUserResponse.get("token");
+        String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization",token);
 
@@ -156,7 +157,7 @@ public class WholesaleItemControllerTest extends TestUtil {
 
     public void testDeleteItem(String slug) throws Exception {
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String  token = loggedUserResponse.get("token");
+        String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization",token);
         String json = """
@@ -182,7 +183,7 @@ public class WholesaleItemControllerTest extends TestUtil {
     @Test
     public void testGetCategory() throws Exception {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String  token = loggedUserResponse.get("token");
+        String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization",token);
 

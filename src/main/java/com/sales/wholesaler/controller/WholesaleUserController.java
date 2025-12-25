@@ -61,12 +61,12 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         }else if (user.getStatus().equalsIgnoreCase("A")) {
             message = "success";
-            responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
+            responseObj.put(ConstantResponseKeys.TOKEN, "GlobalConstant.AUTH_TOKEN_PREFIX" + jwtToken.generateToken(user));
             Store storeDetails = wholesaleStoreService.getStoreByUserId(user.getId());
             Map<String,Object> paginationsObj = wholesalePaginationService.findUserPaginationsByUserId(user);
             responseObj.put("user", user);
-            responseObj.put("store", storeDetails);
-            responseObj.put("paginations",paginationsObj);
+            responseObj.put(ConstantResponseKeys.STORE, storeDetails);
+            responseObj.put(ConstantResponseKeys.PAGINATIONS,paginationsObj);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         }else {
             message = "You are blocked by admin.";
@@ -88,13 +88,13 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put(ConstantResponseKeys.MESSAGE, "Wrong otp password.");
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
-            responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
+            responseObj.put(ConstantResponseKeys.TOKEN, "GlobalConstant.AUTH_TOKEN_PREFIX" + jwtToken.generateToken(user));
             Store store = wholesaleStoreService.getStoreByUserId(user.getId());
             Map<String,Object> paginations = wholesalePaginationService.findUserPaginationsByUserId(user);
             responseObj.put(ConstantResponseKeys.MESSAGE, "success");
             responseObj.put("user", user);
-            responseObj.put("store", store);
-            responseObj.put("paginations",paginations);
+            responseObj.put(ConstantResponseKeys.STORE, store);
+            responseObj.put(ConstantResponseKeys.PAGINATIONS,paginations);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
             wholesaleUserService.resetOtp(user.getEmail());
         } else {
@@ -126,11 +126,11 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         } else if (user.getStatus().equalsIgnoreCase("A")) {
             Store store = wholesaleStoreService.getStoreByUserId(user.getId());
             Map<String,Object> paginations = wholesalePaginationService.findUserPaginationsByUserId(user);
-            responseObj.put("token", "Bearer " + jwtToken.generateToken(user));
+            responseObj.put(ConstantResponseKeys.TOKEN, "GlobalConstant.AUTH_TOKEN_PREFIX" + jwtToken.generateToken(user));
             responseObj.put(ConstantResponseKeys.MESSAGE, "success");
             responseObj.put("user", user);
-            responseObj.put("store", store);
-            responseObj.put("paginations",paginations);
+            responseObj.put(ConstantResponseKeys.STORE, store);
+            responseObj.put(ConstantResponseKeys.PAGINATIONS,paginations);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
             // setting blank otp
             wholesaleUserService.resetOtp(user.getEmail());
@@ -193,7 +193,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         }
         if(slug == null){
             Store store = wholesaleStoreService.getStoreByUserSlug(user.getId());
-            responseObj.put("store", store);
+            responseObj.put(ConstantResponseKeys.STORE, store);
         }
         responseObj.put("user", user);
         responseObj.put(ConstantResponseKeys.STATUS, 200);
@@ -210,7 +210,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         User updatedUser = wholesaleUserService.resetPasswordByUserSlug(passwordDto,loggedUser);
-        responseObj.put("res",updatedUser);
+        responseObj.put(ConstantResponseKeys.RES,updatedUser);
         responseObj.put(ConstantResponseKeys.MESSAGE, "User password has been successfully updated.");
         responseObj.put(ConstantResponseKeys.STATUS, 200);
         logger.info("Completed resetUserPasswordBySlug method");

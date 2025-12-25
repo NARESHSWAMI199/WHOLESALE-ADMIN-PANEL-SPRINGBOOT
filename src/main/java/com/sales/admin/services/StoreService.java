@@ -158,7 +158,7 @@ public class StoreService extends RepoContainer{
                 // if there is any required field null, then this will throw IllegalArgumentException
                 Utils.checkRequiredFields(storeDto,List.of("storeSlug"));
 
-                String storeName = Utils.isValidName(storeDto.getStoreName(),"Store");
+                String storeName = Utils.isValidName(storeDto.getStoreName(),ConstantResponseKeys.STORE);
                 storeDto.setStoreName(storeName);
                 // If we found any issue with email and mobile, this will throw exception
                 Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid store's _ recheck your and store's _.");
@@ -189,10 +189,10 @@ public class StoreService extends RepoContainer{
                     "Not a valid store's _ recheck your and store's _."
                 );
 
-                String storeName = Utils.isValidName(storeDto.getStoreName(),"Store");
+                String storeName = Utils.isValidName(storeDto.getStoreName(),ConstantResponseKeys.STORE);
                 storeDto.setStoreName(storeName);
                 Store createdStore = createStore(storeDto, loggedUser);
-                responseObj.put("res", createdStore);
+                responseObj.put(ConstantResponseKeys.RES, createdStore);
                 responseObj.put(ConstantResponseKeys.MESSAGE, "Successfully inserted.");
                 responseObj.put(ConstantResponseKeys.STATUS, 201);
             }

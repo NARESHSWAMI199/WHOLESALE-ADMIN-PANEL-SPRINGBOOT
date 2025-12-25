@@ -52,7 +52,7 @@ public class CashFreePgController extends PaymentServiceContainer {
                 }else {
                     orderEntity = cashfreeService.getOrderEntityForCashfreePaymentForWallet(request, cashfreeDto, loggedUser,cashfreeDto.getAmount(), redirectUri, env);
                 }
-                result.put("res", orderEntity);
+                result.put(ConstantResponseKeys.RES, orderEntity);
                 result.put(ConstantResponseKeys.STATUS, 201);
             } catch (ApiException e) {
                 logger.error("Exception occurred while getting payment session ID : {}", e.getMessage());

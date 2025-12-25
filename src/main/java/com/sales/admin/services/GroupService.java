@@ -95,7 +95,7 @@ public class GroupService extends RepoContainer {
             Group insertedGroup = groupRepository.save(group);
             // Updating given permissions.
             permissionHbRepository.updatePermissions(insertedGroup.getId(), groupDto.getPermissions());
-            responseObject.put("res", insertedGroup);
+            responseObject.put(ConstantResponseKeys.RES, insertedGroup);
             responseObject.put(ConstantResponseKeys.MESSAGE, groupDto.getName() + " successfully created.");
             responseObject.put(ConstantResponseKeys.STATUS, 201);
         }

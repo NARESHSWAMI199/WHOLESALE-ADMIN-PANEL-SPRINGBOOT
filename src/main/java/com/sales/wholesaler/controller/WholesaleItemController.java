@@ -63,7 +63,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
         Item alItems = wholesaleItemService.findItemBySLug(slug);
         if (alItems != null) {
             responseObj.put(ConstantResponseKeys.MESSAGE, "success");
-            responseObj.put("res", alItems);
+            responseObj.put(ConstantResponseKeys.RES, alItems);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
             responseObj.put(ConstantResponseKeys.MESSAGE, "Item Not Found");

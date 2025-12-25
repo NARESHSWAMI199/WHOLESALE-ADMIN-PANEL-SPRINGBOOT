@@ -42,7 +42,7 @@ public class WholesaleDashboardController extends WholesaleServiceContainer {
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
-        responseObj.put("res" ,wholesaleItemService.getItemCountByMonths(graphDto,storeId));
+        responseObj.put(ConstantResponseKeys.RES ,wholesaleItemService.getItemCountByMonths(graphDto,storeId));
         responseObj.put(ConstantResponseKeys.STATUS, 200);
         logger.info("Completed getAllGraphData method");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));

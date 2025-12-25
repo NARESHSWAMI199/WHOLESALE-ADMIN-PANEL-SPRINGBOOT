@@ -46,7 +46,7 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         Utils.checkRequiredFields(storeDto, List.of("storeName", "storeEmail", "storePhone", "categoryId", "subCategoryId"));
 
         Map<String, Object> responseObj = new HashMap<>();
-        String storeName = Utils.isValidName(storeDto.getStoreName(), "store");
+        String storeName = Utils.isValidName(storeDto.getStoreName(), ConstantResponseKeys.STORE);
         storeDto.setStoreName(storeName);
 
         /* '_' replaced by actual error message in mobileAndEmailValidation */

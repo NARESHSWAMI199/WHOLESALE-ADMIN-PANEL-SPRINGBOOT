@@ -226,7 +226,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
             validateRequiredFieldsBeforeCreateItem(itemDto);
 
             Item createdItem = createItem(itemDto, loggedUser); // Create operation
-            responseObj.put("res", createdItem);
+            responseObj.put(ConstantResponseKeys.RES, createdItem);
             responseObj.put(ConstantResponseKeys.MESSAGE, "Successfully inserted.");
             responseObj.put(ConstantResponseKeys.STATUS, 201);
         }

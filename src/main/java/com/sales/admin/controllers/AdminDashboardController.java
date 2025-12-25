@@ -35,7 +35,7 @@ public class AdminDashboardController extends ServiceContainer {
     public ResponseEntity<Map<String, Object>> getAllGraphData(@RequestBody GraphDto graphDto) {
         logger.info("Fetching graph data for months with filters: {}", graphDto);
         Map<String, Object> responseObj = new HashMap<>();
-        responseObj.put("res", storeService.getStoreCountByMonths(graphDto));
+        responseObj.put(ConstantResponseKeys.RES, storeService.getStoreCountByMonths(graphDto));
         responseObj.put(ConstantResponseKeys.STATUS, 200);
         return new ResponseEntity<>(responseObj,HttpStatus.OK);
     }

@@ -196,7 +196,7 @@ public class ItemService extends RepoContainer{
             // if there is any required field null, then this will throw IllegalArgumentException
             validateRequiredFieldsBeforeCreateItem(itemDto);
             Item createdItem = createItem(itemDto, loggedUser);
-            responseObj.put("res", createdItem);
+            responseObj.put(ConstantResponseKeys.RES, createdItem);
             responseObj.put(ConstantResponseKeys.MESSAGE, "Successfully inserted.");
             responseObj.put(ConstantResponseKeys.STATUS, 201);
         }
