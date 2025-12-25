@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashfree Checkout Integration</title>
+    <script th:src="@{/js/cashfree.js}"></script>
+    <script th:src="@{/js/sweetalert2.all.min.js}"></script>
+    <link th:href="@{/css/sweetalert2.min.css}" rel="stylesheet">
+
+    <style>
+        .center {
+            display: flex;
+            flex-direction : column;
+            justify-content: center;
+            align-items: center;
+            height : 100vh;
+        }
+        .payment-gif {
+            max-width: 80%; /* Ensure image doesn't exceed viewport width */
+            height: auto;
+        }
+    </style>
+
+
+</head>
+<body>
+
+<div class="center">
+    <img class="payment-gif" th:src="@{/images/payment.gif}" alt="Payment in progress"/>
+    <h3 style="opacity:0.5; margin:0px">Redirecting you to the payment page to proceed with your payment. </h3>
+</div>
+
+
+
+    <input type="hidden" id="servicePlanSlug" th:value="${servicePlanSlug}">
+    <input type="hidden" id="amount" th:value="${amount}">
+    <input type="hidden" id="userSlug" th:value="${userSlug}">
+    <input type="hidden" id="env" th:value="${env}">
+    <input type="hidden" id="redirectUri" th:value="${redirectUri}">
+<script>
+
+    let env = document.getElementById("env")?.value;
+    let paymentMode = "production";
+    if(env === 'TEST' || env === 'test') paymentMode = "sandbox";
+    const cashfree = Cashfree({
+        mode: paymentMode,
+    });
+    const redirectPaymentPage = async () => {
+        let paymentSessionId = await requestForPaymentSessionId();
+        let checkoutOptions = {
+            paymentSessionId: paymentSessionId,
+            redirectTarget: "_self",
+        };
+
+        try {
+            let result =  await cashfree.checkout(checkoutOptions);
+            console.log(result);
+        }catch(err){
+            console.log(err);
+        }
+    }
+
+
+
+    const requestForPaymentSessionId = async () =>{
+        let userSlug = document.getElementById("userSlug").value;
+        let servicePlanSlug = document.getElementById("servicePlanSlug").value;
+        let redirectUri = document.getElementById("redirectUri").value;
+        let amount = document.getElementById("amount").value;
+        let paymentFor = "plans";
+        if(!!amount) paymentFor = "wallet";
+
+        let data = JSON.stringify({
+            "servicePlanSlug" : servicePlanSlug,
+            "userSlug" : userSlug,
+            "amount" : amount
+        });
+        let paymentSessionId = null;
+
+        let url = `/cashfree/sessionId/${paymentFor}`;
+        url = (!!redirectUri) ? `/cashfree/sessionId/paymentFor?redirectUri=${redirectUri}` : url;
+        await fetch(url,{
+            headers  : {
+                "Content-Type" : 'application/json;'
+            },
+            method : 'post',
+            body : data
+        }).then(res => {
+            if(!res.ok) return res.json().then(data => {throw new Error(data.message)});
+            return res.json();
+        })
+        .then(data => {
+            paymentSessionId = data.res.paymentSessionId;
+        })
+        .catch(err => {
+            console.log(err);
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: `${err.message}`,
+              confirmButtonText: 'Go Back'
+            }).then(result =>{
+               history.back();
+            });
+        });
+        return paymentSessionId;
+    }
+    redirectPaymentPage();
+
+
+</script>
+</body>
+</html>
