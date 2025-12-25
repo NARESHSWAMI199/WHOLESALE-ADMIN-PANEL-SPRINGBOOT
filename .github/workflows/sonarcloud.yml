@@ -39,7 +39,7 @@ jobs:
         mvn -B verify \
           org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
           -Dsonar.projectKey=NARESHSWAMI199_WHOLESALE-ADMIN-PANEL-SPRINGBOOT \
-          -Dsonar.organization=Naresh Swami \
+          -Dsonar.organization=NARESHSWAMI199 \
           -Dsonar.host.url=https://sonarcloud.io
 
     - name: Quality Gate check (optional - fail build if quality gate fails)
