@@ -26,6 +26,6 @@ jobs:
         run: |
           mvn clean verify \
             org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-            -Dsonar.projectKey=swamisales \
-            -Dsonar.organization=swamisales \
+            -Dsonar.projectKey=nareshswami199_WHOLESALE-ADMIN-PANEL-SPRINGBOOT \
+            -Dsonar.organization=nareshswami199 \
             -Dsonar.host.url=https://sonarcloud.io
