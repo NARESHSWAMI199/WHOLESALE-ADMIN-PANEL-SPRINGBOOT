@@ -155,7 +155,7 @@ public class WriteExcelUtil {
             String fileLocation = path + File.separator + fileName;
             FileOutputStream outputStream = new FileOutputStream(fileLocation);
             workbook.write(outputStream);
-            logger.info("The excel file location of not updated items : {}", fileLocation);
+            logger.info("The excel file location of not updated items : {}", Utils.sanitizeForLog(fileLocation));
             return fileName;
         }
     }
