@@ -2,6 +2,7 @@ package com.sales.global;
 
 import com.sales.entities.User;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,6 +38,8 @@ public class GlobalConstant {
     public static final String AUTH_TOKEN_PREFIX = GlobalConstant.AUTH_TOKEN_PREFIX;
     public static final String AUTHORIZATION = "Authorization";
 
+    public static final List<String> HEADERS_FOR_ITEMS = List.of("NAME","TOKEN","PRICE", "DISCOUNT","LABEL","CAPACITY","RATING","IN-STOCK","STATUS","CREATED-AT","UPDATED-AT");
+    public static final List<String> HEADERS_NOT_UPDATED_ITEMS_EXCEL = List.of("NAME", "TOKEN", "PRICE", "DISCOUNT", "LABEL", "CAPACITY", "IN-STOCK", "REASON");
 
 
     private GlobalConstant () {

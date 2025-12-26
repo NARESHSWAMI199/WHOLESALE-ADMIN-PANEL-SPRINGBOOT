@@ -92,11 +92,10 @@ public class ItemService extends RepoContainer{
             });
         }
         int totalItem = itemsList.size();
-        String [] headers = {"NAME","TOKEN","PRICE", "DISCOUNT","LABEL","CAPACITY","RATING","IN-STOCK","STATUS","CREATED-AT","UPDATED-AT"};
         String folderName  = wholesaleSlug;
         // When we're creating all items, excel without a specific user wholesale or store from admin pannel
         if(folderName == null) folderName = loggedUser.getSlug();
-        String filePath = writeExcel.createExcelSheet(result, totalItem, Arrays.asList(headers), folderName);
+        String filePath = writeExcel.createExcelSheet(result, totalItem,GlobalConstant.HEADERS_FOR_ITEMS, folderName);
         logger.info("Exiting createItemsExcelSheet");
         return filePath;
     }

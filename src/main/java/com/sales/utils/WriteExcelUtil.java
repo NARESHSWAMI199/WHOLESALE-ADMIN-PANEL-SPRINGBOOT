@@ -28,136 +28,220 @@ public class WriteExcelUtil {
     @Value("${excel.notUpdated.absolute}")
     String getExcelNotUpdateItemsFolderPath;
 
-    public String createExcelSheet(Map<String, List<Object>> data, int totalRow, List<String> headers,String folderName) throws IOException {
-        try(XSSFWorkbook workbook = new XSSFWorkbook()) {
+    public String createExcelSheet(
+            Map<String, List<Object>> data,
+            int totalRows,
+            List<String> headers,
+            String folderName) throws IOException {
+
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Items");
-            sheet.setColumnWidth(0, 6000);
-            sheet.setColumnWidth(1, 4000);
+            applyDefaultColumnWidths(sheet);
 
-            Row header = sheet.createRow(0);
+            Row headerRow = sheet.createRow(0);
+            CellStyle headerStyle = createHeaderStyle(workbook);
+            populateHeaders(headerRow, headers, headerStyle);
 
-            CellStyle headerStyle = workbook.createCellStyle();
-            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
-            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            CellStyle dataStyle = createDataStyle(workbook);
+            populateDataRows(sheet, data, headers, totalRows, dataStyle);
 
-            XSSFFont font = workbook.createFont();
-            font.setFontName("Arial");
-            font.setColor(IndexedColors.WHITE.getIndex());
-            font.setFontHeightInPoints((short) 10);
-            font.setBold(true);
-            headerStyle.setFont(font);
-
-            CellStyle style = workbook.createCellStyle();
-            style.setWrapText(true);
-
-            // create excel file's headers
-            for (int cellNo = 0; cellNo < headers.size(); cellNo++) {
-                Cell headerCell = header.createCell(cellNo);
-                headerCell.setCellValue(headers.get(cellNo));
-                headerCell.setCellStyle(headerStyle);
-            }
-            int rowNo = 1;
-            for (int index = 0; index < totalRow; index++) {
-                Row row = sheet.createRow(rowNo);
-                for (int colNo = 0; colNo < headers.size(); colNo++) {
-                    String headerName = headers.get(colNo).replace("-","");
-                    if(headerName.equals("TOKEN")) headerName = "SLUG";
-                    Cell cell = row.createCell(colNo);
-                    String value = String.valueOf(data.get(headerName).get(index));
-                    if (value.equals("N") && headerName.equals("LABEL")) {
-                        value = "New";
-                    } else if (value.equals("O") && headerName.equals("LABEL")) {
-                        value = "Old";
-                    }
-                    else if (value.equals("A") && headerName.equals("STATUS")) {
-                        value = "Active";
-                    }else if (value.equals("D") && headerName.equals("STATUS")) {
-                        value = "Deactive";
-                    }
-                    else if (value.equals("Y") && headerName.equals("INSTOCK")) {
-                        value = "Yes";
-                    }else if (value.equals("N") && headerName.equals("INSTOCK")) {
-                        value = "No";
-                    }
-                    else if (headerName.equals("CREATEDAT") || headerName.equals("UPDATEDAT")) {
-                        value = Utils.getMillisToDate(((Double)Double.parseDouble(value)).longValue());
-                    }
-                    cell.setCellValue(value);
-                    cell.setCellStyle(style);
-                }
-                rowNo++;
-            }
-
-            Path absoluteExcelPath = Paths.get(excelExportAbsolutePath);
-            Path resolve = absoluteExcelPath.resolve(folderName).normalize();
-            File file = new File(String.valueOf(resolve.toAbsolutePath()));
-
-            if(!file.exists()) {
-                boolean created = file.mkdirs();
-                if(created) logger.info("The file is created at : {}",file.getAbsolutePath());
-            }
-            String path = file.getAbsolutePath();
-            String fileLocation = path +File.separator + "temp.xlsx";
-            FileOutputStream outputStream = new FileOutputStream(fileLocation);
-            workbook.write(outputStream);
-            return fileLocation;
+            return saveWorkbook(workbook, folderName);
         }
     }
 
-    public String writeNotUpdatedItemsExcel(List<ItemHbRepository.ItemUpdateError> data, String[] headers, String folderName) throws IOException {
+
+    public String writeNotUpdatedItemsExcel(List<ItemHbRepository.ItemUpdateError> data, List<String> headers, String folderName) throws IOException {
 
         try (XSSFWorkbook workbook =new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Items");
-            sheet.setColumnWidth(0, 6000);
-            sheet.setColumnWidth(1, 4000);
+            applyDefaultColumnWidths(sheet);
 
-            Row header = sheet.createRow(0);
+            Row headerRow = sheet.createRow(0);
+            CellStyle headerStyle = createHeaderStyle(workbook);
+            populateHeaders(headerRow,headers,headerStyle);
 
-            CellStyle headerStyle = workbook.createCellStyle();
-            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
-            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            CellStyle dataStyle = createDataStyle(workbook);
+            populateDataRows(sheet,data,headers,dataStyle);
 
-            XSSFFont font = workbook.createFont();
-            font.setFontName("Arial");
-            font.setColor(IndexedColors.WHITE.getIndex());
-            font.setFontHeightInPoints((short) 10);
-            font.setBold(true);
-            headerStyle.setFont(font);
-
-            CellStyle style = workbook.createCellStyle();
-            style.setWrapText(true);
-
-            // create excel file's headers
-            for (int cellNo = 0; cellNo < headers.length; cellNo++) {
-                Cell headerCell = header.createCell(cellNo);
-                headerCell.setCellValue(headers[cellNo]);
-                headerCell.setCellStyle(headerStyle);
-            }
-            int rowNo = 1;
-            for (int index = 0; index < data.size(); index++) {
-                Map<String, Object> itemDetail = data.get(index).getItemRowDetail();
-                Row row = sheet.createRow(rowNo);
-                for (int colNo = 0; colNo < headers.length; colNo++) {
-                    String headerName = headers[colNo];
-                    Cell cell = row.createCell(colNo);
-                    String value = String.valueOf(itemDetail.get(headerName));
-                    if (headerName.equals("REASON")) value = data.get(index).getErrorMessage();
-                    cell.setCellValue(value);
-                    cell.setCellStyle(style);
-                }
-                rowNo++;
-            }
-
-            File file = new File(getExcelNotUpdateItemsFolderPath + folderName);
-            if (!file.exists()) file.mkdirs();
-            String path = file.getAbsolutePath();
-            String fileName = "temp.xlsx";
-            String fileLocation = path + File.separator + fileName;
-            FileOutputStream outputStream = new FileOutputStream(fileLocation);
-            workbook.write(outputStream);
-            logger.info("The excel file location of not updated items : {}", Utils.sanitizeForLog(fileLocation));
-            return fileName;
+            return saveWorkbookForNotUpdated(workbook,folderName);
         }
+    }
+
+
+
+    private void applyDefaultColumnWidths(Sheet sheet) {
+        sheet.setColumnWidth(0, 6000);
+        sheet.setColumnWidth(1, 4000);
+    }
+
+    private CellStyle createHeaderStyle(XSSFWorkbook workbook) {
+        CellStyle style = workbook.createCellStyle();
+        style.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        XSSFFont font = workbook.createFont();
+        font.setFontName("Arial");
+        font.setColor(IndexedColors.WHITE.getIndex());
+        font.setFontHeightInPoints((short) 10);
+        font.setBold(true);
+
+        style.setFont(font);
+        return style;
+    }
+
+    private CellStyle createDataStyle(XSSFWorkbook workbook) {
+        CellStyle style = workbook.createCellStyle();
+        style.setWrapText(true);
+        return style;
+    }
+
+    private void populateHeaders(Row headerRow, List<String> headers, CellStyle style) {
+        for (int i = 0; i < headers.size(); i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers.get(i));
+            cell.setCellStyle(style);
+        }
+    }
+
+    private void populateDataRows(Sheet sheet,
+                                  Map<String, List<Object>> data,
+                                  List<String> headers,
+                                  int totalRows,
+                                  CellStyle style) {
+
+        for (int rowIdx = 0; rowIdx < totalRows; rowIdx++) {
+            Row row = sheet.createRow(rowIdx + 1);
+
+            for (int colIdx = 0; colIdx < headers.size(); colIdx++) {
+                String originalHeader = headers.get(colIdx);
+                String key = normalizeHeader(originalHeader);
+
+                Cell cell = row.createCell(colIdx);
+                String value = formatValue(key, data.get(key).get(rowIdx));
+
+                cell.setCellValue(value);
+                cell.setCellStyle(style);
+            }
+        }
+    }
+
+
+    private void populateDataRows(Sheet sheet,
+                                  List<ItemHbRepository.ItemUpdateError> errors,
+                                  List<String> headers,
+                                  CellStyle style) {
+        int rowNum = 1;
+
+        for (ItemHbRepository.ItemUpdateError error : errors) {
+            Map<String, Object> itemDetail = error.getItemRowDetail();
+            Row row = sheet.createRow(rowNum++);
+
+            for (int col = 0; col < headers.size(); col++) {
+                String header = headers.get(col);
+                Cell cell = row.createCell(col);
+
+                String value = header.equals("REASON")
+                        ? error.getErrorMessage()
+                        : String.valueOf(itemDetail.getOrDefault(header, ""));
+
+                cell.setCellValue(value);
+                cell.setCellStyle(style);
+            }
+        }
+    }
+
+    private String normalizeHeader(String header) {
+        String cleaned = header.replace("-", "");
+        return "TOKEN".equals(cleaned) ? "SLUG" : cleaned;
+    }
+
+    private String formatValue(String key, Object rawValue) {
+        String value = String.valueOf(rawValue);
+
+        // Special value mappings (can be easily extended later)
+        return switch (key) {
+            case "LABEL"   -> mapLabel(value);
+            case "STATUS"  -> mapStatus(value);
+            case "INSTOCK" -> mapInStock(value);
+            case "CREATEDAT", "UPDATEDAT" -> formatDate(value);
+            default -> value;
+        };
+    }
+
+    private String mapLabel(String value) {
+        return switch (value) {
+            case "N" -> "New";
+            case "O" -> "Old";
+            default  -> value;
+        };
+    }
+
+    private String mapStatus(String value) {
+        return switch (value) {
+            case "A" -> "Active";
+            case "D" -> "Deactive";
+            default  -> value;
+        };
+    }
+
+    private String mapInStock(String value) {
+        return switch (value) {
+            case "Y" -> "Yes";
+            case "N" -> "No";
+            default  -> value;
+        };
+    }
+
+    private String formatDate(String value) {
+        try {
+            long millis = ((Double) Double.parseDouble(value)).longValue();
+            return Utils.getMillisToDate(millis);
+        } catch (Exception e) {
+            return value; // fallback - better to log in real code
+        }
+    }
+
+    private String saveWorkbook(XSSFWorkbook workbook, String folderName) throws IOException {
+        Path basePath = Paths.get(excelExportAbsolutePath);
+        Path targetDir = basePath.resolve(folderName).normalize();
+
+        File directory = targetDir.toFile();
+        if (!directory.exists()) {
+            boolean created = directory.mkdirs();
+            if (created) {
+                logger.info("Directory created: {}", directory.getAbsolutePath());
+            }
+        }
+
+        String filePath = directory.getAbsolutePath() + File.separator + "temp.xlsx";
+
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            workbook.write(fos);
+        }
+
+        return filePath;
+    }
+
+
+    private String saveWorkbookForNotUpdated(XSSFWorkbook workbook, String folderName) throws IOException {
+        File directory = new File(getExcelNotUpdateItemsFolderPath + folderName);
+        if (!directory.exists()) {
+            boolean created = directory.mkdirs();
+            if (created) {
+                logger.info("Created directory for not-updated items: {}", directory.getAbsolutePath());
+            }
+        }
+
+        String fileName = "temp.xlsx";
+        String fullPath = directory.getAbsolutePath() + File.separator + fileName;
+
+        try (FileOutputStream fos = new FileOutputStream(fullPath)) {
+            workbook.write(fos);
+        }
+
+        logger.info("Not updated items excel saved at: {}", Utils.sanitizeForLog(fullPath));
+
+        return fileName;
     }
 
 

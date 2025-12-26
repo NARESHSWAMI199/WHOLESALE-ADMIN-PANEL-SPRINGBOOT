@@ -119,9 +119,7 @@ public class ItemController extends ServiceContainer {
                     responseObj.put(ConstantResponseKeys.STATUS, 200);
                     logger.info("Items successfully updated : {} ",updateItemsError);
                 }else{
-                    // Creating an Excel for which items are not updated
-                    String [] headers = {"NAME","TOKEN","PRICE", "DISCOUNT","LABEL","CAPACITY","IN-STOCK","REASON"};
-                    String fileName = writeExcel.writeNotUpdatedItemsExcel(updateItemsError, headers, wholesaleSlug);
+                    String fileName = writeExcel.writeNotUpdatedItemsExcel(updateItemsError, GlobalConstant.HEADERS_NOT_UPDATED_ITEMS_EXCEL, wholesaleSlug);
                     responseObj.put("fileUrl", Utils.getHostUrl(request)+GlobalConstant.ITEMS_NOT_UPDATED_PATH_FOR_ADMIN+ wholesaleSlug+
                             GlobalConstant.PATH_SEPARATOR+fileName);
                     responseObj.put(ConstantResponseKeys.MESSAGE, "Some items are not updated.");

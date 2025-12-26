@@ -429,8 +429,7 @@ public class WholesaleItemService extends WholesaleRepoContainer {
             });
         }
         int totalItem = itemsList.size();
-        String [] headers = {"NAME","TOKEN","PRICE", "DISCOUNT","LABEL","CAPACITY","RATING","IN-STOCK","STATUS","CREATED-AT","UPDATED-AT"};
-        String filePath = writeExcel.createExcelSheet(result, totalItem, Arrays.asList(headers),"WHOLESALER_"+loggedUser.getSlug());
+        String filePath = writeExcel.createExcelSheet(result, totalItem,GlobalConstant.HEADERS_FOR_ITEMS,"WHOLESALER_"+loggedUser.getSlug());
         logger.info("Exiting createItemsExcelSheet");
         return filePath;
     }
