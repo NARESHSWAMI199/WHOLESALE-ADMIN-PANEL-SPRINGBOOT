@@ -82,7 +82,7 @@ public class StoreController extends ServiceContainer{
 
 
     @GetMapping("/detailbyuser/{userSLug}")
-    public ResponseEntity<Map<String,Object>> getUserDetailByUserSlug(@PathVariable("userSLug") String slug) throws Exception {
+    public ResponseEntity<Map<String,Object>> getUserDetailByUserSlug(@PathVariable("userSLug") String slug) {
         logger.info("Fetching store details for user slug: {}", Utils.sanitizeForLog(slug));
         Map<String,Object> responseObj = new HashMap<>();
         Store store = storeService.getStoreByUserSlug(slug);
