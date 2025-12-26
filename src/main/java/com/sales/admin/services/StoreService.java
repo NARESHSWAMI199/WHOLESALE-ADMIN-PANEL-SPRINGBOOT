@@ -297,7 +297,7 @@ public class StoreService extends RepoContainer{
         return storeId;
     }
 
-    public Store getStoreByUserSlug(String userSlug) throws Exception {
+    public Store getStoreByUserSlug(String userSlug) {
         logger.info("Entering getStoreByUserSlug with userSlug: {}", userSlug);
         if(Utils.isEmpty(userSlug)) throw new IllegalArgumentException("User slug can't be null or blank.");
         User user = userRepository.findUserBySlug(userSlug);

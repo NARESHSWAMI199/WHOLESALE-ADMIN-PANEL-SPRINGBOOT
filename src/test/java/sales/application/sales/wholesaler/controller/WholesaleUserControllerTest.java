@@ -65,7 +65,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
     public void validateOtp(String slug) throws Exception {
         User user = wholesaleUserRepository.findUserBySlug(slug);
         String otp = user.getOtp();
-        logger.error("THE OTP ================== > "+otp);
+        logger.info("THE OTP ================== > {}", otp);
         String json = """
                 {
                     "slug" : "{slug}",

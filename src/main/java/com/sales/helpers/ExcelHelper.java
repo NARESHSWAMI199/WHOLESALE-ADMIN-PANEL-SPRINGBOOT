@@ -10,6 +10,8 @@ import java.util.List;
 
 public class ExcelHelper {
 
+    private ExcelHelper(){}
+
     public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     public static String TYPE_XLS = "application/vnd.ms-excel";
     private static final List<String> EXCEL_MIME_TYPES = Arrays.asList(TYPE, TYPE_XLS);

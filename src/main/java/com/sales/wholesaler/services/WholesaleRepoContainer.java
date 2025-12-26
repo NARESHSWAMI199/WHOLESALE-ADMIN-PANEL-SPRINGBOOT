@@ -133,7 +133,7 @@ public class WholesaleRepoContainer {
     protected WholesaleWalletRepository wholesaleWalletRepository;
 
     public Pageable getPageable(SearchFilters filters){
-        logger.error("page : "+ filters.getPageNumber() + " "+filters.getSize());
+        logger.info("page : {} {}",filters.getPageNumber(),filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?
                 Sort.by(filters.getOrderBy()).ascending() :  Sort.by(filters.getOrderBy()).descending();
         Pageable pageable = PageRequest.of(filters.getPageNumber(), filters.getSize(),sort);

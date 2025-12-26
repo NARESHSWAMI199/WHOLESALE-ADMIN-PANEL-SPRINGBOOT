@@ -1,5 +1,9 @@
 package com.sales.utils;
 
+import com.sales.exceptions.MyException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -8,6 +12,9 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 public class SecureAesUtil {
+
+    private SecureAesUtil(){}
+    private static final Logger logger = LoggerFactory.getLogger(SecureAesUtil.class);
 
     private static final String ALGORITHM = "AES/GCM/NoPadding";
     private static final int GCM_IV_LENGTH = 12;      // 96 bits is standard
@@ -40,7 +47,8 @@ public class SecureAesUtil {
 
         } catch (Exception e) {
             // In real code: throw checked exception or use Result type
-            throw new RuntimeException("Encryption failed", e);
+            logger.error("Exception during encrypt : {}",e.getMessage());
+            throw new MyException("Encryption failed");
         }
     }
 
@@ -73,7 +81,8 @@ public class SecureAesUtil {
             return new String(decrypted, StandardCharsets.UTF_8);
 
         } catch (Exception e) {
-            throw new RuntimeException("Decryption failed", e);
+            logger.error("Exception during decrypt : {}",e.getMessage());
+            throw new MyException("Decryption failed");
         }
     }
 

@@ -65,7 +65,7 @@ public class GroupService extends RepoContainer {
         validateRequiredFieldsForGroup(groupDto);
 
         //Only super admin can create or update a group.
-        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("You don't have permission to create or update a group. Please contact a super admin",null);
+        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("You don't have permission to create or update a group. Please contact a super admin",new Exception());
 
         if (!Utils.isEmpty(groupDto.getSlug()) || path.contains("update")) {
             logger.info("We are going to update the group.");

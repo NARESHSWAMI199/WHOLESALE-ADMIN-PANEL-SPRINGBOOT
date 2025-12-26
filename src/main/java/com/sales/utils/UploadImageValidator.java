@@ -29,7 +29,7 @@ public class UploadImageValidator {
                 int width = image.getWidth();
                 int height = image.getHeight();
 
-                log.info("image width : "+width + " : "+height);
+                log.info("image width : {} : {}", width, height);
                 // Check dimensions
                 if (width < minWidth || width > maxWidth || height < minHeight || height > maxHeight) {
                     if(width < minWidth || height < minHeight) {
@@ -41,7 +41,7 @@ public class UploadImageValidator {
 
                 // Check aspect ratio
                 double aspectRatio = (double) width / height;
-                log.info("image aspectRatio : "+aspectRatio);
+                log.info("image aspectRatio : {}", aspectRatio);
                 boolean validAspectRatio = false;
                 for (double allowedRatio : allowedAspectRatios) {
                     if (Math.abs(aspectRatio - allowedRatio) < 0.01) {
