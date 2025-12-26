@@ -57,7 +57,7 @@ public class ChatUserController extends WholesaleServiceContainer {
             result.put(ConstantResponseKeys.MESSAGE,"Something went wrong during insert your chat user");
             result.put(ConstantResponseKeys.STATUS, 400);
         }
-        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -71,13 +71,13 @@ public class ChatUserController extends WholesaleServiceContainer {
         if(contact>0){
             logger.info("Chat user removed successfully for user: {}", loggedUser.getId());
             result.put(ConstantResponseKeys.MESSAGE,"Your Chat user has been successfully removed.");
-            result.put("status", 200);
+            result.put(ConstantResponseKeys.STATUS, 200);
         }else {
             logger.error("Failed to removed Chat user for user: {}", loggedUser.getId());
             result.put(ConstantResponseKeys.MESSAGE,"No Chat user found to delete.");
-            result.put("status", 404);
+            result.put(ConstantResponseKeys.STATUS, 404);
         }
-        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
     }
 
 
@@ -95,14 +95,14 @@ public class ChatUserController extends WholesaleServiceContainer {
         if(accepted){
             logger.info("Chat {} successfully for user: {}", status, loggedUser.getId());
             result.put(ConstantResponseKeys.MESSAGE,"Chat "+status+" .");
-            result.put("status",200);
+            result.put(ConstantResponseKeys.STATUS,200);
         }else {
             logger.error("Failed to {} chat for user: {}", status, loggedUser.getId());
             result.put(ConstantResponseKeys.MESSAGE,"Something went wrong during "+status+" chat.");
-            result.put("status",400);
+            result.put(ConstantResponseKeys.STATUS,400);
         }
 
-        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status"))) ;
+        return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS))) ;
     }
 
 }

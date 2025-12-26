@@ -84,7 +84,7 @@ public class WholesaleStoreController extends WholesaleServiceContainer {
         logger.info("Starting getAllStoreNotification method");
         wholesaleStoreService.updateSeen(storeDto);
         logger.info("Completed getAllStoreNotification method");
-        return new ResponseEntity<>("success", HttpStatus.valueOf(200));
+        return new ResponseEntity<>(ConstantResponseKeys.SUCCESS, HttpStatus.valueOf(200));
     }
 
 

@@ -7,6 +7,7 @@ public class ConstantResponseKeys {
     public static final String RES = "res";
     public static final String PAGINATIONS = "paginations";
     public static final String TOKEN = "token";
+    public static final String SUCCESS = "success";
 
     private ConstantResponseKeys() {
 

@@ -60,7 +60,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             message = "User exist but not verified. You can login via otp.";
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         }else if (user.getStatus().equalsIgnoreCase("A")) {
-            message = "success";
+            message = ConstantResponseKeys.SUCCESS;
             responseObj.put(ConstantResponseKeys.TOKEN, GlobalConstant.AUTH_TOKEN_PREFIX + jwtToken.generateToken(user));
             Store storeDetails = wholesaleStoreService.getStoreByUserId(user.getId());
             Map<String,Object> paginationsObj = wholesalePaginationService.findUserPaginationsByUserId(user);
@@ -91,7 +91,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put(ConstantResponseKeys.TOKEN, GlobalConstant.AUTH_TOKEN_PREFIX + jwtToken.generateToken(user));
             Store store = wholesaleStoreService.getStoreByUserId(user.getId());
             Map<String,Object> paginations = wholesalePaginationService.findUserPaginationsByUserId(user);
-            responseObj.put(ConstantResponseKeys.MESSAGE, "success");
+            responseObj.put(ConstantResponseKeys.MESSAGE, ConstantResponseKeys.SUCCESS);
             responseObj.put("user", user);
             responseObj.put(ConstantResponseKeys.STORE, store);
             responseObj.put(ConstantResponseKeys.PAGINATIONS,paginations);
@@ -127,7 +127,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             Store store = wholesaleStoreService.getStoreByUserId(user.getId());
             Map<String,Object> paginations = wholesalePaginationService.findUserPaginationsByUserId(user);
             responseObj.put(ConstantResponseKeys.TOKEN, GlobalConstant.AUTH_TOKEN_PREFIX + jwtToken.generateToken(user));
-            responseObj.put(ConstantResponseKeys.MESSAGE, "success");
+            responseObj.put(ConstantResponseKeys.MESSAGE, ConstantResponseKeys.SUCCESS);
             responseObj.put("user", user);
             responseObj.put(ConstantResponseKeys.STORE, store);
             responseObj.put(ConstantResponseKeys.PAGINATIONS,paginations);

@@ -70,7 +70,7 @@ public class UserController extends ServiceContainer {
             message = "Invalid credentials.";
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
-            message = "success";
+            message = ConstantResponseKeys.SUCCESS;
             Map<String, Object> paginations = paginationService.findUserPaginationsByUserId(user);
             responseObj.put(ConstantResponseKeys.TOKEN, GlobalConstant.AUTH_TOKEN_PREFIX + jwtToken.generateToken(user));
             responseObj.put("user", user);

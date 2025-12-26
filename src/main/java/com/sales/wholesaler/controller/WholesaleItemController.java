@@ -62,7 +62,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
         Map<String, Object> responseObj = new HashMap<>();
         Item alItems = wholesaleItemService.findItemBySLug(slug);
         if (alItems != null) {
-            responseObj.put(ConstantResponseKeys.MESSAGE, "success");
+            responseObj.put(ConstantResponseKeys.MESSAGE, ConstantResponseKeys.SUCCESS);
             responseObj.put(ConstantResponseKeys.RES, alItems);
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
