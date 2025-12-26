@@ -465,6 +465,14 @@ public class WholesaleItemService extends WholesaleRepoContainer {
         List<String> nameList = itemsData.get("NAME") , labelList = itemsData.get("LABEL"),slugList = itemsData.get("TOKEN"),
                 capacityList = itemsData.get("CAPACITY"),priceList = itemsData.get("PRICE"),discountList = itemsData.get("DISCOUNT")
                 ,inStockList = itemsData.get("IN-STOCK");
+        if(Objects.isNull(nameList) ||
+            Objects.isNull(labelList) ||
+            Objects.isNull(slugList) ||
+            Objects.isNull(capacityList) ||
+            Objects.isNull(priceList) ||
+            Objects.isNull(discountList) ||
+            Objects.isNull(inStockList)
+        ) throw new MyException("Excel sheet columns missing.");
 
         for (int i = 0; i < nameList.size(); i++) {
             Map<String,Object> itemStringDetail = null;

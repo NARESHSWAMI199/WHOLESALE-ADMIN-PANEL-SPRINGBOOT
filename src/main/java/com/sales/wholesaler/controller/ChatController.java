@@ -6,6 +6,7 @@ import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
+import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,6 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -236,8 +236,11 @@ public class ChatController extends WholesaleServiceContainer {
     public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename
             , @PathVariable String sender,
     @PathVariable String receiver) throws Exception {
-        logger.info("Fetching file: {} for sender: {} and receiver: {}", filename, sender, receiver);
-        Path path = Paths.get(filePath +sender+"_"+receiver+File.separator+ filename);
+        logger.info("Fetching file: {} for sender: {} and receiver: {}", Utils.sanitizeForLog(filename),
+                Utils.sanitizeForLog(sender), Utils.sanitizeForLog(receiver));
+        Path filePathObj = Paths.get(filePath);
+        Path filePathDynamic = filePathObj.resolve(sender+"_"+receiver).normalize();
+        Path path = filePathDynamic.resolve(filename).normalize();
         Resource resource = new UrlResource(path.toUri());
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
     }

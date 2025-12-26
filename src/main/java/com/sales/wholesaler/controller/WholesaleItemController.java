@@ -10,6 +10,7 @@ import com.sales.entities.ItemSubCategory;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
+import com.sales.helpers.ExcelHelper;
 import com.sales.utils.Utils;
 import com.sales.utils.WriteExcelUtil;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -29,7 +30,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
@@ -173,7 +173,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
         logger.info("Importing items from Excel sheet for userSlug: {}", user.getSlug());
         Map<String,Object> responseObj = new HashMap<>();
         try {
-            if (excelSheet != null) {
+            if (excelSheet != null && ExcelHelper.hasExcelFormat(excelSheet)) {
                 Map<String,List<String>> result = readExcel.getExcelDataInJsonFormat(excelSheet);
                 List<ItemHbRepository.ItemUpdateError> updateItemsError = wholesaleItemService.updateItemsWithExcel(result, user.getId());
                 if(updateItemsError.isEmpty()) {
@@ -182,8 +182,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
                     logger.info("Items successfully updated : {} ",updateItemsError);
                 }else{
                     // Creating an Excel for which items are not updated
-                    List<String> headers = List.of("NAME", "TOKEN", "PRICE", "DISCOUNT", "LABEL", "CAPACITY", "IN-STOCK", "REASON");
-                    String fileName = writeExcel.writeNotUpdatedItemsExcel(updateItemsError, headers, "WHOLESALER_"+user.getSlug());
+                    String fileName = writeExcel.writeNotUpdatedItemsExcel(updateItemsError, GlobalConstant.HEADERS_NOT_UPDATED_ITEMS_EXCEL, "WHOLESALER_"+user.getSlug());
                     responseObj.put("fileUrl", Utils.getHostUrl(request)+GlobalConstant.ITEMS_NOT_UPDATED_PATH_FOR_WHOLESALE+"WHOLESALER_"+user.getSlug()+"/"+fileName);
                     responseObj.put("message", "Some items are not updated.");
                     responseObj.put("status", 201);
@@ -191,7 +190,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
                 }
 
             } else {
-                responseObj.put(ConstantResponseKeys.MESSAGE, "Please add a proper file.");
+                responseObj.put(ConstantResponseKeys.MESSAGE, "Please upload a valid excel file (.xls or .xlsx)!");
                 responseObj.put(ConstantResponseKeys.STATUS, 400);
             }
 //            User loggedUser = (User) request.getAttribute("user");
@@ -253,9 +252,10 @@ public class WholesaleItemController extends WholesaleServiceContainer {
     String excelNotUpdateItemsFolderPath;
     @GetMapping(value = {"notUpdated/{folderName}/{filename}"})
     public ResponseEntity<Object> downloadExcelUpdateTemplate(@PathVariable String folderName ,@PathVariable String filename) throws IOException {
-        String fileLocation = excelNotUpdateItemsFolderPath+folderName+ File.separator +filename;
-        logger.info("Download excel sheet template for not updated items : {}",fileLocation);
-        Path path = Paths.get(fileLocation);
+        Path filePathObj = Paths.get(excelNotUpdateItemsFolderPath);
+        Path filePathDynamic = filePathObj.resolve(folderName).normalize();
+        Path path = filePathDynamic.resolve(filename).normalize();
+        logger.info("Download excel sheet template for not updated items : {}",path.toAbsolutePath());
         Resource resource = new UrlResource(path.toUri());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")); // For .xlsx

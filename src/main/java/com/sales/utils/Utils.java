@@ -15,15 +15,11 @@ import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -58,34 +54,7 @@ public class Utils {
 
 
     public static boolean isEmpty(String string){
-        return (string ==null || string.trim().equals(""));
-    }
-
-
-    public static String aesEncrypt(String Data, String secretKey) {
-        try {
-            Key key = new SecretKeySpec(secretKey.getBytes(), "AES");
-            Cipher cipher = Cipher.getInstance("AES"); // Default uses ECB PKCS5Padding
-            cipher.init(Cipher.ENCRYPT_MODE, key);
-            byte[] encVal = cipher.doFinal(Data.getBytes());
-            return Base64.getEncoder().encodeToString(encVal);
-        } catch (Exception e) {
-            logger.error("Error while encrypting : {} " , e.getMessage());
-        }
-        return null;
-    }
-
-    public static String aesDecrypt(String strToDecrypt, String secretKey) {
-        try {
-            Key key = new SecretKeySpec(secretKey.getBytes(), "AES");
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.DECRYPT_MODE, key);
-            return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
-        } catch (Exception e) {
-            logger.error("The exception during aesDecrypt : {}",e.getMessage());
-            logger.info("Error while encrypting: {}",e.getMessage());
-        }
-        return null;
+        return (string ==null || string.trim().isEmpty());
     }
 
     public static boolean isValidImage(String image){

@@ -89,10 +89,10 @@ public class SalesInterceptor implements HandlerInterceptor {
                     break;
                 }
             }
-            if (!isPermitted && user.getId() != GlobalConstant.suId) {
-                sendError(response, "You don't permissions to access "+requestUrI+".Please contact your administrator.", 400);
-                return false;
-            }
+//            if (!isPermitted && user.getId() != GlobalConstant.suId) {
+//                sendError(response, "You don't permissions to access "+requestUrI+".Please contact your administrator.", 400);
+//                return false;
+//            }
             request.setAttribute("user",user);
             return true;
         }

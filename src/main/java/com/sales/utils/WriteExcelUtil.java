@@ -228,7 +228,7 @@ public class WriteExcelUtil {
         if (!directory.exists()) {
             boolean created = directory.mkdirs();
             if (created) {
-                logger.info("Created directory for not-updated items: {}", directory.getAbsolutePath());
+                logger.info("Created directory for not-updated items: {}", Utils.sanitizeForLog(directory.getAbsolutePath()));
             }
         }
 

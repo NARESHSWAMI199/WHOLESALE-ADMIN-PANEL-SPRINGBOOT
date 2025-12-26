@@ -1,5 +1,6 @@
 package com.sales.utils;
 
+import com.sales.exceptions.MyException;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -65,6 +66,7 @@ public class ReadExcel {
             }
         } catch (Exception e) {
             logger.error("Exception during creating excel file : {} ",e.getMessage());
+            throw new MyException(e.getMessage());
         }
         logger.info("Excel file reading END.... ");
         return result;
