@@ -6,7 +6,6 @@ import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
-import com.sales.utils.Utils;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,7 +43,7 @@ public class UserController extends ServiceContainer {
 
     @PostMapping("/{userType}/all")
     public ResponseEntity<Page<User>> getAllUsers(HttpServletRequest request,@RequestBody UserSearchFilters searchFilters, @PathVariable(required = true) String userType) {
-        log.info(logger,"Fetching all users of type: {}", Utils.sanitizeForLog(userType));
+        log.info(logger,"Fetching all users of type: {}", userType);
         searchFilters.setUserType(userType);
         User loggedUser = (User) request.getAttribute("user");
         Page<User> userPage = userService.getAllUser(searchFilters,loggedUser);
@@ -181,7 +180,7 @@ public class UserController extends ServiceContainer {
 
     @GetMapping("/detail/{slug}")
     public ResponseEntity<Map<String, Object>> getDetailUser(HttpServletRequest request,@PathVariable String slug) {
-        log.info(logger,"Fetching details for user with slug: {}", Utils.sanitizeForLog(slug));
+        log.info(logger,"Fetching details for user with slug: {}", slug);
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         User user = userService.getUserDetail(slug,loggedUser);
@@ -253,7 +252,7 @@ public class UserController extends ServiceContainer {
     @Transactional
     @PostMapping("/update_profile/{slug}")
     public ResponseEntity<Map<String, Object>> updateProfileImage(HttpServletRequest request, @RequestPart MultipartFile profileImage, @PathVariable String slug ) {
-        log.info(logger,"Updating profile image for user with slug: {}", Utils.sanitizeForLog(slug));
+        log.info(logger,"Updating profile image for user with slug: {}", slug);
         Map<String,Object> responseObj = new HashMap<>();
         try {
             User loggedUser = (User) request.getAttribute("user");
@@ -280,7 +279,7 @@ public class UserController extends ServiceContainer {
 
     @GetMapping("/profile/{slug}/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename ,@PathVariable String slug) throws Exception {
-        log.info(logger,"Fetching profile image: {} for user with slug: {}", Utils.sanitizeForLog(filename), Utils.sanitizeForLog(slug));
+        log.info(logger,"Fetching profile image: {} for user with slug: {}", filename, slug);
         Path filePathObj = Paths.get(filePath);
         Path filePathDynamic = filePathObj.resolve(slug).normalize();
         Path path = filePathDynamic.resolve(filename).normalize();
@@ -290,7 +289,7 @@ public class UserController extends ServiceContainer {
 
     @GetMapping("/groups/{slug}")
     public ResponseEntity<Map<String,Object>> getUserGroupsIdsBySlug(HttpServletRequest request,@PathVariable String slug){
-        log.info(logger,"Fetching group IDs for user with slug: {}", Utils.sanitizeForLog(slug));
+        log.info(logger,"Fetching group IDs for user with slug: {}", slug);
         Map<String,Object> responseObj = new HashMap<>();
         List<Integer> groupsIds = userService.getUserGroupsIdBySlug(slug);
         if (!groupsIds.isEmpty()) {
@@ -308,7 +307,7 @@ public class UserController extends ServiceContainer {
 
     @GetMapping("wholesale/permissions/{slug}")
     public ResponseEntity<Map<String,Object>> getAllAssignedPermissionsForWholesaler(HttpServletRequest request,@PathVariable String slug){
-        log.info(logger,"Fetching all assigned permissions for wholesaler with slug: {}", Utils.sanitizeForLog(slug));
+        log.info(logger,"Fetching all assigned permissions for wholesaler with slug: {}", slug);
         Map<String, Object> wholesalerAllPermissions = userService.getWholesalerAllPermissions();
         List<Integer> permissions =  userService.getWholesalerAllAssignedPermissions(slug);
         Map<String,Object> responseObj = new HashMap<>();

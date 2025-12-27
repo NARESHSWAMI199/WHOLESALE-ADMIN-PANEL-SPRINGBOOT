@@ -242,7 +242,7 @@ public class ItemController extends ServiceContainer {
 
     @GetMapping("/image/{slug}/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename, @PathVariable("slug") String slug ) throws Exception {
-        log.info(logger,"Fetching image file: {} for slug: {}", Utils.sanitizeForLog(filename), Utils.sanitizeForLog(slug));
+        log.info(logger,"Fetching image file: {} for slug: {}", filename,slug);
         Path filePathObj = Paths.get(filePath);
         Path filePathDynamic = filePathObj.resolve(slug).normalize();
         Path path = filePathDynamic.resolve(filename).normalize();
@@ -385,7 +385,7 @@ public class ItemController extends ServiceContainer {
 
     @GetMapping(value = {"notUpdated/{wholesaleSlug}/{filename}"})
     public ResponseEntity<Object> downloadExcelUpdateTemplate(@PathVariable String wholesaleSlug ,@PathVariable String filename) throws IOException {
-        log.info(logger,"Download excel sheet template for not updated items : {}  : {}",excelNotUpdateItemsFolderPath,Utils.sanitizeForLog(filename));
+        log.info(logger,"Download excel sheet template for not updated items : {}  : {}",excelNotUpdateItemsFolderPath,filename);
         Path filePathObj = Paths.get(excelNotUpdateItemsFolderPath);
         Path filePathDynamic = filePathObj.resolve(wholesaleSlug).normalize();
         Path path = filePathDynamic.resolve(filename).normalize();

@@ -231,7 +231,7 @@ public class WriteExcelUtil {
         if (!directory.exists()) {
             boolean created = directory.mkdirs();
             if (created) {
-                log.info(logger,"Created directory for not-updated items: {}", Utils.sanitizeForLog(directory.getAbsolutePath()));
+                log.info(logger,"Created directory for not-updated items: {}", directory.getAbsolutePath());
             }
         }
 
@@ -242,7 +242,7 @@ public class WriteExcelUtil {
             workbook.write(fos);
         }
 
-        log.info(logger,"Not updated items excel saved at: {}", Utils.sanitizeForLog(fullPath));
+        log.info(logger,"Not updated items excel saved at: {}", fullPath);
 
         return fileName;
     }

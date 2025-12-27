@@ -6,7 +6,6 @@ import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
-import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -239,8 +238,7 @@ public class ChatController extends WholesaleServiceContainer {
     public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename
             , @PathVariable String sender,
     @PathVariable String receiver) throws Exception {
-        log.info(logger,"Fetching file: {} for sender: {} and receiver: {}", Utils.sanitizeForLog(filename),
-                Utils.sanitizeForLog(sender), Utils.sanitizeForLog(receiver));
+        log.info(logger,"Fetching file: {} for sender: {} and receiver: {}", filename,sender, receiver);
         Path filePathObj = Paths.get(filePath);
         Path filePathDynamic = filePathObj.resolve(sender+"_"+receiver).normalize();
         Path path = filePathDynamic.resolve(filename).normalize();
