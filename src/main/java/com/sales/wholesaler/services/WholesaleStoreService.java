@@ -170,9 +170,9 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         Utils.mobileAndEmailValidation(storeDto.getStoreEmail(), storeDto.getStorePhone(), "Not a valid _");
 
         try {
-            StoreCategory storeCategory = wholesaleCategoryRepository.findById(storeDto.getCategoryId()).orElseThrow(() -> new NotFoundException("Store category not found."));;
+            StoreCategory storeCategory = wholesaleCategoryRepository.findById(storeDto.getCategoryId()).orElseThrow(() -> new NotFoundException("Store category not found."));
             storeDto.setStoreCategory(storeCategory);
-            StoreSubCategory storeSubCategory = wholesaleSubCategoryRepository.findById(storeDto.getSubCategoryId()).orElseThrow(() -> new NotFoundException("Store subcategory not found."));;
+            StoreSubCategory storeSubCategory = wholesaleSubCategoryRepository.findById(storeDto.getSubCategoryId()).orElseThrow(() -> new NotFoundException("Store subcategory not found."));
             storeDto.setStoreSubCategory(storeSubCategory);
         } catch (Exception e) {
             throw new MyException("Invalid arguments for category and subcategory");

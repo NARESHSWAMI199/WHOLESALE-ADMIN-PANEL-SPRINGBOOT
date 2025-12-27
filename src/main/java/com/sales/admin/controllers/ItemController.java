@@ -162,7 +162,7 @@ public class ItemController extends ServiceContainer {
                 MediaType mediaType = MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
                 return ResponseEntity.ok().contentType(mediaType).body(resource);
             } else {
-                logger.debug("wholeSlug : " + wholesaleSlug);
+                logger.debug("wholeSlug : {}", wholesaleSlug);
                 responseObj.put(ConstantResponseKeys.MESSAGE, "Store not exist.");
                 responseObj.put(ConstantResponseKeys.STATUS, 500);
             }

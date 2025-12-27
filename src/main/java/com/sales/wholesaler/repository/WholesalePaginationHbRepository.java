@@ -15,7 +15,7 @@ public class WholesalePaginationHbRepository {
 
 
     @Autowired
-    EntityManager entityManager;;
+    EntityManager entityManager;
 
     public int updateUserPaginations(Pagination pagination, UserPaginationDto userPaginationDto){
         String hql = """

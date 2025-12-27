@@ -78,7 +78,7 @@ public class ChatHbRepository {
         } else if (isSenderDeleted != null) {
             hql += " isSenderDeleted='"+ isSenderDeleted+"'";
         }else if (isReceiverDeleted != null) {
-            hql += " isReceiverDeleted='"+isReceiverDeleted+"'";;
+            hql += " isReceiverDeleted='"+isReceiverDeleted+"'";
         }
 
         hql += " where receiver=:receiver and sender=:sender ";

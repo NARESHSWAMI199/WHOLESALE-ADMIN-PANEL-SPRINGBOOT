@@ -162,7 +162,7 @@ public class ChatService extends WholesaleRepoContainer {
             Chat chat = chatOptional.get();
             if(chat.getReceiver().equals(loggedUser.getSlug())){
                 // hiding deleted messages.
-                if(chat.getIsReceiverDeleted().equals("Y")  || chat.getIsReceiverDeleted().equals("H")) chat.setMessage("Message was deleted.");;
+                if(chat.getIsReceiverDeleted().equals("Y")  || chat.getIsReceiverDeleted().equals("H")) chat.setMessage("Message was deleted.");
             } if(chat.getSender().equals(loggedUser.getSlug())){
                 // hiding deleted messages.
                 if(chat.getIsSenderDeleted().equals("Y") || chat.getIsSenderDeleted().equals("H")) chat.setMessage("Message was deleted.");

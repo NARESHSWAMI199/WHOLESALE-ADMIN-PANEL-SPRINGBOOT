@@ -17,7 +17,7 @@ import java.util.Map;
 public class WholesaleFuturePlansService extends WholesaleRepoContainer {
 
     @Autowired
-    private WholesaleServicePlanService  wholesaleServicePlanService;;
+    private WholesaleServicePlanService  wholesaleServicePlanService;
 
     public Page<WholesalerFuturePlan> getWholesalerFuturePlans(User loggedUser, SearchFilters filters) {
         Pageable pageable = getPageable(filters);

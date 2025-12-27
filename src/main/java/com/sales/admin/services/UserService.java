@@ -232,7 +232,7 @@ public class UserService extends RepoContainer {
 
     public void validateRequiredFieldsBeforeCreateUser(UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Validating required fields before creating user: {}", userDto);
-        List<String> requiredFields = new ArrayList<>(List.of("username", "contact", "email", "userType"));;
+        List<String> requiredFields = new ArrayList<>(List.of("username", "contact", "email", "userType"));
         switch (userDto.getUserType()) {
             case "R":
                 break;
@@ -264,7 +264,7 @@ public class UserService extends RepoContainer {
 
     public void validateRequiredFieldsBeforeUpdateUser(UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Validating required fields before updating user: {}", userDto);
-        List<String> requiredFields = new ArrayList<>(List.of("username", "contact", "email","slug"));;
+        List<String> requiredFields = new ArrayList<>(List.of("username", "contact", "email","slug"));
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(userDto,requiredFields);
     }

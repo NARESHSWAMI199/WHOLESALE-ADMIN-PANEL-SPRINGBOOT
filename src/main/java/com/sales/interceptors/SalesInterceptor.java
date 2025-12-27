@@ -57,7 +57,7 @@ public class SalesInterceptor implements HandlerInterceptor {
             String requestUrI = request.getRequestURI();
             Set<String> permittedUrls = null;
             if(user.getUserType().equals("S")  || user.getUserType().equals("SA")){
-                permittedUrls = permissionRepository.getUserAllPermission(user.getId());;
+                permittedUrls = permissionRepository.getUserAllPermission(user.getId());
                 requestUrI = requestUrI.replaceAll("detail","all");
             }else if(user.getUserType().equals("W")){
                 permittedUrls = storePermissionsRepository.getAllAssignedPermissionByUserId(user.getId());

@@ -147,7 +147,7 @@ public class StoreController extends ServiceContainer{
             }
 
         }catch (Exception e){
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();;
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             responseObj.put(ConstantResponseKeys.MESSAGE,e.getMessage());
             responseObj.put(ConstantResponseKeys.STATUS,500);
         }
