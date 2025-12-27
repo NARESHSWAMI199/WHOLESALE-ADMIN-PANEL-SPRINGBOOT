@@ -19,23 +19,31 @@ public final class SafeLogHelper implements com.sales.helpers.Logger {
     }
 
     @Override
-    public void info(Logger logger,String message, Object... object) {
+    public void info(Logger logger, String message, Object... objects) {
         if (logger.isInfoEnabled()) {
-            logger.info(message,object);
+            Object[] processed = Arrays.stream(objects)
+                    .map((b) -> Utils.sanitizeForLog(b.toString()))
+                    .toArray();
+            logger.info(message, processed);
+        }
+    }
+    @Override
+    public void warn(Logger logger, String message,Object... objects) {
+        if (logger.isWarnEnabled()) {
+            Object[] processed = Arrays.stream(objects)
+                    .map((b) -> Utils.sanitizeForLog(b.toString()))
+                    .toArray();
+            logger.warn(message,Utils.sanitizeForLog(Arrays.toString(processed)));
         }
     }
 
     @Override
-    public void warn(Logger safeLog, String message,Object... object) {
-        if (safeLog.isWarnEnabled()) {
-            safeLog.warn(message,Utils.sanitizeForLog(Arrays.toString(object)));
-        }
-    }
-
-    @Override
-    public void error(Logger safeLog, String message,Object... object) {
-        if (safeLog.isErrorEnabled()) {
-            safeLog.warn(message,Utils.sanitizeForLog(Arrays.toString(object)));
+    public void error(Logger logger, String message,Object... objects) {
+        Object[] processed = Arrays.stream(objects)
+                .map((b) -> Utils.sanitizeForLog(b.toString()))
+                .toArray();
+        if (logger.isErrorEnabled()) {
+            logger.warn(message,processed);
         }
     }
 }
