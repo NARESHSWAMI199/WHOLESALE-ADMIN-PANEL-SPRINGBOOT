@@ -28,25 +28,25 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
 
     private final EntityManager entityManager;
 
-      private final com.sales.helpers.Logger safeLog;
+      
   private static final Logger logger = LoggerFactory.getLogger(WholesaleServicePlanService.class);
 
     public List<ServicePlan> getAllServicePlan() {
-        safeLog.info(logger,"Starting getALlServicePlan method");
+        logger.debug("Starting getALlServicePlan method");
         List<ServicePlan> servicePlans = wholesaleServicePlanRepository.findAll().stream().filter(servicePlan -> servicePlan.getPrice() > 0).toList();
-        safeLog.info(logger,"Completed getALlServicePlan method");
+        logger.debug("Completed getALlServicePlan method");
         return servicePlans;
     }
 
     public ServicePlan findBySlug(String slug) {
-        safeLog.info(logger,"Starting findBySlug method with params: {}", slug);
+        logger.debug("Starting findBySlug method with params: {}", slug);
         ServicePlan servicePlan = wholesaleServicePlanRepository.findBySlug(slug);
-        safeLog.info(logger,"Completed findBySlug method");
+        logger.debug("Completed findBySlug method");
         return servicePlan;
     }
 
     public boolean isPlanActive(Integer userPlanId) {
-        safeLog.info(logger,"Starting isPlanActive method with userPlanId: {}", userPlanId);
+        logger.debug("Starting isPlanActive method with userPlanId: {}", userPlanId);
         if (userPlanId == null) return false;
         Optional<WholesalerPlans> plan = wholesaleUserPlansRepository.findById(userPlanId);
         if (plan.isPresent()) {
@@ -54,22 +54,22 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
             long expiryDate = userPlan.getExpiryDate();
             long currentDate = Utils.getCurrentMillis();
             boolean isActive = currentDate <= expiryDate;
-            safeLog.info(logger,"Completed isPlanActive method");
+            logger.debug("Completed isPlanActive method");
             return isActive;
         }
-        safeLog.info(logger,"Completed isPlanActive method");
+        logger.debug("Completed isPlanActive method");
         return false;
     }
 
     public void assignOrAddFuturePlans(int userId, int servicePlanId) {
-        safeLog.info(logger,"Starting assignOrAddFuturePlans method with userId: {}, servicePlanId: {}", userId, servicePlanId);
+        logger.debug("Starting assignOrAddFuturePlans method with userId: {}, servicePlanId: {}", userId, servicePlanId);
         Long currentMillis = Utils.getCurrentMillis();
         // Checking user last plan expired or not.
         WholesalerPlans lastPlan = wholesaleUserPlansRepository.findLastPlanByUserId(userId,entityManager);
         ServicePlan plan = wholesaleServicePlanRepository.findById(servicePlanId).orElseThrow(() -> new NotFoundException("Plan not found."));
 
         if(lastPlan !=null && lastPlan.getExpiryDate() > currentMillis){ // if last plans is not expired.
-            safeLog.info(logger,"Going to adding this plan as future plan.");
+            logger.debug("Going to adding this plan as future plan.");
             WholesalerFuturePlan wholesalerFuturePlan = WholesalerFuturePlan.builder()
                     .userId(userId)
                     .slug(UUID.randomUUID().toString())
@@ -81,15 +81,15 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
         }else { // Going to assign plan directly to user.
             assignUserPlan(userId,plan);
         }
-        safeLog.info(logger,"Completed assignOrAddFuturePlans method");
+        logger.debug("Completed assignOrAddFuturePlans method");
     }
 
 
 
     public void assignUserPlan(int userId, ServicePlan plan) {
-        safeLog.info(logger,"Starting assignUserPlan(int userId, ServicePlan plan) method with userId: {}, servicePlanId: {}", userId, plan.getId());
+        logger.debug("Starting assignUserPlan(int userId, ServicePlan plan) method with userId: {}, servicePlanId: {}", userId, plan.getId());
         Long currentMillis = Utils.getCurrentMillis();
-        safeLog.info(logger,"Going to assign this plan as user current plan.");
+        logger.debug("Going to assign this plan as user current plan.");
         Integer months = plan.getMonths();
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(currentMillis);
@@ -108,16 +108,16 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
         if (updated < 1) {
             throw new NotFoundException("No user found. to assign this plan.");
         }
-        safeLog.info(logger,"Completed assignUserPlan method");
+        logger.debug("Completed assignUserPlan method");
     }
 
 
     // This method is overloaded.
     public void assignUserPlan(int userId, int servicePlanId) {
-        safeLog.info(logger,"Starting assignUserPlan(int userId, int servicePlanId) method with userId: {}, servicePlanId: {}", userId, servicePlanId);
+        logger.debug("Starting assignUserPlan(int userId, int servicePlanId) method with userId: {}, servicePlanId: {}", userId, servicePlanId);
         Long currentMillis = Utils.getCurrentMillis();
         ServicePlan plan = wholesaleServicePlanRepository.findById(servicePlanId).orElseThrow(() -> new NotFoundException("Service plan not found."));
-            safeLog.info(logger,"Going to assign this plan as user current plan : {}.",servicePlanId);
+            logger.debug("Going to assign this plan as user current plan : {}.",servicePlanId);
             Integer months = plan.getMonths();
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(currentMillis);
@@ -136,12 +136,12 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
             if (updated < 1) {
                 throw new NotFoundException("No user found. to assign this plan.");
             }
-        safeLog.info(logger,"Completed assignUserPlan method.");
+        logger.debug("Completed assignUserPlan method.");
     }
 
 
     public Page<WholesalerPlans> getAllUserPlans(User loggedUser, UserPlanDto searchFilters) {
-        safeLog.info(logger,"Starting getAllUserPlans method with loggedUser: {}, searchFilters: {}", loggedUser, searchFilters);
+        logger.debug("Starting getAllUserPlans method with loggedUser: {}, searchFilters: {}", loggedUser, searchFilters);
         Specification<WholesalerPlans> specification = Specification.allOf(
                 hasSlug(searchFilters.getSlug())
                 .and(greaterThanOrEqualCreatedFromDate(searchFilters.getCreatedFromDate()))
@@ -161,24 +161,24 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
         }).toList();
         long totalElements = userPlans.getTotalElements();
         Page<WholesalerPlans> wholesalerPlans = new PageImpl<>(userPlansList,pageable,totalElements);
-        safeLog.info(logger,"Completed getAllUserPlans method");
+        logger.debug("Completed getAllUserPlans method");
         return wholesalerPlans;
     }
 
     public ServicePlan getDefaultServicePlan() {
-        safeLog.info(logger,"Starting getDefaultServicePlan method");
+        logger.debug("Starting getDefaultServicePlan method");
         ServicePlan defaultServicePlan = wholesaleServicePlanRepository.getDefaultServicePlan();
-        safeLog.info(logger,"Completed getDefaultServicePlan method");
+        logger.debug("Completed getDefaultServicePlan method");
         return defaultServicePlan;
     }
 
 
     public int updatedUserCurrentPlan(String plansSlug,User loggedUser) {
-        safeLog.info(logger,"Starting updatedUserCurrentPlan method.");
+        logger.debug("Starting updatedUserCurrentPlan method.");
         Integer wholesaleUserPlanId = wholesaleUserPlansRepository.getWholesaleUserPlanId(loggedUser.getId(),plansSlug);
         if(wholesaleUserPlanId == null) throw new IllegalArgumentException("Not a valid active plan.");
         int isUpdated = wholesaleUserHbRepository.updateUserActivePlan(loggedUser.getId(),wholesaleUserPlanId);
-        safeLog.info(logger,"Completed updatedUserCurrentPlan method with isUpdated  : {}.",isUpdated);
+        logger.debug("Completed updatedUserCurrentPlan method with isUpdated  : {}.",isUpdated);
         return isUpdated;
     }
 

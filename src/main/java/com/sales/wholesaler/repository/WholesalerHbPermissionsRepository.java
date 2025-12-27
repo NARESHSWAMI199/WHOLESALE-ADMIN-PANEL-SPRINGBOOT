@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WholesalerHbPermissionsRepository {
 
-    private final com.sales.helpers.Logger safeLog;
+    
     private final Logger logger = LoggerFactory.getLogger(WholesalerHbPermissionsRepository.class);
 
     @Autowired
@@ -44,7 +44,6 @@ public class WholesalerHbPermissionsRepository {
             values +="("+userId+","+permissions.get(i)+")";
             if(i < permissions.size()-1) values += ",";
         }
-        safeLog.info(logger,values);
         String sql = "insert into wholesaler_permissions (user_id,permission_id) values "+values;
         Query query = entityManager.createNativeQuery(sql);
         return query.executeUpdate();

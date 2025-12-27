@@ -30,7 +30,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class SalesInterceptor implements HandlerInterceptor {
 
-    private final com.sales.helpers.Logger safeLog;
+    
     private final Logger logger = LoggerFactory.getLogger(SalesInterceptor.class);
 
     private final JwtToken jwtToken;
@@ -46,7 +46,7 @@ public class SalesInterceptor implements HandlerInterceptor {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         // Token from swagger because swagger not sends Authorization header in request.
         token = token == null ? request.getHeader("authToken") : token;
-        safeLog.info(logger,"request url : {}", request.getRequestURI());
+        logger.debug("request url : {}", request.getRequestURI());
         try {
         if (token != null && token.startsWith(GlobalConstant.AUTH_TOKEN_PREFIX)) {
             token = token.substring(7);

@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RequiredArgsConstructor
 public class WholesaleUserControllerTest  extends TestUtil {
 
-    private final com.sales.helpers.Logger safeLog;
+    
     private final Logger logger  = LoggerFactory.getLogger(WholesaleStoreControllerTest.class);
 
     @Autowired
@@ -68,7 +68,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
     public void validateOtp(String slug) throws Exception {
         User user = wholesaleUserRepository.findUserBySlug(slug);
         String otp = user.getOtp();
-        safeLog.info(logger,"THE OTP ================== > {}", otp);
+        logger.debug("THE OTP ================== > {}", otp);
         String json = """
                 {
                     "slug" : "{slug}",

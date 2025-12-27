@@ -18,11 +18,11 @@ import static com.sales.specifications.ItemReviewSpecifications.*;
 @RequiredArgsConstructor
 public class WholesaleItemReviewService extends WholesaleRepoContainer {
 
-    private final com.sales.helpers.Logger safeLog;
+    
     private static final Logger logger = LoggerFactory.getLogger(WholesaleItemReviewService.class);
 
     public Page<ItemReviews> getAllItemReview(ItemReviewsFilterDto filters, User loggedUser) {
-        safeLog.info(logger,"Starting getALlItemReview method with filters: {}, loggedUser: {}", filters, loggedUser);
+        logger.debug("Starting getALlItemReview method with filters: {}, loggedUser: {}", filters, loggedUser);
         if(filters.getItemId() == 0) {
             logger.error("Invalid itemId provided");
             throw new IllegalArgumentException("Please provide a valid itemId.");

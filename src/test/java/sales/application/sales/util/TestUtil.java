@@ -3,7 +3,6 @@ package sales.application.sales.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sales.global.ConstantResponseKeys;
-import com.sales.helpers.SafeLogHelper;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -31,7 +30,6 @@ import java.util.Random;
 public class TestUtil {
 
     private final Logger logger = LoggerFactory.getLogger(TestUtil.class);
-    private final com.sales.helpers.Logger safeLog = SafeLogHelper.getInstance();
 
     @Autowired
     protected MockMvc mockMvc;
@@ -161,7 +159,7 @@ public class TestUtil {
         String imageFolder = GlobalConstantTest.IMAGE_FOLDER_PATH_TEST;
         String imageName = GlobalConstantTest.IMAGE_NAME_TEST;
         Path path = Paths.get(imageFolder + imageName);
-        safeLog.info(logger,"The image path ================= {}", path);
+        logger.debug("The image path ================= {}", path);
         if (!Files.exists(path)) throw new FileNotFoundException(path + " not found ");
         byte[] imageBytes = Files.readAllBytes(path);
         MockMultipartFile file = new MockMultipartFile(

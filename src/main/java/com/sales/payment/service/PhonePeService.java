@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PhonePeService extends PaymentRepoContainer {
 
-  private final com.sales.helpers.Logger safeLog;
+  
   private static final Logger logger = LoggerFactory.getLogger(PhonePeService.class);
 
     @Value("${phonepe.key}")
@@ -35,7 +35,7 @@ public class PhonePeService extends PaymentRepoContainer {
     public String phonePeEnv;
 
     public PhonePePaymentClient getPhonePeClient() {
-        safeLog.info(logger,"Starting getPhonePeClient method");
+        logger.debug("Starting getPhonePeClient method");
         String merchentId = saltKey;
         String key = mid;
         Integer saltIndex = 1;
@@ -45,12 +45,12 @@ public class PhonePeService extends PaymentRepoContainer {
         }
         boolean shouldPublishEvents = true;
         PhonePePaymentClient client = new PhonePePaymentClient(merchentId, key, saltIndex, env, shouldPublishEvents);
-        safeLog.info(logger,"Completed getPhonePeClient method");
+        logger.debug("Completed getPhonePeClient method");
         return client;
     }
 
     public PhonePeTrans savePhonePeTransaction(PhonePeDto phonePeDto) {
-        safeLog.info(logger,"Starting savePhonePeTransaction method");
+        logger.debug("Starting savePhonePeTransaction method");
         PhonePeTrans phonePeTrans = PhonePeTrans.builder()
             .merchantTransactionId(phonePeDto.getMerchantTransactionId())
             .userId(phonePeDto.getUserId())
@@ -59,12 +59,12 @@ public class PhonePeService extends PaymentRepoContainer {
             .createdAt(Utils.getCurrentMillis())
             .build();
         PhonePeTrans savedTransaction = phonePeRepository.save(phonePeTrans); // Create operation
-        safeLog.info(logger,"Completed savePhonePeTransaction method");
+        logger.debug("Completed savePhonePeTransaction method");
         return savedTransaction;
     }
 
     public int updatePhonePeTransaction(PhonePeTrans phonePeTrans) {
-        safeLog.info(logger,"Starting updatePhonePeTransaction method");
+        logger.debug("Starting updatePhonePeTransaction method");
         String responseCode = phonePeTrans.getResponseCode();
         if (responseCode.equalsIgnoreCase("SUCCESS")) {
             phonePeTrans.setStatus("S");
@@ -72,21 +72,21 @@ public class PhonePeService extends PaymentRepoContainer {
             phonePeTrans.setStatus("F");
         }
         int updateCount = phonePeHbRepository.updatePhonePeTransaction(phonePeTrans); // Update operation
-        safeLog.info(logger,"Completed updatePhonePeTransaction method");
+        logger.debug("Completed updatePhonePeTransaction method");
         return updateCount;
     }
 
     public UPIPaymentInstrumentResponse checkUpiPaymentStatus(String merchantTransactionId) {
-        safeLog.info(logger,"Starting checkUpiPaymentStatus method");
+        logger.debug("Starting checkUpiPaymentStatus method");
         PhonePePaymentClient phonePePaymentClient = getPhonePeClient();
         PhonePeResponse<PgTransactionStatusResponse> statusResponse = phonePePaymentClient.checkStatus(merchantTransactionId);
         PgPaymentInstrument pgPaymentInstrument = statusResponse.getData().getPaymentInstrument();
-        safeLog.info(logger,"Completed checkUpiPaymentStatus method");
+        logger.debug("Completed checkUpiPaymentStatus method");
         return (UPIPaymentInstrumentResponse) pgPaymentInstrument;
     }
 
     public boolean checkValidityOfPaymentCallback(PhonePeDto phonePeDto, String mid) {
-        safeLog.info(logger,"Starting checkValidityOfPaymentCallback method");
+        logger.debug("Starting checkValidityOfPaymentCallback method");
         String xVerify = phonePeDto.getXVerify();
         String response = phonePeDto.getEncodedResponse();
         if (!Utils.isEmpty(response)) {
@@ -96,12 +96,12 @@ public class PhonePeService extends PaymentRepoContainer {
         }
         PhonePePaymentClient phonepeClient = getPhonePeClient();
         boolean isValid = phonepeClient.verifyResponse(xVerify, response);
-        safeLog.info(logger,"Completed checkValidityOfPaymentCallback method");
+        logger.debug("Completed checkValidityOfPaymentCallback method");
         return isValid;
     }
 
     public PhonePeResponse takeRefund(PhonePeDto phonePeDto, String notifyUrl) {
-        safeLog.info(logger,"Starting takeRefund method");
+        logger.debug("Starting takeRefund method");
         PgRefundRequest pgRefundRequest = PgRefundRequest.builder()
             .amount(phonePeDto.getAmount() * 100)
             .callbackUrl(notifyUrl)
@@ -111,7 +111,7 @@ public class PhonePeService extends PaymentRepoContainer {
             .build();
         PhonePePaymentClient phonepeClient = getPhonePeClient();
         PhonePeResponse refundResponse = phonepeClient.refund(pgRefundRequest);
-        safeLog.info(logger,"Completed takeRefund method");
+        logger.debug("Completed takeRefund method");
         return refundResponse;
     }
 

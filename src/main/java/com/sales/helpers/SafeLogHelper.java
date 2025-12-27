@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 
 import java.util.Arrays;
 
-public final class SafeLogHelper implements com.sales.helpers.Logger {
+public final class SafeLogHelper {
 
     private SafeLogHelper() {}
     private  static SafeLogHelper safeLogObj;
@@ -18,16 +18,14 @@ public final class SafeLogHelper implements com.sales.helpers.Logger {
         return safeLogObj;
     }
 
-    @Override
     public void info(Logger logger, String message, Object... objects) {
         if (logger.isInfoEnabled()) {
             Object[] processed = Arrays.stream(objects)
                     .map((b) -> Utils.sanitizeForLog(b.toString()))
                     .toArray();
-            logger.info(message, processed);
+            logger.debug(message, processed);
         }
     }
-    @Override
     public void warn(Logger logger, String message,Object... objects) {
         if (logger.isWarnEnabled()) {
             Object[] processed = Arrays.stream(objects)
@@ -37,7 +35,6 @@ public final class SafeLogHelper implements com.sales.helpers.Logger {
         }
     }
 
-    @Override
     public void error(Logger logger, String message,Object... objects) {
         Object[] processed = Arrays.stream(objects)
                 .map((b) -> Utils.sanitizeForLog(b.toString()))

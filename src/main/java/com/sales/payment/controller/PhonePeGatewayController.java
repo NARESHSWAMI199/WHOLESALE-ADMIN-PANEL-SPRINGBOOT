@@ -37,7 +37,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PhonePeGatewayController extends PaymentServiceContainer {
 
-    private final com.sales.helpers.Logger safeLog;
+    
     private static final Logger logger = LoggerFactory.getLogger(PhonePeGatewayController.class);
 
     @Value("${phonepe.callback_uri}")
@@ -51,12 +51,12 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
     public ResponseEntity<Map<String,Object>> payViaPhonePe(HttpServletRequest request,@PathVariable String slug){
         User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         ServicePlan servicePlan = servicePlanService.findBySlug(slug);
-        safeLog.info(logger,"Initiating payment via PhonePe for user: {}, service plan: {}", loggedUser.getId(), servicePlan.getId());
+        logger.debug("Initiating payment via PhonePe for user: {}, service plan: {}", loggedUser.getId(), servicePlan.getId());
         Map<String,Object> result = new HashMap<>();
         try {
-            safeLog.info(logger,"user id  : {}",loggedUser.getId());
+            logger.debug("user id  : {}",loggedUser.getId());
             String merchantTransactionId = UUID.randomUUID().toString().substring(0, 34);
-            safeLog.info(logger,"merchantTransactionId : {}",merchantTransactionId);
+            logger.debug("merchantTransactionId : {}",merchantTransactionId);
             /* TODO : Must add Extra GST amount */
             long amount = (servicePlan.getPrice()-servicePlan.getDiscount())*100; /* converting in rupees */
             String merchantUserId = UUID.randomUUID().toString().substring(0, 34);
@@ -86,7 +86,7 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
             PhonePeResponse<PgPayResponse> payResponse = phonepeClient.pay(pgPayRequest);
             PayPageInstrumentResponse payPageInstrumentResponse = (PayPageInstrumentResponse) payResponse.getData().getInstrumentResponse();
             String url = payPageInstrumentResponse.getRedirectInfo().getUrl();
-            safeLog.info(logger,"Payment URL generated successfully for user: {}", loggedUser.getId());
+            logger.debug("Payment URL generated successfully for user: {}", loggedUser.getId());
             result.put(ConstantResponseKeys.RES,payResponse);
             result.put("url",url);
             result.put("status" , 200);
@@ -102,7 +102,7 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
 
     @RequestMapping("callback/{servicePlanId}/{userId}/{id}")
     public ResponseEntity<Map<String,Object>>  phonePeCallbackResponse(HttpServletRequest request,@PathVariable(name = "servicePlanId")Integer servicePlanId, @PathVariable(name = "userId") Integer userId , @PathVariable( name = "id") Integer id, @RequestBody Map<String,Object> paramsBody){
-        safeLog.info(logger,"Received PhonePe callback for user: {}, service plan: {}", userId, servicePlanId);
+        logger.debug("Received PhonePe callback for user: {}, service plan: {}", userId, servicePlanId);
         Map<String,Object> result = new HashMap<>();
         try {
             String xVerify = request.getHeader("x_verify");
@@ -140,7 +140,7 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
 
             int isUpdated = phonePeService.updatePhonePeTransaction(phonePeTrans);
             wholesaleServicePlanService.assignOrAddFuturePlans(userId,servicePlanId);
-            safeLog.info(logger,"PhonePe callback processed successfully for user: {}", userId);
+            logger.debug("PhonePe callback processed successfully for user: {}", userId);
             result.put("isUpdate", isUpdated > 0);
             result.put("data", new Gson().fromJson(decodedString,Map.class));
             result.put(ConstantResponseKeys.STATUS,200);
@@ -156,12 +156,12 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
 
     @PostMapping("refund")
     public ResponseEntity<Map<String,Object>> getRefund(@RequestBody  PhonePeDto phonePeDto){
-        safeLog.info(logger,"Initiating refund for transaction: {}", phonePeDto);
+        logger.debug("Initiating refund for transaction: {}", phonePeDto);
         Map<String,Object> result = new HashMap<>();
         try{
             String notifyUrl = "http//:localhost:8080/pg/refund-notify";
             PhonePeResponse phonePeResponse = phonePeService.takeRefund(phonePeDto,notifyUrl);
-            safeLog.info(logger,"Refund processed successfully for transaction: {}", phonePeDto);
+            logger.debug("Refund processed successfully for transaction: {}", phonePeDto);
             result.put("data", phonePeResponse);
             result.put(ConstantResponseKeys.STATUS,200);
         } catch (PhonePeException e){
@@ -175,7 +175,7 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
 
     @RequestMapping("refund-notify")
     public ResponseEntity<Map<String,Object>> getNotificationCallback(@RequestBody Map<String,Object> body){
-        safeLog.info(logger,"Received refund notification callback");
+        logger.debug("Received refund notification callback");
         return new ResponseEntity<>(body,HttpStatus.OK);
     }
 }

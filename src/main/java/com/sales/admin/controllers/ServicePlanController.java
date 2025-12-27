@@ -30,12 +30,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ServicePlanController extends ServiceContainer {
 
-    private final com.sales.helpers.Logger safeLog;
+    
     private static final Logger logger = LoggerFactory.getLogger(ServicePlanController.class);
 
     @PostMapping(value = {"user-plans/{userSlug}","user-plans"})
     public ResponseEntity< Page<WholesalerPlans>> getUserPlans(@PathVariable(required = false) String userSlug, @RequestBody UserPlanDto searchFilters){
-        safeLog.info(logger,"Fetching user plans for userSlug: {}", userSlug);
+        logger.debug("Fetching user plans for userSlug: {}", userSlug);
         Integer userId = userService.getUserIdBySlug(userSlug);
         Page<WholesalerPlans> allUserPlans = servicePlanService.getAllUserPlans(userId, searchFilters);
         return new ResponseEntity<>(allUserPlans,HttpStatus.OK);
@@ -44,7 +44,7 @@ public class ServicePlanController extends ServiceContainer {
 
     @PostMapping("service-plans")
     public ResponseEntity<Page<ServicePlan>> getAllPlans(@RequestBody ServicePlanDto servicePlanDto) {
-        safeLog.info(logger,"Fetching all service plans with filters: {}", servicePlanDto);
+        logger.debug("Fetching all service plans with filters: {}", servicePlanDto);
         return new ResponseEntity<>(servicePlanService.getALlServicePlan(servicePlanDto), HttpStatusCode.valueOf(200));
     }
 
@@ -62,7 +62,7 @@ public class ServicePlanController extends ServiceContainer {
     )
     @PostMapping("add")
     public ResponseEntity<Map<String,Object>> insertServicePlans(HttpServletRequest request , @RequestBody ServicePlanDto servicePlanDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        safeLog.info(logger,"Inserting new service plan: {}", servicePlanDto);
+        logger.debug("Inserting new service plan: {}", servicePlanDto);
         User loggedUser = (User) request.getAttribute("user");
         Map<String,Object> result = new HashMap<>();
         ServicePlan servicePlan = servicePlanService.insertServicePlan(loggedUser,servicePlanDto);
@@ -75,7 +75,7 @@ public class ServicePlanController extends ServiceContainer {
 
     @PostMapping(ConstantResponseKeys.STATUS)
     public ResponseEntity<Map<String,Object>> updateStatus(HttpServletRequest request, @RequestBody StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        safeLog.info(logger,"Updating status for service plan: {}", statusDto);
+        logger.debug("Updating status for service plan: {}", statusDto);
         User loggedUser = (User) request.getAttribute("user");
         Map<String, Object> result = servicePlanService.updateServicePlanStatus(statusDto, loggedUser);
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
@@ -84,7 +84,7 @@ public class ServicePlanController extends ServiceContainer {
 
     @PostMapping("delete")
     public ResponseEntity<Map<String,Object>> deleteStatus(@RequestBody DeleteDto deleteDto, HttpServletRequest request) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        safeLog.info(logger,"Deleting service plan: {}", deleteDto);
+        logger.debug("Deleting service plan: {}", deleteDto);
         User loggedUser = (User) request.getAttribute("user");
         Map<String, Object> result = servicePlanService.deletedServicePlan(deleteDto,loggedUser);
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));

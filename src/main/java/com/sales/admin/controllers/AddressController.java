@@ -19,19 +19,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AddressController extends ServiceContainer {
 
-    private final com.sales.helpers.Logger safeLog;
+    
     private static final Logger logger = LoggerFactory.getLogger(AddressController.class);
 
     @GetMapping("/city/{stateId}")
     public ResponseEntity<List<City>> getCityList(@PathVariable Integer stateId) {
-        safeLog.info(logger,"Fetching city list for stateId: {}", stateId);
+        logger.debug("Fetching city list for stateId: {}", stateId);
         List<City> cityList = addressService.getCityList(stateId);
         return new ResponseEntity<>(cityList, HttpStatus.OK);
     }
 
     @GetMapping("/state")
     public ResponseEntity<List<State>> getStateList() {
-        safeLog.info(logger,"Fetching state list");
+        logger.debug("Fetching state list");
         List<State> stateList = addressService.getStateList();
         return new ResponseEntity<>(stateList, HttpStatus.OK);
     }

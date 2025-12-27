@@ -20,12 +20,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WholesaleDashboardController extends WholesaleServiceContainer {
 
-    private final com.sales.helpers.Logger safeLog;
+    
     private static final Logger logger = LoggerFactory.getLogger(WholesaleDashboardController.class);
 
     @GetMapping("/counts")
     public ResponseEntity<Map<String, Object>> getAllDashboardCount(HttpServletRequest request) {
-        safeLog.info(logger,"Starting getAllDashboardCount method");
+        logger.debug("Starting getAllDashboardCount method");
         User loggedUser = (User) request.getAttribute("user");
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
         Map<String,Object> responseObj = new HashMap<>();
@@ -35,19 +35,19 @@ public class WholesaleDashboardController extends WholesaleServiceContainer {
         responseObj.put("inStock" , wholesaleItemService.getItemCountsForInStock(storeId));
         responseObj.put("outStock" , wholesaleItemService.getItemCountsForOutStock(storeId));
         responseObj.put(ConstantResponseKeys.STATUS, 200);
-        safeLog.info(logger,"Completed getAllDashboardCount method");
+        logger.debug("Completed getAllDashboardCount method");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
     @PostMapping("graph/months/")
     public ResponseEntity<Map<String, Object>> getAllGraphData(HttpServletRequest request,@RequestBody GraphDto graphDto) {
-        safeLog.info(logger,"Starting getAllGraphData method");
+        logger.debug("Starting getAllGraphData method");
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
         responseObj.put(ConstantResponseKeys.RES ,wholesaleItemService.getItemCountByMonths(graphDto,storeId));
         responseObj.put(ConstantResponseKeys.STATUS, 200);
-        safeLog.info(logger,"Completed getAllGraphData method");
+        logger.debug("Completed getAllGraphData method");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 }

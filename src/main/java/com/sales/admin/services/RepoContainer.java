@@ -3,8 +3,6 @@ package com.sales.admin.services;
 
 import com.sales.admin.repositories.*;
 import com.sales.dto.SearchFilters;
-import com.sales.helpers.Logger;
-import com.sales.helpers.SafeLogHelper;
 import com.sales.utils.WriteExcelUtil;
 import com.sales.wholesaler.repository.ChatHbRepository;
 import com.sales.wholesaler.repository.ChatRepository;
@@ -20,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RepoContainer {
 
-    private final Logger safeLog = SafeLogHelper.getInstance();
+    
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(RepoContainer.class);
 
     @Autowired
@@ -134,7 +132,7 @@ public class RepoContainer {
     protected StoreWalletTransactionRepository storeWalletTransactionRepository;
 
     public Pageable getPageable(SearchFilters filters){
-        safeLog.info(logger,"page : "+ filters.getPageNumber() + " "+filters.getSize());
+        logger.debug("page : "+ filters.getPageNumber() + " "+filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?
                 Sort.by(filters.getOrderBy()).ascending() :  Sort.by(filters.getOrderBy()).descending();
         Pageable pageable = PageRequest.of(filters.getPageNumber(), filters.getSize(),sort);

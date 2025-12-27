@@ -20,14 +20,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatUserService extends WholesaleRepoContainer {
 
-    private final com.sales.helpers.Logger safeLog;
+    
      private static final Logger logger = LoggerFactory.getLogger(ChatUserService.class);
 
     @Autowired
     protected BlockListService blockListService;
 
     public List<User> getAllChatUsers(User loggedUser, HttpServletRequest request) {
-        safeLog.info(logger,"Starting getAllChatUsers method and the user id : {}",loggedUser.getId());
+        logger.debug("Starting getAllChatUsers method and the user id : {}",loggedUser.getId());
         List<ChatUser> chatUserList = chatUserRepository.getChatUserByUserId(loggedUser.getId()).stream().filter(chatUser -> chatUser.getChatUser() !=null).toList();
         List<User> userList = chatUserList.stream().map(ChatUser::getChatUser).toList();
 
@@ -39,15 +39,15 @@ public class ChatUserService extends WholesaleRepoContainer {
                 user.setChatNotification(unSeenChatsCount);
             }
         }
-        safeLog.info(logger,"Completed getAllChatUsers method");
+        logger.debug("Completed getAllChatUsers method");
         return userList;
     }
 
     public ChatUser addNewChatUser(User sender, User receiver, String status) {
-        safeLog.info(logger,"Starting addNewChatUser method with User receiver there the sender is : {} and the receiver is : {} ",sender.getId(),receiver.getId());
+        logger.debug("Starting addNewChatUser method with User receiver there the sender is : {} and the receiver is : {} ",sender.getId(),receiver.getId());
         ChatUser userFound = chatUserRepository.findByUserIdAndChatUser(sender.getId(), receiver);
         if (userFound != null) {
-            safeLog.info(logger,"ChatUser already exists, returning existing user checking in addNewChatUser method");
+            logger.debug("ChatUser already exists, returning existing user checking in addNewChatUser method");
             return userFound;
         }
 
@@ -57,12 +57,12 @@ public class ChatUserService extends WholesaleRepoContainer {
             .chatUser(receiver)
             .build();
         ChatUser savedChatUser = chatUserRepository.save(chatUser); // Create operation
-        safeLog.info(logger,"Completed addNewChatUser method with User receiver");
+        logger.debug("Completed addNewChatUser method with User receiver");
         return savedChatUser;
     }
 
     public ChatUser addNewChatUser(User sender, String receiverSlug, String status) {
-        safeLog.info(logger,"Starting addNewChatUser method with receiverSlug");
+        logger.debug("Starting addNewChatUser method with receiverSlug");
         User receiver = wholesaleUserRepository.findUserBySlug(receiverSlug);
         if (receiver == null) {
             logger.error("Receiver not found");
@@ -70,7 +70,7 @@ public class ChatUserService extends WholesaleRepoContainer {
         }
         ChatUser userFound = chatUserRepository.findByUserIdAndChatUser(sender.getId(), receiver);
         if (userFound != null) {
-            safeLog.info(logger,"ChatUser already exists, returning existing user");
+            logger.debug("ChatUser already exists, returning existing user");
             return userFound;
         }
 
@@ -80,43 +80,43 @@ public class ChatUserService extends WholesaleRepoContainer {
             .senderAcceptStatus(status)
             .build();
         ChatUser savedChatUser = chatUserRepository.save(chatUser); // Create operation
-        safeLog.info(logger,"Completed addNewChatUser method with receiverSlug");
+        logger.debug("Completed addNewChatUser method with receiverSlug");
         return savedChatUser;
     }
 
     public boolean updateAcceptStatus(Integer userId, String receiverSlug, String status) {
-        safeLog.info(logger,"Starting updateAcceptStatus method");
+        logger.debug("Starting updateAcceptStatus method");
         User receiver = wholesaleUserRepository.findUserBySlug(receiverSlug);
         boolean isUpdated = chatUserHbRepository.updateAcceptStatus(userId, receiver, status); // Update operation
-        safeLog.info(logger,"Completed updateAcceptStatus method");
+        logger.debug("Completed updateAcceptStatus method");
         return isUpdated;
     }
 
 
 
     public String isChatRequestAcceptedByLoggedUser(User loggedUser,User receiver) {
-        safeLog.info(logger,"Starting isChatRequestAccepted method with userId : {} and chatUserId : {} ",loggedUser.getId(),receiver.getId());
+        logger.debug("Starting isChatRequestAccepted method with userId : {} and chatUserId : {} ",loggedUser.getId(),receiver.getId());
         ChatUser chatUser = chatUserRepository.findByUserIdAndChatUser(loggedUser.getId(), receiver);
         if(chatUser == null) throw new NotFoundException("User not found in your chat users list.");
-        safeLog.info(logger,"Completed isChatRequestAccepted method");
+        logger.debug("Completed isChatRequestAccepted method");
         return chatUser.getSenderAcceptStatus();
     }
 
 
     public String isChatRequestAcceptedByLoggedUser(User loggedUser,String receiverSlug) {
-        safeLog.info(logger,"Starting isChatRequestAccepted method with userId : {} and chatUser : {} ",loggedUser.getId(),receiverSlug);
+        logger.debug("Starting isChatRequestAccepted method with userId : {} and chatUser : {} ",loggedUser.getId(),receiverSlug);
         User receiver = wholesaleUserRepository.findUserBySlug(receiverSlug);
         if(receiver == null) throw new NotFoundException("Receiver not found.");
         ChatUser chatUser = chatUserRepository.findByUserIdAndChatUser(loggedUser.getId(),receiver);
         if(chatUser == null) throw new NotFoundException("Receiver not found.");
-        safeLog.info(logger,"Completed isChatRequestAcceptedByLoggedUser method");
+        logger.debug("Completed isChatRequestAcceptedByLoggedUser method");
         return chatUser.getSenderAcceptStatus();
     }
 
 
     @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
     public int removeChatUser(User loggedUser,String chatUserSlug,Boolean deleteChats) {
-        safeLog.info(logger,"Going to remove contact from contact list with loggedUser  {} : and chatUserSlug {} ",loggedUser,chatUserSlug);
+        logger.debug("Going to remove contact from contact list with loggedUser  {} : and chatUserSlug {} ",loggedUser,chatUserSlug);
         User contactUser = wholesaleUserRepository.findUserBySlug(chatUserSlug);
         if(contactUser == null) throw new NotFoundException("No contact user found to delete.");
         Integer deleted = chatUserRepository.deleteChatUserFromChatList(loggedUser.getId(), contactUser);

@@ -26,44 +26,44 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WholesaleServicePlanController extends WholesaleServiceContainer {
 
-    private final com.sales.helpers.Logger safeLog;
+    
     private static final Logger logger = LoggerFactory.getLogger(WholesaleServicePlanController.class);
 
     @GetMapping("/all")
     public ResponseEntity<List<ServicePlan>> getAllPlans() {
-        safeLog.info(logger,"Starting getAllPlans method");
+        logger.debug("Starting getAllPlans method");
         ResponseEntity<List<ServicePlan>> response = new ResponseEntity<>(wholesaleServicePlanService.getAllServicePlan(), HttpStatusCode.valueOf(200));
-        safeLog.info(logger,"Completed getAllPlans method");
+        logger.debug("Completed getAllPlans method");
         return response;
     }
 
 
     @GetMapping("detail/{slug}")
     public ResponseEntity<ServicePlan> getPlanDetailBySlug(@PathVariable String slug) {
-        safeLog.info(logger,"Starting getPlanDetailBySlug method");
+        logger.debug("Starting getPlanDetailBySlug method");
         ResponseEntity<ServicePlan> response = new ResponseEntity<>(wholesaleServicePlanService.findBySlug(slug), HttpStatusCode.valueOf(200));
-        safeLog.info(logger,"Completed getPlanDetailBySlug method");
+        logger.debug("Completed getPlanDetailBySlug method");
         return response;
     }
 
     @PostMapping("/my-plans")
     public ResponseEntity<Page<WholesalerPlans>> getMyAllPlans(HttpServletRequest request, @RequestBody UserPlanDto searchFilters) {
-        safeLog.info(logger,"Starting getMyAllPlans method");
+        logger.debug("Starting getMyAllPlans method");
         User loggedUser = Utils.getUserFromRequest(request, jwtToken, wholesaleUserService);
         Page<WholesalerPlans> allUserPlans = wholesaleServicePlanService.getAllUserPlans(loggedUser, searchFilters);
-        safeLog.info(logger,"Completed getMyAllPlans method");
+        logger.debug("Completed getMyAllPlans method");
         return new ResponseEntity<>(allUserPlans, HttpStatusCode.valueOf(200));
     }
 
     @GetMapping("is-active")
     public ResponseEntity<Map<String,Object>> isUserPlanActive(HttpServletRequest request){
-        safeLog.info(logger,"Starting isUserPlanActive method");
+        logger.debug("Starting isUserPlanActive method");
         User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         Map<String,Object> result = new HashMap<>();
         boolean planIsActive = wholesaleServicePlanService.isPlanActive(loggedUser.getActivePlan());
         result.put("planIsActive",planIsActive);
         result.put("status" , 200);
-        safeLog.info(logger,"Completed isUserPlanActive method");
+        logger.debug("Completed isUserPlanActive method");
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
 

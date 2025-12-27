@@ -20,12 +20,12 @@ import static com.sales.utils.Utils.getCurrentMillis;
 @RequiredArgsConstructor
 public class AddressService extends RepoContainer {
 
-    private final com.sales.helpers.Logger safeLog;
+    
     private static final Logger logger = LoggerFactory.getLogger(AddressService.class);
 
     @Transactional
     public Address insertAddress(AddressDto addressDto, User loggedUser) {
-        safeLog.info(logger,"Entering insertAddress with addressDto: {}, loggedUser: {}", addressDto, loggedUser);
+        logger.debug("Entering insertAddress with addressDto: {}, loggedUser: {}", addressDto, loggedUser);
         Address address = new Address();
         address.setSlug(UUID.randomUUID().toString());
 
@@ -41,21 +41,21 @@ public class AddressService extends RepoContainer {
         address.setUpdatedAt(getCurrentMillis());
         address.setUpdatedBy(loggedUser.getId());
         Address result = addressRepository.save(address);
-        safeLog.info(logger,"Exiting insertAddress with result: {}", result);
+        logger.debug("Exiting insertAddress with result: {}", result);
         return result;
     }
 
     public List<City> getCityList(int stateId) {
-        safeLog.info(logger,"Entering getCityList with stateId: {}", stateId);
+        logger.debug("Entering getCityList with stateId: {}", stateId);
         List<City> result = addressHbRepository.getCityList(stateId);
-        safeLog.info(logger,"Exiting getCityList with result: {}", result);
+        logger.debug("Exiting getCityList with result: {}", result);
         return result;
     }
 
     public List<State> getStateList() {
-        safeLog.info(logger,"Entering getStateList");
+        logger.debug("Entering getStateList");
         List<State> result = addressHbRepository.getStateList();
-        safeLog.info(logger,"Exiting getStateList with result: {}", result);
+        logger.debug("Exiting getStateList with result: {}", result);
         return result;
     }
 

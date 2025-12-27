@@ -17,11 +17,11 @@ import static com.sales.specifications.ItemReviewSpecifications.*;
 @RequiredArgsConstructor
 public class ItemReviewService extends  RepoContainer {
 
-  private final com.sales.helpers.Logger safeLog;
+  
   private static final Logger logger = LoggerFactory.getLogger(ItemReviewService.class);
 
     public Page<ItemReviews> getAllItemReview(ItemReviewsFilterDto filters) {
-        safeLog.info(logger,"Entering getALlItemReview with filters: {}", filters);
+        logger.debug("Entering getALlItemReview with filters: {}", filters);
         Specification<ItemReviews> specification = Specification.allOf(
                 (containsName(filters.getSearchKey()))
                         .and(greaterThanOrEqualFromDate(filters.getFromDate()))

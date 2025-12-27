@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class WholesaleWalletService extends WholesaleRepoContainer {
 
-      private final com.sales.helpers.Logger safeLog;
+      
     private static final Logger logger = LoggerFactory.getLogger(WholesaleWalletService.class);
 
     @Autowired
@@ -34,14 +34,14 @@ public class WholesaleWalletService extends WholesaleRepoContainer {
 
     @Transactional
     public void sendNotification(String title,String messageBody,int storeId,User loggedUser){
-        safeLog.info(logger,"Entering sendNotification with title: {}, messageBody: {}, storeId: {}, loggedUser: {}", title, messageBody, storeId, loggedUser);
+        logger.debug("Entering sendNotification with title: {}, messageBody: {}, storeId: {}, loggedUser: {}", title, messageBody, storeId, loggedUser);
         StoreNotifications storeNotifications = new StoreNotifications();
         storeNotifications.setTitle(title);
         storeNotifications.setMessageBody(messageBody);
         storeNotifications.setWholesaleId(storeId);
         storeNotifications.setCreatedBy(loggedUser);
         wholesaleNotificationHbRepository.insertStoreNotifications(storeNotifications);
-        safeLog.info(logger,"Exiting sendNotification");
+        logger.debug("Exiting sendNotification");
     }
 
     public boolean paymentViaWallet(String servicePlanSlug, User loggedUser) {

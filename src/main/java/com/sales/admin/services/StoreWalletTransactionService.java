@@ -22,7 +22,7 @@ import static com.sales.specifications.WalletTransactionSpecification.*;
 @RequiredArgsConstructor
 public class StoreWalletTransactionService extends RepoContainer {
 
-      private final com.sales.helpers.Logger safeLog;
+      
   private static final Logger logger = LoggerFactory.getLogger(StoreWalletTransactionService.class);
 
 
@@ -44,7 +44,7 @@ public class StoreWalletTransactionService extends RepoContainer {
 
 
     public WalletTransaction addWalletTransaction(WalletTransactionDto walletTransactionDto,Integer userId) {
-        safeLog.info(logger,"The addWalletTransaction method started with wallTransactionDto : {}",walletTransactionDto);
+        logger.debug("The addWalletTransaction method started with wallTransactionDto : {}",walletTransactionDto);
         WalletTransaction walletTransaction = WalletTransaction.builder()
                 .slug(UUID.randomUUID().toString())
                 .userId(userId)
@@ -53,11 +53,11 @@ public class StoreWalletTransactionService extends RepoContainer {
                 .createdAt(Utils.getCurrentMillis())
                 .status(walletTransactionDto.getStatus())
                 .build();
-        safeLog.info(logger,"The addWalletTransaction method ended with wallTransactionDto : {}",walletTransaction);
+        logger.debug("The addWalletTransaction method ended with wallTransactionDto : {}",walletTransaction);
 
         if(!Utils.isEmpty(walletTransactionDto.getTransactionType()) && walletTransactionDto.getTransactionType().equalsIgnoreCase("CR")){
             Integer added = walletRepository.addMoneyInWallet(walletTransaction.getAmount(), userId, Utils.getCurrentMillis());
-            safeLog.info(logger,"Added money in wallet rows was updated : {} ",added);
+            logger.debug("Added money in wallet rows was updated : {} ",added);
             if(added < 1){ // if a user isn't found in wallet.
                 Wallet wallet = Wallet.builder()
                         .userId(userId)
@@ -68,7 +68,7 @@ public class StoreWalletTransactionService extends RepoContainer {
             }
         }else{
             Integer deducted = walletRepository.deductMoneyFromWallet(walletTransaction.getAmount(), userId, Utils.getCurrentMillis());
-            safeLog.info(logger,"Detected money in wallet rows was updated : {} ",deducted);
+            logger.debug("Detected money in wallet rows was updated : {} ",deducted);
         }
 
         return storeWalletTransactionRepository.save(walletTransaction);

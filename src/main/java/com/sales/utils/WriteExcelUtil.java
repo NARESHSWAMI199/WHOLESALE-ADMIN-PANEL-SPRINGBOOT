@@ -22,7 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WriteExcelUtil {
 
-    private final com.sales.helpers.Logger safeLog;
+    
     private final Logger logger = LoggerFactory.getLogger(WriteExcelUtil.class);
 
     @Value("${excel.export.absolute}")
@@ -212,7 +212,7 @@ public class WriteExcelUtil {
         if (!directory.exists()) {
             boolean created = directory.mkdirs();
             if (created) {
-                safeLog.info(logger,"Directory created: {}", directory.getAbsolutePath());
+                logger.debug("Directory created: {}", directory.getAbsolutePath());
             }
         }
 
@@ -231,7 +231,7 @@ public class WriteExcelUtil {
         if (!directory.exists()) {
             boolean created = directory.mkdirs();
             if (created) {
-                safeLog.info(logger,"Created directory for not-updated items: {}", directory.getAbsolutePath());
+                logger.debug("Created directory for not-updated items: {}", directory.getAbsolutePath());
             }
         }
 
@@ -242,7 +242,7 @@ public class WriteExcelUtil {
             workbook.write(fos);
         }
 
-        safeLog.info(logger,"Not updated items excel saved at: {}", fullPath);
+        logger.debug("Not updated items excel saved at: {}", fullPath);
 
         return fileName;
     }

@@ -29,11 +29,11 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ServicePlanService extends  RepoContainer {
 
-      private final com.sales.helpers.Logger safeLog;
+      
   private static final Logger logger = LoggerFactory.getLogger(ServicePlanService.class);
 
     public Page<ServicePlan> getALlServicePlan(ServicePlanDto servicePlanDto){
-        safeLog.info(logger,"Entering getALlServicePlan with servicePlanDto: {}", servicePlanDto);
+        logger.debug("Entering getALlServicePlan with servicePlanDto: {}", servicePlanDto);
         Specification<ServicePlan> specification = Specification.allOf(
                 ServicePlanSpecification.containsName(servicePlanDto.getName())
                         .and(ServicePlanSpecification.hasSlug(servicePlanDto.getSlug()))
@@ -43,19 +43,19 @@ public class ServicePlanService extends  RepoContainer {
         );
         Pageable pageable = getPageable(servicePlanDto);
         Page<ServicePlan> result = servicePlanRepository.findAll(specification,pageable);
-        safeLog.info(logger,"Exiting getALlServicePlan");
+        logger.debug("Exiting getALlServicePlan");
         return result;
     }
 
     public ServicePlan findBySlug(String slug){
-        safeLog.info(logger,"Entering findBySlug with slug: {}", slug);
+        logger.debug("Entering findBySlug with slug: {}", slug);
         ServicePlan result = servicePlanRepository.findBySlug(slug);
-        safeLog.info(logger,"Exiting findBySlug");
+        logger.debug("Exiting findBySlug");
         return result;
     }
 
     public boolean isPlanActive(Integer  userPlanId){
-        safeLog.info(logger,"Entering isPlanActive with userPlanId: {}", userPlanId);
+        logger.debug("Entering isPlanActive with userPlanId: {}", userPlanId);
         if(userPlanId == null) return false;
         Optional<WholesalerPlans> plan = wholesalerPlansRepository.findById(userPlanId);
         if (plan.isPresent()){
@@ -63,15 +63,15 @@ public class ServicePlanService extends  RepoContainer {
             long expiryDate = userPlan.getExpiryDate();
             long currentDate =  Utils.getCurrentMillis();
             boolean isActive = currentDate <= expiryDate;
-            safeLog.info(logger,"Exiting isPlanActive with result: {}", isActive);
+            logger.debug("Exiting isPlanActive with result: {}", isActive);
             return isActive;
         }
-        safeLog.info(logger,"Exiting isPlanActive with result: false");
+        logger.debug("Exiting isPlanActive with result: false");
         return false;
     }
 
     public Page<WholesalerPlans> getAllUserPlans(Integer userId , UserPlanDto searchFilters){
-        safeLog.info(logger,"Entering getAllUserPlans with userId: {}, searchFilters: {}", userId, searchFilters);
+        logger.debug("Entering getAllUserPlans with userId: {}, searchFilters: {}", userId, searchFilters);
         Specification<WholesalerPlans> specification = Specification.allOf(
                 PlansSpecifications.hasSlug(searchFilters.getSlug())
                 .and(PlansSpecifications.greaterThanOrEqualCreatedFromDate(searchFilters.getCreatedFromDate()))
@@ -83,7 +83,7 @@ public class ServicePlanService extends  RepoContainer {
         );
         Pageable pageable = getPageable(searchFilters);
         Page<WholesalerPlans> result = wholesalerPlansRepository.findAll(specification, pageable);
-        safeLog.info(logger,"Exiting getAllUserPlans");
+        logger.debug("Exiting getAllUserPlans");
         return result;
     }
 
@@ -91,7 +91,7 @@ public class ServicePlanService extends  RepoContainer {
 
     @Transactional
     public ServicePlan insertServicePlan(User loggedUser, ServicePlanDto servicePlanDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        safeLog.info(logger,"Entering insertServicePlan with loggedUser: {}, servicePlanDto: {}", loggedUser, servicePlanDto);
+        logger.debug("Entering insertServicePlan with loggedUser: {}, servicePlanDto: {}", loggedUser, servicePlanDto);
         if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("You don't have permission to perform this action. Contact to your administrator.",new Exception());
 
         // Validating required fields if there we found any required field is null, then it will throw an Exception
@@ -115,12 +115,12 @@ public class ServicePlanService extends  RepoContainer {
                 .isDeleted("N")
                 .build();
         ServicePlan result = servicePlanRepository.save(servicePlan);
-        safeLog.info(logger,"Exiting insertServicePlan");
+        logger.debug("Exiting insertServicePlan");
         return result;
     }
 
     public Map<String,Object> updateServicePlanStatus(StatusDto statusDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        safeLog.info(logger,"Entering updateServicePlanStatus with statusDto: {}, loggedUser: {}", statusDto, loggedUser);
+        logger.debug("Entering updateServicePlanStatus with statusDto: {}, loggedUser: {}", statusDto, loggedUser);
         // Validating required fields if there we found any required field is null, then it will throw an Exception
         Utils.checkRequiredFields(statusDto, List.of("status","slug"));
 
@@ -143,7 +143,7 @@ public class ServicePlanService extends  RepoContainer {
                     result.put(ConstantResponseKeys.MESSAGE, "No plan found to update.");
                     result.put(ConstantResponseKeys.STATUS, 404);
                 }
-                safeLog.info(logger,"Exiting updateServicePlanStatus with result: {}", result);
+                logger.debug("Exiting updateServicePlanStatus with result: {}", result);
                 return result;
             default:
                 throw new IllegalArgumentException("status must be A or D.");
@@ -151,7 +151,7 @@ public class ServicePlanService extends  RepoContainer {
     }
 
     public Map<String,Object> deletedServicePlan(DeleteDto deleteDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        safeLog.info(logger,"Entering deletedServicePlan with deleteDto: {}, loggedUser: {}", deleteDto, loggedUser);
+        logger.debug("Entering deletedServicePlan with deleteDto: {}, loggedUser: {}", deleteDto, loggedUser);
         // Validating required fields if their we found any required field is null, then it will throw an Exception
         Utils.checkRequiredFields(deleteDto, List.of("slug"));
         String slug = deleteDto.getSlug();
@@ -165,7 +165,7 @@ public class ServicePlanService extends  RepoContainer {
             result.put(ConstantResponseKeys.MESSAGE,"No service plan found to delete.");
             result.put(ConstantResponseKeys.STATUS,404);
         }
-        safeLog.info(logger,"Exiting deletedServicePlan with result: {}", result);
+        logger.debug("Exiting deletedServicePlan with result: {}", result);
         return result;
     }
 

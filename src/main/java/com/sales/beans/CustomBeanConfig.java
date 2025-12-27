@@ -1,8 +1,8 @@
 package com.sales.beans;
 
 
-import com.sales.helpers.Logger;
-import com.sales.helpers.SafeLogHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,6 +12,6 @@ public class CustomBeanConfig {
 
     @Bean("safeLogger")
     public Logger getLogger(){
-        return SafeLogHelper.getInstance();
+        return LoggerFactory.getLogger("test");
     }
 }

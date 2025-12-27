@@ -22,7 +22,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ChatService extends WholesaleRepoContainer {
 
-    private final com.sales.helpers.Logger safeLog;
+    
     private static final Logger logger = LoggerFactory.getLogger(ChatService.class);
 
     @Value("${chat.absolute}")
@@ -72,14 +72,14 @@ public class ChatService extends WholesaleRepoContainer {
         /* Check you are blocked by receiver or not */
         boolean isYouBlockedByReceiver = blockListService.isSenderBlockedByReceiver(loggedUser,receiver);
         if (isYouBlockedByReceiver) {
-            safeLog.info(logger,"Receiver blocked you ? : {} ", true);
+            logger.debug("Receiver blocked you ? : {} ", true);
             return false; //  If isBlocked == true, that's mean. Receiver already blocked you
         }
 
         /* Check you blocked the receiver or not */
         boolean isYouBlockedReceiver = blockListService.isReceiverBlockedBySender(loggedUser,receiver);
         if(isYouBlockedReceiver){
-            safeLog.info(logger,"You blocked receiver ? : {} ", true);
+            logger.debug("You blocked receiver ? : {} ", true);
         }
         return !isYouBlockedReceiver; //  If isYouBlockedReceiver == true, that's mean.
     }
@@ -87,7 +87,7 @@ public class ChatService extends WholesaleRepoContainer {
 
 
     public Chat saveMessage(MessageDto message,String commaSeparatedImagesName) {
-        safeLog.info(logger,"Starting saveMessage method");
+        logger.debug("Starting saveMessage method");
         Chat chat = Chat.builder()
             .parentId(message.getParentId())
 //            .userId(loggedUser.getId())
@@ -102,13 +102,13 @@ public class ChatService extends WholesaleRepoContainer {
             .seen(false)
             .build();
         Chat savedChat = chatRepository.save(chat); // Create operation
-        safeLog.info(logger,"Completed saveMessage method");
+        logger.debug("Completed saveMessage method");
         return savedChat;
     }
 
     public Map<String, List<Chat>> getAllChatBySenderAndReceiverKey(MessageDto message,HttpServletRequest request) {
         // sender is loggedUser
-        safeLog.info(logger,"Starting getAllChatBySenderAndReceiverKey method with messageDto : {} ",message);
+        logger.debug("Starting getAllChatBySenderAndReceiverKey method with messageDto : {} ",message);
         Map<String, List<Chat>> formattedData = new TreeMap<>();
         List<Chat> chatList = chatRepository.getChatBySenderKeyOrReceiverKey(message.getSender(), message.getReceiver());
         for (Chat chat : chatList) {
@@ -150,13 +150,13 @@ public class ChatService extends WholesaleRepoContainer {
             chats.add(chat);
             formattedData.put(createAtDate, chats);
         }
-        safeLog.info(logger,"Completed getAllChatBySenderAndReceiverKey method");
+        logger.debug("Completed getAllChatBySenderAndReceiverKey method");
         return formattedData;
     }
 
 
     public Chat getParentMessageById(Long parentId,User loggedUser,HttpServletRequest request){
-        safeLog.info(logger,"Starting getParentMessageById method with parentId : {} ",parentId);
+        logger.debug("Starting getParentMessageById method with parentId : {} ",parentId);
         Optional<Chat> chatOptional = chatRepository.findById(parentId);
         if (chatOptional.isPresent()){
             Chat chat = chatOptional.get();
@@ -177,7 +177,7 @@ public class ChatService extends WholesaleRepoContainer {
                 ).toList();
                 chat.setImagesUrls(list);
             }
-            safeLog.info(logger,"Completed getParentMessageById method");
+            logger.debug("Completed getParentMessageById method");
             return chat;
         }
         return  null;
@@ -186,22 +186,22 @@ public class ChatService extends WholesaleRepoContainer {
 
 
     public Integer getParentMessageIdByCreatedAt(MessageDto messageDto, HttpServletRequest request){
-        safeLog.info(logger,"Starting getParentMessageIdByCreatedAt method with messageDto : {}",messageDto);
+        logger.debug("Starting getParentMessageIdByCreatedAt method with messageDto : {}",messageDto);
         Integer parentMessageId = chatRepository.getParentMessageIdByCreateAt(messageDto.getSender(),messageDto.getReceiver(),messageDto.getCreatedAt());
-        safeLog.info(logger,"Completed getParentMessageIdByCreatedAt method");
+        logger.debug("Completed getParentMessageIdByCreatedAt method");
         return parentMessageId;
     }
 
 
 
     public List<String> saveAllImages(MessageDto messageDto, User loggedUser) {
-        safeLog.info(logger,"Starting saveAllImages method");
+        logger.debug("Starting saveAllImages method");
         List<String> imagesNames = new ArrayList<>();
         String folderPath = chatAbsolutePath + loggedUser.getSlug() + "_" + messageDto.getReceiver() + File.separator;
         File directory = new File(folderPath);
         if (!directory.exists()) {
             boolean dirCreated = directory.mkdirs();
-            if(dirCreated) safeLog.info(logger,"New dir created :{}",directory.getName());
+            if(dirCreated) logger.debug("New dir created :{}",directory.getName());
 
         }
         try {
@@ -214,15 +214,15 @@ public class ChatService extends WholesaleRepoContainer {
             }
         } catch (Exception e) {
             boolean deleted = directory.delete();
-            if (deleted) safeLog.info(logger,"The folder was deleted : {}", folderPath);
+            if (deleted) logger.debug("The folder was deleted : {}", folderPath);
             throw new MyException(e.getMessage());
         }
-        safeLog.info(logger,"Completed saveAllImages method");
+        logger.debug("Completed saveAllImages method");
         return imagesNames;
     }
 
     public MessageDto addImagesList(MessageDto message, HttpServletRequest request, List<String> allImagesName, User loggedUser, String recipient) {
-        safeLog.info(logger,"Starting addImagesList method");
+        logger.debug("Starting addImagesList method");
         message.setImages(null);
         List<String> imageUrls = allImagesName.stream().map(name -> Utils.getHostUrl(request) + "/chat/images/" + loggedUser.getSlug() + GlobalConstant.PATH_SEPARATOR + message.getReceiver() + GlobalConstant.PATH_SEPARATOR + name).toList();
         message.setImagesUrls(imageUrls);
@@ -231,7 +231,7 @@ public class ChatService extends WholesaleRepoContainer {
         String imagesNamesString = String.join(",", allImagesName);
         Chat savedMessage = saveMessage(message,imagesNamesString); // Create operation
         message.setId(savedMessage.getId());
-        safeLog.info(logger,"Completed addImagesList method");
+        logger.debug("Completed addImagesList method");
         return message;
     }
 
@@ -242,7 +242,7 @@ public class ChatService extends WholesaleRepoContainer {
 
 
     public int deleteMessage(User loggedUser,MessageDto messageDto){
-        safeLog.info(logger,"Starting deleteMessage method with loggedUser: {}, messageDto: {}", loggedUser, messageDto);
+        logger.debug("Starting deleteMessage method with loggedUser: {}, messageDto: {}", loggedUser, messageDto);
         switch (messageDto.getIsDeleted()){
             case "S": // delete sender's message
                 if(!messageDto.getSender().equals(loggedUser.getSlug())) return  0;
@@ -273,7 +273,7 @@ public class ChatService extends WholesaleRepoContainer {
                 return 0;
         }
         int deleteCount = chatHbRepository.deleteChat(messageDto); // Update operation
-        safeLog.info(logger,"Completed deleteMessage method");
+        logger.debug("Completed deleteMessage method");
         return deleteCount;
     }
 

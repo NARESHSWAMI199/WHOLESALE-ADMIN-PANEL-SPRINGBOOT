@@ -39,7 +39,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WholesaleUserController extends WholesaleServiceContainer {
 
-    private final com.sales.helpers.Logger safeLog;
+    
     private static final Logger logger = LoggerFactory.getLogger(WholesaleUserController.class);
 
     @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(
@@ -52,7 +52,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
     )))
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> loginWholesaler(@RequestBody Map<String,String> param) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        safeLog.info(logger,"Starting loginWholesaler method");
+        logger.debug("Starting loginWholesaler method");
         Map<String, Object> responseObj = new HashMap<>();
         User user = wholesaleUserService.findByEmailAndPassword(param);
         String message;
@@ -76,7 +76,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         }
         responseObj.put(ConstantResponseKeys.MESSAGE, message);
-        safeLog.info(logger,"Completed loginWholesaler method.");
+        logger.debug("Completed loginWholesaler method.");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
@@ -84,7 +84,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
 
     @PostMapping("/login/otp")
     public ResponseEntity<Map<String, Object>> loginUserViaOtp (@RequestBody UserDto userDetails) {
-        safeLog.info(logger,"Starting loginUserViaOtp method");
+        logger.debug("Starting loginUserViaOtp method");
         Map<String, Object> responseObj = new HashMap<>();
         User user = wholesaleUserService.findUserByOtpAndEmail(userDetails);
         if (user == null) {
@@ -104,7 +104,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put(ConstantResponseKeys.MESSAGE, "You are blocked by admin");
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         }
-        safeLog.info(logger,"Completed loginUserViaOtp method");
+        logger.debug("Completed loginUserViaOtp method");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
@@ -120,7 +120,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
 
     @PostMapping("validate-otp")
     public ResponseEntity<Map<String, Object>> validateUserOtp(@RequestBody UserDto userDetails) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        safeLog.info(logger,"Starting validateUserOtp method");
+        logger.debug("Starting validateUserOtp method");
         Map<String, Object> responseObj = new HashMap<>();
         User user = wholesaleUserService.findUserByOtpAndSlug(userDetails);
         if (user == null) {
@@ -141,14 +141,14 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put(ConstantResponseKeys.MESSAGE, "You are blocked by admin");
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         }
-        safeLog.info(logger,"Completed validateUserOtp method");
+        logger.debug("Completed validateUserOtp method");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 
     @PostMapping("sendOtp")
     public ResponseEntity<Map<String,Object>> sendOtp(HttpServletRequest request, @RequestBody UserDto userDto){
-        safeLog.info(logger,"Starting sendOtp method");
+        logger.debug("Starting sendOtp method");
         Map<String,Object> responseObj = new HashMap<>();
         boolean sendOtp = wholesaleUserService.sendOtp(userDto);
         if(sendOtp)  {
@@ -158,7 +158,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put(ConstantResponseKeys.STATUS,400);
             responseObj.put(ConstantResponseKeys.MESSAGE, "We facing some issue to send otp to this mail ->"+userDto.getEmail());
         }
-        safeLog.info(logger,"Completed sendOtp method");
+        logger.debug("Completed sendOtp method");
         return  new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
@@ -176,17 +176,17 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             ))
     @PostMapping(value = {"/update"})
     public ResponseEntity<Map<String, Object>> updateAuth(HttpServletRequest request, @RequestBody UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        safeLog.info(logger,"Starting updateAuth method");
+        logger.debug("Starting updateAuth method");
         User loggedUser = (User) request.getAttribute("user");
         Map<String,Object> responseObj = wholesaleUserService.updateUserProfile(userDto, loggedUser);
-        safeLog.info(logger,"Completed updateAuth method");
+        logger.debug("Completed updateAuth method");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
 
     }
 
     @GetMapping(value = {"/detail","/detail/{slug}"})
     public ResponseEntity<Map<String, Object>> getDetailUser(@PathVariable(required = false) String slug, HttpServletRequest request) {
-        safeLog.info(logger,"Starting getDetailUser method");
+        logger.debug("Starting getDetailUser method");
         Map<String,Object> responseObj = new HashMap<>();
         User user = null;
         if(slug == null){
@@ -200,7 +200,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
         }
         responseObj.put("user", user);
         responseObj.put(ConstantResponseKeys.STATUS, 200);
-        safeLog.info(logger,"Completed getDetailUser method");
+        logger.debug("Completed getDetailUser method");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
@@ -209,14 +209,14 @@ public class WholesaleUserController extends WholesaleServiceContainer {
     @Transactional
     @PostMapping("/password")
     public ResponseEntity<Map<String, Object>> resetUserPasswordBySlug(HttpServletRequest request ,@RequestBody PasswordDto passwordDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        safeLog.info(logger,"Starting resetUserPasswordBySlug method");
+        logger.debug("Starting resetUserPasswordBySlug method");
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         User updatedUser = wholesaleUserService.resetPasswordByUserSlug(passwordDto,loggedUser);
         responseObj.put(ConstantResponseKeys.RES,updatedUser);
         responseObj.put(ConstantResponseKeys.MESSAGE, "User password has been successfully updated.");
         responseObj.put(ConstantResponseKeys.STATUS, 200);
-        safeLog.info(logger,"Completed resetUserPasswordBySlug method");
+        logger.debug("Completed resetUserPasswordBySlug method");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
@@ -224,7 +224,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
 
     @PostMapping("/update_profile")
     public ResponseEntity<Map<String, Object>> updateProfileImage(HttpServletRequest request, @RequestPart MultipartFile profileImage) throws IOException {
-        safeLog.info(logger,"Starting updateProfileImage method");
+        logger.debug("Starting updateProfileImage method");
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         String  imageName = wholesaleUserService.updateProfileImage(profileImage,loggedUser);
@@ -236,7 +236,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             responseObj.put(ConstantResponseKeys.STATUS , 406);
             responseObj.put(ConstantResponseKeys.MESSAGE , "Not a valid profile image");
         }
-        safeLog.info(logger,"Completed updateProfileImage method");
+        logger.debug("Completed updateProfileImage method");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
 
     }
@@ -268,20 +268,20 @@ public class WholesaleUserController extends WholesaleServiceContainer {
     ))
     @PostMapping(value = {"add","register"})
     public ResponseEntity<Map<String,Object>> addNewUser(@RequestBody UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        safeLog.info(logger,"Starting addNewUser method");
+        logger.debug("Starting addNewUser method");
         Map<String,Object> result = new HashMap<>();
         User insertedUser = wholesaleUserService.addNewUser(userDto);
         result.put("user",insertedUser);
         result.put(ConstantResponseKeys.MESSAGE, "User created successfully");
         result.put(ConstantResponseKeys.STATUS, 201);
-        safeLog.info(logger,"Completed addNewUser method");
+        logger.debug("Completed addNewUser method");
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
     }
 
 
     @GetMapping("last-seen")
     public ResponseEntity<Map<String,Object>> updateUserLastSeen(HttpServletRequest request){
-        safeLog.info(logger,"Starting updateUserLastSeen method");
+        logger.debug("Starting updateUserLastSeen method");
         Map<String,Object> result = new HashMap<>();
         User loggedUser = (User)request.getAttribute("user");
         int isUpdated = wholesaleUserService.updateLastSeen(loggedUser);
@@ -295,7 +295,7 @@ public class WholesaleUserController extends WholesaleServiceContainer {
             result.put(ConstantResponseKeys.MESSAGE,"Something went wrong during updating last seen of user");
             result.put(ConstantResponseKeys.STATUS,500);
         }
-        safeLog.info(logger,"Completed updateUserLastSeen method");
+        logger.debug("Completed updateUserLastSeen method");
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
 
     }
@@ -306,10 +306,10 @@ public class WholesaleUserController extends WholesaleServiceContainer {
 
     @PostMapping("chat/users")
     public ResponseEntity<Page<User>> getAllChatUser(HttpServletRequest request, @RequestBody UserSearchFilters userSearchFilters){
-        safeLog.info(logger,"Starting getAllChatUser method");
+        logger.debug("Starting getAllChatUser method");
         User loggedUser = (User) request.getAttribute("user");
         Page<User> allUsers = wholesaleUserService.getAllUsers(userSearchFilters, loggedUser);
-        safeLog.info(logger,"Completed getAllChatUser method");
+        logger.debug("Completed getAllChatUser method");
         return new ResponseEntity<>(allUsers,HttpStatus.OK);
     }
 

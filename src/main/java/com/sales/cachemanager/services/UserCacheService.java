@@ -3,8 +3,6 @@ package com.sales.cachemanager.services;
 
 import com.sales.cachemanager.RedisConstants;
 import com.sales.entities.User;
-import com.sales.helpers.Logger;
-import com.sales.helpers.SafeLogHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
@@ -21,12 +19,12 @@ import org.springframework.stereotype.Service;
 public class UserCacheService {
 
     private final CacheManager cacheManager;
-    private final Logger safeLog = SafeLogHelper.getInstance();
+    
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(UserCacheService.class);
 
     public User getCacheUser(String slug){
         Cache cache = cacheManager.getCache(RedisConstants.USER_REDIS_CACHE_NAME);
-        safeLog.info(logger,"Getting user from redis : {}",slug);
+        logger.debug("Getting user from redis : {}",slug);
         return cache == null ?  null : cache.get(slug,User.class);
     }
 
@@ -38,13 +36,13 @@ public class UserCacheService {
 
     @CachePut(value = RedisConstants.USER_REDIS_CACHE_NAME, key = "#user.slug")
     public User saveCacheUser(User user){
-        safeLog.info(logger,"Saving a user in cache : {}",user.getSlug());
+        logger.debug("Saving a user in cache : {}",user.getSlug());
         return user;
     }
 
     @CacheEvict(value = RedisConstants.USER_REDIS_CACHE_NAME, key = "#slug")
     public void deleteCacheUser(String slug){
-        safeLog.info(logger,"User delete from redis : {}",slug);
+        logger.debug("User delete from redis : {}",slug);
     }
 
 
