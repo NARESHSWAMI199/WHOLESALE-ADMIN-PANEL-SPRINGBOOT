@@ -33,7 +33,7 @@ public class ContactsService extends WholesaleRepoContainer {
         for (User user : userList) {
             Integer unSeenChatsCount = chatRepository.getUnSeenChatsCount(user.getSlug(), loggedUser.getSlug());
             String hostUrl = Utils.getHostUrl(request);
-            user.setAvatarUrl(hostUrl + GlobalConstant.wholesalerImagePath + user.getSlug() + GlobalConstant.PATH_SEPARATOR + user.getAvatar());
+            user.setAvatarUrl(hostUrl + GlobalConstant.WHOLESALER_IMAGE_PATH + user.getSlug() + GlobalConstant.PATH_SEPARATOR + user.getAvatar());
             user.setChatNotification(unSeenChatsCount);
             //user.setBlocked(blockListService.isReceiverBlockedBySender(loggedUser,user));
             // Verifying the contact user existing in chats and sender chat request accepted or not.

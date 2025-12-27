@@ -47,7 +47,7 @@ public class PaginationService extends  RepoContainer{
     }
 
     @Transactional(rollbackOn = {InternalException.class, RuntimeException.class,Exception.class })
-    public void setUserDefaultPaginationForSettings(User user) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public void setUserDefaultPaginationForSettings(User user) {
         Specification<Pagination> specification = Specification.allOf(PaginationSpecification.whoCanSee("B")
                 .or(PaginationSpecification.whoCanSee(user.getUserType()))
         );

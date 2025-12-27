@@ -48,7 +48,7 @@ public class WholesalePaginationService extends  WholesaleRepoContainer{
 
 
     @Transactional(rollbackOn = {InternalException.class, RuntimeException.class,Exception.class })
-    public void setUserDefaultPaginationForSettings(User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public void setUserDefaultPaginationForSettings(User loggedUser) {
         Specification<Pagination> specification = Specification.allOf(PaginationSpecification.whoCanSee("B")
                 .or(PaginationSpecification.whoCanSee("W"))
         );
