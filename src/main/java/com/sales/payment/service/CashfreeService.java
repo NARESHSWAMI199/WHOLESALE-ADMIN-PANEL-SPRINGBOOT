@@ -37,7 +37,7 @@ import static com.sales.specifications.CashfreeSpecification.*;
 @RequiredArgsConstructor
 public class CashfreeService extends PaymentRepoContainer {
 
-    private final com.sales.helpers.Logger log;
+    private final com.sales.helpers.Logger safeLog;
     private static final Logger logger = LoggerFactory.getLogger(CashFreePgController.class);
 
 
@@ -87,7 +87,7 @@ public class CashfreeService extends PaymentRepoContainer {
 
 
     public int updateCashfreeCallback(JSONObject order, JSONObject payment, String slug, Integer userId, Integer servicePlanId, String paymentResponseStr) {
-        log.info(logger,"started updateCashfreeCallback with params order : {} payment : {} slug : {} userId : {} servicePlanId : {} ", order, payment, slug, userId, servicePlanId);
+        safeLog.info(logger,"started updateCashfreeCallback with params order : {} payment : {} slug : {} userId : {} servicePlanId : {} ", order, payment, slug, userId, servicePlanId);
         String orderId = String.valueOf(order.get("order_id"));
         String cfPaymentId = String.valueOf(payment.get("cf_payment_id"));
         String paymentStatus = payment.getString("payment_status");
@@ -115,19 +115,19 @@ public class CashfreeService extends PaymentRepoContainer {
                 .build();
 
         int updatedRows = cashfreeHbRepository.updateCashfreePaymentDetail(cashfreeDto, userId);
-        log.info(logger,"Updated rows in updateCashfreeCallback. return by updatePaymentCallback -> {}", updatedRows);
+        safeLog.info(logger,"Updated rows in updateCashfreeCallback. return by updatePaymentCallback -> {}", updatedRows);
         // The Active plan is payment status is successful
         if (paymentStatus.equals("SUCCESS")) wholesaleServicePlanService.assignOrAddFuturePlans(userId, servicePlanId);
-        log.info(logger,"Ended updateCashfreeCallback.");
+        safeLog.info(logger,"Ended updateCashfreeCallback.");
         return updatedRows;
     }
 
 
     public OrderEntity getOrderEntityForCashfreePaymentForPlans(HttpServletRequest httpServletRequest,CashfreeDto cashfreeDto, User loggedUser, ServicePlan servicePlan, String givenRedirectUri, String env) throws ApiException {
-        log.info(logger,"Started getOrderEntityForCashfreePaymentForPlans with params : cashfreeDto : {} and loggedUser : {} and servicePlan : {} and redirectUri : {} and env : {}", cashfreeDto.toString(), loggedUser.toString(), servicePlan.toString(), givenRedirectUri, env);
+        safeLog.info(logger,"Started getOrderEntityForCashfreePaymentForPlans with params : cashfreeDto : {} and loggedUser : {} and servicePlan : {} and redirectUri : {} and env : {}", cashfreeDto.toString(), loggedUser.toString(), servicePlan.toString(), givenRedirectUri, env);
         long amount = (servicePlan.getPrice() - servicePlan.getDiscount());
         String slug = UUID.randomUUID().toString();
-        log.info(logger,"amount {}", amount);
+        safeLog.info(logger,"amount {}", amount);
         Cashfree.XClientId = mid;
         Cashfree.XClientSecret = key;
         if (env != null && env.equalsIgnoreCase("TEST")) {
@@ -157,8 +157,8 @@ public class CashfreeService extends PaymentRepoContainer {
         request.setCustomerDetails(customerDetails);
         Cashfree cashfree = new Cashfree();
         ApiResponse<OrderEntity> response = cashfree.PGCreateOrder("2023-08-01", request, null, null, null);
-        log.info(logger,"Payment session ID generated successfully: {}", response.getData().getPaymentSessionId());
-        log.info(logger,"The order id for payment : {}",response.getData().getOrderId());
+        safeLog.info(logger,"Payment session ID generated successfully: {}", response.getData().getPaymentSessionId());
+        safeLog.info(logger,"The order id for payment : {}",response.getData().getOrderId());
 
         cashfreeDto.setSlug(slug);
         cashfreeDto.setAmount((double) amount);
@@ -167,7 +167,7 @@ public class CashfreeService extends PaymentRepoContainer {
         cashfreeDto.setStatus("VISITED");
         cashfreeDto.setUserId(loggedUser.getId());
         insertPaymentDetail(cashfreeDto);
-        log.info(logger,"Ended getOrderEntityForCashfreePaymentForPlans with -> {}",response.getData());
+        safeLog.info(logger,"Ended getOrderEntityForCashfreePaymentForPlans with -> {}",response.getData());
         return response.getData();
     }
 
@@ -175,10 +175,10 @@ public class CashfreeService extends PaymentRepoContainer {
 
 
     public OrderEntity getOrderEntityForCashfreePaymentForWallet(HttpServletRequest httpServletRequest, CashfreeDto cashfreeDto, User loggedUser, Double amount, String givenRedirectUri, String env) throws ApiException {
-        log.info(logger,"Started getOrderEntityForCashfreePaymentForWallet with params : cashfreeDto : {} and loggedUser : {} and redirectUri : {} and env : {}", cashfreeDto.toString(), loggedUser.toString(), givenRedirectUri, env);
+        safeLog.info(logger,"Started getOrderEntityForCashfreePaymentForWallet with params : cashfreeDto : {} and loggedUser : {} and redirectUri : {} and env : {}", cashfreeDto.toString(), loggedUser.toString(), givenRedirectUri, env);
 
         String slug = UUID.randomUUID().toString();
-        log.info(logger,"amount {}", amount);
+        safeLog.info(logger,"amount {}", amount);
         Cashfree.XClientId = mid;
         Cashfree.XClientSecret = key;
         if (env != null && env.equalsIgnoreCase("TEST")) {
@@ -208,8 +208,8 @@ public class CashfreeService extends PaymentRepoContainer {
         request.setCustomerDetails(customerDetails);
         Cashfree cashfree = new Cashfree();
         ApiResponse<OrderEntity> response = cashfree.PGCreateOrder("2023-08-01", request, null, null, null);
-        log.info(logger,"Payment session ID generated successfully: {}", response.getData().getPaymentSessionId());
-        log.info(logger,"The order id for payment : {}",response.getData().getOrderId());
+        safeLog.info(logger,"Payment session ID generated successfully: {}", response.getData().getPaymentSessionId());
+        safeLog.info(logger,"The order id for payment : {}",response.getData().getOrderId());
 
         cashfreeDto.setSlug(slug);
         cashfreeDto.setAmount((double) amount);
@@ -218,7 +218,7 @@ public class CashfreeService extends PaymentRepoContainer {
         cashfreeDto.setStatus("VISITED");
         cashfreeDto.setUserId(loggedUser.getId());
         insertPaymentDetail(cashfreeDto);
-        log.info(logger,"Ended getOrderEntityForCashfreePaymentForWallet with -> {}",response.getData());
+        safeLog.info(logger,"Ended getOrderEntityForCashfreePaymentForWallet with -> {}",response.getData());
         return response.getData();
     }
 

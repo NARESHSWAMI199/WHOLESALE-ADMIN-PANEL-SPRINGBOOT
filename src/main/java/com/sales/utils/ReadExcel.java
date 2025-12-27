@@ -22,7 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ReadExcel {
 
-    private final com.sales.helpers.Logger log;
+    private final com.sales.helpers.Logger safeLog;
     private final Logger logger = LoggerFactory.getLogger(ReadExcel.class);
 
     public Map<String,List<String>> getExcelDataInJsonFormat(MultipartFile excelFile) {
@@ -31,7 +31,7 @@ public class ReadExcel {
         List<String> columnsList = new ArrayList<>();
         try {
             DataFormatter formatter = new DataFormatter();
-            log.info(logger,"Excel file reading....");
+            safeLog.info(logger,"Excel file reading....");
             XSSFWorkbook workbook = new XSSFWorkbook(excelFile.getInputStream());
 
             int totalSheets = workbook.getNumberOfSheets();
@@ -71,7 +71,7 @@ public class ReadExcel {
             logger.error("Exception during creating excel file : {} ",e.getMessage());
             throw new MyException(e.getMessage());
         }
-        log.info(logger,"Excel file reading END.... ");
+        safeLog.info(logger,"Excel file reading END.... ");
         return result;
     }
 

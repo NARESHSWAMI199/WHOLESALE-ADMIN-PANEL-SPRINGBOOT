@@ -21,7 +21,7 @@ import static com.sales.specifications.WalletTransactionSpecification.*;
 @RequiredArgsConstructor
 public class WalletTransactionService extends WholesaleRepoContainer{
 
-    private final com.sales.helpers.Logger log;
+    private final com.sales.helpers.Logger safeLog;
     private static final Logger logger = LoggerFactory.getLogger(WalletTransactionService.class);
 
 
@@ -41,7 +41,7 @@ public class WalletTransactionService extends WholesaleRepoContainer{
 
 
     public WalletTransaction addWalletTransaction(WalletTransactionDto walletTransactionDto,Integer userId) {
-        log.info(logger,"The addWalletTransaction method started with wallTransactionDto : {}",walletTransactionDto);
+        safeLog.info(logger,"The addWalletTransaction method started with wallTransactionDto : {}",walletTransactionDto);
         WalletTransaction walletTransaction = WalletTransaction.builder()
                 .slug(UUID.randomUUID().toString())
                 .userId(userId)
@@ -50,11 +50,11 @@ public class WalletTransactionService extends WholesaleRepoContainer{
                 .createdAt(Utils.getCurrentMillis())
                 .status(walletTransactionDto.getStatus())
                 .build();
-        log.info(logger,"The addWalletTransaction method ended with wallTransactionDto : {}",walletTransaction);
+        safeLog.info(logger,"The addWalletTransaction method ended with wallTransactionDto : {}",walletTransaction);
 
         if(!Utils.isEmpty(walletTransactionDto.getTransactionType()) && walletTransactionDto.getTransactionType().equalsIgnoreCase("CR")){
             Integer added = wholesaleWalletRepository.addMoneyInWallet(walletTransaction.getAmount(), userId, Utils.getCurrentMillis());
-            log.info(logger,"Added money in wallet rows was updated : {} ",added);
+            safeLog.info(logger,"Added money in wallet rows was updated : {} ",added);
             if(added < 1){ // if a user isn't found in wallet.
                 Wallet wallet = Wallet.builder()
                         .userId(userId)
@@ -65,7 +65,7 @@ public class WalletTransactionService extends WholesaleRepoContainer{
             }
         }else{
             Integer deducted = wholesaleWalletRepository.deductMoneyFromWallet(walletTransaction.getAmount(), userId, Utils.getCurrentMillis());
-            log.info(logger,"Detected money in wallet rows was updated : {} ",deducted);
+            safeLog.info(logger,"Detected money in wallet rows was updated : {} ",deducted);
         }
 
         return walletTransactionRepository.save(walletTransaction);

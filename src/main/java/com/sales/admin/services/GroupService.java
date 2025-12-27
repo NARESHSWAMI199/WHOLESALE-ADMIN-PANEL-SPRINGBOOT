@@ -34,11 +34,11 @@ import static com.sales.specifications.GroupSpecifications.*;
 public class GroupService extends RepoContainer {
 
 
-    private final com.sales.helpers.Logger log;
+    private final com.sales.helpers.Logger safeLog;
     private static final Logger logger = LoggerFactory.getLogger(GroupService.class);
 
     public Page<Group> getAllGroups(SearchFilters filters, User loggedUser) {
-        log.info(logger,"Entering getAllGroups with filters: {}, loggedUser: {}", filters, loggedUser);
+        safeLog.info(logger,"Entering getAllGroups with filters: {}, loggedUser: {}", filters, loggedUser);
         Specification<Group> specification = Specification.allOf(
                 (containsName(filters.getSearchKey()))
                         .and(greaterThanOrEqualFromDate(filters.getFromDate()))
@@ -48,21 +48,21 @@ public class GroupService extends RepoContainer {
         );
         Pageable pageable = getPageable(filters);
         Page<Group> result = groupRepository.findAll(specification, pageable);
-        log.info(logger,"Exiting getAllGroups with result: {}", result);
+        safeLog.info(logger,"Exiting getAllGroups with result: {}", result);
         return result;
     }
 
     public void validateRequiredFieldsForGroup(GroupDto groupDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        log.info(logger,"Entering validateRequiredFieldsForGroup with groupDto: {}", groupDto);
+        safeLog.info(logger,"Entering validateRequiredFieldsForGroup with groupDto: {}", groupDto);
         List<String> requiredFields = new ArrayList<>(List.of("name"));
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(groupDto, requiredFields);
-        log.info(logger,"Exiting validateRequiredFieldsForGroup");
+        safeLog.info(logger,"Exiting validateRequiredFieldsForGroup");
     }
 
     @Transactional(rollbackOn = {IllegalArgumentException.class, NotFoundException.class, RuntimeException.class, Exception.class})
     public Map<String, Object> createOrUpdateGroup(GroupDto groupDto, User loggedUser, String path) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        log.info(logger,"Entering createOrUpdateGroup with groupDto: {}, loggedUser: {}, path: {}", groupDto, loggedUser, path);
+        safeLog.info(logger,"Entering createOrUpdateGroup with groupDto: {}, loggedUser: {}, path: {}", groupDto, loggedUser, path);
         Map<String, Object> responseObject = new HashMap<>();
 
         // Validating the required fields if there is any required field is null then this is throw Exception
@@ -72,7 +72,7 @@ public class GroupService extends RepoContainer {
         if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("You don't have permission to create or update a group. Please contact a super admin",new Exception());
 
         if (!Utils.isEmpty(groupDto.getSlug()) || path.contains("update")) {
-            log.info(logger,"We are going to update the group.");
+            safeLog.info(logger,"We are going to update the group.");
             // if there is any required field null then this will throw IllegalArgumentException
             Utils.checkRequiredFields(groupDto, List.of("slug"));
 
@@ -93,7 +93,7 @@ public class GroupService extends RepoContainer {
                 responseObject.put(ConstantResponseKeys.STATUS, 404);
             }
         } else { // Going to insert a new group
-            log.info(logger,"We are going to create the group.");
+            safeLog.info(logger,"We are going to create the group.");
             Group group = new Group(loggedUser);
             group.setName(groupDto.getName());
             Group insertedGroup = groupRepository.save(group);
@@ -103,12 +103,12 @@ public class GroupService extends RepoContainer {
             responseObject.put(ConstantResponseKeys.MESSAGE, groupDto.getName() + " successfully created.");
             responseObject.put(ConstantResponseKeys.STATUS, 201);
         }
-        log.info(logger,"Exiting createOrUpdateGroup with responseObject: {}", responseObject);
+        safeLog.info(logger,"Exiting createOrUpdateGroup with responseObject: {}", responseObject);
         return responseObject;
     }
 
     public Map<String, Object> findGroupBySlug(String slug) {
-        log.info(logger,"Entering findGroupBySlug with slug: {}", slug);
+        safeLog.info(logger,"Entering findGroupBySlug with slug: {}", slug);
         if (Utils.isEmpty(slug)) throw new IllegalArgumentException("slug can't be null");
         Group group = groupRepository.findGroupBySlug(slug);
         if (group == null) throw new NotFoundException("No record found.");
@@ -124,12 +124,12 @@ public class GroupService extends RepoContainer {
         formattedGroup.put("group", group.getName());
         formattedGroup.put("permissions", permissionList);
 
-        log.info(logger,"Exiting findGroupBySlug with formattedGroup: {}", formattedGroup);
+        safeLog.info(logger,"Exiting findGroupBySlug with formattedGroup: {}", formattedGroup);
         return formattedGroup;
     }
 
     public Map<String, List<Object>> getAllPermissions() {
-        log.info(logger,"Entering getAllPermissions");
+        safeLog.info(logger,"Entering getAllPermissions");
         List<Map<String, Object>> permissionList = permissionRepository.getAllPermissions();
         Map<String, List<Object>> formattedPermissions = new HashMap<>();
         for (Map<String, Object> permission : permissionList) {
@@ -144,13 +144,13 @@ public class GroupService extends RepoContainer {
                 formattedPermissions.put(key, newPermissions);
             }
         }
-        log.info(logger,"Exiting getAllPermissions with formattedPermissions: {}", formattedPermissions);
+        safeLog.info(logger,"Exiting getAllPermissions with formattedPermissions: {}", formattedPermissions);
         return formattedPermissions;
     }
 
     @Transactional(rollbackOn = {IllegalArgumentException.class, PermissionDeniedDataAccessException.class, RuntimeException.class, Exception.class})
     public int deleteGroupBySlug(DeleteDto deleteDto, User loggedUser) throws Exception {
-        log.info(logger,"Entering deleteGroupBySlug with deleteDto: {}, loggedUser: {}", deleteDto, loggedUser);
+        safeLog.info(logger,"Entering deleteGroupBySlug with deleteDto: {}, loggedUser: {}", deleteDto, loggedUser);
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(deleteDto, List.of("slug"));
 
@@ -162,15 +162,15 @@ public class GroupService extends RepoContainer {
         Group group = groupRepository.findGroupBySlug(slug);
         if (group == null) throw new NotFoundException("No group found to delete");
         int result = permissionHbRepository.deleteGroupBySlug(slug, group.getId());
-        log.info(logger,"Exiting deleteGroupBySlug with result: {}", result);
+        safeLog.info(logger,"Exiting deleteGroupBySlug with result: {}", result);
         return result;
     }
 
     public int assignGroupsToUser(UserPermissionsDto userPermissionsDto, User loggedUser) throws Exception {
-        log.info(logger,"Entering assignGroupsToUser with userPermissionsDto: {}, loggedUser: {}", userPermissionsDto, loggedUser);
+        safeLog.info(logger,"Entering assignGroupsToUser with userPermissionsDto: {}, loggedUser: {}", userPermissionsDto, loggedUser);
         int userId = userPermissionsDto.getUserId();
         int result = permissionHbRepository.assignGroupsToUser(userId, userPermissionsDto.getGroupList(), loggedUser);
-        log.info(logger,"Exiting assignGroupsToUser with result: {}", result);
+        safeLog.info(logger,"Exiting assignGroupsToUser with result: {}", result);
         return result;
     }
 }

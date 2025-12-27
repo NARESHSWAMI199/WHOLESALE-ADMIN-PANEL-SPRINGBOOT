@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class WalletService extends RepoContainer {
 
-    private final com.sales.helpers.Logger log;
+    private final com.sales.helpers.Logger safeLog;
     private static final Logger logger = LoggerFactory.getLogger(WalletService.class);
 
     @Autowired
@@ -38,14 +38,14 @@ public class WalletService extends RepoContainer {
 
     @Transactional
     public void sendNotification(String title,String messageBody,int storeId,User loggedUser){
-        log.info(logger,"Entering sendNotification with title: {}, messageBody: {}, storeId: {}, loggedUser: {}", title, messageBody, storeId, loggedUser);
+        safeLog.info(logger,"Entering sendNotification with title: {}, messageBody: {}, storeId: {}, loggedUser: {}", title, messageBody, storeId, loggedUser);
         StoreNotifications storeNotifications = new StoreNotifications();
         storeNotifications.setTitle(title);
         storeNotifications.setMessageBody(messageBody);
         storeNotifications.setWholesaleId(storeId);
         storeNotifications.setCreatedBy(loggedUser);
         storeHbRepository.insertStoreNotifications(storeNotifications);
-        log.info(logger,"Exiting sendNotification");
+        safeLog.info(logger,"Exiting sendNotification");
     }
 
     public boolean paymentViaWallet(String servicePlanSlug, String slug) {

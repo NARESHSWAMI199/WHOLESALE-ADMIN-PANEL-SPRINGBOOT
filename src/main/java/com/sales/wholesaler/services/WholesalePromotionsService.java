@@ -16,11 +16,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WholesalePromotionsService extends WholesaleRepoContainer {
 
-    private final com.sales.helpers.Logger log;
+    private final com.sales.helpers.Logger safeLog;
     private static final Logger logger = LoggerFactory.getLogger(WholesalePromotionsService.class);
 
     public Map<String,Object> insertItemPromotion(StorePromotionDto storePromotionDto, User loggedUser) {
-        log.info(logger,"Starting insertItemPromotion method with storePromotionDto: {}, loggedUser: {}", storePromotionDto, loggedUser);
+        safeLog.info(logger,"Starting insertItemPromotion method with storePromotionDto: {}, loggedUser: {}", storePromotionDto, loggedUser);
         Map<String,Object> response = new HashMap<>();
         Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(loggedUser.getId());
         storePromotionDto.setStoreId(storeId);
@@ -32,7 +32,7 @@ public class WholesalePromotionsService extends WholesaleRepoContainer {
             response.put(ConstantResponseKeys.MESSAGE,"Something went wrong during promote item. if your money was deducted contact to administrator");
             response.put(ConstantResponseKeys.STATUS,400);
         }
-        log.info(logger,"Completed insertItemPromotion method");
+        safeLog.info(logger,"Completed insertItemPromotion method");
         return response;
     }
 

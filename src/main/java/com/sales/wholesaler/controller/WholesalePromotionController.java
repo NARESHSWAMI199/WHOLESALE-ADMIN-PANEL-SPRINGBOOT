@@ -21,15 +21,15 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WholesalePromotionController extends WholesaleServiceContainer {
 
-    private final com.sales.helpers.Logger log;
+    private final com.sales.helpers.Logger safeLog;
     private static final Logger logger = LoggerFactory.getLogger(WholesalePromotionController.class);
 
     @PostMapping("/")
     public ResponseEntity<Map<String,Object>> insertPromotedItem(HttpServletRequest request, @ModelAttribute StorePromotionDto storePromotionDto){
-        log.info(logger,"Starting insertPromotedItem method");
+        safeLog.info(logger,"Starting insertPromotedItem method");
         User loggedUser = (User) request.getAttribute("user");
         Map<String,Object> response = wholesalePromotionsService.insertItemPromotion(storePromotionDto,loggedUser);
-        log.info(logger,"Completed insertPromotedItem method");
+        safeLog.info(logger,"Completed insertPromotedItem method");
         return new ResponseEntity<>(response,HttpStatus.valueOf((Integer) response.get("status")));
     }
 

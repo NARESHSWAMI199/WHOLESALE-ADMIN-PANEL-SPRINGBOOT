@@ -14,11 +14,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BlockListService extends WholesaleRepoContainer {
 
-  private final com.sales.helpers.Logger log;
+  private final com.sales.helpers.Logger safeLog;
   private static final Logger logger = LoggerFactory.getLogger(BlockListService.class);
 
     public BlockedUser addAUserInBlockList(User blockingBy, String blockedUserSlug) {
-        log.info(logger,"Starting addAUserInBlockList method");
+        safeLog.info(logger,"Starting addAUserInBlockList method");
         User blockedUser = wholesaleUserRepository.findUserBySlug(blockedUserSlug);
         if (blockedUser == null) {
             logger.error("Blocked user not exists");
@@ -30,7 +30,7 @@ public class BlockListService extends WholesaleRepoContainer {
             .createdAt(Utils.getCurrentMillis())
             .build();
         BlockedUser savedBlockList = blockListRepository.save(blockList); // Create operation
-        log.info(logger,"Completed addAUserInBlockList method");
+        safeLog.info(logger,"Completed addAUserInBlockList method");
         return savedBlockList;
     }
 
@@ -42,23 +42,23 @@ public class BlockListService extends WholesaleRepoContainer {
 
 
     public boolean isReceiverBlockedBySender(User loggedUser, User receiver) {
-        log.info(logger,"Starting isReceiverBlockedBySender method the loggedUser : {} and the receiver : {} ",loggedUser,receiver);
+        safeLog.info(logger,"Starting isReceiverBlockedBySender method the loggedUser : {} and the receiver : {} ",loggedUser,receiver);
         BlockedUser blockedUser = blockListRepository.findByUserIdAndBlockedUser(loggedUser.getId(),receiver);
         boolean exists = blockedUser != null;
-        log.info(logger,"Completed isReceiverBlockedBySender method returning : {}",exists);
+        safeLog.info(logger,"Completed isReceiverBlockedBySender method returning : {}",exists);
         return exists;
     }
 
 
     public boolean isSenderBlockedByReceiver(User loggedUser, User receiver) {
-        log.info(logger,"Starting isSenderBlockedGyReceiver method");
+        safeLog.info(logger,"Starting isSenderBlockedGyReceiver method");
         if (receiver == null) {
-            log.info(logger,"Receiver is null, returning false");
+            safeLog.info(logger,"Receiver is null, returning false");
             return false;
         }
         BlockedUser blockedUser = blockListRepository.findByUserIdAndBlockedUser(receiver.getId(), loggedUser);
         boolean exists = blockedUser != null;
-        log.info(logger,"Completed isSenderBlockedGyReceiver method");
+        safeLog.info(logger,"Completed isSenderBlockedGyReceiver method");
         return exists;
     }
 

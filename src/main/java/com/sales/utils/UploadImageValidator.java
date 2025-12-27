@@ -17,7 +17,7 @@ import java.io.IOException;
 
 
 public class UploadImageValidator {
-    private static final Logger log = LoggerFactory.getLogger(UploadImageValidator.class);
+    private static final Logger safeLog = LoggerFactory.getLogger(UploadImageValidator.class);
 
     public static boolean isValidImage(MultipartFile imageFile, int minWidth, int minHeight, int maxWidth, int maxHeight, double[] allowedAspectRatios, String[] allowedFormats) {
             try {
@@ -29,7 +29,7 @@ public class UploadImageValidator {
                 int width = image.getWidth();
                 int height = image.getHeight();
 
-                log.info("image width : {} : {}", width, height);
+                safeLog.info("image width : {} : {}", width, height);
                 // Check dimensions
                 if (width < minWidth || width > maxWidth || height < minHeight || height > maxHeight) {
                     if(width < minWidth || height < minHeight) {
@@ -41,7 +41,7 @@ public class UploadImageValidator {
 
                 // Check aspect ratio
                 double aspectRatio = (double) width / height;
-                log.info("image aspectRatio : {}", aspectRatio);
+                safeLog.info("image aspectRatio : {}", aspectRatio);
                 boolean validAspectRatio = false;
                 for (double allowedRatio : allowedAspectRatios) {
                     if (Math.abs(aspectRatio - allowedRatio) < 0.01) {
@@ -68,7 +68,7 @@ public class UploadImageValidator {
 
                 return true;
             } catch (IOException e) {
-                log.error("The exception is : {}",e.getMessage());
+                safeLog.error("The exception is : {}",e.getMessage());
                 return false;
             }
         }

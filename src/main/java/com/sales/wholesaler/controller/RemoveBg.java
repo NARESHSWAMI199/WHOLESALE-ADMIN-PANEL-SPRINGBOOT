@@ -35,7 +35,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class RemoveBg {
 
-  private final com.sales.helpers.Logger log;
+  private final com.sales.helpers.Logger safeLog;
   private static final Logger logger = LoggerFactory.getLogger(RemoveBg.class);
 
     @Value(value = "${removebg.absolute}")
@@ -46,7 +46,7 @@ public class RemoveBg {
 
     @PostMapping("/")
     public ResponseEntity<Map<String,String>> uploadImage(HttpServletRequest request, @RequestParam("image") MultipartFile file) throws IOException {
-        log.info(logger,"Starting uploadImage method");
+        safeLog.info(logger,"Starting uploadImage method");
         User user = (User) request.getAttribute("user");
         String baseUrl = GlobalConstant.removeBgUrl; // Replace with your Flask API URL
         Path baseDir = Paths.get(outputPath).toAbsolutePath().normalize();
@@ -58,7 +58,7 @@ public class RemoveBg {
         File filePath = targetPath.toFile();
         if (!filePath.exists()){
             boolean dirCreated = filePath.getParentFile().mkdirs();
-            if(dirCreated) log.info(logger,"New dir created :{}",filePath.getName());
+            if(dirCreated) safeLog.info(logger,"New dir created :{}",filePath.getName());
 
         }
 
@@ -95,21 +95,21 @@ public class RemoveBg {
         Map<String,String> result = new HashMap<>();
         result.put("downloadPath","/removebg/"+outputPathRes);
         Files.delete(targetPath);
-        log.info(logger,"File : {} successfully deleted",filePath.getAbsolutePath());
-        log.info(logger,"Completed uploadImage method");
+        safeLog.info(logger,"File : {} successfully deleted",filePath.getAbsolutePath());
+        safeLog.info(logger,"Completed uploadImage method");
         return new ResponseEntity<>(result, responseEntity.getStatusCode());
     }
 
 
     @GetMapping("/{filename}")
     public ResponseEntity<Resource> getFile( HttpServletRequest request, @PathVariable(required = true) String filename) throws MalformedURLException {
-        log.info(logger,"Starting getFile method");
+        safeLog.info(logger,"Starting getFile method");
         User user = (User) request.getAttribute("user");
         Path relative = Paths.get(relativePath);
         Path userSlug = relative.resolve(user.getSlug()).normalize();
         Path path = userSlug.resolve(filename).normalize();
         Resource resource = new UrlResource(path.toUri());
-        log.info(logger,"Completed getFile method");
+        safeLog.info(logger,"Completed getFile method");
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
     }
 

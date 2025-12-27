@@ -21,14 +21,14 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ContactsService extends WholesaleRepoContainer {
 
-    private final com.sales.helpers.Logger log;
+    private final com.sales.helpers.Logger safeLog;
     private static final Logger logger = LoggerFactory.getLogger(ContactsService.class);
 
     @Autowired
     private BlockListService blockListService;
 
     public List<User> getAllContactsByUserId(User loggedUser, HttpServletRequest request) {
-        log.info(logger,"Starting getAllContactsByUserId method");
+        safeLog.info(logger,"Starting getAllContactsByUserId method");
         List<User> userList = contactRepository.getContactByUserId(loggedUser.getId()).stream().filter(Objects::nonNull).toList();
         for (User user : userList) {
             Integer unSeenChatsCount = chatRepository.getUnSeenChatsCount(user.getSlug(), loggedUser.getSlug());
@@ -39,16 +39,16 @@ public class ContactsService extends WholesaleRepoContainer {
             // Verifying the contact user existing in chats and sender chat request accepted or not.
             //user.setAccepted(chatUserRepository.getSenderAcceptStatus(loggedUser.getId(),user));
         }
-        log.info(logger,"Completed getAllContactsByUserId method");
+        safeLog.info(logger,"Completed getAllContactsByUserId method");
         return userList;
     }
 
     public Contact addNewContact(User loggedUser, String contactSlug) {
-        log.info(logger,"Starting addNewContact method loggedUser slug : {} and contactSlug : {}",loggedUser.getSlug(),contactSlug);
+        safeLog.info(logger,"Starting addNewContact method loggedUser slug : {} and contactSlug : {}",loggedUser.getSlug(),contactSlug);
         // TODO : check if user already in contact list not chat list
 //        Integer userFound = chatRepository.isUserExistsInChatList(loggedUser.getSlug(), contactSlug);
 //        if (userFound > 0) {
-//            log.info(logger,"User already exists in chat list, returning null");
+//            safeLog.info(logger,"User already exists in chat list, returning null");
 //            return null;
 //        }
         User contactUser = wholesaleUserRepository.findUserBySlug(contactSlug);
@@ -61,13 +61,13 @@ public class ContactsService extends WholesaleRepoContainer {
             .contactUser(contactUser)
             .build();
         Contact savedContact = contactRepository.save(contacts); // Create operation
-        log.info(logger,"Completed addNewContact method");
+        safeLog.info(logger,"Completed addNewContact method");
         return savedContact;
     }
 
     @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
     public int removeContact(User loggedUser,String contactUserSlug,Boolean deleteChats) {
-        log.info(logger,"Going to remove contact from contact list with loggedUser  {} : and contactUserSlug {} ",loggedUser,contactUserSlug);
+        safeLog.info(logger,"Going to remove contact from contact list with loggedUser  {} : and contactUserSlug {} ",loggedUser,contactUserSlug);
         User contactUser = wholesaleUserRepository.findUserBySlug(contactUserSlug);
         if(contactUser == null) throw new NotFoundException("No contact user found to delete.");
         Integer deleted = contactRepository.deleteContactUserFromContact(loggedUser.getId(), contactUser);

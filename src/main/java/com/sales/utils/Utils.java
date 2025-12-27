@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 @Component
 public class Utils {
 
-    private static final com.sales.helpers.Logger log = SafeLogHelper.getInstance();
+    private static final com.sales.helpers.Logger safeLog = SafeLogHelper.getInstance();
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
     private Utils() {}
@@ -120,17 +120,17 @@ public class Utils {
         }
         Pattern pattern = Pattern.compile(NAME_PATTERN);
         Matcher matcher = pattern.matcher(name);
-        log.info(logger,"{}",matcher.matches());
+        safeLog.info(logger,"{}",matcher.matches());
         if(!matcher.matches()){
             String message ="";
             String neededSyntax = "Special symbols like : ^*$+?[]()| are not allowed.";
             if(flag.equals("user")){
                 message = "Not a valid username";
-                log.info(logger,message);
+                safeLog.info(logger,message);
                 throw  new MyException(message + " "+neededSyntax  );
             }
             message = "Not a valid "+flag+" name.";
-            log.info(logger,message);
+            safeLog.info(logger,message);
             throw new IllegalArgumentException(message + " "+neededSyntax);
         }
         return name;
@@ -151,7 +151,7 @@ public class Utils {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         // Token from swagger because swagger not sends Authorization header in request.
         token = token == null ? request.getHeader("authToken") : token;
-        log.info(logger,"request url : {}", request.getRequestURI());
+        safeLog.info(logger,"request url : {}", request.getRequestURI());
         try {
             if (token != null && token.startsWith(GlobalConstant.AUTH_TOKEN_PREFIX)) {
                 token = token.substring(7);
@@ -173,7 +173,7 @@ public class Utils {
 
 
     public static User getUserFromRequest(HttpServletRequest request,String token,JwtToken jwtToken, WholesaleUserService userService){
-        log.info(logger,"[getUserFromRequest] request url : {}", request.getRequestURI());
+        safeLog.info(logger,"[getUserFromRequest] request url : {}", request.getRequestURI());
         token = token != null ? URLDecoder.decode(token, StandardCharsets.UTF_8) : token;
         try {
             if (token != null) {

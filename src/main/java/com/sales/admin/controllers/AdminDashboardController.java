@@ -17,12 +17,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AdminDashboardController extends ServiceContainer {
 
-    private final com.sales.helpers.Logger log;
+    private final com.sales.helpers.Logger safeLog;
     private static final Logger logger = LoggerFactory.getLogger(AdminDashboardController.class);
 
     @GetMapping("/counts")
     public ResponseEntity<Map<String, Object>> getAllDashboardCount() {
-        log.info(logger,"Fetching all dashboard counts");
+        safeLog.info(logger,"Fetching all dashboard counts");
         Map<String, Object> responseObj = new HashMap<>();
         responseObj.put("users", userService.getUserCounts());
         responseObj.put("retailers", userService.getRetailersCounts());
@@ -36,7 +36,7 @@ public class AdminDashboardController extends ServiceContainer {
 
     @PostMapping("graph/months/")
     public ResponseEntity<Map<String, Object>> getAllGraphData(@RequestBody GraphDto graphDto) {
-        log.info(logger,"Fetching graph data for months with filters: {}", graphDto);
+        safeLog.info(logger,"Fetching graph data for months with filters: {}", graphDto);
         Map<String, Object> responseObj = new HashMap<>();
         responseObj.put(ConstantResponseKeys.RES, storeService.getStoreCountByMonths(graphDto));
         responseObj.put(ConstantResponseKeys.STATUS, 200);

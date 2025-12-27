@@ -32,7 +32,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CashFreePgController extends PaymentServiceContainer {
 
-    private final com.sales.helpers.Logger log;
+    private final com.sales.helpers.Logger safeLog;
     private static final Logger logger = LoggerFactory.getLogger(CashFreePgController.class);
 
     @Value("${cashfree.env}")
@@ -48,7 +48,7 @@ public class CashFreePgController extends PaymentServiceContainer {
         OrderEntity orderEntity = null;
             try {
                 if(!paymentFor.equalsIgnoreCase("wallet")) {
-                    log.info(logger,"Received request to get payment session ID for service slug : {} and username : {} and user slug : {}", cashfreeDto.getServicePlanSlug(), loggedUser.getUsername(), loggedUser.getSlug());
+                    safeLog.info(logger,"Received request to get payment session ID for service slug : {} and username : {} and user slug : {}", cashfreeDto.getServicePlanSlug(), loggedUser.getUsername(), loggedUser.getSlug());
                     ServicePlan servicePlan = servicePlanService.findBySlug(cashfreeDto.getServicePlanSlug());
                     if (servicePlan == null) throw new NotFoundException("No service plan found.");
                     orderEntity = cashfreeService.getOrderEntityForCashfreePaymentForPlans(request, cashfreeDto, loggedUser, servicePlan, redirectUri, env);
@@ -61,7 +61,7 @@ public class CashFreePgController extends PaymentServiceContainer {
                 logger.error("Exception occurred while getting payment session ID : {}", e.getMessage());
                 result.put(ConstantResponseKeys.MESSAGE, "Something went wrong during getPaymentSessionId payment. please contact to administrator.");
                 result.put(ConstantResponseKeys.STATUS, 500);
-                log.info(logger,"Exception occur in  getPaymentSessionId :: {}", e.getMessage());
+                safeLog.info(logger,"Exception occur in  getPaymentSessionId :: {}", e.getMessage());
             }
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
@@ -70,7 +70,7 @@ public class CashFreePgController extends PaymentServiceContainer {
     public String redirectPaymentPage(HttpServletRequest request,@PathVariable(required = false) String servicePlanSlug, @PathVariable String token,@RequestParam(required = false) Float amount,
                                       @RequestParam(value = "redirectUri", required = false) String redirectUri, Model model) {
         User loggedUser = Utils.getUserFromRequest(request,token,jwtToken,wholesaleUserService);
-        log.info(logger,"Redirecting to payment page for servicePlanSlug : {} user : {} and user slug : {} and redirect uri : {} and ", servicePlanSlug,loggedUser.getUsername(),loggedUser.getSlug(),redirectUri);
+        safeLog.info(logger,"Redirecting to payment page for servicePlanSlug : {} user : {} and user slug : {} and redirect uri : {} and ", servicePlanSlug,loggedUser.getUsername(),loggedUser.getSlug(),redirectUri);
         model.addAttribute("servicePlanSlug",servicePlanSlug);
         model.addAttribute("amount",amount);
         model.addAttribute("userSlug",loggedUser.getSlug());
@@ -86,7 +86,7 @@ public class CashFreePgController extends PaymentServiceContainer {
                                                                    @PathVariable(required = false)  Integer servicePlanId, @RequestBody Map<String,Object> data) {
         Map<String,Object> result = new HashMap<>();
         try {
-            log.info(logger,"Response getting from callback  : {} ", data.toString());
+            safeLog.info(logger,"Response getting from callback  : {} ", data.toString());
             String paymentResponseStr = new Gson().toJson(data.get("data"));
             JSONObject paymentDetails = new JSONObject(paymentResponseStr);
             JSONObject order = null;
@@ -99,7 +99,7 @@ public class CashFreePgController extends PaymentServiceContainer {
             assert payment != null;
             if(servicePlanId != null) {
                 int isUpdated = cashfreeService.updateCashfreeCallback(order, payment, slug, userId, servicePlanId, paymentResponseStr);
-                log.info(logger,"Cashfree callback processed successfully for user: {} and status isUpdated : {}",userId,isUpdated);
+                safeLog.info(logger,"Cashfree callback processed successfully for user: {} and status isUpdated : {}",userId,isUpdated);
                 result.put("isUpdate", isUpdated > 0);
             }else{
                 Float amount =  Float.valueOf(String.valueOf(payment.get("payment_amount")));
@@ -112,7 +112,7 @@ public class CashFreePgController extends PaymentServiceContainer {
                         .status(paymentStatus)
                         .build();
                 WalletTransaction walletTransaction = walletTransactionService.addWalletTransaction(walletTransactionDto,userId);
-                log.info(logger,"Cashfree callback processed successfully for user: {} and walletTransaction : {}",userId,walletTransaction);
+                safeLog.info(logger,"Cashfree callback processed successfully for user: {} and walletTransaction : {}",userId,walletTransaction);
             }
             result.put("response", data);
             result.put(ConstantResponseKeys.STATUS, 200);

@@ -20,22 +20,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WholesaleAddressController extends WholesaleServiceContainer {
 
-    private final com.sales.helpers.Logger log;
+    private final com.sales.helpers.Logger safeLog;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleAddressController.class);
 
     @GetMapping("/city/{stateId}")
     public ResponseEntity<List<City>> getCityList(@PathVariable Integer stateId ) {
-        log.info(logger,"Starting getCityList method");
+        safeLog.info(logger,"Starting getCityList method");
         List<City> cityList = addressService.getCityList(stateId);
-        log.info(logger,"Completed getCityList method");
+        safeLog.info(logger,"Completed getCityList method");
         return new ResponseEntity<>(cityList, HttpStatus.OK);
     }
 
     @GetMapping("/state")
     public ResponseEntity<List<State>> getStateList() {
-        log.info(logger,"Starting getStateList method");
+        safeLog.info(logger,"Starting getStateList method");
         List<State> stateList = addressService.getStateList();
-        log.info(logger,"Completed getStateList method");
+        safeLog.info(logger,"Completed getStateList method");
         return new ResponseEntity<>(stateList,HttpStatus.OK);
     }
 

@@ -20,12 +20,12 @@ import static com.sales.utils.Utils.getCurrentMillis;
 @RequiredArgsConstructor
 public class AddressService extends RepoContainer {
 
-    private final com.sales.helpers.Logger log;
+    private final com.sales.helpers.Logger safeLog;
     private static final Logger logger = LoggerFactory.getLogger(AddressService.class);
 
     @Transactional
     public Address insertAddress(AddressDto addressDto, User loggedUser) {
-        log.info(logger,"Entering insertAddress with addressDto: {}, loggedUser: {}", addressDto, loggedUser);
+        safeLog.info(logger,"Entering insertAddress with addressDto: {}, loggedUser: {}", addressDto, loggedUser);
         Address address = new Address();
         address.setSlug(UUID.randomUUID().toString());
 
@@ -41,21 +41,21 @@ public class AddressService extends RepoContainer {
         address.setUpdatedAt(getCurrentMillis());
         address.setUpdatedBy(loggedUser.getId());
         Address result = addressRepository.save(address);
-        log.info(logger,"Exiting insertAddress with result: {}", result);
+        safeLog.info(logger,"Exiting insertAddress with result: {}", result);
         return result;
     }
 
     public List<City> getCityList(int stateId) {
-        log.info(logger,"Entering getCityList with stateId: {}", stateId);
+        safeLog.info(logger,"Entering getCityList with stateId: {}", stateId);
         List<City> result = addressHbRepository.getCityList(stateId);
-        log.info(logger,"Exiting getCityList with result: {}", result);
+        safeLog.info(logger,"Exiting getCityList with result: {}", result);
         return result;
     }
 
     public List<State> getStateList() {
-        log.info(logger,"Entering getStateList");
+        safeLog.info(logger,"Entering getStateList");
         List<State> result = addressHbRepository.getStateList();
-        log.info(logger,"Exiting getStateList with result: {}", result);
+        safeLog.info(logger,"Exiting getStateList with result: {}", result);
         return result;
     }
 

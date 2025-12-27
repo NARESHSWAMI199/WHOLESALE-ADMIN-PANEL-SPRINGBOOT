@@ -40,12 +40,12 @@ public class ItemController extends ServiceContainer {
 
     private final WriteExcelUtil writeExcel;
 
-      private final com.sales.helpers.Logger log;
+      private final com.sales.helpers.Logger safeLog;
   private static final Logger logger = LoggerFactory.getLogger(ItemController.class);
 
     @PostMapping("/all")
     public ResponseEntity<Page<Item>> getAllItem(@RequestBody ItemSearchFields searchFilters,HttpServletRequest request) {
-        log.info(logger,"Fetching all items with filters: {}", searchFilters);
+        safeLog.info(logger,"Fetching all items with filters: {}", searchFilters);
         User loggedUser = (User) request.getAttribute("user");
         Page<Item> alItems = itemService.getAllItems(searchFilters,loggedUser);
         return new ResponseEntity<>(alItems, HttpStatus.OK);
@@ -53,7 +53,7 @@ public class ItemController extends ServiceContainer {
 
     @GetMapping("/detail/{slug}")
     public ResponseEntity<Map<String, Object>> getItem(@PathVariable String slug) {
-        log.info(logger,"Fetching item details for slug: {}", slug);
+        safeLog.info(logger,"Fetching item details for slug: {}", slug);
         Map<String, Object> responseObj = new HashMap<>();
         Item alItems = itemService.findItemBySLug(slug);
         if (alItems != null) {
@@ -91,7 +91,7 @@ public class ItemController extends ServiceContainer {
 
     @PostMapping(value = {"/add", "/update"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> addOrUpdateItems(HttpServletRequest request, @ModelAttribute ItemDto itemDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        log.info(logger,"Adding or updating item: {}", itemDto);
+        safeLog.info(logger,"Adding or updating item: {}", itemDto);
         User loggedUser = (User) request.getAttribute("user");
         String path = request.getRequestURI();
         logger.error(itemDto.toString());
@@ -102,7 +102,7 @@ public class ItemController extends ServiceContainer {
 
     @PostMapping(value = {"/importExcel/{wholesaleSlug}"})
     public ResponseEntity<Object> importItemsFromExcelSheet(HttpServletRequest request, @RequestParam("excelfile") MultipartFile excelSheet, @PathVariable(value = "wholesaleSlug") String wholesaleSlug) {
-        log.info(logger,"Importing items from Excel sheet for wholesaleSlug: {}", wholesaleSlug);
+        safeLog.info(logger,"Importing items from Excel sheet for wholesaleSlug: {}", wholesaleSlug);
         Map<String,Object> responseObj = new HashMap<>();
         try {
             if (excelSheet != null) {
@@ -117,14 +117,14 @@ public class ItemController extends ServiceContainer {
                 if(updateItemsError.isEmpty()) {
                     responseObj.put(ConstantResponseKeys.MESSAGE, "Items successfully updated.");
                     responseObj.put(ConstantResponseKeys.STATUS, 200);
-                    log.info(logger,"Items successfully updated : {} ",updateItemsError);
+                    safeLog.info(logger,"Items successfully updated : {} ",updateItemsError);
                 }else{
                     String fileName = writeExcel.writeNotUpdatedItemsExcel(updateItemsError, GlobalConstant.HEADERS_NOT_UPDATED_ITEMS_EXCEL, wholesaleSlug);
                     responseObj.put("fileUrl", Utils.getHostUrl(request)+GlobalConstant.ITEMS_NOT_UPDATED_PATH_FOR_ADMIN+ wholesaleSlug+
                             GlobalConstant.PATH_SEPARATOR+fileName);
                     responseObj.put(ConstantResponseKeys.MESSAGE, "Some items are not updated.");
                     responseObj.put(ConstantResponseKeys.STATUS, 201);
-                    log.info(logger,"Some items are not updated : {} ",updateItemsError);
+                    safeLog.info(logger,"Some items are not updated : {} ",updateItemsError);
                 }
 
             } else {
@@ -142,7 +142,7 @@ public class ItemController extends ServiceContainer {
 
     @PostMapping(value = {"/exportExcel/{wholesaleSlug}","exportExcel"})
     public ResponseEntity<Object> exportItemsFromExcel(@PathVariable(required = false) String wholesaleSlug, @RequestBody ItemSearchFields searchFilters,HttpServletRequest request) {
-        log.info(logger,"Exporting items to Excel for wholesaleSlug: {}", wholesaleSlug);
+        safeLog.info(logger,"Exporting items to Excel for wholesaleSlug: {}", wholesaleSlug);
         User loggedUser = (User) request.getAttribute("user");
         Map<String,Object> responseObj = new HashMap<>();
         try {
@@ -151,7 +151,7 @@ public class ItemController extends ServiceContainer {
                 if(wholesale != null) {
                     searchFilters.setStoreId(wholesale.getId());
                 }else {
-                    log.info(logger,"Wholesale is not found and wholesaleSlug : {} so that's why we using logged user slug : {} instead wholesale slug ",wholesaleSlug,loggedUser.getSlug());
+                    safeLog.info(logger,"Wholesale is not found and wholesaleSlug : {} so that's why we using logged user slug : {} instead wholesale slug ",wholesaleSlug,loggedUser.getSlug());
                     wholesaleSlug = loggedUser.getSlug();
                 }
                 String filePath = itemService.createItemsExcelSheet(searchFilters,wholesaleSlug,loggedUser);
@@ -162,7 +162,7 @@ public class ItemController extends ServiceContainer {
                 MediaType mediaType = MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
                 return ResponseEntity.ok().contentType(mediaType).body(resource);
             } else {
-                log.info(logger,"wholeSlug : " + wholesaleSlug);
+                safeLog.info(logger,"wholeSlug : " + wholesaleSlug);
                 responseObj.put(ConstantResponseKeys.MESSAGE, "Store not exist.");
                 responseObj.put(ConstantResponseKeys.STATUS, 500);
             }
@@ -171,14 +171,14 @@ public class ItemController extends ServiceContainer {
             responseObj.put(ConstantResponseKeys.STATUS, 500);
             logger.error("Exception during export excel : {}",e.getMessage(),e);
         }
-        log.info(logger,"ENDED exportItemsFromExcel.");
+        safeLog.info(logger,"ENDED exportItemsFromExcel.");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
 
     @PostMapping("/delete")
     public ResponseEntity<Map<String, Object>> deleteItemBySlug(HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        log.info(logger,"Deleting item with slug: {}", deleteDto);
+        safeLog.info(logger,"Deleting item with slug: {}", deleteDto);
         Map<String,Object> responseObj = new HashMap<>();
         User user = (User) request.getAttribute("user");
         int isUpdated = itemService.deleteItem(deleteDto,user);
@@ -206,7 +206,7 @@ public class ItemController extends ServiceContainer {
     ))
     @PostMapping("/stock")
     public ResponseEntity<Map<String, Object>> updateItemStock(@RequestBody Map<String, String> params) {
-        log.info(logger,"Updating stock for item with slug: {}", params.get("slug"));
+        safeLog.info(logger,"Updating stock for item with slug: {}", params.get("slug"));
         Map<String,Object> responseObj = new HashMap<>();
         int isUpdated = itemService.updateStock(params.get("stock"), params.get("slug"));
         if (isUpdated > 0) {
@@ -222,7 +222,7 @@ public class ItemController extends ServiceContainer {
 
     @PostMapping("/status")
     public ResponseEntity<Map<String, Object>> updateItemStatus(HttpServletRequest request ,@RequestBody StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        log.info(logger,"Updating status for item with statusDto: {}", statusDto);
+        safeLog.info(logger,"Updating status for item with statusDto: {}", statusDto);
         Map<String,Object> responseObj = new HashMap<>();
         User user = (User) request.getAttribute("user");
         int isUpdated = itemService.updateStatusBySlug(statusDto,user);
@@ -242,7 +242,7 @@ public class ItemController extends ServiceContainer {
 
     @GetMapping("/image/{slug}/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename, @PathVariable("slug") String slug ) throws Exception {
-        log.info(logger,"Fetching image file: {} for slug: {}", filename,slug);
+        safeLog.info(logger,"Fetching image file: {} for slug: {}", filename,slug);
         Path filePathObj = Paths.get(filePath);
         Path filePathDynamic = filePathObj.resolve(slug).normalize();
         Path path = filePathDynamic.resolve(filename).normalize();
@@ -257,14 +257,14 @@ public class ItemController extends ServiceContainer {
 
     @PostMapping("category")
     public ResponseEntity<List<ItemCategory>> getAllCategory(@RequestBody  SearchFilters searchFilters) {
-        log.info(logger,"Fetching all item categories with filters: {}", searchFilters);
+        safeLog.info(logger,"Fetching all item categories with filters: {}", searchFilters);
         List<ItemCategory> itemCategories = itemService.getAllCategory(searchFilters);
         return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
 
     @PostMapping(value = {"category/add","category/update"})
     public ResponseEntity<Map<String,Object>> saveOrUpdateItemCategory(@RequestBody CategoryDto categoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        log.info(logger,"Saving or updating item category: {}", categoryDto);
+        safeLog.info(logger,"Saving or updating item category: {}", categoryDto);
         Map<String,Object> result = new HashMap<>();
         ItemCategory updatedItemCategory = itemService.saveOrUpdateItemCategory(categoryDto);
         if(updatedItemCategory != null) {
@@ -283,7 +283,7 @@ public class ItemController extends ServiceContainer {
 
     @PostMapping("category/delete")
     public ResponseEntity<Map<String,Object>> deleteItemCategoryById(HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        log.info(logger,"Deleting item category with id: {}", deleteDto);
+        safeLog.info(logger,"Deleting item category with id: {}", deleteDto);
         Map<String,Object> responseObj = new HashMap<>();
         User user = (User) request.getAttribute("user");
         int isUpdated = itemService.deleteItemCategory(deleteDto,user);
@@ -300,7 +300,7 @@ public class ItemController extends ServiceContainer {
 
     @GetMapping("category/{categoryId}")
     public ResponseEntity<ItemCategory> getAllCategory(@PathVariable Integer categoryId) {
-        log.info(logger,"Fetching item category with id: {}", categoryId);
+        safeLog.info(logger,"Fetching item category with id: {}", categoryId);
         ItemCategory itemCategories = itemService.getItemCategoryById(categoryId);
         return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
@@ -311,14 +311,14 @@ public class ItemController extends ServiceContainer {
 
     @PostMapping("subcategory")
     public ResponseEntity<List<ItemSubCategory>> getSubCategory(@RequestBody SearchFilters searchFilters) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        log.info(logger,"Fetching all item subcategories with filters: {}", searchFilters);
+        safeLog.info(logger,"Fetching all item subcategories with filters: {}", searchFilters);
         List<ItemSubCategory> itemCategories = itemService.getAllItemsSubCategories(searchFilters);
         return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
 
     @PostMapping(value = {"subcategory/add","subcategory/update"})
     public ResponseEntity<Map<String,Object>> saveOrUpdateItemSubCategory(@RequestBody SubCategoryDto subCategoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        log.info(logger,"Saving or updating item subcategory: {}", subCategoryDto);
+        safeLog.info(logger,"Saving or updating item subcategory: {}", subCategoryDto);
         Map<String,Object> result = new HashMap<>();
         ItemSubCategory updateItemSubCategory = itemService.saveOrUpdateItemSubCategory(subCategoryDto);
         if(updateItemSubCategory != null) {
@@ -337,7 +337,7 @@ public class ItemController extends ServiceContainer {
 
     @PostMapping("subcategory/delete")
     public ResponseEntity<Map<String,Object>> deleteItemSubCategoryById(HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        log.info(logger,"Deleting item subcategory with id: {}", deleteDto);
+        safeLog.info(logger,"Deleting item subcategory with id: {}", deleteDto);
         Map<String,Object> responseObj = new HashMap<>();
         User user = (User) request.getAttribute("user");
         int isUpdated = itemService.deleteItemSubCategory(deleteDto,user);
@@ -354,7 +354,7 @@ public class ItemController extends ServiceContainer {
 
     @GetMapping("units")
     public ResponseEntity<List<MeasurementUnit>> getALlMeasuringUnitsBySubcategory() {
-        log.info(logger,"Fetching all measuring units by subcategory");
+        safeLog.info(logger,"Fetching all measuring units by subcategory");
         List<MeasurementUnit> itemMeasurementUnitList = itemService.getAllMeasurementUnit();
         return new ResponseEntity<>(itemMeasurementUnitList, HttpStatus.OK);
     }
@@ -368,7 +368,7 @@ public class ItemController extends ServiceContainer {
 
     @GetMapping(value = {"download/update/template"})
     public ResponseEntity<Object> downloadExcelUpdateTemplate() throws IOException {
-        log.info(logger,"Download excel sheet template for update items" );
+        safeLog.info(logger,"Download excel sheet template for update items" );
         Path path = Paths.get(updateItemTemplate);
         Resource resource = new UrlResource(path.toUri());
         HttpHeaders headers = new HttpHeaders();
@@ -385,7 +385,7 @@ public class ItemController extends ServiceContainer {
 
     @GetMapping(value = {"notUpdated/{wholesaleSlug}/{filename}"})
     public ResponseEntity<Object> downloadExcelUpdateTemplate(@PathVariable String wholesaleSlug ,@PathVariable String filename) throws IOException {
-        log.info(logger,"Download excel sheet template for not updated items : {}  : {}",excelNotUpdateItemsFolderPath,filename);
+        safeLog.info(logger,"Download excel sheet template for not updated items : {}  : {}",excelNotUpdateItemsFolderPath,filename);
         Path filePathObj = Paths.get(excelNotUpdateItemsFolderPath);
         Path filePathDynamic = filePathObj.resolve(wholesaleSlug).normalize();
         Path path = filePathDynamic.resolve(filename).normalize();

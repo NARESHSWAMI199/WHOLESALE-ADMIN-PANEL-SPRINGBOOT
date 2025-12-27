@@ -55,9 +55,9 @@
 
         try {
             let result =  await cashfree.checkout(checkoutOptions);
-            console.log(result);
+            console.safeLog(result);
         }catch(err){
-            console.log(err);
+            console.safeLog(err);
         }
     }
 
@@ -94,7 +94,7 @@
             paymentSessionId = data.res.paymentSessionId;
         })
         .catch(err => {
-            console.log(err);
+            console.safeLog(err);
             Swal.fire({
               icon: "error",
               title: "Oops...",

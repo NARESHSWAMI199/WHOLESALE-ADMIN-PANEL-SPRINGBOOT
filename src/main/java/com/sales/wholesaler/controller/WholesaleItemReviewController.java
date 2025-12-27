@@ -21,15 +21,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class WholesaleItemReviewController extends WholesaleServiceContainer {
 
-    private final com.sales.helpers.Logger log;
+    private final com.sales.helpers.Logger safeLog;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleItemReviewController.class);
 
     @PostMapping("all")
     public ResponseEntity<Page<ItemReviews>> getAllReviews(@RequestBody ItemReviewsFilterDto ItemReviewsFilterDto, HttpServletRequest request) {
-        log.info(logger,"Starting getAllUsers method");
+        safeLog.info(logger,"Starting getAllUsers method");
         User loggedUser = (User) request.getAttribute("user");
         Page<ItemReviews> ItemReviewsPage = wholesaleItemReviewService.getAllItemReview(ItemReviewsFilterDto, loggedUser);
-        log.info(logger,"Completed getAllUsers method");
+        safeLog.info(logger,"Completed getAllUsers method");
         return new ResponseEntity<>(ItemReviewsPage, HttpStatus.OK);
     }
 

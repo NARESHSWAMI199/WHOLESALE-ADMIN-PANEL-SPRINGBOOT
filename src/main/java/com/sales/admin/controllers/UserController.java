@@ -36,14 +36,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserController extends ServiceContainer {
 
-      private final com.sales.helpers.Logger log;
+      private final com.sales.helpers.Logger safeLog;
   private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final JwtToken jwtToken;
 
     @PostMapping("/{userType}/all")
     public ResponseEntity<Page<User>> getAllUsers(HttpServletRequest request,@RequestBody UserSearchFilters searchFilters, @PathVariable(required = true) String userType) {
-        log.info(logger,"Fetching all users of type: {}", userType);
+        safeLog.info(logger,"Fetching all users of type: {}", userType);
         searchFilters.setUserType(userType);
         User loggedUser = (User) request.getAttribute("user");
         Page<User> userPage = userService.getAllUser(searchFilters,loggedUser);
@@ -62,7 +62,7 @@ public class UserController extends ServiceContainer {
     ))
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> findByEmailAndPassword(@RequestBody UserDto userDetails) {
-        log.info(logger,"Admin login attempt with email: {}", userDetails.getEmail());
+        safeLog.info(logger,"Admin login attempt with email: {}", userDetails.getEmail());
         Map<String, Object> responseObj = new HashMap<>();
         User user = userService.findByEmailAndPassword(userDetails);
         String message;
@@ -96,7 +96,7 @@ public class UserController extends ServiceContainer {
     ))
     @PostMapping("/login/otp")
     public ResponseEntity<Map<String, Object>> findUserByOtp(@RequestBody UserDto userDetails) {
-        log.info(logger,"Admin OTP login attempt with email: {}", userDetails.getEmail());
+        safeLog.info(logger,"Admin OTP login attempt with email: {}", userDetails.getEmail());
         Map<String, Object> responseObj = new HashMap<>();
         User user = userService.findUserByOtpAndEmail(userDetails);
         if (user == null) {
@@ -128,7 +128,7 @@ public class UserController extends ServiceContainer {
     ))
     @PostMapping("sendOtp")
     public ResponseEntity<Map<String,Object>> sendOtp(@RequestBody UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        log.info(logger,"Sending OTP to email: {}", userDto.getEmail());
+        safeLog.info(logger,"Sending OTP to email: {}", userDto.getEmail());
         Map<String,Object> responseObj = new HashMap<>();
         boolean sendOtp = userService.sendOtp(userDto);
         if(sendOtp)  {
@@ -170,7 +170,7 @@ public class UserController extends ServiceContainer {
     @Transactional
     @PostMapping(value = {"/add", "/update"})
     public ResponseEntity<Map<String, Object>> register(HttpServletRequest request, @RequestBody UserDto userDto) throws Exception {
-        log.info(logger,"Registering or updating user with email: {}", userDto.getEmail());
+        safeLog.info(logger,"Registering or updating user with email: {}", userDto.getEmail());
         User loggedUser = (User) request.getAttribute("user");
         String path = request.getRequestURI();
         Map<String,Object> responseObj = userService.createOrUpdateUser(userDto, loggedUser,path);
@@ -180,7 +180,7 @@ public class UserController extends ServiceContainer {
 
     @GetMapping("/detail/{slug}")
     public ResponseEntity<Map<String, Object>> getDetailUser(HttpServletRequest request,@PathVariable String slug) {
-        log.info(logger,"Fetching details for user with slug: {}", slug);
+        safeLog.info(logger,"Fetching details for user with slug: {}", slug);
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         User user = userService.getUserDetail(slug,loggedUser);
@@ -197,7 +197,7 @@ public class UserController extends ServiceContainer {
     @Transactional
     @PostMapping("/delete")
     public ResponseEntity<Map<String, Object>> deleteUserBySlug(HttpServletRequest request, @RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        log.info(logger,"Deleting user with slug: {}", deleteDto.getSlug());
+        safeLog.info(logger,"Deleting user with slug: {}", deleteDto.getSlug());
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         int isUpdated = userService.deleteUserBySlug(deleteDto,loggedUser);
@@ -214,7 +214,7 @@ public class UserController extends ServiceContainer {
     @Transactional
     @PostMapping("/password")
     public ResponseEntity<Map<String, Object>> resetUserPasswordBySlug(HttpServletRequest request ,@RequestBody PasswordDto passwordDto) {
-        log.info(logger,"Resetting password for user with slug: {}", passwordDto.getSlug());
+        safeLog.info(logger,"Resetting password for user with slug: {}", passwordDto.getSlug());
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         int isUpdated = userService.resetPasswordByUserSlug(passwordDto,loggedUser);
@@ -231,7 +231,7 @@ public class UserController extends ServiceContainer {
 
     @PostMapping("/status")
     public ResponseEntity<Map<String, Object>> stockSlug(HttpServletRequest request,@RequestBody StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        log.info(logger,"Updating status for user with slug: {}", statusDto.getSlug());
+        safeLog.info(logger,"Updating status for user with slug: {}", statusDto.getSlug());
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         int isUpdated = userService.updateStatusBySlug(statusDto,loggedUser);
@@ -252,7 +252,7 @@ public class UserController extends ServiceContainer {
     @Transactional
     @PostMapping("/update_profile/{slug}")
     public ResponseEntity<Map<String, Object>> updateProfileImage(HttpServletRequest request, @RequestPart MultipartFile profileImage, @PathVariable String slug ) {
-        log.info(logger,"Updating profile image for user with slug: {}", slug);
+        safeLog.info(logger,"Updating profile image for user with slug: {}", slug);
         Map<String,Object> responseObj = new HashMap<>();
         try {
             User loggedUser = (User) request.getAttribute("user");
@@ -279,7 +279,7 @@ public class UserController extends ServiceContainer {
 
     @GetMapping("/profile/{slug}/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename ,@PathVariable String slug) throws Exception {
-        log.info(logger,"Fetching profile image: {} for user with slug: {}", filename, slug);
+        safeLog.info(logger,"Fetching profile image: {} for user with slug: {}", filename, slug);
         Path filePathObj = Paths.get(filePath);
         Path filePathDynamic = filePathObj.resolve(slug).normalize();
         Path path = filePathDynamic.resolve(filename).normalize();
@@ -289,7 +289,7 @@ public class UserController extends ServiceContainer {
 
     @GetMapping("/groups/{slug}")
     public ResponseEntity<Map<String,Object>> getUserGroupsIdsBySlug(HttpServletRequest request,@PathVariable String slug){
-        log.info(logger,"Fetching group IDs for user with slug: {}", slug);
+        safeLog.info(logger,"Fetching group IDs for user with slug: {}", slug);
         Map<String,Object> responseObj = new HashMap<>();
         List<Integer> groupsIds = userService.getUserGroupsIdBySlug(slug);
         if (!groupsIds.isEmpty()) {
@@ -307,7 +307,7 @@ public class UserController extends ServiceContainer {
 
     @GetMapping("wholesale/permissions/{slug}")
     public ResponseEntity<Map<String,Object>> getAllAssignedPermissionsForWholesaler(HttpServletRequest request,@PathVariable String slug){
-        log.info(logger,"Fetching all assigned permissions for wholesaler with slug: {}", slug);
+        safeLog.info(logger,"Fetching all assigned permissions for wholesaler with slug: {}", slug);
         Map<String, Object> wholesalerAllPermissions = userService.getWholesalerAllPermissions();
         List<Integer> permissions =  userService.getWholesalerAllAssignedPermissions(slug);
         Map<String,Object> responseObj = new HashMap<>();
@@ -335,7 +335,7 @@ public class UserController extends ServiceContainer {
     @Transactional
     @PostMapping("wholesaler/permissions/update")
     public ResponseEntity<Map<String,Object>> updateWholesalerPermissions(HttpServletRequest request, @RequestBody UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        log.info(logger,"Updating permissions for wholesaler with slug: {}", userDto.getSlug());
+        safeLog.info(logger,"Updating permissions for wholesaler with slug: {}", userDto.getSlug());
         User loggedUser =  (User)request.getAttribute("user");
         Map<String,Object> response= userService.updateWholesalerPermissions(userDto,loggedUser);
         return new ResponseEntity<>(response, HttpStatus.valueOf((Integer) response.get(ConstantResponseKeys.STATUS )));

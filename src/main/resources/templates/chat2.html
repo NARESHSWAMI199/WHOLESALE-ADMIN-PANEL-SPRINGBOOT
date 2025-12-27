@@ -59,7 +59,7 @@
 
 stompClient.onConnect = (frame) => {
     setConnected(true);
-    console.log('Connected: ' + frame);
+    console.safeLog('Connected: ' + frame);
     stompClient.subscribe('/user/rakesh/queue/private', (greeting) => {
         showGreeting(JSON.parse(greeting.body).message);
     });
@@ -93,7 +93,7 @@ function connect() {
 function disconnect() {
     stompClient.deactivate();
     setConnected(false);
-    console.log("Disconnected");
+    console.safeLog("Disconnected");
 }
 
 function sendMessage() {

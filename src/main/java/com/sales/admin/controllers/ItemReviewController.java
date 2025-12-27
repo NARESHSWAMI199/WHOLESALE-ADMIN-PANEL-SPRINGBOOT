@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ItemReviewController extends ServiceContainer {
 
-      private final com.sales.helpers.Logger log;
+      private final com.sales.helpers.Logger safeLog;
   private static final Logger logger = LoggerFactory.getLogger(ItemReviewController.class);
 
     @PostMapping("all")
     public ResponseEntity<Page<ItemReviews>> getAllReviews(@RequestBody ItemReviewsFilterDto ItemReviewsFilterDto, HttpServletRequest httpServletRequest) {
-        log.info(logger,"Fetching all item comments with filters: {}", ItemReviewsFilterDto);
+        safeLog.info(logger,"Fetching all item comments with filters: {}", ItemReviewsFilterDto);
         Page<ItemReviews > itemReviewsPage = itemReviewService.getAllItemReview(ItemReviewsFilterDto);
         return new ResponseEntity<>(itemReviewsPage, HttpStatus.OK);
     }

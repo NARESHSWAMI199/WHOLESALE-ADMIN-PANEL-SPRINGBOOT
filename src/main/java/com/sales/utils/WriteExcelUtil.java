@@ -22,7 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WriteExcelUtil {
 
-    private final com.sales.helpers.Logger log;
+    private final com.sales.helpers.Logger safeLog;
     private final Logger logger = LoggerFactory.getLogger(WriteExcelUtil.class);
 
     @Value("${excel.export.absolute}")
@@ -200,7 +200,7 @@ public class WriteExcelUtil {
             long millis = ((Double) Double.parseDouble(value)).longValue();
             return Utils.getMillisToDate(millis);
         } catch (Exception e) {
-            return value; // fallback - better to log in real code
+            return value; // fallback - better to safeLog in real code
         }
     }
 
@@ -212,7 +212,7 @@ public class WriteExcelUtil {
         if (!directory.exists()) {
             boolean created = directory.mkdirs();
             if (created) {
-                log.info(logger,"Directory created: {}", directory.getAbsolutePath());
+                safeLog.info(logger,"Directory created: {}", directory.getAbsolutePath());
             }
         }
 
@@ -231,7 +231,7 @@ public class WriteExcelUtil {
         if (!directory.exists()) {
             boolean created = directory.mkdirs();
             if (created) {
-                log.info(logger,"Created directory for not-updated items: {}", directory.getAbsolutePath());
+                safeLog.info(logger,"Created directory for not-updated items: {}", directory.getAbsolutePath());
             }
         }
 
@@ -242,7 +242,7 @@ public class WriteExcelUtil {
             workbook.write(fos);
         }
 
-        log.info(logger,"Not updated items excel saved at: {}", fullPath);
+        safeLog.info(logger,"Not updated items excel saved at: {}", fullPath);
 
         return fileName;
     }

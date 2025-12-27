@@ -21,21 +21,21 @@ public final class SafeLogHelper implements com.sales.helpers.Logger {
     @Override
     public void info(Logger logger,String message, Object... object) {
         if (logger.isInfoEnabled()) {
-            logger.info(message, Utils.sanitizeForLog(Arrays.toString(object)));
+            logger.info(message,object);
         }
     }
 
     @Override
-    public void warn(Logger log, String message,Object... object) {
-        if (log.isWarnEnabled()) {
-            log.warn(message,Utils.sanitizeForLog(Arrays.toString(object)));
+    public void warn(Logger safeLog, String message,Object... object) {
+        if (safeLog.isWarnEnabled()) {
+            safeLog.warn(message,Utils.sanitizeForLog(Arrays.toString(object)));
         }
     }
 
     @Override
-    public void error(Logger log, String message,Object... object) {
-        if (log.isErrorEnabled()) {
-            log.warn(message,Utils.sanitizeForLog(Arrays.toString(object)));
+    public void error(Logger safeLog, String message,Object... object) {
+        if (safeLog.isErrorEnabled()) {
+            safeLog.warn(message,Utils.sanitizeForLog(Arrays.toString(object)));
         }
     }
 }

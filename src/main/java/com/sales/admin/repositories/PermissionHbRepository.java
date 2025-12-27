@@ -47,7 +47,6 @@ public class PermissionHbRepository {
             values +="("+groupId+","+permissions.get(i)+")";
             if(i < permissions.size()-1) values += ",";
         }
-        log.info(values);
         String sql = "insert into group_permissions (group_id,permission_id) values "+values;
         Query query = entityManager.createNativeQuery(sql);
         return query.executeUpdate();

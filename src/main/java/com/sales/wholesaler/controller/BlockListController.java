@@ -20,12 +20,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class BlockListController extends WholesaleServiceContainer {
 
-  private final com.sales.helpers.Logger log;
+  private final com.sales.helpers.Logger safeLog;
   private static final Logger logger = LoggerFactory.getLogger(BlockListController.class);
 
     @GetMapping("/block/{recipient}")
     public ResponseEntity<Map<String,Object>> addUserInBlockList(@PathVariable String recipient, HttpServletRequest request){
-        log.info(logger,"Blocking user: {}", recipient);
+        safeLog.info(logger,"Blocking user: {}", recipient);
         Map<String,Object> result = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         BlockedUser blockedUser = blockListService.addAUserInBlockList(loggedUser, recipient);
@@ -43,7 +43,7 @@ public class BlockListController extends WholesaleServiceContainer {
 
     @GetMapping("/unblock/{recipient}")
     public ResponseEntity<Map<String,Object>> removeUserFromBlockList(@PathVariable String recipient, HttpServletRequest request){
-        log.info(logger,"Unblocking user: {}", recipient);
+        safeLog.info(logger,"Unblocking user: {}", recipient);
         Map<String,Object> result = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         boolean unblocked = blockListService.removeUserFromBlockList(loggedUser.getId(), recipient);

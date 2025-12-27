@@ -3,12 +3,14 @@ package com.sales.admin.services;
 
 import com.sales.admin.repositories.*;
 import com.sales.dto.SearchFilters;
+import com.sales.helpers.Logger;
 import com.sales.utils.WriteExcelUtil;
 import com.sales.wholesaler.repository.ChatHbRepository;
 import com.sales.wholesaler.repository.ChatRepository;
 import com.sales.wholesaler.repository.ChatUserRepository;
 import com.sales.wholesaler.repository.ContactRepository;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,8 +18,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Component
-@Slf4j
+@RequiredArgsConstructor
 public class RepoContainer {
+
+    private final Logger safeLog;
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(RepoContainer.class);
 
     @Autowired
     protected StoreRepository storeRepository;
@@ -130,7 +135,7 @@ public class RepoContainer {
     protected StoreWalletTransactionRepository storeWalletTransactionRepository;
 
     public Pageable getPageable(SearchFilters filters){
-        log.info("page : "+ filters.getPageNumber() + " "+filters.getSize());
+        safeLog.info(logger,"page : "+ filters.getPageNumber() + " "+filters.getSize());
         Sort sort = (filters.getOrder().equalsIgnoreCase("asc")) ?
                 Sort.by(filters.getOrderBy()).ascending() :  Sort.by(filters.getOrderBy()).descending();
         Pageable pageable = PageRequest.of(filters.getPageNumber(), filters.getSize(),sort);

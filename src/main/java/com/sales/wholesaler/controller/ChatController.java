@@ -32,13 +32,13 @@ import java.util.Objects;
 @RestController
 public class ChatController extends WholesaleServiceContainer {
 
-    private final com.sales.helpers.Logger log;
+    private final com.sales.helpers.Logger safeLog;
     private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
 
     private final SimpMessagingTemplate messagingTemplate;
 
-    public ChatController(com.sales.helpers.Logger log, SimpMessagingTemplate messagingTemplate) {
-        this.log = log;
+    public ChatController(com.sales.helpers.Logger safeLog, SimpMessagingTemplate messagingTemplate) {
+        this.safeLog = safeLog;
         this.messagingTemplate = messagingTemplate;
     }
 
@@ -48,7 +48,7 @@ public class ChatController extends WholesaleServiceContainer {
 
     @PostMapping("/chats/all")
     public ResponseEntity<Map<String, List<Chat>>> getALlUsers(@RequestBody MessageDto message , HttpServletRequest request){
-        log.info(logger,"Fetching all users for message: {}", message);
+        safeLog.info(logger,"Fetching all users for message: {}", message);
         User loggedUser = (User) request.getAttribute("user");
         message.setSender(loggedUser.getSlug());
         Map<String, List<Chat>> formatedChatList = chatService.getAllChatBySenderAndReceiverKey(message,request);
@@ -58,7 +58,7 @@ public class ChatController extends WholesaleServiceContainer {
 
     @GetMapping("/chats/message/{parentId}")
     public ResponseEntity<Chat> getParentChatMessageByParentId(@PathVariable Long parentId , HttpServletRequest request){
-        log.info(logger,"Fetching parent chat using parentId: {}", parentId);
+        safeLog.info(logger,"Fetching parent chat using parentId: {}", parentId);
         User loggedUser = (User) request.getAttribute("user");
         Chat parentChat = chatService.getParentMessageById(parentId,loggedUser,request);
         return new ResponseEntity<>(parentChat, HttpStatus.valueOf(200));
@@ -67,7 +67,7 @@ public class ChatController extends WholesaleServiceContainer {
 
     @PostMapping("/chats/parentId")
     public ResponseEntity<Integer> getParentChatMessageBySentTime(@RequestBody MessageDto message , HttpServletRequest request){
-        log.info(logger,"Fetching parent chat using createdAt: {} and sender : {} and receiver : {}", message.getCreatedAt(),message.getSender(),message.getReceiver());
+        safeLog.info(logger,"Fetching parent chat using createdAt: {} and sender : {} and receiver : {}", message.getCreatedAt(),message.getSender(),message.getReceiver());
         Integer parentMessageId = chatService.getParentMessageIdByCreatedAt(message,request);
         return new ResponseEntity<>(parentMessageId, HttpStatus.valueOf(200));
     }
@@ -77,7 +77,7 @@ public class ChatController extends WholesaleServiceContainer {
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
     public MessageDto sendMessage(MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
-        log.info(logger,"Sending public message: {}", message);
+        safeLog.info(logger,"Sending public message: {}", message);
         // Get the sender's username
         String sender = (String) headerAccessor.getSessionAttributes().get("username");
         // Set the sender in the message
@@ -93,7 +93,7 @@ public class ChatController extends WholesaleServiceContainer {
 
     @MessageMapping("/chat/private/{recipient}")
     public void sendPrivateMessage(@DestinationVariable String recipient, MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
-        log.info(logger,"Sending private message to recipient: {}", recipient);
+        safeLog.info(logger,"Sending private message to recipient: {}", recipient);
         User loggedUser = (User) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("user");
         Chat sentMessage = chatService.sendMessage(message,loggedUser,message.getReceiver());
         if(sentMessage == null) return;
@@ -106,7 +106,7 @@ public class ChatController extends WholesaleServiceContainer {
     /** Upload images and other files with chat */
     @PostMapping("/chat/upload")
     public ResponseEntity<Map<String,Object>> uploadImages(@ModelAttribute MessageDto message ,HttpServletRequest request){
-        log.info(logger,"Uploading images for message: {}", message);
+        safeLog.info(logger,"Uploading images for message: {}", message);
         Map<String,Object> result = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         String recipient = message.getReceiver();
@@ -145,18 +145,18 @@ public class ChatController extends WholesaleServiceContainer {
 
     @MessageMapping("/chat/connect/{slug}")
     public void userConnected(@DestinationVariable String slug, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
-        log.info(logger,"User connected with slug: {}", slug);
-        log.info(logger,"Connected");
+        safeLog.info(logger,"User connected with slug: {}", slug);
+        safeLog.info(logger,"Connected");
         try{
             String sender = Objects.requireNonNull(simpMessageHeaderAccessor.getSessionAttributes()).get("username").toString();
-            log.info(logger,"The sender is : {}",sender);
+            safeLog.info(logger,"The sender is : {}",sender);
             User user = wholesaleUserService.findUserBySlug(slug);
             if(user == null) throw new MyException("Not valid user to connect for chat.");
             user.setOnline(true);
             wholesaleUserService.updateLastSeen(user);
             GlobalConstant.onlineUsers.put(slug, user);
         }catch (Exception e){
-            log.info(logger,e.getMessage());
+            safeLog.info(logger,e.getMessage());
         }
 
     }
@@ -166,8 +166,8 @@ public class ChatController extends WholesaleServiceContainer {
 
     @MessageMapping("/chat/deactivate/{slug}")
     public void disconnectUser(@DestinationVariable String slug) {
-        log.info(logger,"User disconnected with slug: {}", slug);
-        log.info(logger,"Disconnected");
+        safeLog.info(logger,"User disconnected with slug: {}", slug);
+        safeLog.info(logger,"Disconnected");
         try{
             User user = GlobalConstant.onlineUsers.get(slug);
             if(user == null) throw new MyException("Not valid user to connect for chat.");
@@ -175,7 +175,7 @@ public class ChatController extends WholesaleServiceContainer {
             wholesaleUserService.updateLastSeen(user);
             GlobalConstant.onlineUsers.put(slug, user);
         }catch (Exception e){
-            log.info(logger,e.getMessage());
+            safeLog.info(logger,e.getMessage());
         }
     }
 
@@ -186,13 +186,13 @@ public class ChatController extends WholesaleServiceContainer {
         User loggedUser = (User) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("user");
         User receiver = wholesaleUserService.findUserBySlug(recipient);
         if (recipient == null) throw new MyException("Please provide a valid recipient");
-        log.info(logger,"Seen Called.....");
+        safeLog.info(logger,"Seen Called.....");
         /* Check If you already blocked by receiver or not if blocked, then do nothing eat fivestar */
         boolean isYouBlockedByReceiver = blockListService.isSenderBlockedByReceiver(loggedUser,receiver);
         /* Check you blocked the receiver or not */
         boolean isYouBlockedReceiver = blockListService.isReceiverBlockedBySender(loggedUser,receiver);
         boolean seen = !isYouBlockedByReceiver && !isYouBlockedReceiver;
-        log.info(logger,"Message seen or not :  {} ",seen);
+        safeLog.info(logger,"Message seen or not :  {} ",seen);
         /* you need to subscribe like  /user/{userId}/queue/private/chat/seen */
         messagingTemplate.convertAndSendToUser(recipient, "/queue/private/chat/seen",seen);
     }
@@ -200,7 +200,7 @@ public class ChatController extends WholesaleServiceContainer {
 
     @MessageMapping("/chat/{slug}/userStatus")
     public void getUserStatus(@DestinationVariable String slug, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
-        log.info(logger,"Checking user status for slug: {}", slug);
+        safeLog.info(logger,"Checking user status for slug: {}", slug);
         String sender = (String) Objects.requireNonNull(simpMessageHeaderAccessor.getSessionAttributes()).get("username");
         /* you need to subscribe like  /user/{userId}/queue/private/status */
         messagingTemplate.convertAndSendToUser(sender, "/queue/private/status",GlobalConstant.onlineUsers.getOrDefault(slug,new User()));
@@ -210,7 +210,7 @@ public class ChatController extends WholesaleServiceContainer {
 
     @GetMapping("/chat/status/{slug}")
     public ResponseEntity<User> getUserStatus(@PathVariable String slug){
-        log.info(logger,"Getting user status for slug: {}", slug);
+        safeLog.info(logger,"Getting user status for slug: {}", slug);
         User user = GlobalConstant.onlineUsers.getOrDefault(slug, new User());
         return new ResponseEntity<>(user,HttpStatus.valueOf(200));
     }
@@ -219,7 +219,7 @@ public class ChatController extends WholesaleServiceContainer {
 
     @PostMapping("/chat/seen")
     public ResponseEntity<Map<String,Object>> getUserStatus(@RequestBody MessageDto message, HttpServletRequest request){
-        log.info(logger,"Updating seen status for message: {}", message);
+        safeLog.info(logger,"Updating seen status for message: {}", message);
         Map<String,Object> result = new HashMap<>();
         User  loggedUser = (User) request.getAttribute("user");
         message.setReceiver(loggedUser.getSlug());
@@ -238,7 +238,7 @@ public class ChatController extends WholesaleServiceContainer {
     public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename
             , @PathVariable String sender,
     @PathVariable String receiver) throws Exception {
-        log.info(logger,"Fetching file: {} for sender: {} and receiver: {}", filename,sender, receiver);
+        safeLog.info(logger,"Fetching file: {} for sender: {} and receiver: {}", filename,sender, receiver);
         Path filePathObj = Paths.get(filePath);
         Path filePathDynamic = filePathObj.resolve(sender+"_"+receiver).normalize();
         Path path = filePathDynamic.resolve(filename).normalize();
@@ -249,7 +249,7 @@ public class ChatController extends WholesaleServiceContainer {
 
     @PostMapping("/chat/delete")
     public ResponseEntity<Map<String,Object>> deleteBySlug(@RequestBody MessageDto messageDto,HttpServletRequest request){
-        log.info(logger,"Deleting message: {}", messageDto);
+        safeLog.info(logger,"Deleting message: {}", messageDto);
         Map<String,Object> result = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         int isDeleted = chatService.deleteMessage(loggedUser, messageDto);
