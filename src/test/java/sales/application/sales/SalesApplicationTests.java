@@ -1,16 +1,10 @@
 package sales.application.sales;
 
-import com.sales.SalesApplication;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.platform.suite.api.SelectPackages;
+import org.junit.platform.suite.api.Suite;
 
-@SpringBootTest(classes = SalesApplication.class)
-@AutoConfigureMockMvc
+@Suite
+@SelectPackages("sales.application.sales.wholesaler.controller")
 class SalesApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
 
 }

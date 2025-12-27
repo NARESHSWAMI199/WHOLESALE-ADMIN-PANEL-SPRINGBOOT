@@ -51,7 +51,23 @@ public interface WholesaleItemRepository extends JpaRepository<Item, Integer> , 
    Integer optionItemCountInStock(@Param("inStock") String inStock,@Param("status") String status,@Param("id") Integer storeId);
 
 
-   @Query(value = "SELECT count(id) from item s where wholesale_id=:storeId and  FROM_UNIXTIME(created_at /1000,'%m') =:month and FROM_UNIXTIME(created_at /1000,'%Y') =:year and is_deleted='N'",nativeQuery = true)
-   Integer totalItemsViaMonth(@Param("month") Integer month, @Param("year") Integer year, @Param("storeId")Integer storeId);
+//   @Query(value = "SELECT count(id) from item s where wholesale_id=:storeId and  FROM_UNIXTIME(created_at /1000,'%m') =:month and FROM_UNIXTIME(created_at /1000,'%Y') =:year and is_deleted='N'",nativeQuery = true)
+//   Integer totalItemsViaMonth(@Param("month") Integer month, @Param("year") Integer year, @Param("storeId")Integer storeId);
+
+   // Improved
+   @Query(value = """
+    SELECT count(id) 
+    FROM item s 
+    WHERE wholesale_id = :storeId
+      AND is_deleted = 'N'
+      AND created_at >= :startOfMonth
+      AND created_at < :startOfNextMonth
+   """, nativeQuery = true)
+   Integer totalItemsViaMonth(
+           @Param("storeId") Integer storeId,
+           @Param("startOfMonth") Long startOfMonth,
+           @Param("startOfNextMonth") Long startOfNextMonth
+   );
+
 
 }

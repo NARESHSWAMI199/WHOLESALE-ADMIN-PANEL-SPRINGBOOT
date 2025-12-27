@@ -1,0 +1,101 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+default:
+  password: saleispower
+
+jwt:
+  secret: saleispower
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+
+    health:
+      show-details=always:
+
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+logging:
+  level:
+    org:
+      springframework:
+        cache:
+          interceptor: TRACE
+
+
+
+phonepe :
+  key : 96434309-7796-489d-8924-ab56988a6076
+  mid : PGTESTPAYUAT86
+  env : UAT
+  callback_uri: https://ac82-45-249-85-171.ngrok-free.app/pg/callback
+  redirect_uri: http://localhost:8080/pg/home
+
+cashfree :
+  key : cfsk_ma_test_4101943cd010dd3f59d86a25d03df53a_cce9da94
+  mid : TEST10390991bf0adc9155492e36f12619909301
+  env : TEST
+  mobile : 9999999999
+  callback_uri: https://ac82-45-249-85-171.ngrok-free.app/cashfree/callback/
+  redirect_uri: http://localhost:3000
+
+# ------------------ start public folder path
+public_folder :
+  absolute : /Users/nareshswami/Documents/springboot/backend/sales-admin/src/main/resources/public
+  #  absolute : C:\Users\abc\Documents\demo\sales-backend\src\main\resources\public
+  get : /Users/nareshswami/Documents/springboot/backend/sales-admin/src/main/resources/public
+
+# ------------------! end public folder path
+
+profile :
+  absolute  : ${public_folder.absolute}/profiles/
+  get : ${public_folder.get}/profiles/
+
+store :
+  absolute  :  ${public_folder.absolute}/stores/
+  get :  ${public_folder.get}/stores/
+
+item:
+  absolute:  ${public_folder.absolute}/items/
+  get:  ${public_folder.get}/items/
+
+removebg :
+  absolute : ${public_folder.absolute}/removebg/
+  get :  ${public_folder.get}/removebg/
+
+chat :
+  absolute  : ${public_folder.absolute}/chat/
+  get:  ${public_folder.get}/chat/
+
+excel:
+  export :
+    absolute :  ${public_folder.absolute}/items_excels/
+  update :
+    template : ${public_folder.get}/items_excels/update_items/update_item_template.xlsx
+  notUpdated:
+    absolute:  ${public_folder.absolute}/items_excels/not_updated_items/

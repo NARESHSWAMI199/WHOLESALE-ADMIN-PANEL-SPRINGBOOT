@@ -15,6 +15,7 @@ import com.sales.exceptions.MyException;
 import com.sales.exceptions.NotFoundException;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
+import com.sales.utils.DateUtils;
 import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
@@ -358,13 +359,19 @@ public class WholesaleItemService extends WholesaleRepoContainer {
 
     public Map<String,Object> getItemCountByMonths(GraphDto graphDto,Integer storeId){
         logger.debug("Starting getItemCountByMonths method with graphDto: {}, storeId: {}", graphDto, storeId);
+        Date date = new Date();
+        int currentYear = date.getYear();
         List<Integer> months = graphDto.getMonths();
         months = (months == null || months.isEmpty()) ?
                 Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12) : months;
-        Integer year = graphDto.getYear();
+        int year = Objects.nonNull(graphDto.getYear()) ? graphDto.getYear() : currentYear;
+
         Map<String,Object> monthsObj= new LinkedHashMap<>();
         for(Integer month : months) {
-            monthsObj.put(getMonthName(month),wholesaleItemRepository.totalItemsViaMonth(month,year,storeId));
+            long start = DateUtils.getStartOfMonthEpochMillis(year, month);
+            long end = DateUtils.getStartOfNextMonthEpochMillis(year, month);
+            Integer total = wholesaleItemRepository.totalItemsViaMonth(storeId, start, end);
+            monthsObj.put(getMonthName(month),total);
         }
         logger.debug("Completed getItemCountByMonths method");
         return monthsObj;
