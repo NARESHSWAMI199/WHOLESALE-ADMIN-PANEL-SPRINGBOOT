@@ -3,6 +3,7 @@ package sales.application.sales.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.helpers.SafeLogHelper;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import java.util.Random;
 public class TestUtil {
 
     private final Logger logger = LoggerFactory.getLogger(TestUtil.class);
+    private final com.sales.helpers.Logger log = SafeLogHelper.getInstance();
 
     @Autowired
     protected MockMvc mockMvc;
