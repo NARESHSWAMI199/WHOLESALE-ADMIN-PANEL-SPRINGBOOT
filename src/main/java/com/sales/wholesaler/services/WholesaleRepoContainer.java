@@ -4,9 +4,9 @@ package com.sales.wholesaler.services;
 import com.sales.admin.repositories.AddressHbRepository;
 import com.sales.admin.repositories.AddressRepository;
 import com.sales.dto.SearchFilters;
+import com.sales.helpers.SafeLogHelper;
 import com.sales.utils.WriteExcelUtil;
 import com.sales.wholesaler.repository.*;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +16,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class WholesaleRepoContainer {
 
-    private final com.sales.helpers.Logger safeLog;
+    private final com.sales.helpers.Logger safeLog = SafeLogHelper.getInstance();
     private final Logger logger = LoggerFactory.getLogger(WholesaleRepoContainer.class);
 
     @Autowired

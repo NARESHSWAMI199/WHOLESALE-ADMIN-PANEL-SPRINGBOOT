@@ -4,12 +4,12 @@ package com.sales.admin.services;
 import com.sales.admin.repositories.*;
 import com.sales.dto.SearchFilters;
 import com.sales.helpers.Logger;
+import com.sales.helpers.SafeLogHelper;
 import com.sales.utils.WriteExcelUtil;
 import com.sales.wholesaler.repository.ChatHbRepository;
 import com.sales.wholesaler.repository.ChatRepository;
 import com.sales.wholesaler.repository.ChatUserRepository;
 import com.sales.wholesaler.repository.ContactRepository;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -18,10 +18,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class RepoContainer {
 
-    private final Logger safeLog;
+    private final Logger safeLog = SafeLogHelper.getInstance();
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(RepoContainer.class);
 
     @Autowired

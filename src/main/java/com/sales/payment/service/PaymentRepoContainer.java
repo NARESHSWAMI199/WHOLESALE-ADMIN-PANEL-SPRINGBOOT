@@ -1,11 +1,11 @@
 package com.sales.payment.service;
 
 import com.sales.dto.SearchFilters;
+import com.sales.helpers.SafeLogHelper;
 import com.sales.payment.repository.CashfreeHbRepository;
 import com.sales.payment.repository.CashfreeRepository;
 import com.sales.payment.repository.PhonePeHbRepository;
 import com.sales.payment.repository.PhonePeRepository;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +15,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class PaymentRepoContainer {
-    private  final com.sales.helpers.Logger safeLog;
+    private  final com.sales.helpers.Logger safeLog = SafeLogHelper.getInstance();
     private final Logger logger = LoggerFactory.getLogger(PaymentRepoContainer.class);
 
     @Autowired
