@@ -61,7 +61,7 @@ public class WholesalePaginationService extends  WholesaleRepoContainer{
     }
 
     @Transactional(rollbackOn = {InternalException.class, RuntimeException.class,Exception.class })
-    public UserPagination insertUserPagination(Pagination pagination,User loggedUser,Integer rowNumbers) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public UserPagination insertUserPagination(Pagination pagination,User loggedUser,Integer rowNumbers) {
         UserPagination userPagination = new UserPagination();
         userPagination.setPagination(pagination);
         userPagination.setUserId(loggedUser.getId());

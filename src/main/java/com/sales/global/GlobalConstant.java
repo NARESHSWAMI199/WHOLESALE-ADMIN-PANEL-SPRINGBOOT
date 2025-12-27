@@ -10,10 +10,10 @@ public class GlobalConstant {
     public static String secretKey = "asdfghj123456789";
     public static int suId =0;
     public  static  int groupId = 0;
-    public static String wholesalerImagePath = "/wholesale/auth/profile/";
-    public static String PATH_SEPARATOR = "/";
-    public static String staffImagePath = "/admin/auth/profile/";
-    public static String CHAT_STATIC_PATH = "/chat/images/";
+    public static final String wholesalerImagePath = "/wholesale/auth/profile/";
+    public static final String PATH_SEPARATOR = "/";
+    public static final String staffImagePath = "/admin/auth/profile/";
+    public static final String CHAT_STATIC_PATH = "/chat/images/";
 
     // for normal images
     public static int minWidth = 500;

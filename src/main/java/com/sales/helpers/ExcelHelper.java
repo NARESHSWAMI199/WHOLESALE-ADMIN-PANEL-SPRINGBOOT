@@ -12,8 +12,8 @@ public class ExcelHelper {
 
     private ExcelHelper(){}
 
-    public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-    public static String TYPE_XLS = "application/vnd.ms-excel";
+    public static final String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    public static final String TYPE_XLS = "application/vnd.ms-excel";
     private static final List<String> EXCEL_MIME_TYPES = Arrays.asList(TYPE, TYPE_XLS);
 
     public static boolean hasExcelFormat(MultipartFile file) {
