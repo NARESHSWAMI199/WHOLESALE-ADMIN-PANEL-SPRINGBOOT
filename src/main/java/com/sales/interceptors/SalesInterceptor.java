@@ -14,6 +14,7 @@ import com.sales.utils.Utils;
 import com.sales.wholesaler.services.WholesaleServicePlanService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,10 @@ import java.util.Objects;
 import java.util.Set;
 
 @Component
+@RequiredArgsConstructor
 public class SalesInterceptor implements HandlerInterceptor {
+
+    private final com.sales.helpers.Logger log;
     private final Logger logger = LoggerFactory.getLogger(SalesInterceptor.class);
 
     private final JwtToken jwtToken;
@@ -37,21 +41,12 @@ public class SalesInterceptor implements HandlerInterceptor {
     private final WholesaleServicePlanService wholesaleServicePlanService;
     private final UserCacheService userCacheService;
 
-    public SalesInterceptor(JwtToken jwtToken, UserRepository userRepository,UserCacheService userCacheService, PermissionRepository permissionRepository, StorePermissionsRepository storePermissionsRepository,WholesaleServicePlanService wholesaleServicePlanService){
-        this.jwtToken = jwtToken;
-        this.userRepository = userRepository;
-        this.userCacheService = userCacheService;
-        this.permissionRepository = permissionRepository;
-        this.storePermissionsRepository = storePermissionsRepository;
-        this.wholesaleServicePlanService = wholesaleServicePlanService;
-    }
-
     @Override
     public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) throws Exception {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         // Token from swagger because swagger not sends Authorization header in request.
         token = token == null ? request.getHeader("authToken") : token;
-        logger.info("request url : {}", request.getRequestURI());
+        log.info(logger,"request url : {}", request.getRequestURI());
         try {
         if (token != null && token.startsWith(GlobalConstant.AUTH_TOKEN_PREFIX)) {
             token = token.substring(7);

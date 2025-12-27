@@ -11,6 +11,7 @@ import com.sales.global.GlobalConstant;
 import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,8 +32,10 @@ import static com.sales.specifications.ItemReviewSpecifications.isWholesaleId;
 import static com.sales.utils.Utils.getCurrentMillis;
 
 @Service
+@RequiredArgsConstructor
 public class WholesaleStoreService extends WholesaleRepoContainer {
 
+    private final com.sales.helpers.Logger log;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleStoreService.class);
 
     @Value("${store.absolute}")
@@ -40,7 +43,7 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
 
     @Transactional(rollbackOn = {IllegalArgumentException.class, MyException.class, RuntimeException.class})
     public Map<String, Object> updateStoreBySlug(StoreDto storeDto, User loggedUser) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Starting updateStoreBySlug method with storeDto: {}, loggedUser: {}", storeDto, loggedUser);
+        log.info(logger,"Starting updateStoreBySlug method with storeDto: {}, loggedUser: {}", storeDto, loggedUser);
 
         // Validating required fields. If there we found any required field is null, this will throw an Exception
         Utils.checkRequiredFields(storeDto, List.of("storeName", "storeEmail", "storePhone", "categoryId", "subCategoryId"));
@@ -83,13 +86,13 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
             responseObj.put(ConstantResponseKeys.MESSAGE, "No store found to update");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
-        logger.info("Completed updateStoreBySlug method");
+        log.info(logger,"Completed updateStoreBySlug method");
         return responseObj;
     }
 
     @Transactional(rollbackOn = {IllegalArgumentException.class, MyException.class, RuntimeException.class})
     public int updateStore(StoreDto storeDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Starting updateStore method with storeDto: {}, loggedUser: {}", storeDto, loggedUser);
+        log.info(logger,"Starting updateStore method with storeDto: {}, loggedUser: {}", storeDto, loggedUser);
         AddressDto address = new AddressDto();
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(storeDto, List.of("street", "zipCode", "city", "state"));
@@ -101,42 +104,42 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         int isUpdatedAddress = wholesaleAddressHbRepository.updateAddress(address, loggedUser); // Update operation
         if (isUpdatedAddress < 1) return isUpdatedAddress;
         int isUpdatedStore = wholesaleStoreHbRepository.updateStore(storeDto, loggedUser); // Update operation
-        logger.info("Completed updateStore method");
+        log.info(logger,"Completed updateStore method");
         return isUpdatedStore;
     }
 
     @Transactional
     public Store getStoreDetails(String slug) {
-        logger.info("Starting getStoreDetails method with slug: {}", slug);
+        log.info(logger,"Starting getStoreDetails method with slug: {}", slug);
         Store store = wholesaleStoreRepository.findStoreBySlug(slug);
-        logger.info("Completed getStoreDetails method");
+        log.info(logger,"Completed getStoreDetails method");
         return store;
     }
 
     public Store getStoreByUserSlug(Integer userId) {
-        logger.info("Starting getStoreByUserSlug method with userId: {}", userId);
+        log.info(logger,"Starting getStoreByUserSlug method with userId: {}", userId);
         Store store = wholesaleStoreRepository.findStoreByUserId(userId);
-        logger.info("Completed getStoreByUserSlug method");
+        log.info(logger,"Completed getStoreByUserSlug method");
         return store;
     }
 
     public Store getStoreByUserId(Integer userId) {
-        logger.info("Starting getStoreByUserId method with userId: {}", userId);
+        log.info(logger,"Starting getStoreByUserId method with userId: {}", userId);
         Store store = wholesaleStoreRepository.findStoreByUserId(userId);
-        logger.info("Completed getStoreByUserId method");
+        log.info(logger,"Completed getStoreByUserId method");
         return store;
     }
 
     public Integer getStoreIdByUserSlug(Integer userId) {
-        logger.info("Starting getStoreIdByUserSlug method with userId: {}", userId);
+        log.info(logger,"Starting getStoreIdByUserSlug method with userId: {}", userId);
         Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(userId);
-        logger.info("Completed getStoreIdByUserSlug method");
+        log.info(logger,"Completed getStoreIdByUserSlug method");
         return storeId;
     }
 
     @Transactional
     public String getStoreImagePath(MultipartFile storeImage, String slug) throws MyException, IOException {
-        logger.info("Starting getStoreImagePath method with storeImage: {}, slug: {}", storeImage, slug);
+        log.info(logger,"Starting getStoreImagePath method with storeImage: {}, slug: {}", storeImage, slug);
         if (storeImage != null) {
             if (UploadImageValidator.isValidImage(storeImage, GlobalConstant.bannerMinWidth,
                     GlobalConstant.bannerMinHeight, GlobalConstant.bannerMaxWidth, GlobalConstant.bannerMaxHeight,
@@ -147,7 +150,7 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
                 if (!dir.exists()) dir.mkdirs();
                 File file = new File(dirPath + fileOriginalName);
                 storeImage.transferTo(file);
-                logger.info("Completed getStoreImagePath method");
+                log.info(logger,"Completed getStoreImagePath method");
                 return fileOriginalName;
             } else {
                 throw new MyException("Image is not fit in accept ratio. please resize your image before upload.");
@@ -158,7 +161,7 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
 
     @Transactional(rollbackOn = {MyException.class, IllegalArgumentException.class, RuntimeException.class, Exception.class})
     public Store createStore(StoreDto storeDto, User loggedUser) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Starting createStore method with storeDto: {}, loggedUser: {}", storeDto, loggedUser);
+        log.info(logger,"Starting createStore method with storeDto: {}, loggedUser: {}", storeDto, loggedUser);
 
         // Validating required fields. If their we found any required field is null, this will throw an Exception
         Utils.checkRequiredFields(storeDto, List.of("storeName", "storePic", "storeEmail", "storePhone", "categoryId", "subCategoryId"));
@@ -198,13 +201,13 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         } else {
             throw new MyException("Store image can't be blank.");
         }
-        logger.info("Completed createStore method");
+        log.info(logger,"Completed createStore method");
         return insertedStore;
     }
 
     @Transactional
     public Address insertAddress(AddressDto addressDto, User loggedUser) {
-        logger.info("Starting insertAddress method with addressDto: {}, loggedUser: {}", addressDto, loggedUser);
+        log.info(logger,"Starting insertAddress method with addressDto: {}, loggedUser: {}", addressDto, loggedUser);
         Address address = Address.builder()
             .slug(UUID.randomUUID().toString())
             .street(addressDto.getStreet())
@@ -219,12 +222,12 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
             .updatedBy(loggedUser.getId())
             .build();
         Address savedAddress = addressRepository.save(address); // Create operation
-        logger.info("Completed insertAddress method");
+        log.info(logger,"Completed insertAddress method");
         return savedAddress;
     }
 
     public AddressDto getAddressObjFromStore(StoreDto storeDto) {
-        logger.info("Starting getAddressObjFromStore method with storeDto: {}", storeDto);
+        log.info(logger,"Starting getAddressObjFromStore method with storeDto: {}", storeDto);
         AddressDto addressDto = AddressDto.builder()
             .street(storeDto.getStreet())
             .zipCode(storeDto.getZipCode())
@@ -233,43 +236,43 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
             .latitude(storeDto.getLatitude())
             .altitude(storeDto.getAltitude())
             .build();
-        logger.info("Completed getAddressObjFromStore method");
+        log.info(logger,"Completed getAddressObjFromStore method");
         return addressDto;
     }
 
     public Page<StoreNotifications> getAllStoreNotification(SearchFilters filters, User loggedUser) {
-        logger.info("Starting getAllStoreNotification method with filters: {}, loggedUser: {}", filters, loggedUser);
+        log.info(logger,"Starting getAllStoreNotification method with filters: {}, loggedUser: {}", filters, loggedUser);
         Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(loggedUser.getId());
         Specification<StoreNotifications> specification = Specification.allOf(isUserId(loggedUser.getId()).or(isWholesaleId(storeId)));
         Pageable pageable = getPageable(filters);
         Page<StoreNotifications> notifications = wholesaleNotificationRepository.findAll(specification, pageable);
-        logger.info("Completed getAllStoreNotification method");
+        log.info(logger,"Completed getAllStoreNotification method");
         return notifications;
     }
 
     public void updateSeen(StoreDto storeDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Starting updateSeen method with storeDto: {}", storeDto);
+        log.info(logger,"Starting updateSeen method with storeDto: {}", storeDto);
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(storeDto, List.of("seenIds"));
         List<Long> seenIds = storeDto.getSeenIds();
         for (long id : seenIds) {
             wholesaleStoreHbRepository.updateSeenNotifications(id); // Update operation
         }
-        logger.info("Completed updateSeen method");
+        log.info(logger,"Completed updateSeen method");
     }
 
     public List<StoreCategory> getAllStoreCategory() {
-        logger.info("Starting getAllStoreCategory method");
+        log.info(logger,"Starting getAllStoreCategory method");
         Sort sort = Sort.by("category").ascending();
         List<StoreCategory> categories = wholesaleCategoryRepository.findAll(sort);
-        logger.info("Completed getAllStoreCategory method");
+        log.info(logger,"Completed getAllStoreCategory method");
         return categories;
     }
 
     public List<StoreSubCategory> getAllStoreSubCategories(int categoryId) {
-        logger.info("Starting getAllStoreSubCategories method with categoryId: {}", categoryId);
+        log.info(logger,"Starting getAllStoreSubCategories method with categoryId: {}", categoryId);
         List<StoreSubCategory> subCategories = wholesaleSubCategoryRepository.getSubCategories(categoryId);
-        logger.info("Completed getAllStoreSubCategories method");
+        log.info(logger,"Completed getAllStoreSubCategories method");
         return subCategories;
     }
 

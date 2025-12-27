@@ -4,6 +4,7 @@ import com.sales.entities.BlockedUser;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -16,13 +17,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 public class BlockListController extends WholesaleServiceContainer {
 
-    private static final Logger logger = LoggerFactory.getLogger(BlockListController.class);
+  private final com.sales.helpers.Logger log;
+  private static final Logger logger = LoggerFactory.getLogger(BlockListController.class);
 
     @GetMapping("/block/{recipient}")
     public ResponseEntity<Map<String,Object>> addUserInBlockList(@PathVariable String recipient, HttpServletRequest request){
-        logger.info("Blocking user: {}", recipient);
+        log.info(logger,"Blocking user: {}", recipient);
         Map<String,Object> result = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         BlockedUser blockedUser = blockListService.addAUserInBlockList(loggedUser, recipient);
@@ -40,7 +43,7 @@ public class BlockListController extends WholesaleServiceContainer {
 
     @GetMapping("/unblock/{recipient}")
     public ResponseEntity<Map<String,Object>> removeUserFromBlockList(@PathVariable String recipient, HttpServletRequest request){
-        logger.info("Unblocking user: {}", recipient);
+        log.info(logger,"Unblocking user: {}", recipient);
         Map<String,Object> result = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         boolean unblocked = blockListService.removeUserFromBlockList(loggedUser.getId(), recipient);

@@ -159,7 +159,7 @@ public class TestUtil {
         String imageFolder = GlobalConstantTest.IMAGE_FOLDER_PATH_TEST;
         String imageName = GlobalConstantTest.IMAGE_NAME_TEST;
         Path path = Paths.get(imageFolder + imageName);
-        logger.info("The image path ================= {}", path);
+        log.info(logger,"The image path ================= {}", path);
         if (!Files.exists(path)) throw new FileNotFoundException(path + " not found ");
         byte[] imageBytes = Files.readAllBytes(path);
         MockMultipartFile file = new MockMultipartFile(

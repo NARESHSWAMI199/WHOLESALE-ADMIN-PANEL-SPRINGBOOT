@@ -1,8 +1,7 @@
 name: SonarQube
 on:
   push:
-    branches:
-      - main
+    branches: [ main, develop, feature/*, bugfix/* ]
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:

@@ -3,6 +3,7 @@ package com.sales.exceptions;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.sales.dto.ErrorDto;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -25,8 +26,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class GlobalAdviceController {
 
+    private final com.sales.helpers.Logger log;
     private static final Logger logger = LoggerFactory.getLogger(GlobalAdviceController.class);
 
     @Transactional

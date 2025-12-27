@@ -1,6 +1,7 @@
 package com.sales.utils;
 
 import com.sales.admin.repositories.ItemHbRepository;
+import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -18,8 +19,10 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class WriteExcelUtil {
 
+    private final com.sales.helpers.Logger log;
     private final Logger logger = LoggerFactory.getLogger(WriteExcelUtil.class);
 
     @Value("${excel.export.absolute}")
@@ -209,7 +212,7 @@ public class WriteExcelUtil {
         if (!directory.exists()) {
             boolean created = directory.mkdirs();
             if (created) {
-                logger.info("Directory created: {}", directory.getAbsolutePath());
+                log.info(logger,"Directory created: {}", directory.getAbsolutePath());
             }
         }
 
@@ -228,7 +231,7 @@ public class WriteExcelUtil {
         if (!directory.exists()) {
             boolean created = directory.mkdirs();
             if (created) {
-                logger.info("Created directory for not-updated items: {}", Utils.sanitizeForLog(directory.getAbsolutePath()));
+                log.info(logger,"Created directory for not-updated items: {}", Utils.sanitizeForLog(directory.getAbsolutePath()));
             }
         }
 
@@ -239,7 +242,7 @@ public class WriteExcelUtil {
             workbook.write(fos);
         }
 
-        logger.info("Not updated items excel saved at: {}", Utils.sanitizeForLog(fullPath));
+        log.info(logger,"Not updated items excel saved at: {}", Utils.sanitizeForLog(fullPath));
 
         return fileName;
     }

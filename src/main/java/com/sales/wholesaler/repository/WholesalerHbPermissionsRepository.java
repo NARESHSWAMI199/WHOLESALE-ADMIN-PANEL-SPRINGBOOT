@@ -6,6 +6,7 @@ import com.sales.global.GlobalConstant;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,10 @@ import java.util.List;
 
 @Component
 @Transactional
+@RequiredArgsConstructor
 public class WholesalerHbPermissionsRepository {
 
+    private final com.sales.helpers.Logger log;
     private final Logger logger = LoggerFactory.getLogger(WholesalerHbPermissionsRepository.class);
 
     @Autowired
@@ -41,7 +44,7 @@ public class WholesalerHbPermissionsRepository {
             values +="("+userId+","+permissions.get(i)+")";
             if(i < permissions.size()-1) values += ",";
         }
-        logger.info(values);
+        log.info(logger,values);
         String sql = "insert into wholesaler_permissions (user_id,permission_id) values "+values;
         Query query = entityManager.createNativeQuery(sql);
         return query.executeUpdate();

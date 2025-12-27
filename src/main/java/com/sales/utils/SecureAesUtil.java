@@ -1,6 +1,7 @@
 package com.sales.utils;
 
 import com.sales.exceptions.MyException;
+import com.sales.helpers.SafeLogHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +15,7 @@ import java.util.Base64;
 public class SecureAesUtil {
 
     private SecureAesUtil(){}
+    private final com.sales.helpers.Logger log = SafeLogHelper.getInstance();
     private static final Logger logger = LoggerFactory.getLogger(SecureAesUtil.class);
 
     private static final String ALGORITHM = "AES/GCM/NoPadding";

@@ -3,6 +3,7 @@ package com.sales.wholesaler.controller;
 
 import com.sales.entities.City;
 import com.sales.entities.State;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -16,23 +17,25 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/wholesale/address")
+@RequiredArgsConstructor
 public class WholesaleAddressController extends WholesaleServiceContainer {
 
+    private final com.sales.helpers.Logger log;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleAddressController.class);
 
     @GetMapping("/city/{stateId}")
     public ResponseEntity<List<City>> getCityList(@PathVariable Integer stateId ) {
-        logger.info("Starting getCityList method");
+        log.info(logger,"Starting getCityList method");
         List<City> cityList = addressService.getCityList(stateId);
-        logger.info("Completed getCityList method");
+        log.info(logger,"Completed getCityList method");
         return new ResponseEntity<>(cityList, HttpStatus.OK);
     }
 
     @GetMapping("/state")
     public ResponseEntity<List<State>> getStateList() {
-        logger.info("Starting getStateList method");
+        log.info(logger,"Starting getStateList method");
         List<State> stateList = addressService.getStateList();
-        logger.info("Completed getStateList method");
+        log.info(logger,"Completed getStateList method");
         return new ResponseEntity<>(stateList,HttpStatus.OK);
     }
 

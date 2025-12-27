@@ -1,8 +1,8 @@
 package com.sales.beans;
 
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.sales.helpers.Logger;
+import com.sales.helpers.SafeLogHelper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 public class CustomBeanConfig {
 
 
-    @Bean
+    @Bean("safeLogger")
     public Logger getLogger(){
-        return LogManager.getLogger(this);
+        return SafeLogHelper.getInstance();
     }
 }

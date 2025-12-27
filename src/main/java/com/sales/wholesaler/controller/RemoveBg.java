@@ -3,6 +3,7 @@ package com.sales.wholesaler.controller;
 import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,9 +32,11 @@ import java.util.Objects;
 
 @RequestMapping("removebg")
 @RestController
+@RequiredArgsConstructor
 public class RemoveBg {
 
-    private static final Logger logger = LoggerFactory.getLogger(RemoveBg.class);
+  private final com.sales.helpers.Logger log;
+  private static final Logger logger = LoggerFactory.getLogger(RemoveBg.class);
 
     @Value(value = "${removebg.absolute}")
     String outputPath;
@@ -43,7 +46,7 @@ public class RemoveBg {
 
     @PostMapping("/")
     public ResponseEntity<Map<String,String>> uploadImage(HttpServletRequest request, @RequestParam("image") MultipartFile file) throws IOException {
-        logger.info("Starting uploadImage method");
+        log.info(logger,"Starting uploadImage method");
         User user = (User) request.getAttribute("user");
         String baseUrl = GlobalConstant.removeBgUrl; // Replace with your Flask API URL
         Path baseDir = Paths.get(outputPath).toAbsolutePath().normalize();
@@ -55,7 +58,7 @@ public class RemoveBg {
         File filePath = targetPath.toFile();
         if (!filePath.exists()){
             boolean dirCreated = filePath.getParentFile().mkdirs();
-            if(dirCreated) logger.info("New dir created :{}",filePath.getName());
+            if(dirCreated) log.info(logger,"New dir created :{}",filePath.getName());
 
         }
 
@@ -92,21 +95,21 @@ public class RemoveBg {
         Map<String,String> result = new HashMap<>();
         result.put("downloadPath","/removebg/"+outputPathRes);
         Files.delete(targetPath);
-        logger.info("File : {} successfully deleted",filePath.getAbsolutePath());
-        logger.info("Completed uploadImage method");
+        log.info(logger,"File : {} successfully deleted",filePath.getAbsolutePath());
+        log.info(logger,"Completed uploadImage method");
         return new ResponseEntity<>(result, responseEntity.getStatusCode());
     }
 
 
     @GetMapping("/{filename}")
     public ResponseEntity<Resource> getFile( HttpServletRequest request, @PathVariable(required = true) String filename) throws MalformedURLException {
-        logger.info("Starting getFile method");
+        log.info(logger,"Starting getFile method");
         User user = (User) request.getAttribute("user");
         Path relative = Paths.get(relativePath);
         Path userSlug = relative.resolve(user.getSlug()).normalize();
         Path path = userSlug.resolve(filename).normalize();
         Resource resource = new UrlResource(path.toUri());
-        logger.info("Completed getFile method");
+        log.info(logger,"Completed getFile method");
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
     }
 

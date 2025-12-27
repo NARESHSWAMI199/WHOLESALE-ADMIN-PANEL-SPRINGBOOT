@@ -2,6 +2,7 @@ package com.sales.admin.controllers;
 
 import com.sales.dto.GraphDto;
 import com.sales.global.ConstantResponseKeys;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -13,13 +14,15 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("admin/dashboard")
+@RequiredArgsConstructor
 public class AdminDashboardController extends ServiceContainer {
 
+    private final com.sales.helpers.Logger log;
     private static final Logger logger = LoggerFactory.getLogger(AdminDashboardController.class);
 
     @GetMapping("/counts")
     public ResponseEntity<Map<String, Object>> getAllDashboardCount() {
-        logger.info("Fetching all dashboard counts");
+        log.info(logger,"Fetching all dashboard counts");
         Map<String, Object> responseObj = new HashMap<>();
         responseObj.put("users", userService.getUserCounts());
         responseObj.put("retailers", userService.getRetailersCounts());
@@ -33,7 +36,7 @@ public class AdminDashboardController extends ServiceContainer {
 
     @PostMapping("graph/months/")
     public ResponseEntity<Map<String, Object>> getAllGraphData(@RequestBody GraphDto graphDto) {
-        logger.info("Fetching graph data for months with filters: {}", graphDto);
+        log.info(logger,"Fetching graph data for months with filters: {}", graphDto);
         Map<String, Object> responseObj = new HashMap<>();
         responseObj.put(ConstantResponseKeys.RES, storeService.getStoreCountByMonths(graphDto));
         responseObj.put(ConstantResponseKeys.STATUS, 200);

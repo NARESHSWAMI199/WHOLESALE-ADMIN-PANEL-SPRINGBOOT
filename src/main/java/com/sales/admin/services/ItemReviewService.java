@@ -2,6 +2,7 @@ package com.sales.admin.services;
 
 import com.sales.dto.ItemReviewsFilterDto;
 import com.sales.entities.ItemReviews;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -13,12 +14,14 @@ import static com.sales.specifications.ItemReviewSpecifications.*;
 
 
 @Service
+@RequiredArgsConstructor
 public class ItemReviewService extends  RepoContainer {
 
-    private static final Logger logger = LoggerFactory.getLogger(ItemReviewService.class);
+  private final com.sales.helpers.Logger log;
+  private static final Logger logger = LoggerFactory.getLogger(ItemReviewService.class);
 
     public Page<ItemReviews> getAllItemReview(ItemReviewsFilterDto filters) {
-        logger.info("Entering getALlItemReview with filters: {}", filters);
+        log.info(logger,"Entering getALlItemReview with filters: {}", filters);
         Specification<ItemReviews> specification = Specification.allOf(
                 (containsName(filters.getSearchKey()))
                         .and(greaterThanOrEqualFromDate(filters.getFromDate()))

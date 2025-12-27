@@ -8,14 +8,17 @@ import com.sales.entities.User;
 import com.sales.entities.Wallet;
 import com.sales.exceptions.NotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class WholesaleWalletService extends WholesaleRepoContainer {
 
+      private final com.sales.helpers.Logger log;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleWalletService.class);
 
     @Autowired
@@ -31,14 +34,14 @@ public class WholesaleWalletService extends WholesaleRepoContainer {
 
     @Transactional
     public void sendNotification(String title,String messageBody,int storeId,User loggedUser){
-        logger.info("Entering sendNotification with title: {}, messageBody: {}, storeId: {}, loggedUser: {}", title, messageBody, storeId, loggedUser);
+        log.info(logger,"Entering sendNotification with title: {}, messageBody: {}, storeId: {}, loggedUser: {}", title, messageBody, storeId, loggedUser);
         StoreNotifications storeNotifications = new StoreNotifications();
         storeNotifications.setTitle(title);
         storeNotifications.setMessageBody(messageBody);
         storeNotifications.setWholesaleId(storeId);
         storeNotifications.setCreatedBy(loggedUser);
         wholesaleNotificationHbRepository.insertStoreNotifications(storeNotifications);
-        logger.info("Exiting sendNotification");
+        log.info(logger,"Exiting sendNotification");
     }
 
     public boolean paymentViaWallet(String servicePlanSlug, User loggedUser) {

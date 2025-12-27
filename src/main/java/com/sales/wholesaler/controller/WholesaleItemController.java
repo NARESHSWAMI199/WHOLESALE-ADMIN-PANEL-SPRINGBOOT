@@ -44,21 +44,22 @@ import java.util.Map;
 public class WholesaleItemController extends WholesaleServiceContainer {
 
     private final WriteExcelUtil writeExcel;
-    private static final Logger logger = LoggerFactory.getLogger(WholesaleItemController.class);
+      private final com.sales.helpers.Logger log;
+  private static final Logger logger = LoggerFactory.getLogger(WholesaleItemController.class);
 
     @PostMapping("/all")
     public ResponseEntity<Page<Item>> getAllItem(HttpServletRequest request,@RequestBody ItemSearchFields searchFilters) {
-        logger.info("Starting getAllItem method");
+        log.info(logger,"Starting getAllItem method");
         User loggedUser = (User) request.getAttribute("user");
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
         Page<Item> alItems = wholesaleItemService.getAllItems(searchFilters,storeId);
-        logger.info("Completed getAllItem method");
+        log.info(logger,"Completed getAllItem method");
         return new ResponseEntity<>(alItems, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{slug}")
     public ResponseEntity<Map<String, Object>> getItem(@PathVariable String slug) {
-        logger.info("Starting getItem method");
+        log.info(logger,"Starting getItem method");
         Map<String, Object> responseObj = new HashMap<>();
         Item alItems = wholesaleItemService.findItemBySLug(slug);
         if (alItems != null) {
@@ -69,7 +70,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
             responseObj.put(ConstantResponseKeys.MESSAGE, "Item Not Found");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
-        logger.info("Completed getItem method");
+        log.info(logger,"Completed getItem method");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
@@ -95,17 +96,17 @@ public class WholesaleItemController extends WholesaleServiceContainer {
     )))
     @PostMapping(value = {"/add", "/update"})
     public ResponseEntity<Map<String, Object>> addOrUpdateItems(HttpServletRequest request, @ModelAttribute ItemDto itemDto) throws Exception {
-        logger.info("Starting addOrUpdateItems method");
+        log.info(logger,"Starting addOrUpdateItems method");
         User loggedUser = (User) request.getAttribute("user");
         String path = request.getRequestURI();
         Map<String,Object> responseObj = wholesaleItemService.createOrUpdateItem(itemDto, loggedUser,path);
-        logger.info("Completed addOrUpdateItems method");
+        log.info(logger,"Completed addOrUpdateItems method");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
     @PostMapping("/delete")
     public ResponseEntity<Map<String,Object>> deleteItemBySlug(HttpServletRequest request, @RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Starting deleteItemBySlug method");
+        log.info(logger,"Starting deleteItemBySlug method");
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
@@ -117,7 +118,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
             responseObj.put(ConstantResponseKeys.MESSAGE, "No item found to delete.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
-        logger.info("Completed deleteItemBySlug method");
+        log.info(logger,"Completed deleteItemBySlug method");
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
@@ -131,7 +132,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
     )))
     @PostMapping("/stock")
     public ResponseEntity<Map<String,Object>> updateItemStock (HttpServletRequest request,@RequestBody Map<String,String> params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Starting updateItemStock method");
+        log.info(logger,"Starting updateItemStock method");
         Map<String,Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
@@ -143,23 +144,23 @@ public class WholesaleItemController extends WholesaleServiceContainer {
             responseObj.put(ConstantResponseKeys.MESSAGE, "No item found to update.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
-        logger.info("Completed updateItemStock method");
+        log.info(logger,"Completed updateItemStock method");
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
     @GetMapping("category")
     public ResponseEntity<List<ItemCategory>> getAllCategory() {
-        logger.info("Starting getAllCategory method");
+        log.info(logger,"Starting getAllCategory method");
         List<ItemCategory> itemCategories = wholesaleItemService.getAllCategory();
-        logger.info("Completed getAllCategory method");
+        log.info(logger,"Completed getAllCategory method");
         return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
 
     @GetMapping("subcategory/{categoryId}")
     public ResponseEntity<List<ItemSubCategory>> getSubCategory(@PathVariable(required = true) int categoryId) {
-        logger.info("Starting getSubCategory method");
+        log.info(logger,"Starting getSubCategory method");
         List<ItemSubCategory> itemCategories = wholesaleItemService.getAllItemsSubCategories(categoryId);
-        logger.info("Completed getSubCategory method");
+        log.info(logger,"Completed getSubCategory method");
         return new ResponseEntity<>(itemCategories, HttpStatus.OK);
     }
 
@@ -170,7 +171,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
     @PostMapping(value = {"importExcel"})
     public ResponseEntity<Map<String, Object>> importItemsFromExcelSheet(HttpServletRequest request, @RequestParam("excelfile") MultipartFile excelSheet) {
         User user = (User) request.getAttribute("user");
-        logger.info("Importing items from Excel sheet for userSlug: {}", user.getSlug());
+        log.info(logger,"Importing items from Excel sheet for userSlug: {}", user.getSlug());
         Map<String,Object> responseObj = new HashMap<>();
         try {
             if (excelSheet != null && ExcelHelper.hasExcelFormat(excelSheet)) {
@@ -179,14 +180,14 @@ public class WholesaleItemController extends WholesaleServiceContainer {
                 if(updateItemsError.isEmpty()) {
                     responseObj.put(ConstantResponseKeys.MESSAGE, "Items successfully updated.");
                     responseObj.put(ConstantResponseKeys.STATUS, 200);
-                    logger.info("Items successfully updated : {} ",updateItemsError);
+                    log.info(logger,"Items successfully updated : {} ",updateItemsError);
                 }else{
                     // Creating an Excel for which items are not updated
                     String fileName = writeExcel.writeNotUpdatedItemsExcel(updateItemsError, GlobalConstant.HEADERS_NOT_UPDATED_ITEMS_EXCEL, "WHOLESALER_"+user.getSlug());
                     responseObj.put("fileUrl", Utils.getHostUrl(request)+GlobalConstant.ITEMS_NOT_UPDATED_PATH_FOR_WHOLESALE+"WHOLESALER_"+user.getSlug()+"/"+fileName);
                     responseObj.put("message", "Some items are not updated.");
                     responseObj.put("status", 201);
-                    logger.info("Some items are not updated : {} ",updateItemsError);
+                    log.info(logger,"Some items are not updated : {} ",updateItemsError);
                 }
 
             } else {
@@ -206,7 +207,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
     @PostMapping(value = {"exportExcel"})
     public ResponseEntity<Object> exportItemsFromExcel(@RequestBody ItemSearchFields searchFilters ,HttpServletRequest request) {
         User user = (User) request.getAttribute("user");
-        logger.info("Exporting items to Excel for user : {}", user );
+        log.info(logger,"Exporting items to Excel for user : {}", user );
         Map<String,Object> responseObj = new HashMap<>();
         try {
             searchFilters.setStoreId(wholesaleStoreService.getStoreIdByUserSlug(user.getId()));
@@ -215,7 +216,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
             Resource resource = new UrlResource(path.toUri());
             responseObj.put(ConstantResponseKeys.MESSAGE, "File successfully downloaded.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
-            logger.info("Response during export items excel sheet : {} ",responseObj);
+            log.info(logger,"Response during export items excel sheet : {} ",responseObj);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")); // For .xlsx
             headers.setContentDispositionFormData("attachment", "myItemsExcelFile.xlsx");
@@ -225,7 +226,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
             responseObj.put(ConstantResponseKeys.STATUS, 500);
             logger.error("Exception during export excel : {}",e.getMessage(),e);
         }
-        logger.info("ENDED exportItemsFromExcel.");
+        log.info(logger,"ENDED exportItemsFromExcel.");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
@@ -238,7 +239,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
 
     @GetMapping(value = {"download/update/template"})
     public ResponseEntity<Object> downloadExcelUpdateTemplate() throws IOException {
-        logger.info("Download excel sheet template for update items" );
+        log.info(logger,"Download excel sheet template for update items" );
         Path path = Paths.get(updateItemTemplate);
         Resource resource = new UrlResource(path.toUri());
         HttpHeaders headers = new HttpHeaders();
@@ -255,7 +256,7 @@ public class WholesaleItemController extends WholesaleServiceContainer {
         Path filePathObj = Paths.get(excelNotUpdateItemsFolderPath);
         Path filePathDynamic = filePathObj.resolve(folderName).normalize();
         Path path = filePathDynamic.resolve(filename).normalize();
-        logger.info("Download excel sheet template for not updated items : {}",path.toAbsolutePath());
+        log.info(logger,"Download excel sheet template for not updated items : {}",path.toAbsolutePath());
         Resource resource = new UrlResource(path.toUri());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")); // For .xlsx

@@ -6,6 +6,7 @@ import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import com.sales.wholesaler.repository.WholesaleUserRepository;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +29,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = {SalesApplication.class})
 @AutoConfigureMockMvc
+@RequiredArgsConstructor
 public class WholesaleUserControllerTest  extends TestUtil {
 
+    private final com.sales.helpers.Logger log;
     private final Logger logger  = LoggerFactory.getLogger(WholesaleStoreControllerTest.class);
 
     @Autowired
@@ -65,7 +68,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
     public void validateOtp(String slug) throws Exception {
         User user = wholesaleUserRepository.findUserBySlug(slug);
         String otp = user.getOtp();
-        logger.info("THE OTP ================== > {}", otp);
+        log.info(logger,"THE OTP ================== > {}", otp);
         String json = """
                 {
                     "slug" : "{slug}",

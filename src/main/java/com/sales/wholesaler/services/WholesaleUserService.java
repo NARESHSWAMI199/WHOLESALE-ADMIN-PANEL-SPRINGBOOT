@@ -11,6 +11,7 @@ import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +34,10 @@ import static com.sales.specifications.UserSpecifications.*;
 
 
 @Service
+@RequiredArgsConstructor
 public class WholesaleUserService extends WholesaleRepoContainer {
 
+    private final com.sales.helpers.Logger log;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleUserService.class);
 
     @Autowired
@@ -56,44 +59,44 @@ public class WholesaleUserService extends WholesaleRepoContainer {
     String password;
 
     public User findByEmailAndPassword(Map<String,String> param) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Starting findByEmailAndPassword method with param: {}", param);
+        log.info(logger,"Starting findByEmailAndPassword method with param: {}", param);
         // Validating required fields. If their we found any required field is null, this will throw an Exception
         Utils.checkRequiredFields(param,List.of("email","password"));
 
         String email = param.get("email");
         String password = param.get("password");
         User user = wholesaleUserRepository.findByEmailAndPassword(email,password);
-        logger.info("Completed findByEmailAndPassword method");
+        log.info(logger,"Completed findByEmailAndPassword method");
         userCacheService.saveCacheUser(user);
         return user;
     }
 
     public User findUserByOtpAndSlug(UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Starting findUserByOtpAndSlug method with userDto: {}", userDto);
+        log.info(logger,"Starting findUserByOtpAndSlug method with userDto: {}", userDto);
         // Validating required fields. If their we found any required field is null, this will throw an Exception
         Utils.checkRequiredFields(userDto,List.of("slug","password"));
         User user = wholesaleUserRepository.findUserByOtpAndSlug(userDto.getSlug(),userDto.getPassword());
-        logger.info("Completed findUserByOtpAndSlug method");
+        log.info(logger,"Completed findUserByOtpAndSlug method");
         userCacheService.saveCacheUser(user);
         return user;
     }
 
     public User findUserByOtpAndEmail(UserDto userDto) {
-        logger.info("Starting findUserByOtpAndEmail method with userDto: {}", userDto);
+        log.info(logger,"Starting findUserByOtpAndEmail method with userDto: {}", userDto);
         User user = wholesaleUserRepository.findUserByOtpAndEmail(userDto.getEmail(),userDto.getPassword());
-        logger.info("Completed findUserByOtpAndEmail method");
+        log.info(logger,"Completed findUserByOtpAndEmail method");
         userCacheService.saveCacheUser(user);
         return user;
     }
 
     public void resetOtp(String email){
-        logger.info("Starting resetOtp method with email: {}", email);
+        log.info(logger,"Starting resetOtp method with email: {}", email);
         wholesaleUserHbRepository.updateOtp(email,"");
-        logger.info("Completed resetOtp method");
+        log.info(logger,"Completed resetOtp method");
     }
 
     public boolean sendOtp(UserDto userDto){
-        logger.info("Starting sendOtp method with userDto: {}", userDto);
+        log.info(logger,"Starting sendOtp method with userDto: {}", userDto);
         boolean sent = false;
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com"); // Replace it with your mail server
@@ -152,19 +155,19 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         {
             mex.printStackTrace();
         }
-        logger.info("Completed sendOtp method");
+        log.info(logger,"Completed sendOtp method");
         return  sent;
     }
 
     public User findUserBySlug(String slug){
-        logger.info("Starting findUserBySlug method with slug: {}", slug);
+        log.info(logger,"Starting findUserBySlug method with slug: {}", slug);
         User user = wholesaleUserRepository.findUserBySlug(slug);
-        logger.info("Completed findUserBySlug method");
+        log.info(logger,"Completed findUserBySlug method");
         return user;
     }
 
     public StoreDto userDtoToStoreDto(UserDto userDto) {
-        logger.info("Starting userDtoToStoreDto method with userDto: {}", userDto);
+        log.info(logger,"Starting userDtoToStoreDto method with userDto: {}", userDto);
         StoreDto storeDto = new StoreDto();
         storeDto.setStoreName(userDto.getStoreName());
         storeDto.setStoreEmail(userDto.getStoreEmail());
@@ -172,12 +175,12 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         storeDto.setCity(userDto.getCity());
         storeDto.setState(userDto.getState());
         storeDto.setStorePhone(userDto.getStorePhone());
-        logger.info("Completed userDtoToStoreDto method");
+        log.info(logger,"Completed userDtoToStoreDto method");
         return storeDto;
     }
 
     public Map<String, Object> updateUserProfile(UserDto userDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Starting updateUserProfile method with userDto: {}, loggedUser: {}", userDto, loggedUser);
+        log.info(logger,"Starting updateUserProfile method with userDto: {}, loggedUser: {}", userDto, loggedUser);
         // Validating required fields. If there we found any required field is null, this will throw an Exception
         Utils.checkRequiredFields(userDto,List.of("slug","username","email","contact"));
 
@@ -199,39 +202,39 @@ public class WholesaleUserService extends WholesaleRepoContainer {
             responseObj.put(ConstantResponseKeys.MESSAGE, "No user found to update.");
             responseObj.put(ConstantResponseKeys.STATUS, 404);
         }
-        logger.info("Completed updateUserProfile method");
+        log.info(logger,"Completed updateUserProfile method");
         return responseObj;
     }
 
     @Transactional
     public int updateUser(UserDto userDto, User loggedUser) {
-        logger.info("Starting updateUser method with userDto: {}, loggedUser: {}", userDto, loggedUser);
+        log.info(logger,"Starting updateUser method with userDto: {}, loggedUser: {}", userDto, loggedUser);
         int updateCount = wholesaleUserHbRepository.updateUser(userDto, loggedUser); // Update operation
-        logger.info("Completed updateUser method");
+        log.info(logger,"Completed updateUser method");
         return updateCount;
     }
 
     public User getUserDetail(String slug) {
-        logger.info("Starting getUserDetail method with slug: {}", slug);
+        log.info(logger,"Starting getUserDetail method with slug: {}", slug);
         User user = wholesaleUserRepository.findUserBySlug(slug);
-        logger.info("Completed getUserDetail method");
+        log.info(logger,"Completed getUserDetail method");
         return user;
     }
 
     @Transactional
     public User resetPasswordByUserSlug(PasswordDto passwordDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Starting resetPasswordByUserSlug method with passwordDto: {}, loggedUser: {}", passwordDto, loggedUser);
+        log.info(logger,"Starting resetPasswordByUserSlug method with passwordDto: {}, loggedUser: {}", passwordDto, loggedUser);
         // Validating required fields. If their we found any required field is null, this will throw an Exception
         Utils.checkRequiredFields(passwordDto,List.of("password"));
         if(passwordDto.getPassword().isEmpty()) throw new IllegalArgumentException("password can't by empty or blank");
         loggedUser.setPassword(passwordDto.getPassword());
         User updatedUser = wholesaleUserRepository.save(loggedUser); // Update operation
-        logger.info("Completed resetPasswordByUserSlug method");
+        log.info(logger,"Completed resetPasswordByUserSlug method");
         return updatedUser;
     }
 
     public String updateProfileImage(MultipartFile profileImage,User loggedUser) throws IOException {
-        logger.info("Starting updateProfileImage method with profileImage: {}, loggedUser: {}", profileImage, loggedUser);
+        log.info(logger,"Starting updateProfileImage method with profileImage: {}, loggedUser: {}", profileImage, loggedUser);
         String slug = loggedUser.getSlug();
         String imageName = UUID.randomUUID().toString().substring(0,5)+"_"+ Objects.requireNonNull(profileImage.getOriginalFilename()).replaceAll(" ","_");
         if (!Utils.isValidImage(imageName)) throw new IllegalArgumentException("Not a valid Image.");
@@ -241,15 +244,15 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         profileImage.transferTo(new File(dirPath+imageName));
         int isUpdated =  wholesaleUserHbRepository.updateProfileImage(slug,imageName); // Update operation
         if(isUpdated > 0) {
-            logger.info("Completed updateProfileImage method");
+            log.info(logger,"Completed updateProfileImage method");
             return imageName;
         }
-        logger.info("Completed updateProfileImage method");
+        log.info(logger,"Completed updateProfileImage method");
         return null;
     }
 
     public User addNewUser(UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Starting addNewUser method with userDto: {}", userDto);
+        log.info(logger,"Starting addNewUser method with userDto: {}", userDto);
         // Validating required fields. If their we found any required field is null, this will throw an Exception
         Utils.checkRequiredFields(userDto,List.of("username","email","password","contact"));
 
@@ -278,7 +281,7 @@ public class WholesaleUserService extends WholesaleRepoContainer {
         if (!sendOtp(userDto)){
             throw new MyException("User was created successfully. but we facing issue some issue during sending otp. Make sure your email address was correct.");
         }
-        logger.info("Completed addNewUser method");
+        log.info(logger,"Completed addNewUser method");
 
         // updating default pagination settings also for both kind of user "W" and "R"
         wholesalePaginationService.setUserDefaultPaginationForSettings(insertedUser);
@@ -289,23 +292,23 @@ public class WholesaleUserService extends WholesaleRepoContainer {
     }
 
     public int updateLastSeen(User loggedUser) {
-        logger.info("Starting updateLastSeen method with loggedUser: {}", loggedUser);
+        log.info(logger,"Starting updateLastSeen method with loggedUser: {}", loggedUser);
         int updateCount = wholesaleUserHbRepository.updatedUserLastSeen(loggedUser.getSlug()); // Update operation
-        logger.info("Completed updateLastSeen method");
+        log.info(logger,"Completed updateLastSeen method");
         return updateCount;
     }
 
     public boolean updateSeenMessages(MessageDto message){
-        logger.info("Starting updateSeenMessages method with message: {}", message);
+        log.info(logger,"Starting updateSeenMessages method with message: {}", message);
         boolean isUpdated = wholesaleUserHbRepository.updateSeenMessage(message); // Update operation
-        logger.info("Completed updateSeenMessages method");
+        log.info(logger,"Completed updateSeenMessages method");
         return isUpdated;
     }
 
 
     /** Getting all retailers and wholesalers for chat purpose */
     public Page<User> getAllUsers(UserSearchFilters filters, User loggedUser) {
-        logger.info("Starting getAllUsers method with filters: {}, loggedUser: {}", filters, loggedUser);
+        log.info(logger,"Starting getAllUsers method with filters: {}, loggedUser: {}", filters, loggedUser);
         Specification<User> specification = Specification.allOf(
                 (containsName(filters.getSearchKey()).or(containsEmail(filters.getSearchKey())))
                     .and(isStatus("A"))
@@ -315,7 +318,7 @@ public class WholesaleUserService extends WholesaleRepoContainer {
 
         Pageable pageable = getPageable(filters);
         Page<User> users = wholesaleUserRepository.findAll(specification,pageable);
-        logger.info("Completed getAllUsers method");
+        log.info(logger,"Completed getAllUsers method");
         return users;
     }
 

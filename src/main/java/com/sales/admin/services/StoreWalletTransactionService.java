@@ -6,6 +6,7 @@ import com.sales.entities.Wallet;
 import com.sales.entities.WalletTransaction;
 import com.sales.exceptions.NotFoundException;
 import com.sales.utils.Utils;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -18,9 +19,11 @@ import java.util.UUID;
 import static com.sales.specifications.WalletTransactionSpecification.*;
 
 @Service
+@RequiredArgsConstructor
 public class StoreWalletTransactionService extends RepoContainer {
 
-    private static final Logger logger = LoggerFactory.getLogger(StoreWalletTransactionService.class);
+      private final com.sales.helpers.Logger log;
+  private static final Logger logger = LoggerFactory.getLogger(StoreWalletTransactionService.class);
 
 
 
@@ -41,7 +44,7 @@ public class StoreWalletTransactionService extends RepoContainer {
 
 
     public WalletTransaction addWalletTransaction(WalletTransactionDto walletTransactionDto,Integer userId) {
-        logger.info("The addWalletTransaction method started with wallTransactionDto : {}",walletTransactionDto);
+        log.info(logger,"The addWalletTransaction method started with wallTransactionDto : {}",walletTransactionDto);
         WalletTransaction walletTransaction = WalletTransaction.builder()
                 .slug(UUID.randomUUID().toString())
                 .userId(userId)
@@ -50,11 +53,11 @@ public class StoreWalletTransactionService extends RepoContainer {
                 .createdAt(Utils.getCurrentMillis())
                 .status(walletTransactionDto.getStatus())
                 .build();
-        logger.info("The addWalletTransaction method ended with wallTransactionDto : {}",walletTransaction);
+        log.info(logger,"The addWalletTransaction method ended with wallTransactionDto : {}",walletTransaction);
 
         if(!Utils.isEmpty(walletTransactionDto.getTransactionType()) && walletTransactionDto.getTransactionType().equalsIgnoreCase("CR")){
             Integer added = walletRepository.addMoneyInWallet(walletTransaction.getAmount(), userId, Utils.getCurrentMillis());
-            logger.info("Added money in wallet rows was updated : {} ",added);
+            log.info(logger,"Added money in wallet rows was updated : {} ",added);
             if(added < 1){ // if a user isn't found in wallet.
                 Wallet wallet = Wallet.builder()
                         .userId(userId)
@@ -65,7 +68,7 @@ public class StoreWalletTransactionService extends RepoContainer {
             }
         }else{
             Integer deducted = walletRepository.deductMoneyFromWallet(walletTransaction.getAmount(), userId, Utils.getCurrentMillis());
-            logger.info("Detected money in wallet rows was updated : {} ",deducted);
+            log.info(logger,"Detected money in wallet rows was updated : {} ",deducted);
         }
 
         return storeWalletTransactionRepository.save(walletTransaction);

@@ -1,13 +1,14 @@
 package com.sales.utils;
 
 import com.sales.exceptions.MyException;
-import org.apache.logging.log4j.Logger;
+import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,17 +19,19 @@ import java.util.Map;
 
 
 @Component
+@RequiredArgsConstructor
 public class ReadExcel {
-    @Autowired
-    Logger logger;
+
+    private final com.sales.helpers.Logger log;
+    private final Logger logger = LoggerFactory.getLogger(ReadExcel.class);
 
     public Map<String,List<String>> getExcelDataInJsonFormat(MultipartFile excelFile) {
 
-        Map<String,List<String>> result = new HashMap();
+        Map<String,List<String>> result = new HashMap<>();
         List<String> columnsList = new ArrayList<>();
         try {
             DataFormatter formatter = new DataFormatter();
-            logger.info("Excel file reading....");
+            log.info(logger,"Excel file reading....");
             XSSFWorkbook workbook = new XSSFWorkbook(excelFile.getInputStream());
 
             int totalSheets = workbook.getNumberOfSheets();
@@ -68,7 +71,7 @@ public class ReadExcel {
             logger.error("Exception during creating excel file : {} ",e.getMessage());
             throw new MyException(e.getMessage());
         }
-        logger.info("Excel file reading END.... ");
+        log.info(logger,"Excel file reading END.... ");
         return result;
     }
 

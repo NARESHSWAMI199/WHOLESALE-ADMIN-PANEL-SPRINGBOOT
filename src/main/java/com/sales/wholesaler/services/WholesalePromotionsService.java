@@ -4,6 +4,7 @@ package com.sales.wholesaler.services;
 import com.sales.dto.StorePromotionDto;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -12,12 +13,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class WholesalePromotionsService extends WholesaleRepoContainer {
 
+    private final com.sales.helpers.Logger log;
     private static final Logger logger = LoggerFactory.getLogger(WholesalePromotionsService.class);
 
     public Map<String,Object> insertItemPromotion(StorePromotionDto storePromotionDto, User loggedUser) {
-        logger.info("Starting insertItemPromotion method with storePromotionDto: {}, loggedUser: {}", storePromotionDto, loggedUser);
+        log.info(logger,"Starting insertItemPromotion method with storePromotionDto: {}, loggedUser: {}", storePromotionDto, loggedUser);
         Map<String,Object> response = new HashMap<>();
         Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(loggedUser.getId());
         storePromotionDto.setStoreId(storeId);
@@ -29,7 +32,7 @@ public class WholesalePromotionsService extends WholesaleRepoContainer {
             response.put(ConstantResponseKeys.MESSAGE,"Something went wrong during promote item. if your money was deducted contact to administrator");
             response.put(ConstantResponseKeys.STATUS,400);
         }
-        logger.info("Completed insertItemPromotion method");
+        log.info(logger,"Completed insertItemPromotion method");
         return response;
     }
 

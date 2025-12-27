@@ -5,6 +5,7 @@ import com.sales.exceptions.MyException;
 import com.sales.exceptions.NotFoundException;
 import com.sales.exceptions.UserException;
 import com.sales.global.GlobalConstant;
+import com.sales.helpers.SafeLogHelper;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.wholesaler.services.WholesaleUserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +30,7 @@ import java.util.regex.Pattern;
 @Component
 public class Utils {
 
+    private static final com.sales.helpers.Logger log = SafeLogHelper.getInstance();
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
     private Utils() {}
@@ -118,17 +120,17 @@ public class Utils {
         }
         Pattern pattern = Pattern.compile(NAME_PATTERN);
         Matcher matcher = pattern.matcher(name);
-        logger.info("{}",matcher.matches());
+        log.info(logger,"{}",matcher.matches());
         if(!matcher.matches()){
             String message ="";
             String neededSyntax = "Special symbols like : ^*$+?[]()| are not allowed.";
             if(flag.equals("user")){
                 message = "Not a valid username";
-                logger.info(message);
+                log.info(logger,message);
                 throw  new MyException(message + " "+neededSyntax  );
             }
             message = "Not a valid "+flag+" name.";
-            logger.info(message);
+            log.info(logger,message);
             throw new IllegalArgumentException(message + " "+neededSyntax);
         }
         return name;
@@ -149,7 +151,7 @@ public class Utils {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         // Token from swagger because swagger not sends Authorization header in request.
         token = token == null ? request.getHeader("authToken") : token;
-        logger.info("request url : {}", request.getRequestURI());
+        log.info(logger,"request url : {}", request.getRequestURI());
         try {
             if (token != null && token.startsWith(GlobalConstant.AUTH_TOKEN_PREFIX)) {
                 token = token.substring(7);
@@ -171,7 +173,7 @@ public class Utils {
 
 
     public static User getUserFromRequest(HttpServletRequest request,String token,JwtToken jwtToken, WholesaleUserService userService){
-        logger.info("[getUserFromRequest] request url : {}", request.getRequestURI());
+        log.info(logger,"[getUserFromRequest] request url : {}", request.getRequestURI());
         token = token != null ? URLDecoder.decode(token, StandardCharsets.UTF_8) : token;
         try {
             if (token != null) {

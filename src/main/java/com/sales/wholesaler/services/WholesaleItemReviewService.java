@@ -3,6 +3,7 @@ package com.sales.wholesaler.services;
 import com.sales.dto.ItemReviewsFilterDto;
 import com.sales.entities.ItemReviews;
 import com.sales.entities.User;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -14,12 +15,14 @@ import static com.sales.specifications.ItemReviewSpecifications.*;
 
 
 @Service
+@RequiredArgsConstructor
 public class WholesaleItemReviewService extends WholesaleRepoContainer {
 
+    private final com.sales.helpers.Logger log;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleItemReviewService.class);
 
     public Page<ItemReviews> getAllItemReview(ItemReviewsFilterDto filters, User loggedUser) {
-        logger.info("Starting getALlItemReview method with filters: {}, loggedUser: {}", filters, loggedUser);
+        log.info(logger,"Starting getALlItemReview method with filters: {}, loggedUser: {}", filters, loggedUser);
         if(filters.getItemId() == 0) {
             logger.error("Invalid itemId provided");
             throw new IllegalArgumentException("Please provide a valid itemId.");

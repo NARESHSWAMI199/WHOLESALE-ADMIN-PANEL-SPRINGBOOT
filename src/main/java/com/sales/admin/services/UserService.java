@@ -12,9 +12,9 @@ import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.data.domain.Page;
@@ -35,49 +35,47 @@ import java.util.*;
 import static com.sales.specifications.UserSpecifications.*;
 
 @Service
+@RequiredArgsConstructor
 public class UserService extends RepoContainer {
 
+    private final com.sales.helpers.Logger log;
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
-
-    @Autowired
-    StoreService storeService;
-
-    @Autowired
-    PaginationService paginationService;
+    private final StoreService storeService;
+    private final PaginationService paginationService;
 
     @Value("${profile.absolute}")
-    String profilePath;
+    private String profilePath;
 
     @Value("${default.password}")
-    String password;
+    private String password;
 
 
 
     public User findByEmailAndPassword(UserDto userDto) {
-        logger.info("Finding user by email and password: {}", userDto.getEmail());
+        log.info(logger,"Finding user by email and password: {}", userDto.getEmail());
         return userRepository.findByEmailAndPassword(userDto.getEmail(), userDto.getPassword());
     }
 
     public User findUserByOtpAndEmail(UserDto userDto) {
-        logger.info("Finding user by OTP and email: {}", userDto.getEmail());
+        log.info(logger,"Finding user by OTP and email: {}", userDto.getEmail());
         // Here password key has otp
         return  userRepository.findUserByOtpAndEmail(userDto.getEmail(),userDto.getPassword());
     }
 
 
     public Integer getUserIdBySlug(String slug){
-        logger.info("Getting user ID by slug: {}", slug);
+        log.info(logger,"Getting user ID by slug: {}", slug);
         return userRepository.getUserIdBySlug(slug);
     }
 
     public void resetOtp(String email){
-        logger.info("Resetting OTP for email: {}", email);
+        log.info(logger,"Resetting OTP for email: {}", email);
         userHbRepository.updateOtp(email,"");
     }
 
 
     public boolean sendOtp(UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Sending OTP to email: {}", userDto.getEmail());
+        log.info(logger,"Sending OTP to email: {}", userDto.getEmail());
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(userDto,List.of("email"));
 
@@ -140,7 +138,7 @@ public class UserService extends RepoContainer {
 
 
     public Map<String, Integer> getUserCounts () {
-        logger.info("Getting user counts");
+        log.info(logger,"Getting user counts");
         Map<String,Integer> responseObj = new HashMap<>();
         responseObj.put("all",userRepository.totalUserCount());
         responseObj.put("active",userRepository.optionUserCount("A"));
@@ -149,7 +147,7 @@ public class UserService extends RepoContainer {
     }
 
     public Map<String, Integer> getRetailersCounts () {
-        logger.info("Getting retailers counts");
+        log.info(logger,"Getting retailers counts");
         Map<String,Integer> responseObj = new HashMap<>();
         responseObj.put("all",userRepository.getUserWithUserType("R"));
         responseObj.put("active",userRepository.getUserWithUserType("A","R"));
@@ -158,7 +156,7 @@ public class UserService extends RepoContainer {
     }
 
     public Map<String, Integer> getWholesalersCounts () {
-        logger.info("Getting wholesalers counts");
+        log.info(logger,"Getting wholesalers counts");
         Map<String,Integer> responseObj = new HashMap<>();
         responseObj.put("all",userRepository.getUserWithUserType("W"));
         responseObj.put("active",userRepository.getUserWithUserType("A","W"));
@@ -167,7 +165,7 @@ public class UserService extends RepoContainer {
     }
 
     public Map<String, Integer> getStaffsCounts () {
-        logger.info("Getting staffs counts");
+        log.info(logger,"Getting staffs counts");
         Map<String,Integer> responseObj = new HashMap<>();
         responseObj.put("all",userRepository.getUserWithUserType("S"));
         responseObj.put("active",userRepository.getUserWithUserType("A","S"));
@@ -176,7 +174,7 @@ public class UserService extends RepoContainer {
     }
 
     public Map<String, Integer> getAdminsCounts () {
-        logger.info("Getting admins counts");
+        log.info(logger,"Getting admins counts");
         Map<String,Integer> responseObj = new HashMap<>();
         responseObj.put("all",userRepository.getUserWithUserType("SA"));
         responseObj.put("active",userRepository.getUserWithUserType("A","SA"));
@@ -188,7 +186,7 @@ public class UserService extends RepoContainer {
 
 
     public Page<User> getAllUser(UserSearchFilters filters, User loggedUser) {
-        logger.info("Getting all users with filters: {}", filters);
+        log.info(logger,"Getting all users with filters: {}", filters);
        String notUserType = null;
         if(filters.getUserType().equals("SA") && loggedUser.getId() !=GlobalConstant.suId){
             filters.setUserType(null);
@@ -215,7 +213,7 @@ public class UserService extends RepoContainer {
 
 
     public StoreDto userDtoToStoreDto(UserDto userDto){
-        logger.info("Converting UserDto to StoreDto: {}", userDto);
+        log.info(logger,"Converting UserDto to StoreDto: {}", userDto);
         StoreDto storeDto = new StoreDto();
         storeDto.setStreet(userDto.getStreet());
         storeDto.setZipCode(userDto.getZipCode());
@@ -233,7 +231,7 @@ public class UserService extends RepoContainer {
 
 
     public void validateRequiredFieldsBeforeCreateUser(UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Validating required fields before creating user: {}", userDto);
+        log.info(logger,"Validating required fields before creating user: {}", userDto);
         List<String> requiredFields = new ArrayList<>(List.of("username", "contact", "email", "userType"));;
         switch (userDto.getUserType()) {
             case "R":
@@ -265,7 +263,7 @@ public class UserService extends RepoContainer {
     }
 
     public void validateRequiredFieldsBeforeUpdateUser(UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Validating required fields before updating user: {}", userDto);
+        log.info(logger,"Validating required fields before updating user: {}", userDto);
         List<String> requiredFields = new ArrayList<>(List.of("username", "contact", "email","slug"));;
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(userDto,requiredFields);
@@ -277,7 +275,7 @@ public class UserService extends RepoContainer {
      */
     @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
     public Map<String, Object> createOrUpdateUser(UserDto userDto, User loggedUser,String path) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Creating or updating user: {}", userDto);
+        log.info(logger,"Creating or updating user: {}", userDto);
         Map<String, Object> responseObj = new HashMap<>();
         StoreDto storeDto;
         // condition for create or update superuser
@@ -302,7 +300,7 @@ public class UserService extends RepoContainer {
 
         // Updating existing user
         if (!Utils.isEmpty(userDto.getSlug()) || path.contains("update")) {
-            logger.info("We are going to update the user.");
+            log.info(logger,"We are going to update the user.");
             // Verify required fields before create user
             validateRequiredFieldsBeforeUpdateUser(userDto);
             int isUpdated = updateUser(userDto, loggedUser);
@@ -324,13 +322,13 @@ public class UserService extends RepoContainer {
                 // return responseObj;
             }
         } else {    // Creating new user
-            logger.info("We are going to create the user.");
+            log.info(logger,"We are going to create the user.");
             // Verify required fields before create user
             validateRequiredFieldsBeforeCreateUser(userDto);
 
             User updatedUser = createUser(userDto, loggedUser);
             userDto.setUserId(updatedUser.getId());
-            logger.info("{} : {}", userDto.getUserType(), userDto.getUserSlug());
+            log.info(logger,"{} : {}", userDto.getUserType(), userDto.getUserSlug());
 
             // if logged user not same to request user and make sure request user must be Wholesaler
             if((userDto.getUserId() != loggedUser.getId()) &&  userDto.getUserType().equals("W"))
@@ -376,7 +374,7 @@ public class UserService extends RepoContainer {
 
     @Transactional
     public User createUser(UserDto userDto, User loggedUser) {
-        logger.info("Creating user: {}", userDto);
+        log.info(logger,"Creating user: {}", userDto);
         User user = new User(loggedUser);
         user.setUsername(userDto.getUsername());
         user.setSlug(UUID.randomUUID().toString());
@@ -389,12 +387,12 @@ public class UserService extends RepoContainer {
 
     @Transactional
     public int updateUser(UserDto userDto, User loggedUser) {
-        logger.info("Updating user: {}", userDto);
+        log.info(logger,"Updating user: {}", userDto);
         return userHbRepository.updateUser(userDto,loggedUser);
     }
 
     public User getUserDetail(String slug ,User loggedUser){
-        logger.info("Getting user detail for slug: {}", slug);
+        log.info(logger,"Getting user detail for slug: {}", slug);
        User user = userRepository.findUserBySlug(slug);
         if(user !=null && (user.getId() !=GlobalConstant.suId || loggedUser.getId() == GlobalConstant.suId )){
             return user;
@@ -403,7 +401,7 @@ public class UserService extends RepoContainer {
     }
 
     public User getUserDetail(String slug){
-        logger.info("Getting user detail for slug: {}", slug);
+        log.info(logger,"Getting user detail for slug: {}", slug);
         User user = userRepository.findUserBySlug(slug);
         if(user !=null && (user.getId() !=GlobalConstant.suId )){
             return user;
@@ -413,7 +411,7 @@ public class UserService extends RepoContainer {
 
     @Transactional(rollbackOn = {PermissionDeniedDataAccessException.class,IllegalArgumentException.class,RuntimeException.class,Exception.class})
     public int deleteUserBySlug(DeleteDto deleteDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Deleting user by slug: {}", deleteDto.getSlug());
+        log.info(logger,"Deleting user by slug: {}", deleteDto.getSlug());
         // if there is any required field null, then this will throw IllegalArgumentException
         Utils.checkRequiredFields(deleteDto, List.of("slug"));
 
@@ -429,7 +427,7 @@ public class UserService extends RepoContainer {
 
     @Transactional
     public int resetPasswordByUserSlug(PasswordDto passwordDto,User loggedUser){
-        logger.info("Resetting password for user with slug: {}", passwordDto.getSlug());
+        log.info(logger,"Resetting password for user with slug: {}", passwordDto.getSlug());
         password = !Utils.isEmpty(password) ?  passwordDto.getPassword() : password;
         User user = userRepository.findUserBySlug(passwordDto.getSlug());
         Utils.canUpdateAStaff(passwordDto.getSlug(),user.getUserType(),loggedUser);
@@ -439,7 +437,7 @@ public class UserService extends RepoContainer {
 
     @Transactional
     public int updateStatusBySlug(StatusDto statusDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Updating status for user with slug: {}", statusDto.getSlug());
+        log.info(logger,"Updating status for user with slug: {}", statusDto.getSlug());
         try {
             // if there is any required field null, then this will throw IllegalArgumentException
             Utils.checkRequiredFields(statusDto, List.of("status", "slug"));
@@ -476,7 +474,7 @@ public class UserService extends RepoContainer {
 
 
     public String updateProfileImage(MultipartFile profileImage,String slug,User loggedUser) throws IOException {
-        logger.info("Updating profile image for user with slug: {}", slug);
+        log.info(logger,"Updating profile image for user with slug: {}", slug);
         User user = userRepository.findUserBySlug(slug);
         Utils.canUpdateAStaff(slug,user.getUserType(),loggedUser);
         String imageName = UUID.randomUUID().toString().substring(0,5)+"_"+ Objects.requireNonNull(profileImage.getOriginalFilename()).replaceAll(" ","_");
@@ -493,20 +491,20 @@ public class UserService extends RepoContainer {
 
 
     public List<Integer> getUserGroupsIdBySlug(String slug) {
-        logger.info("Getting user groups ID by slug: {}", slug);
+        log.info(logger,"Getting user groups ID by slug: {}", slug);
         return userRepository.getUserGroupsIdBySlug(slug);
     }
 
 
     public List<Integer> getWholesalerAllAssignedPermissions(String slug) {
-        logger.info("Getting wholesaler all assigned permissions for slug: {}", slug);
+        log.info(logger,"Getting wholesaler all assigned permissions for slug: {}", slug);
         User user = getUserDetail(slug);
         if(user==null) return null;
         return storePermissionsRepository.getAllAssignedPermissionsIdByUserId(user.getId());
     }
 
     public Map<String,Object> getWholesalerAllPermissions() {
-        logger.info("Getting wholesaler all permissions");
+        log.info(logger,"Getting wholesaler all permissions");
         List<StorePermissions> storePermissionsList = storePermissionsRepository.findAll();
         Map<String,Object> result = new HashMap<>();
         for(StorePermissions storePermissions : storePermissionsList){
@@ -533,7 +531,7 @@ public class UserService extends RepoContainer {
 
     @Transactional(rollbackOn = {MyException.class,RuntimeException.class})
     public Map<String,Object> updateWholesalerPermissions(UserDto userDto, User loggededUser) throws MyException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Updating wholesaler permissions for user with slug: {}", userDto.getSlug());
+        log.info(logger,"Updating wholesaler permissions for user with slug: {}", userDto.getSlug());
         // Validating required field is there is any null field this will throw Exception
         Utils.checkRequiredFields(userDto,List.of("slug","userType","storePermissions"));
 

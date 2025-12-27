@@ -9,6 +9,7 @@ import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -22,13 +23,15 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("group")
+@RequiredArgsConstructor
 public class GroupController extends ServiceContainer {
 
+    private final com.sales.helpers.Logger log;
     private static final Logger logger = LoggerFactory.getLogger(GroupController.class);
 
     @PostMapping("/all")
     public ResponseEntity<Page<Group>> getAllGroup(HttpServletRequest request, @RequestBody SearchFilters searchFilters) {
-        logger.info("Fetching all groups with filters: {}", searchFilters);
+        log.info(logger,"Fetching all groups with filters: {}", searchFilters);
         User loggedUser = (User) request.getAttribute("user");
         Page<Group> storePage = groupService.getAllGroups(searchFilters, loggedUser);
         return new ResponseEntity<>(storePage, HttpStatus.OK);
@@ -36,7 +39,7 @@ public class GroupController extends ServiceContainer {
 
     @GetMapping("/permissions/all")
     public ResponseEntity<Map<String, List<Object>>> getAllPermissions(HttpServletRequest request) {
-        logger.info("Fetching all permissions");
+        log.info(logger,"Fetching all permissions");
         Map<String, List<Object>> permissions = groupService.getAllPermissions();
         return new ResponseEntity<>(permissions, HttpStatus.OK);
     }
@@ -44,7 +47,7 @@ public class GroupController extends ServiceContainer {
     @Transactional
     @PostMapping(value = {"create", "update"})
     public ResponseEntity<Map<String, Object>> createOrUpdate(HttpServletRequest request, @RequestBody GroupDto groupDto) throws Exception {
-        logger.info("Creating or updating group: {}", groupDto);
+        log.info(logger,"Creating or updating group: {}", groupDto);
         User loggedUser = (User) request.getAttribute("user");
         String path = request.getRequestURI();
         Map<String, Object> response = groupService.createOrUpdateGroup(groupDto, loggedUser, path);
@@ -53,7 +56,7 @@ public class GroupController extends ServiceContainer {
 
     @GetMapping("/detail/{slug}")
     public ResponseEntity<Map<String, Object>> getDetailGroup(@PathVariable String slug) {
-        logger.info("Fetching group details for slug: {}", slug);
+        log.info(logger,"Fetching group details for slug: {}", slug);
         Map<String, Object> responseObj = new HashMap<>();
         Map<String, Object> group = groupService.findGroupBySlug(slug);
         responseObj.put(ConstantResponseKeys.RES, group);
@@ -64,7 +67,7 @@ public class GroupController extends ServiceContainer {
     @Transactional
     @PostMapping("/delete")
     public ResponseEntity<Map<String, Object>> deleteGroupBySlug(HttpServletRequest request, @RequestBody DeleteDto deleteDto) throws Exception {
-        logger.info("Deleting group with slug: {}", deleteDto);
+        log.info(logger,"Deleting group with slug: {}", deleteDto);
         Map<String, Object> responseObj = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
         int isUpdated = groupService.deleteGroupBySlug(deleteDto, loggedUser);

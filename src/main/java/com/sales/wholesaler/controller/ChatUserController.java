@@ -8,6 +8,7 @@ import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -20,14 +21,16 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("chat-users")
+@RequiredArgsConstructor
 public class ChatUserController extends WholesaleServiceContainer {
 
+    private final com.sales.helpers.Logger log;
     private static final Logger logger = LoggerFactory.getLogger(ChatUserController.class);
 
     @GetMapping("all")
     public ResponseEntity<List<User>> getAllChatUsers(HttpServletRequest request){
         User loggedUser = (User) request.getAttribute("user");
-        logger.info("Fetching all chat users for logged user: {}", loggedUser.getId());
+        log.info(logger,"Fetching all chat users for logged user: {}", loggedUser.getId());
         List<User> allContactsByUserId = chatUserService.getAllChatUsers(loggedUser,request);
         return new ResponseEntity<>(allContactsByUserId, HttpStatus.valueOf(200));
     }
@@ -36,7 +39,7 @@ public class ChatUserController extends WholesaleServiceContainer {
     @GetMapping("is-accepted/{receiver}")
     public ResponseEntity<String> isChatRequestAcceptedByLoggedUser(@PathVariable String receiver, HttpServletRequest request){
         User loggedUser = (User) request.getAttribute("user");
-        logger.info("Fetching isChatRequestAcceptedByLoggedUser for logged user: {}", loggedUser.getId());
+        log.info(logger,"Fetching isChatRequestAcceptedByLoggedUser for logged user: {}", loggedUser.getId());
         String accepted =  chatUserService.isChatRequestAcceptedByLoggedUser(loggedUser,receiver);
         return new ResponseEntity<>(accepted, HttpStatus.valueOf(200));
     }
@@ -46,10 +49,10 @@ public class ChatUserController extends WholesaleServiceContainer {
     public ResponseEntity<Map<String,Object>> addNewChatUser(@RequestBody ContactDto contactDto, HttpServletRequest request){
         Map<String,Object> result = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
-        logger.info("Adding new chat user for logged user: {}", loggedUser.getId());
+        log.info(logger,"Adding new chat user for logged user: {}", loggedUser.getId());
         ChatUser chatUser = chatUserService.addNewChatUser(loggedUser, contactDto.getContactSlug(),"A");
         if(chatUser != null){
-            logger.info("Chat user added successfully for user: {}", loggedUser.getId());
+            log.info(logger,"Chat user added successfully for user: {}", loggedUser.getId());
             result.put(ConstantResponseKeys.MESSAGE,"Your chat user has been successfully inserted");
             result.put(ConstantResponseKeys.STATUS, 200);
         }else {
@@ -66,10 +69,10 @@ public class ChatUserController extends WholesaleServiceContainer {
     public ResponseEntity<Map<String,Object>> removeChatUserAndHisChat(@RequestBody ContactDto contactDto, HttpServletRequest request){
         Map<String,Object> result = new HashMap<>();
         User loggedUser = (User) request.getAttribute("user");
-        logger.info("Removing Chat user for logged user: {}", loggedUser.getId());
+        log.info(logger,"Removing Chat user for logged user: {}", loggedUser.getId());
         int contact = chatUserService.removeChatUser(loggedUser, contactDto.getContactSlug(),contactDto.getDeleteChats());
         if(contact>0){
-            logger.info("Chat user removed successfully for user: {}", loggedUser.getId());
+            log.info(logger,"Chat user removed successfully for user: {}", loggedUser.getId());
             result.put(ConstantResponseKeys.MESSAGE,"Your Chat user has been successfully removed.");
             result.put(ConstantResponseKeys.STATUS, 200);
         }else {
@@ -84,7 +87,7 @@ public class ChatUserController extends WholesaleServiceContainer {
     @PostMapping("/accept")
     public ResponseEntity<Map<String,Object>> updateChatAcceptStatus(HttpServletRequest request, @RequestBody ChatUserDto chatUserDto) {
         User loggedUser = (User) request.getAttribute("user");
-        logger.info("Updating chat accept status for user: {}", loggedUser.getId());
+        log.info(logger,"Updating chat accept status for user: {}", loggedUser.getId());
         Map<String,Object> result = new HashMap<>();
 
         boolean accepted = chatUserService.updateAcceptStatus(loggedUser.getId(), chatUserDto.getReceiverSlug(), chatUserDto.getStatus());
@@ -93,7 +96,7 @@ public class ChatUserController extends WholesaleServiceContainer {
             status = "declined";
         }
         if(accepted){
-            logger.info("Chat {} successfully for user: {}", status, loggedUser.getId());
+            log.info(logger,"Chat {} successfully for user: {}", status, loggedUser.getId());
             result.put(ConstantResponseKeys.MESSAGE,"Chat "+status+" .");
             result.put(ConstantResponseKeys.STATUS,200);
         }else {

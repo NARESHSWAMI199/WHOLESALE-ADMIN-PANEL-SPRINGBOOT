@@ -1,13 +1,7 @@
 package com.sales.interceptors;
 
-import com.sales.admin.repositories.PermissionRepository;
-import com.sales.admin.repositories.StorePermissionsRepository;
-import com.sales.admin.repositories.UserRepository;
-import com.sales.cachemanager.services.UserCacheService;
 import com.sales.global.GlobalConstant;
-import com.sales.jwtUtils.JwtToken;
-import com.sales.wholesaler.services.WholesaleServicePlanService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.*;
 
@@ -19,25 +13,10 @@ import java.util.List;
 @Configuration
 @EnableWebMvc
 
+@RequiredArgsConstructor
 public class StoreWebMvcConfigure implements WebMvcConfigurer {
 
-    @Autowired
-    private JwtToken jwtToken;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PermissionRepository permissionRepository;
-
-    @Autowired
-    private StorePermissionsRepository storePermissionsRepository;
-
-    @Autowired
-    private WholesaleServicePlanService wholesaleServicePlanService;
-
-    @Autowired
-    private UserCacheService userCacheService;
+    private final SalesInterceptor salesInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -90,8 +69,7 @@ public class StoreWebMvcConfigure implements WebMvcConfigurer {
 
         List<String> excludingPaths = new ArrayList<>(List.of(unAuthorizePaths));
         excludingPaths.addAll(Arrays.asList(authorizedPaths));
-        registry.addInterceptor(new SalesInterceptor(jwtToken,userRepository,userCacheService,permissionRepository,storePermissionsRepository,wholesaleServicePlanService))
-                .excludePathPatterns(excludingPaths);
+        registry.addInterceptor(salesInterceptor).excludePathPatterns(excludingPaths);
     }
 
 

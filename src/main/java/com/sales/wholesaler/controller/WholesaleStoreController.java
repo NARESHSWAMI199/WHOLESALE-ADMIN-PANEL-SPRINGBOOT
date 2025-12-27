@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -26,8 +27,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("wholesale/store")
+@RequiredArgsConstructor
 public class WholesaleStoreController extends WholesaleServiceContainer {
 
+    private final com.sales.helpers.Logger log;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleStoreController.class);
 
     @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema =
@@ -51,10 +54,10 @@ public class WholesaleStoreController extends WholesaleServiceContainer {
     @Transactional
     @PostMapping(value = {"/update"})
     public ResponseEntity<Map<String, Object>> updateStore(HttpServletRequest request, @ModelAttribute StoreDto storeDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Starting updateStore method");
+        log.info(logger,"Starting updateStore method");
         User loggedUser = (User) request.getAttribute("user");
         Map<String,Object> responseObj = wholesaleStoreService.updateStoreBySlug(storeDto, loggedUser);
-        logger.info("Completed updateStore method");
+        log.info(logger,"Completed updateStore method");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
@@ -62,10 +65,10 @@ public class WholesaleStoreController extends WholesaleServiceContainer {
     @Transactional
     @PostMapping(value = {"notifications"})
     public ResponseEntity<Page<StoreNotifications>> getAllStoreNotification(HttpServletRequest request, @RequestBody SearchFilters searchFilters) {
-        logger.info("Starting getAllStoreNotification method");
+        log.info(logger,"Starting getAllStoreNotification method");
         User loggedUser = (User) request.getAttribute("user");
         Page<StoreNotifications> storeNotifications = wholesaleStoreService.getAllStoreNotification(searchFilters,loggedUser);
-        logger.info("Completed getAllStoreNotification method");
+        log.info(logger,"Completed getAllStoreNotification method");
         return new ResponseEntity<>(storeNotifications, HttpStatus.OK);
     }
 
@@ -81,27 +84,27 @@ public class WholesaleStoreController extends WholesaleServiceContainer {
     @Transactional
     @PostMapping(value = {"update/notifications"})
     public ResponseEntity<String> getAllStoreNotification(@RequestBody StoreDto storeDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Starting getAllStoreNotification method");
+        log.info(logger,"Starting getAllStoreNotification method");
         wholesaleStoreService.updateSeen(storeDto);
-        logger.info("Completed getAllStoreNotification method");
+        log.info(logger,"Completed getAllStoreNotification method");
         return new ResponseEntity<>(ConstantResponseKeys.SUCCESS, HttpStatus.valueOf(200));
     }
 
 
     @GetMapping("category")
     public ResponseEntity<List<StoreCategory>> getAllStoreCategory() {
-        logger.info("Starting getAllStoreCategory method");
+        log.info(logger,"Starting getAllStoreCategory method");
         List<StoreCategory> storeCategories = wholesaleStoreService.getAllStoreCategory();
-        logger.info("Completed getAllStoreCategory method");
+        log.info(logger,"Completed getAllStoreCategory method");
         return new ResponseEntity<>(storeCategories, HttpStatus.OK);
     }
 
 
     @GetMapping("subcategory/{categoryId}")
     public ResponseEntity<List<StoreSubCategory>> getStoreSubCategory(@PathVariable(required = true) int categoryId) {
-        logger.info("Starting getStoreSubCategory method");
+        log.info(logger,"Starting getStoreSubCategory method");
         List<StoreSubCategory> storeSubCategories = wholesaleStoreService.getAllStoreSubCategories(categoryId);
-        logger.info("Completed getStoreSubCategory method");
+        log.info(logger,"Completed getStoreSubCategory method");
         return new ResponseEntity<>(storeSubCategories, HttpStatus.OK);
     }
 
@@ -127,7 +130,7 @@ public class WholesaleStoreController extends WholesaleServiceContainer {
     @PostMapping(value = "add",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
     public ResponseEntity<Map<String,Object>> addNewStore(HttpServletRequest request,@ModelAttribute StoreDto storeDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.info("Starting addNewStore method");
+        log.info(logger,"Starting addNewStore method");
         Map<String,Object> result = new HashMap<>();
         User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         Store isInserted = wholesaleStoreService.createStore(storeDto,loggedUser);
@@ -138,7 +141,7 @@ public class WholesaleStoreController extends WholesaleServiceContainer {
             result.put(ConstantResponseKeys.MESSAGE,"Something went wrong");
             result.put(ConstantResponseKeys.STATUS,400);
         }
-        logger.info("Completed addNewStore method");
+        log.info(logger,"Completed addNewStore method");
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get("status")));
     }
 

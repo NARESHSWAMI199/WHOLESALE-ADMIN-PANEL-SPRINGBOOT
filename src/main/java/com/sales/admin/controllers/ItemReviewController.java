@@ -3,6 +3,7 @@ package com.sales.admin.controllers;
 import com.sales.dto.ItemReviewsFilterDto;
 import com.sales.entities.ItemReviews;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -15,13 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("admin/item/review")
+@RequiredArgsConstructor
 public class ItemReviewController extends ServiceContainer {
 
-    private static final Logger logger = LoggerFactory.getLogger(ItemReviewController.class);
+      private final com.sales.helpers.Logger log;
+  private static final Logger logger = LoggerFactory.getLogger(ItemReviewController.class);
 
     @PostMapping("all")
     public ResponseEntity<Page<ItemReviews>> getAllReviews(@RequestBody ItemReviewsFilterDto ItemReviewsFilterDto, HttpServletRequest httpServletRequest) {
-        logger.info("Fetching all item comments with filters: {}", ItemReviewsFilterDto);
+        log.info(logger,"Fetching all item comments with filters: {}", ItemReviewsFilterDto);
         Page<ItemReviews > itemReviewsPage = itemReviewService.getAllItemReview(ItemReviewsFilterDto);
         return new ResponseEntity<>(itemReviewsPage, HttpStatus.OK);
     }
