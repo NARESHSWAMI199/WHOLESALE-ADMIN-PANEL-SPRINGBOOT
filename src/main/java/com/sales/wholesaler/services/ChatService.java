@@ -34,7 +34,7 @@ public class ChatService extends WholesaleRepoContainer {
 
     @Autowired
     BlockListService blockListService;
-    private final String chatImagesPath = GlobalConstant.CHAT_STATIC_PATH;
+    private final static String chatImagesPath = GlobalConstant.CHAT_STATIC_PATH;
 
 
     public Chat sendMessage(MessageDto message, User loggedUser, String recipient){
@@ -162,10 +162,14 @@ public class ChatService extends WholesaleRepoContainer {
             Chat chat = chatOptional.get();
             if(chat.getReceiver().equals(loggedUser.getSlug())){
                 // hiding deleted messages.
-                if(chat.getIsReceiverDeleted().equals("Y")  || chat.getIsReceiverDeleted().equals("H")) chat.setMessage("Message was deleted.");
+                if(chat.getIsReceiverDeleted().equals("Y")  || chat.getIsReceiverDeleted().equals("H")){
+                    chat.setMessage("Message was deleted.");
+                }
             } if(chat.getSender().equals(loggedUser.getSlug())){
                 // hiding deleted messages.
-                if(chat.getIsSenderDeleted().equals("Y") || chat.getIsSenderDeleted().equals("H")) chat.setMessage("Message was deleted.");
+                if(chat.getIsSenderDeleted().equals("Y") || chat.getIsSenderDeleted().equals("H")) {
+                    chat.setMessage("Message was deleted.");
+                }
             }
             String images = chat.getImages();
             if (images != null) {
