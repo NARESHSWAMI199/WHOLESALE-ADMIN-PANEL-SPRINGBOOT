@@ -18,7 +18,8 @@ public class GlobalConstantTest {
     public static String WHOLESALER_TEST_EMAIL = "a5348c@mocktest.in"; // You need to provide your super admin account email
     public static String WHOLESALER_TEST_PASSWORD= "123456"; // password must be 123456 for test wholesaler
 
-
+    public static String WHOLESALER = "W";
+    public static String ADMIN = "A";
 
     public static String RETAILER_SLUG = "7ef4b83b-6305-4da7-b428-a0c41bd3f174";
     public static String WHOLESALER_SLUG = "378e0c08-727d-431f-94c7-f35c5d850d27";

@@ -2,6 +2,8 @@ package sales.application.sales.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sales.admin.repositories.*;
+import com.sales.entities.*;
 import com.sales.global.ConstantResponseKeys;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,10 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class TestUtil {
 
@@ -36,6 +35,24 @@ public class TestUtil {
 
     @Autowired
     private ObjectMapper objectMapper; // For JSON parsing/creation
+
+    @Autowired
+    protected UserRepository userRepository;
+
+    @Autowired
+    protected ServicePlanRepository servicePlanRepository;
+
+    @Autowired
+    protected WholesalerPlansRepository wholesalePlansRepository;
+
+    @Autowired
+    protected ItemRepository itemRepository;
+
+    @Autowired
+    ItemCategoryRepository itemCategoryRepository;
+
+    @Autowired
+    ItemSubCategoryRepository itemSubCategoryRepository;
 
 
     protected String extractTokenFromResponse(MvcResult result) throws Exception {
@@ -92,6 +109,61 @@ public class TestUtil {
         private Map<String,Object> user;
     }
 
+
+    public ServicePlan createServicePlan(Date currentTime) {
+        ServicePlan servicePlan = ServicePlan.builder()
+                .name("Test Service plan")
+                .slug(UUID.randomUUID().toString())
+                .createdAt(currentTime.getTime())
+                .price(101L)
+                .discount(0L)
+                .months(6)
+                .updatedAt(currentTime.getTime())
+                .createdBy(1)
+                .updatedBy(1)
+                .build();
+        return servicePlanRepository.save(servicePlan);
+    }
+
+    public User createUser(String slug,String email, String password ,String userType) {
+        User user = User.builder()
+                .slug(slug)
+                .userType(userType)
+                .email(email)
+                .password(password)
+                .status("A")
+                .isDeleted("N")
+                .build();
+        return userRepository.save(user);
+    }
+
+    public WholesalerPlans createWholesalePlan(String slug,User user,Date currentTime,Date futureDate,ServicePlan servicePlan){
+        WholesalerPlans wholesalerPlans = WholesalerPlans.builder()
+                .userId(user.getId())
+                .createdAt(currentTime.getTime())
+                .expiryDate(futureDate.getTime())
+                .isExpired(false)
+                .slug(slug)
+                .servicePlan(servicePlan)
+                .build();
+        return wholesalePlansRepository.save(wholesalerPlans);
+    }
+
+    public String loginUser(String userType) throws Exception {
+        String email = UUID.randomUUID()+"@mocktest.in";
+        String password = UUID.randomUUID().toString();
+        String slug = UUID.randomUUID().toString();
+        Date currentTime = new Date();
+        Date futureDate = new Date();
+        futureDate.setMonth(currentTime.getMonth() + 12);
+        ServicePlan servicePlan = createServicePlan(currentTime);
+        User user = createUser(slug,email,password,userType);
+        WholesalerPlans wholesalerPlans = createWholesalePlan(slug,user,currentTime,futureDate,servicePlan);
+        user.setActivePlan(wholesalerPlans.getId());
+        userRepository.save(user);
+        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(email, password);
+        return loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+    }
 
     public Map<String,String> getLoginBeaverSlugAndToken(String email, String password) throws Exception {
         String json = """
@@ -171,6 +243,52 @@ public class TestUtil {
         return file;
 
     }
+
+
+    protected ItemCategory createItemCategory() {
+        String slug = UUID.randomUUID().toString();
+        ItemCategory itemCategory  = ItemCategory.builder()
+               .category("Electronic")
+               .slug(slug)
+               .isDeleted("N")
+               .icon("abc.png")
+               .build();
+       return itemCategoryRepository.save(itemCategory);
+    }
+
+
+    protected ItemSubCategory createItemSubCategory(int itemCategoryId) {
+        String slug = UUID.randomUUID().toString();
+        ItemSubCategory itemSubCategory  = ItemSubCategory.builder()
+                .categoryId(itemCategoryId)
+                .subcategory("Laptop")
+                .slug(slug)
+                .isDeleted("N")
+                .icon("abc.png")
+                .build();
+        return itemSubCategoryRepository.save(itemSubCategory);
+    }
+
+
+    public Item createItem(){
+        ItemCategory itemCategory = createItemCategory();
+        ItemSubCategory itemSubCategory = createItemSubCategory(itemCategory.getId());
+        String slug = UUID.randomUUID().toString();
+        Item item = Item.builder()
+                .slug(slug)
+                .name("Test item")
+                .price(100)
+                .capacity(100F)
+                .discount(0)
+                .isDeleted("N")
+                .inStock("Y")
+                .itemSubCategory(itemSubCategory)
+                .itemCategory(itemCategory)
+                .build();
+        return itemRepository.save(item);
+    }
+
+
 
 
 
