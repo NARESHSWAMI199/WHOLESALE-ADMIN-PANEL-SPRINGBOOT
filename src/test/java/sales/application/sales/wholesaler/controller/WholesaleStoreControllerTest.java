@@ -3,17 +3,18 @@ package sales.application.sales.wholesaler.controller;
 
 import com.google.gson.Gson;
 import com.sales.SalesApplication;
-import com.sales.global.ConstantResponseKeys;
+import com.sales.entities.City;
+import com.sales.entities.StoreCategory;
+import com.sales.entities.StoreSubCategory;
 import com.sales.global.GlobalConstant;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -26,17 +27,22 @@ import java.util.UUID;
 
 @SpringBootTest(classes = SalesApplication.class)
 @AutoConfigureMockMvc
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
+@ActiveProfiles("test")
 public class WholesaleStoreControllerTest extends TestUtil {
 
+    private String token;
 
-    @Autowired
-    MockMvc mockMvc;
+    @BeforeEach
+    public void loginUserTest() throws Exception {
+        token = loginUser(GlobalConstantTest.WHOLESALER);
+    }
+
 
     @Test
     public void testAddStore() throws Exception {
-        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+        StoreCategory storeCategory = createStoreCategory();
+        StoreSubCategory storeSubCategory = createStoreSubCategory(storeCategory.getId());
+        City city = createCity();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
         String randomEmail = UUID.randomUUID().toString().substring(0,6) + "@mocktest.in";
@@ -50,14 +56,18 @@ public class WholesaleStoreControllerTest extends TestUtil {
                   "description": "Mock test store created by mock test user",
                   "street": "Murlipura",
                   "zipCode": "302013",
-                  "city": "1",
-                  "state": "1",
-                  "categoryId" : "0",
-                  "subCategoryId" : "0"
+                  "city": "{city}",
+                  "state": "{state}",
+                  "categoryId" : "{categoryId}",
+                  "subCategoryId" : "{subCategoryId}"
                 }
                 """
                 .replace("{email}",randomEmail)
                 .replace("{phone}",randomPhone)
+                .replace("{city}",String.valueOf(city.getId()))
+                .replace("{state}",String.valueOf(city.getStateId()))
+                .replace("{categoryId}",String.valueOf(storeCategory.getId()))
+                .replace("{subCategoryId}",String.valueOf(storeSubCategory.getId()))
                 ;
 
         Map<String,String> params = new Gson().fromJson(json,Map.class);
@@ -74,8 +84,9 @@ public class WholesaleStoreControllerTest extends TestUtil {
     }
     @Test
     public void testUpdateStore() throws Exception {
-        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+        StoreCategory storeCategory = createStoreCategory();
+        StoreSubCategory storeSubCategory = createStoreSubCategory(storeCategory.getId());
+        City city = createCity();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
         String randomEmail = UUID.randomUUID().toString().substring(0,6) + "@mocktest.in";
@@ -90,15 +101,19 @@ public class WholesaleStoreControllerTest extends TestUtil {
                   "description": "Mock test store created by mock test user",
                   "street": "Murlipura updated",
                   "zipCode": "302013",
-                  "city": "1",
-                  "state": "1",
-                  "categoryId" : "0",
-                  "subCategoryId" : "0"
+                  "city": "{city}",
+                  "state": "{state}",
+                  "categoryId" : "{categoryId}",
+                  "subCategoryId" : "{subCategoryId}"
                 }
                 """
-                .replace("{storeSlug}",GlobalConstantTest.TEST_STORE_SLUG)
+                .replace("{storeSlug}",storeSlug)
                 .replace("{email}",randomEmail)
                 .replace("{phone}",randomPhone)
+                .replace("{city}",String.valueOf(city.getId()))
+                .replace("{state}",String.valueOf(city.getStateId()))
+                .replace("{categoryId}",String.valueOf(storeCategory.getId()))
+                .replace("{subCategoryId}",String.valueOf(storeSubCategory.getId()))
                 ;
 
         Map<String,String> params = new Gson().fromJson(json,Map.class);
@@ -114,8 +129,6 @@ public class WholesaleStoreControllerTest extends TestUtil {
     }
     @Test
     public void testUpdateNotifications() throws Exception {
-        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
         String json = """
@@ -136,8 +149,6 @@ public class WholesaleStoreControllerTest extends TestUtil {
 
     @Test
     public void testUpdateNotificationsWithoutParams() throws Exception {
-        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
         String json = """
@@ -155,8 +166,6 @@ public class WholesaleStoreControllerTest extends TestUtil {
 
     @Test
     public void testNotifications() throws Exception {
-        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
         String json = """
@@ -175,8 +184,6 @@ public class WholesaleStoreControllerTest extends TestUtil {
     }
     @Test
     public void testGetWholesaleStoreCategory() throws Exception {
-        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
         mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/store/category")
@@ -188,11 +195,11 @@ public class WholesaleStoreControllerTest extends TestUtil {
     }
     @Test
     public void testGetWholesaleStoreSubcategory() throws Exception {
-        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+        StoreCategory storeCategory = createStoreCategory();
+        StoreSubCategory storeSubCategory = createStoreSubCategory(storeCategory.getId());
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
-        mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/store/subcategory/0")
+        mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/store/subcategory/"+storeSubCategory.getId())
                 .headers(headers)
         ).andExpectAll(
                 MockMvcResultMatchers.status().isOk()

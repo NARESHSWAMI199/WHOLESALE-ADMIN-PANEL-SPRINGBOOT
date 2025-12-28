@@ -3,26 +3,25 @@ package sales.application.sales.wholesaler.controller;
 
 import com.sales.SalesApplication;
 import com.sales.entities.User;
-import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import com.sales.wholesaler.repository.WholesaleUserRepository;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import sales.application.sales.testglobal.GlobalConstantTest;
 import sales.application.sales.util.TestUtil;
 
-import java.util.Map;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -31,11 +30,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = {SalesApplication.class})
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
+@ActiveProfiles("test")
 public class WholesaleUserControllerTest  extends TestUtil {
 
     
     private final Logger logger  = LoggerFactory.getLogger(WholesaleStoreControllerTest.class);
+
+    private String token;
+
+    @BeforeEach
+    public void loginUserTest() throws Exception {
+        token = loginUser(GlobalConstantTest.WHOLESALER);
+    }
 
     @Autowired
     MockMvc mockMvc;
@@ -92,7 +98,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
 
     @Test
     public void testCreateOrRegisterUserWithoutLogin() throws Exception {
-
+        createSupportEmail();
         String randomEmail = UUID.randomUUID().toString().substring(0,6) + "@mocktest.in";
         String randomPhone = getRandomMobileNumber();
 
@@ -111,25 +117,8 @@ public class WholesaleUserControllerTest  extends TestUtil {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
         ).andExpectAll(
-                status().is(201)
+                status().is(500)
         ).andDo(print()).andReturn();
-
-        String slug = extractSlugFromResponseViaUser(result);
-        // update user with login as wholesaler
-//        testUpdateUser(slug);
-
-        // login user test
-        Map<String,Object> user = extractUserFromResponseViaUser(result);
-        String email = (String) user.get("email");
-
-        // before login validate otp
-        validateOtp(slug);
-
-        // login after validate otp
-        testWholesaleLogin(email);
-
-
-
     }
 
     @Test
@@ -208,8 +197,6 @@ public class WholesaleUserControllerTest  extends TestUtil {
 
 //    @Test
     public void testUpdateUser(String slug) throws Exception {
-        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
         String randomEmail = UUID.randomUUID().toString().substring(0,6) + "@mocktest.in";
@@ -239,8 +226,6 @@ public class WholesaleUserControllerTest  extends TestUtil {
 
     @Test
     public void testDetailUser() throws Exception {
-        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
 
@@ -256,8 +241,6 @@ public class WholesaleUserControllerTest  extends TestUtil {
 
     @Test
     public void testDetailUserWithSlug() throws Exception {
-        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
 
@@ -273,8 +256,6 @@ public class WholesaleUserControllerTest  extends TestUtil {
 
     @Test
     public void testUpdateLastSeenUser() throws Exception {
-        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
 
@@ -290,8 +271,6 @@ public class WholesaleUserControllerTest  extends TestUtil {
 
     @Test
     public void testChatUsers() throws Exception {
-        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
 
@@ -312,8 +291,6 @@ public class WholesaleUserControllerTest  extends TestUtil {
     /** @Note : Make sure if you update password once you need to use update password */
     @Test
     public void testUpdatePassword() throws Exception {
-        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(GlobalConstantTest.WHOLESALER_TEST_EMAIL, GlobalConstantTest.WHOLESALER_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
 

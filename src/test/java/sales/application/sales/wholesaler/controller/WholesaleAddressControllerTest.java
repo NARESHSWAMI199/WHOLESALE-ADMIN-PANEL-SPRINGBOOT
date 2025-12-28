@@ -3,8 +3,6 @@ package sales.application.sales.wholesaler.controller;
 
 import com.sales.SalesApplication;
 import com.sales.admin.controllers.AddressController;
-import com.sales.admin.repositories.CityRepository;
-import com.sales.admin.repositories.StateRepository;
 import com.sales.admin.services.StoreService;
 import com.sales.entities.City;
 import com.sales.entities.State;
@@ -36,9 +34,6 @@ public class WholesaleAddressControllerTest extends  TestUtil{
     private MockMvc mockMvc;
 
     @Autowired
-    private StateRepository stateRepository;
-
-    @Autowired
     private AddressController addressController;
 
     @Autowired
@@ -50,13 +45,10 @@ public class WholesaleAddressControllerTest extends  TestUtil{
     @Value(value = "${excel.export.absolute}")
     private String excelPath;
 
-    @Autowired
-    CityRepository cityRepository;
-
     private String token;
 
     @BeforeEach
-    public void loginUser() throws Exception {
+    public void loginUserTest() throws Exception {
         token = loginUser(GlobalConstantTest.WHOLESALER);
     }
 

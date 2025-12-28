@@ -31,7 +31,7 @@ public class WholesaleDashboardControllerTest extends TestUtil {
     private String token;
 
     @BeforeEach
-    public void loginUser() throws Exception {
+    public void loginUserTest() throws Exception {
         token = loginUser(GlobalConstantTest.WHOLESALER);;
     }
 

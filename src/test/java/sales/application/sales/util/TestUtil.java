@@ -63,7 +63,22 @@ public class TestUtil {
     @Autowired
     protected StoreRepository storeRepository;
 
+    @Autowired
+    protected CityRepository cityRepository;
+
+    @Autowired
+    protected StateRepository stateRepository;
+
+    @Autowired
+    protected AddressRepository addressRepository;
+
+    @Autowired
+    protected SupportEmailsRepository supportEmailsRepository;
+
     private Integer storeId;
+
+    protected String storeSlug;
+
 
     protected String extractTokenFromResponse(MvcResult result) throws Exception {
         String responseBody = result.getResponse().getContentAsString();
@@ -120,6 +135,23 @@ public class TestUtil {
     }
 
 
+    protected State createState() {
+        State state = State.builder()
+                .stateName("Rajasthan")
+                .status("A")
+                .build();
+        return stateRepository.save(state);
+    }
+
+    protected City createCity() {
+        State state = createState();
+        City city = City.builder()
+                .cityName("Jaipur")
+                .stateId(state.getId())
+                .status("A")
+                .build();
+        return cityRepository.save(city);
+    }
 
 
     protected StoreCategory createStoreCategory() {
@@ -148,8 +180,22 @@ public class TestUtil {
 
 
 
+    public Address createAddress() {
+        City city = createCity();
+        String slug = UUID.randomUUID().toString();
+        Address address = Address.builder()
+                .street("Test")
+                .state(city.getStateId())
+                .city(city.getId())
+                .slug(slug)
+                .build();
+        return addressRepository.save(address);
+    }
+
+
 
     public Store createStore() {
+        Address address = createAddress();
         StoreCategory storeCategory = createStoreCategory();
         StoreSubCategory storeSubCategory = createStoreSubCategory(storeCategory.getId());
         String slug = UUID.randomUUID().toString();
@@ -160,6 +206,7 @@ public class TestUtil {
                 .storeSubCategory(storeSubCategory)
                 .avtar("abc.png")
                 .isDeleted("N")
+                .address(address)
                 .build();
         return storeRepository.save(store);
     }
@@ -221,6 +268,7 @@ public class TestUtil {
             store.setUser(user);
             storeRepository.save(store);
             storeId = store.getId();
+            storeSlug = store.getSlug();
         }
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(email, password);
         return loggedUserResponse.get(ConstantResponseKeys.TOKEN);
@@ -353,6 +401,14 @@ public class TestUtil {
     }
 
 
+    public SupportEmail createSupportEmail () {
+        SupportEmail supportEmail = SupportEmail.builder()
+                .email(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL)
+                .supportType("SUPPORT")
+                .passwordKey("test")
+                .build();
+        return supportEmailsRepository.save(supportEmail);
+    }
 
 
 
