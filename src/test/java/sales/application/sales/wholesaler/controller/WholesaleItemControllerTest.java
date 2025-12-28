@@ -1,9 +1,14 @@
 package sales.application.sales.wholesaler.controller;
 
 import com.sales.SalesApplication;
+import com.sales.entities.Item;
+import com.sales.entities.ItemCategory;
+import com.sales.entities.ItemSubCategory;
 import com.sales.global.GlobalConstant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -36,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 public class WholesaleItemControllerTest extends TestUtil {
 
+    Logger logger = LoggerFactory.getLogger(WholesaleItemControllerTest.class);
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,7 +56,6 @@ public class WholesaleItemControllerTest extends TestUtil {
 
     @Test
     public void testGetAllItems() throws Exception {
-        createItem();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
@@ -73,20 +78,22 @@ public class WholesaleItemControllerTest extends TestUtil {
 
     @Test
     public void testAddItem() throws Exception {
+        ItemCategory itemCategory = createItemCategory();
+        ItemSubCategory itemSubCategory = createItemSubCategory(itemCategory.getId());
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         MockMultipartFile file = getImageMultipartFileToUpload("newItemImages");
         List<MockMultipartFile> imageFiles = List.of(file);
         MockMultipartHttpServletRequestBuilder requestBuilder = multipart("/wholesale/item/add");
         imageFiles.forEach(requestBuilder::file);
-        MvcResult result = mockMvc.perform(requestBuilder
+        mockMvc.perform(requestBuilder
                         .param("name", "Mock test item updated")
                         .param("price", "100")
                         .param("discount", "10")
                         .param("description", "Mock test.")
                         .param("capacity", "1")
-                        .param("categoryId", "0")
-                        .param("subCategoryId", "0")
+                        .param("categoryId", String.valueOf(itemCategory.getId()))
+                        .param("subCategoryId", String.valueOf(itemSubCategory.getId()))
                         .param("inStock", "Y")
                         .param("label", "N")
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -97,20 +104,13 @@ public class WholesaleItemControllerTest extends TestUtil {
                 )
                 .andDo(print())
                 .andReturn();
-
-        // Update added
-        String slug = extractSlugFromResponseViaRes(result);
-        testUpdateItem(slug);
-
-        // update stock
-        testUpdateStock(slug);
-
-        // delete added item
-        testDeleteItem(slug);
     }
 
 
-    public void testUpdateItem(String slug) throws Exception {
+    @Test
+    public void testUpdateItem() throws Exception {
+        Item item = createItem();
+        logger.info("Item : {} {}",item,item.getWholesaleId());
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION, token);
         MockMultipartFile file = getImageMultipartFileToUpload("newItemImages");
@@ -118,15 +118,15 @@ public class WholesaleItemControllerTest extends TestUtil {
         MockMultipartHttpServletRequestBuilder requestBuilder = multipart("/wholesale/item/update");
         imageFiles.forEach(requestBuilder::file);
         mockMvc.perform(requestBuilder
-                        .param("slug", slug)
+                        .param("slug", item.getSlug())
                         .param("name", "Mock test item updated")
                         .param("price", "20")
                         .param("discount", "10")
                         .param("rating", "0")
                         .param("description", "Mock test.")
                         .param("capacity", "1")
-                        .param("categoryId", "0")
-                        .param("subCategoryId", "0")
+                        .param("categoryId", String.valueOf(item.getItemCategory().getId()))
+                        .param("subCategoryId", String.valueOf(item.getItemSubCategory().getId()))
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                         .headers(headers)
                 )
@@ -137,7 +137,9 @@ public class WholesaleItemControllerTest extends TestUtil {
     }
 
 
-    public void testUpdateStock(String slug) throws Exception {
+    @Test
+    public void testUpdateStock() throws Exception {
+        Item item = createItem();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
 
@@ -147,7 +149,7 @@ public class WholesaleItemControllerTest extends TestUtil {
                 "stock" : "Y"
                 }
                 """
-                .replace("{slug}",slug);
+                .replace("{slug}",item.getSlug());
         mockMvc.perform(post("/admin/item/stock")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -160,7 +162,9 @@ public class WholesaleItemControllerTest extends TestUtil {
     }
 
 
-    public void testDeleteItem(String slug) throws Exception {
+    @Test
+    public void testDeleteItem() throws Exception {
+        Item item = createItem();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
@@ -168,7 +172,7 @@ public class WholesaleItemControllerTest extends TestUtil {
                 "slug" : "{slug}"
                 }
                 """
-                .replace("{slug}",slug);
+                .replace("{slug}", item.getSlug());
         mockMvc.perform(post("/wholesale/item/delete")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -185,6 +189,7 @@ public class WholesaleItemControllerTest extends TestUtil {
 
     @Test
     public void testGetCategory() throws Exception {
+        createItemCategory();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
 

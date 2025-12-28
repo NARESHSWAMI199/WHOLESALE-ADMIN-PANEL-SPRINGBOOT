@@ -49,11 +49,21 @@ public class TestUtil {
     protected ItemRepository itemRepository;
 
     @Autowired
-    ItemCategoryRepository itemCategoryRepository;
+    protected ItemCategoryRepository itemCategoryRepository;
 
     @Autowired
-    ItemSubCategoryRepository itemSubCategoryRepository;
+    protected ItemSubCategoryRepository itemSubCategoryRepository;
 
+    @Autowired
+    protected StoreCategoryRepository storeCategoryRepository;
+
+    @Autowired
+    protected StoreSubCategoryRepository storeSubCategoryRepository;
+
+    @Autowired
+    protected StoreRepository storeRepository;
+
+    private Integer storeId;
 
     protected String extractTokenFromResponse(MvcResult result) throws Exception {
         String responseBody = result.getResponse().getContentAsString();
@@ -110,6 +120,51 @@ public class TestUtil {
     }
 
 
+
+
+    protected StoreCategory createStoreCategory() {
+        String slug = UUID.randomUUID().toString();
+        StoreCategory storeCategory  = StoreCategory.builder()
+                .category("Electronic")
+                .slug(slug)
+                .isDeleted("N")
+                .icon("abc.png")
+                .build();
+        return storeCategoryRepository.save(storeCategory);
+    }
+
+
+    protected StoreSubCategory createStoreSubCategory(int itemCategoryId) {
+        String slug = UUID.randomUUID().toString();
+        StoreSubCategory storeSubCategory  = StoreSubCategory.builder()
+                .categoryId(itemCategoryId)
+                .subcategory("Laptop")
+                .slug(slug)
+                .isDeleted("N")
+                .icon("abc.png")
+                .build();
+        return storeSubCategoryRepository.save(storeSubCategory);
+    }
+
+
+
+
+    public Store createStore() {
+        StoreCategory storeCategory = createStoreCategory();
+        StoreSubCategory storeSubCategory = createStoreSubCategory(storeCategory.getId());
+        String slug = UUID.randomUUID().toString();
+        Store store = Store.builder()
+                .slug(slug)
+                .storeName("Test store")
+                .storeCategory(storeCategory)
+                .storeSubCategory(storeSubCategory)
+                .avtar("abc.png")
+                .isDeleted("N")
+                .build();
+        return storeRepository.save(store);
+    }
+
+
     public ServicePlan createServicePlan(Date currentTime) {
         ServicePlan servicePlan = ServicePlan.builder()
                 .name("Test Service plan")
@@ -161,6 +216,12 @@ public class TestUtil {
         WholesalerPlans wholesalerPlans = createWholesalePlan(slug,user,currentTime,futureDate,servicePlan);
         user.setActivePlan(wholesalerPlans.getId());
         userRepository.save(user);
+        if(userType.equals(GlobalConstantTest.WHOLESALER)){
+            Store store = createStore();
+            store.setUser(user);
+            storeRepository.save(store);
+            storeId = store.getId();
+        }
         Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(email, password);
         return loggedUserResponse.get(ConstantResponseKeys.TOKEN);
     }
@@ -275,6 +336,7 @@ public class TestUtil {
         ItemSubCategory itemSubCategory = createItemSubCategory(itemCategory.getId());
         String slug = UUID.randomUUID().toString();
         Item item = Item.builder()
+                .wholesaleId(storeId)
                 .slug(slug)
                 .name("Test item")
                 .price(100)
@@ -282,6 +344,8 @@ public class TestUtil {
                 .discount(0)
                 .isDeleted("N")
                 .inStock("Y")
+                .status("A")
+                .label(GlobalConstantTest.ITEM_LABEL_NEW)
                 .itemSubCategory(itemSubCategory)
                 .itemCategory(itemCategory)
                 .build();
