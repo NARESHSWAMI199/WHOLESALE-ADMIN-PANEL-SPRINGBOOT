@@ -2,7 +2,6 @@ package sales.application.sales.admin.controller;
 
 
 import com.sales.SalesApplication;
-import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import sales.application.sales.testglobal.GlobalConstantTest;
 import sales.application.sales.util.TestUtil;
 
-import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -41,8 +39,7 @@ public class ServicePlanController extends TestUtil {
 
     @Test
     public void createServicePlansViaStaffAccount() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+        token = loginUser(GlobalConstantTest.STAFF);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
@@ -69,8 +66,7 @@ public class ServicePlanController extends TestUtil {
     }
     @Test
     public void createServicePlansViaSuperAdminAccount() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
-        String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+        token = loginUser(GlobalConstantTest.ADMIN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
@@ -78,7 +74,7 @@ public class ServicePlanController extends TestUtil {
                 "planName": "Mock test {random}",
                 "months": 1,
                 "price": {price},
-                "discount": 10,
+                "discount": 0,
                 "description": "this is dummy plan for mock test"
             }
             """
@@ -113,8 +109,6 @@ public class ServicePlanController extends TestUtil {
 
     @Test
     public void testGetAllServicePlans() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
@@ -133,8 +127,6 @@ public class ServicePlanController extends TestUtil {
 
     @Test
     public void testGetAllUserPlans() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
@@ -154,8 +146,6 @@ public class ServicePlanController extends TestUtil {
 
     @Test
     public void testGetAllUserPlansWithNoPlansWholesaler() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
@@ -176,8 +166,7 @@ public class ServicePlanController extends TestUtil {
 
 //    @Test
     public void testServicePlansStatusWithStaffAccount(String slug) throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+        token = loginUser(GlobalConstantTest.STAFF);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         //By default status id deactivate
@@ -200,8 +189,7 @@ public class ServicePlanController extends TestUtil {
 
 //@Test
 public void testServicePlansStatusWithSuperAdminAccount(String slug) throws Exception {
-    Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
-    String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+    token = loginUser(GlobalConstantTest.ADMIN);
     HttpHeaders headers = new HttpHeaders();
     headers.set(GlobalConstant.AUTHORIZATION,token);
     String json = """
@@ -210,8 +198,7 @@ public void testServicePlansStatusWithSuperAdminAccount(String slug) throws Exce
                 "status" : "A"
                 }
             """
-            .replace("{slug}",slug)
-            ;
+        .replace("{slug}",slug);
 
     mockMvc.perform(post("/admin/plans/status") // make sure wholesale user doesn't have any plan
             .content(json)
@@ -226,8 +213,7 @@ public void testServicePlansStatusWithSuperAdminAccount(String slug) throws Exce
 
 //    @Test
     public void testServicePlansDeleteWithStaffAccount(String slug) throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+        token = loginUser(GlobalConstantTest.STAFF);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         //By default status id deactivate
@@ -251,8 +237,7 @@ public void testServicePlansStatusWithSuperAdminAccount(String slug) throws Exce
 
 //    @Test
     public void testServicePlansDeleteWithSuperAdminAccount(String slug) throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+        token = loginUser(GlobalConstantTest.ADMIN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         //By default status id deactivate
