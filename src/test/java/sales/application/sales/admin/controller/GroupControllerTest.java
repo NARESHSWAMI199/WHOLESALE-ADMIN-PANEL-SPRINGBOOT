@@ -2,21 +2,20 @@ package sales.application.sales.admin.controller;
 
 
 import com.sales.SalesApplication;
-import com.sales.global.ConstantResponseKeys;
+import com.sales.entities.Group;
 import com.sales.global.GlobalConstant;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import sales.application.sales.testglobal.GlobalConstantTest;
 import sales.application.sales.util.TestUtil;
 
-import java.util.Map;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.notNullValue;
@@ -25,17 +24,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = SalesApplication.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
+@ActiveProfiles("test")
 public class GroupControllerTest extends TestUtil {
 
 
-    @Autowired
-    MockMvc mockMvc;
+    private String token;
+
+    @BeforeEach
+    public void loginUserTest() throws Exception {
+        token = loginUser(GlobalConstantTest.ADMIN);
+    }
+
 
     @Test
     public void testCreateGroupWithoutParams () throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
         String json = """
@@ -54,8 +57,7 @@ public class GroupControllerTest extends TestUtil {
 
     @Test
     public void testCreateGroupWithStaffAccount () throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+        token = loginUser(GlobalConstantTest.STAFF);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
 
@@ -78,8 +80,6 @@ public class GroupControllerTest extends TestUtil {
 
     @Test
     public void testCreateGroupWithSuperAdminAccount () throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
 
@@ -100,27 +100,11 @@ public class GroupControllerTest extends TestUtil {
                         status().is(201)
                 ).andDo(print())
                 .andReturn();
-
-        String slug = extractSlugFromResponseViaRes(result);
-        // update this group
-        testUpdateGroupWithSuperAdminAccountWithSlug(slug);
-
-        // find detail by slug
-        testFindGroupBySlug(slug);
-
-        // delete group by staff account
-        testDeleteGroupByStaffAccount(slug);
-
-        // delete group by super admin account
-        testDeleteGroupBySuperAdminAccount(slug);
-
     }
 
 
     @Test
     public void testUpdateGroupWithSuperAdminAccountWithoutSlug () throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
 
@@ -147,8 +131,6 @@ public class GroupControllerTest extends TestUtil {
 
     @Test
     public void testUpdateGroupWithSuperAdminAccountWithWrongSlug () throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
         String json= """
@@ -173,10 +155,10 @@ public class GroupControllerTest extends TestUtil {
 
 
 
-    public void testUpdateGroupWithSuperAdminAccountWithSlug (String slug) throws Exception {
-            Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
-            String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
-            HttpHeaders headers = new HttpHeaders();
+    @Test
+    public void testUpdateGroupWithSuperAdminAccountWithSlug () throws Exception {
+        Group group = createGroup();
+        HttpHeaders headers = new HttpHeaders();
             headers.set(GlobalConstant.AUTHORIZATION , token);
             String json= """
                 {
@@ -185,7 +167,7 @@ public class GroupControllerTest extends TestUtil {
                 }
                 
                 """
-                    .replace("{slug}",slug)
+                    .replace("{slug}",group.getSlug())
                     .replace("{random}", UUID.randomUUID().toString().substring(0,6))
                     ;
             mockMvc.perform(MockMvcRequestBuilders.post("/group/update")
@@ -200,8 +182,6 @@ public class GroupControllerTest extends TestUtil {
 
     @Test
     public void testGetAllGroups () throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
         String json= """
@@ -220,12 +200,12 @@ public class GroupControllerTest extends TestUtil {
     }
 
 
-    public void testFindGroupBySlug (String slug) throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+    @Test
+    public void testFindGroupBySlug () throws Exception {
+        Group group = createGroup();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
-        mockMvc.perform(MockMvcRequestBuilders.get("/group/detail/"+slug)
+        mockMvc.perform(MockMvcRequestBuilders.get("/group/detail/"+group.getSlug())
                         .contentType(MediaType.APPLICATION_JSON)
                         .headers(headers)
                 )
@@ -238,9 +218,10 @@ public class GroupControllerTest extends TestUtil {
 
 
 
-    public void testDeleteGroupByStaffAccount (String slug) throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+    @Test
+    public void testDeleteGroupByStaffAccount () throws Exception {
+        token = loginUser(GlobalConstantTest.STAFF);
+        Group group = createGroup();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
 
@@ -249,7 +230,7 @@ public class GroupControllerTest extends TestUtil {
                         "slug" : "{slug}"
                     }
                 """
-                .replace("{slug}",slug);
+                .replace("{slug}",group.getSlug());
 
         mockMvc.perform(MockMvcRequestBuilders.post("/group/delete")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -260,9 +241,11 @@ public class GroupControllerTest extends TestUtil {
                         status().is(403)
                 ).andDo(print());
     }
-    public void testDeleteGroupBySuperAdminAccount (String slug) throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+
+
+    @Test
+    public void testDeleteGroupBySuperAdminAccount () throws Exception {
+        Group group = createGroup();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
         String json = """
@@ -270,7 +253,7 @@ public class GroupControllerTest extends TestUtil {
                         "slug" : "{slug}"
                     }
                 """
-                .replace("{slug}",slug);
+                .replace("{slug}",group.getSlug());
 
         mockMvc.perform(MockMvcRequestBuilders.post("/group/delete")
                         .contentType(MediaType.APPLICATION_JSON)

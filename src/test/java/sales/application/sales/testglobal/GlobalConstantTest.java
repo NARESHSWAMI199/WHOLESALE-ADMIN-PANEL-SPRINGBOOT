@@ -19,7 +19,8 @@ public class GlobalConstantTest {
     public static String WHOLESALER_TEST_PASSWORD= "123456"; // password must be 123456 for test wholesaler
 
     public static String WHOLESALER = "W";
-    public static String ADMIN = "A";
+    public static String ADMIN = "SA";
+    public static String STAFF = "S";
     public static final String ITEM_LABEL_NEW = "N";
     public static final String ITEM_LABEL_OLD = "N";
 

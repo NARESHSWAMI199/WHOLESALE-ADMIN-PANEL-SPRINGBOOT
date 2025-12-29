@@ -25,12 +25,12 @@ public class GroupPermission implements Serializable {
     @JsonIgnore
     int id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id", referencedColumnName = "id")
     Group group;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "permission_id" , referencedColumnName = "id")
     Permission permissions;
 
 

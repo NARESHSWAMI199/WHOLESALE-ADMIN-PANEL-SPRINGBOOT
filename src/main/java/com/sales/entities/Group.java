@@ -2,10 +2,7 @@ package com.sales.entities;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -13,11 +10,12 @@ import java.util.UUID;
 import static com.sales.utils.Utils.getCurrentMillis;
 
 @Entity
-@Table(name = "`groups`")
+@Table(name = "groups")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Group implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

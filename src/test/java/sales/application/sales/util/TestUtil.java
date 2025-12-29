@@ -75,7 +75,10 @@ public class TestUtil {
     @Autowired
     protected SupportEmailsRepository supportEmailsRepository;
 
-    private Integer storeId;
+    @Autowired
+    protected GroupRepository groupRepository;
+
+    protected  Integer storeId;
 
     protected String storeSlug;
 
@@ -166,10 +169,11 @@ public class TestUtil {
     }
 
 
-    protected StoreSubCategory createStoreSubCategory(int itemCategoryId) {
+    protected StoreSubCategory createStoreSubCategory() {
+        StoreCategory storeCategory = createStoreCategory();
         String slug = UUID.randomUUID().toString();
         StoreSubCategory storeSubCategory  = StoreSubCategory.builder()
-                .categoryId(itemCategoryId)
+                .categoryId(storeCategory.getId())
                 .subcategory("Laptop")
                 .slug(slug)
                 .isDeleted("N")
@@ -197,7 +201,7 @@ public class TestUtil {
     public Store createStore() {
         Address address = createAddress();
         StoreCategory storeCategory = createStoreCategory();
-        StoreSubCategory storeSubCategory = createStoreSubCategory(storeCategory.getId());
+        StoreSubCategory storeSubCategory = createStoreSubCategory();
         String slug = UUID.randomUUID().toString();
         Store store = Store.builder()
                 .slug(slug)
@@ -269,8 +273,10 @@ public class TestUtil {
             storeRepository.save(store);
             storeId = store.getId();
             storeSlug = store.getSlug();
+            Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(email, password);
+            return loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         }
-        Map<String,String> loggedUserResponse = getWholesaleLoginBeaverSlugAndToken(email, password);
+        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(email, password);
         return loggedUserResponse.get(ConstantResponseKeys.TOKEN);
     }
 
@@ -366,10 +372,11 @@ public class TestUtil {
     }
 
 
-    protected ItemSubCategory createItemSubCategory(int itemCategoryId) {
+    protected ItemSubCategory createItemSubCategory() {
+        ItemCategory itemCategory = createItemCategory();
         String slug = UUID.randomUUID().toString();
         ItemSubCategory itemSubCategory  = ItemSubCategory.builder()
-                .categoryId(itemCategoryId)
+                .categoryId(itemCategory.getId())
                 .subcategory("Laptop")
                 .slug(slug)
                 .isDeleted("N")
@@ -379,9 +386,9 @@ public class TestUtil {
     }
 
 
-    public Item createItem(){
+    public Item createItem(Integer storeId){
         ItemCategory itemCategory = createItemCategory();
-        ItemSubCategory itemSubCategory = createItemSubCategory(itemCategory.getId());
+        ItemSubCategory itemSubCategory = createItemSubCategory();
         String slug = UUID.randomUUID().toString();
         Item item = Item.builder()
                 .wholesaleId(storeId)
@@ -410,6 +417,14 @@ public class TestUtil {
         return supportEmailsRepository.save(supportEmail);
     }
 
+
+    public Group createGroup() {
+        Group group = Group.builder()
+                .name("Test group")
+                .slug(UUID.randomUUID().toString())
+                .build();
+        return groupRepository.save(group);
+    }
 
 
 

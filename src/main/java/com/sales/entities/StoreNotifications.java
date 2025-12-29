@@ -31,7 +31,7 @@ public class StoreNotifications implements Serializable {
     @Column(name = "title")
     String title;
 
-    @Column(name = "message_body")
+    @Column(name = "message_body" , columnDefinition = "TEXT")
     String messageBody;
 
     @Column(name = "created_at")

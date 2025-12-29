@@ -2,7 +2,6 @@ package sales.application.sales.wholesaler.controller;
 
 import com.sales.SalesApplication;
 import com.sales.entities.Item;
-import com.sales.entities.ItemCategory;
 import com.sales.entities.ItemSubCategory;
 import com.sales.global.GlobalConstant;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,8 +77,7 @@ public class WholesaleItemControllerTest extends TestUtil {
 
     @Test
     public void testAddItem() throws Exception {
-        ItemCategory itemCategory = createItemCategory();
-        ItemSubCategory itemSubCategory = createItemSubCategory(itemCategory.getId());
+        ItemSubCategory itemSubCategory = createItemSubCategory();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         MockMultipartFile file = getImageMultipartFileToUpload("newItemImages");
@@ -92,7 +90,7 @@ public class WholesaleItemControllerTest extends TestUtil {
                         .param("discount", "10")
                         .param("description", "Mock test.")
                         .param("capacity", "1")
-                        .param("categoryId", String.valueOf(itemCategory.getId()))
+                        .param("categoryId", String.valueOf(itemSubCategory.getCategoryId()))
                         .param("subCategoryId", String.valueOf(itemSubCategory.getId()))
                         .param("inStock", "Y")
                         .param("label", "N")
@@ -109,7 +107,7 @@ public class WholesaleItemControllerTest extends TestUtil {
 
     @Test
     public void testUpdateItem() throws Exception {
-        Item item = createItem();
+        Item item = createItem(storeId);
         logger.info("Item : {} {}",item,item.getWholesaleId());
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION, token);
@@ -139,7 +137,7 @@ public class WholesaleItemControllerTest extends TestUtil {
 
     @Test
     public void testUpdateStock() throws Exception {
-        Item item = createItem();
+        Item item = createItem(storeId);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
 
@@ -164,7 +162,7 @@ public class WholesaleItemControllerTest extends TestUtil {
 
     @Test
     public void testDeleteItem() throws Exception {
-        Item item = createItem();
+        Item item = createItem(storeId);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """

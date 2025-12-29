@@ -4,7 +4,6 @@ package sales.application.sales.wholesaler.controller;
 import com.google.gson.Gson;
 import com.sales.SalesApplication;
 import com.sales.entities.City;
-import com.sales.entities.StoreCategory;
 import com.sales.entities.StoreSubCategory;
 import com.sales.global.GlobalConstant;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,8 +39,7 @@ public class WholesaleStoreControllerTest extends TestUtil {
 
     @Test
     public void testAddStore() throws Exception {
-        StoreCategory storeCategory = createStoreCategory();
-        StoreSubCategory storeSubCategory = createStoreSubCategory(storeCategory.getId());
+        StoreSubCategory storeSubCategory = createStoreSubCategory();
         City city = createCity();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
@@ -66,7 +64,7 @@ public class WholesaleStoreControllerTest extends TestUtil {
                 .replace("{phone}",randomPhone)
                 .replace("{city}",String.valueOf(city.getId()))
                 .replace("{state}",String.valueOf(city.getStateId()))
-                .replace("{categoryId}",String.valueOf(storeCategory.getId()))
+                .replace("{categoryId}",String.valueOf(storeSubCategory.getCategoryId()))
                 .replace("{subCategoryId}",String.valueOf(storeSubCategory.getId()))
                 ;
 
@@ -84,8 +82,7 @@ public class WholesaleStoreControllerTest extends TestUtil {
     }
     @Test
     public void testUpdateStore() throws Exception {
-        StoreCategory storeCategory = createStoreCategory();
-        StoreSubCategory storeSubCategory = createStoreSubCategory(storeCategory.getId());
+        StoreSubCategory storeSubCategory = createStoreSubCategory();
         City city = createCity();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
@@ -112,7 +109,7 @@ public class WholesaleStoreControllerTest extends TestUtil {
                 .replace("{phone}",randomPhone)
                 .replace("{city}",String.valueOf(city.getId()))
                 .replace("{state}",String.valueOf(city.getStateId()))
-                .replace("{categoryId}",String.valueOf(storeCategory.getId()))
+                .replace("{categoryId}",String.valueOf(storeSubCategory.getCategoryId()))
                 .replace("{subCategoryId}",String.valueOf(storeSubCategory.getId()))
                 ;
 
@@ -195,8 +192,7 @@ public class WholesaleStoreControllerTest extends TestUtil {
     }
     @Test
     public void testGetWholesaleStoreSubcategory() throws Exception {
-        StoreCategory storeCategory = createStoreCategory();
-        StoreSubCategory storeSubCategory = createStoreSubCategory(storeCategory.getId());
+        StoreSubCategory storeSubCategory = createStoreSubCategory();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
         mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/store/subcategory/"+storeSubCategory.getId())
