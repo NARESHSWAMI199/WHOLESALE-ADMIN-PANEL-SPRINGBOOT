@@ -90,6 +90,9 @@ public class UserService extends RepoContainer {
         
         String recipient = user.getEmail();
         SupportEmail supportEmail =  supportEmailsRepository.findSupportEmailBySupportType("SUPPORT");
+        if(Objects.isNull(supportEmail)) {
+            throw new InternalError("Support email is not found. please contact administrator.");
+        }
         String sender = supportEmail.getEmail();
         Session session = Session.getInstance(props, new Authenticator() {
             @Override

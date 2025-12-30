@@ -21,6 +21,7 @@ public class GlobalConstantTest {
     public static String WHOLESALER = "W";
     public static String ADMIN = "SA";
     public static String STAFF = "S";
+    public static String RETAILER = "R";
     public static final String ITEM_LABEL_NEW = "N";
     public static final String ITEM_LABEL_OLD = "N";
 

@@ -45,7 +45,7 @@ public interface UserRepository  extends JpaRepository<User, Integer> , JpaSpeci
     Integer getUserWithUserType(@Param("status") String status,@Param("userType") String userType);
 
 
-    @Query(value = "select ug.group_id as groupId  from user_groups ug left join `user` u on ug.user_id = u.user_id where u.slug = :slug",nativeQuery = true)
+    @Query(value = "select ug.groupId as groupId from UserGroups ug left join User u on ug.userId = u.id where u.slug = :slug")
     List<Integer> getUserGroupsIdBySlug(String slug);
 
 }

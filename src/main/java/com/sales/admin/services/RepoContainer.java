@@ -54,7 +54,7 @@ public class RepoContainer {
 
 
     @Autowired
-    protected  PermissionRepository permissionRepository;
+    protected  GroupPermissionRepository groupPermissionRepository;
 
     @Autowired
     protected  PermissionHbRepository permissionHbRepository;

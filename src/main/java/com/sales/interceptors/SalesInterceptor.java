@@ -2,7 +2,7 @@ package com.sales.interceptors;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sales.admin.repositories.PermissionRepository;
+import com.sales.admin.repositories.GroupPermissionRepository;
 import com.sales.admin.repositories.StorePermissionsRepository;
 import com.sales.admin.repositories.UserRepository;
 import com.sales.cachemanager.services.UserCacheService;
@@ -36,7 +36,7 @@ public class SalesInterceptor implements HandlerInterceptor {
     private final JwtToken jwtToken;
     private final UserRepository userRepository;
 
-    private final PermissionRepository permissionRepository;
+    private final GroupPermissionRepository groupPermissionRepository;
     private final StorePermissionsRepository storePermissionsRepository;
     private final WholesaleServicePlanService wholesaleServicePlanService;
     private final UserCacheService userCacheService;
@@ -57,7 +57,7 @@ public class SalesInterceptor implements HandlerInterceptor {
             String requestUrI = request.getRequestURI();
             Set<String> permittedUrls = null;
             if(user.getUserType().equals("S")  || user.getUserType().equals("SA")){
-                permittedUrls = permissionRepository.getUserAllPermission(user.getId());
+                permittedUrls = groupPermissionRepository.getUserAllPermission(user.getId());
                 requestUrI = requestUrI.replaceAll("detail","all");
             }else if(user.getUserType().equals("W")){
                 permittedUrls = storePermissionsRepository.getAllAssignedPermissionByUserId(user.getId());

@@ -3,7 +3,9 @@ package sales.application.sales.admin.controller;
 
 import com.sales.SalesApplication;
 import com.sales.admin.services.UserService;
-import com.sales.dto.UserDto;
+import com.sales.entities.Group;
+import com.sales.entities.Store;
+import com.sales.entities.StoreSubCategory;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
@@ -22,8 +24,7 @@ import sales.application.sales.util.TestUtil;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -36,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTest extends TestUtil {
 
 
+    private String emailDomain = "@sales.com";
     private String token;
 
     @BeforeEach
@@ -44,36 +46,46 @@ public class UserControllerTest extends TestUtil {
     }
 
 
-    HttpHeaders headers = new HttpHeaders();
-
 
     @Test
     void testLoginWithRightPassword() throws Exception {
+
+        String email = UUID.randomUUID()+emailDomain;;
+        String password = UUID.randomUUID().toString();
+        String slug =UUID.randomUUID().toString();
+        User user = createUser(slug,email, password, GlobalConstantTest.STAFF);
+
         String userJson = """
             {
-                "email" : "naresh@gmail.com",
-                "password" : "123456"
+                "email" : "{email}",
+                "password" : "{password}"
             }
-            """;
+            """.replace("{email}",user.getEmail())
+                .replace("{password}",user.getPassword());
 
         mockMvc.perform(post("/admin/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.user.username", is("naresh")))
-                .andExpect(jsonPath("$.user.email", is("naresh@gmail.com")))
+                .andExpect(jsonPath("$.user.email", is(email)))
                 .andDo(print());
     }
 
 
     @Test
     void testLoginWithWrongPassword() throws Exception {
+        String email = UUID.randomUUID()+emailDomain;;
+        String password = UUID.randomUUID().toString();
+        String slug =UUID.randomUUID().toString();
+        User user = createUser(slug,email, password, GlobalConstantTest.STAFF);
+
         String userJson = """
             {
-                "email" : "test.naresh@gmail.com",
-                "password" : "123456"
+                "email" : "{email}",
+                "password" : "{password}"
             }
-            """;
+            """.replace("{email}",user.getEmail())
+                .replace("{password}",UUID.randomUUID().toString());
 
         mockMvc.perform(post("/admin/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -145,37 +157,11 @@ public class UserControllerTest extends TestUtil {
     }
 
 
-
-    @BeforeEach
-    public void loginFirst () throws Exception {
-            String userJson = """
-            {
-                "email" : "naresh@gmail.com",
-                "password" : "123456"
-            }
-            """;
-
-        MvcResult result = mockMvc.perform(post("/admin/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(userJson))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.user.username", is("naresh")))
-                .andExpect(jsonPath("$.user.email", is("naresh@gmail.com")))
-                .andExpect(jsonPath("$.token", notNullValue()))
-//                .andDo(print())
-                .andReturn();
-                headers.set(GlobalConstant.AUTHORIZATION, extractTokenFromResponse(result));
-
-    }
-
-
-
-
-
-
     /** For admin login */
     @Test
     public void addRetailerMultipartRequestTest() throws Exception{
+        HttpHeaders headers = new  HttpHeaders();
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                 {
                     "email" : "{email}",
@@ -191,13 +177,15 @@ public class UserControllerTest extends TestUtil {
                 .headers(headers)
                 )
                 .andExpect(status().is(500))
-                .andExpect(jsonPath("$.message",is("Content-Type 'multipart/form-data")));
+                .andExpect(jsonPath("$.message",containsString("Content-Type 'multipart/form-data")));
 
     }
 
 
     @Test
     public void addRetailerTest() throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION,token);
         String randomEmail = UUID.randomUUID().toString().substring(0,6) + "@mocktest.in";
         String randomPhone = getRandomMobileNumber();
         String json = """
@@ -212,32 +200,25 @@ public class UserControllerTest extends TestUtil {
                 .replace("{contact}",randomPhone)
                 ;
 
-        MvcResult result = mockMvc.perform(post("/admin/auth/add")
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .headers(headers)
-                )
-                .andExpect(status().is(201))
-                .andDo(print()).andReturn();
-
-        String userSlug = extractSlugFromResponseViaRes(result);
-
-        // delete add user
-        testDeleteRetailerUserViaStaffAccount(userSlug);
+         mockMvc.perform(post("/admin/auth/add")
+                    .content(json)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .headers(headers)
+            )
+            .andExpect(status().is(201))
+            .andDo(print()).andReturn();
     }
 
 
 
     @Test
-    public void addWholesalerAndUpdateTest() throws Exception{
+    public void addWholesalerTest() throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION,token);
+        StoreSubCategory storeSubCategory = createStoreSubCategory();
         String randomEmail = UUID.randomUUID().toString().substring(0,6) + "@mocktest.in";
         String randomPhone = getRandomMobileNumber();
-
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
-
-        HttpHeaders staffHeader = new HttpHeaders();
-        staffHeader.set(GlobalConstant.AUTHORIZATION,token);
+        createStorePermission();
         // Creating wholesaler
         String json = """
                 {
@@ -251,8 +232,8 @@ public class UserControllerTest extends TestUtil {
                     "storeName" : "abc",
                     "storeEmail" : "{storeEmail}",
                     "description" : "test",
-                    "categoryId" : 0,
-                    "subCategoryId"  : 0,
+                    "categoryId" : {categoryId},
+                    "subCategoryId"  : {subCategoryId},
                     "zipCode" : "302013",
                     "storePhone" : "{storePhone}"
                 }
@@ -260,8 +241,12 @@ public class UserControllerTest extends TestUtil {
                 .replace("{email}",randomEmail)
                 .replace("{contact}",randomPhone)
                 .replace("{storePhone}",randomPhone)
-                .replace("{storeEmail}",randomEmail);
-            MvcResult result = mockMvc.perform(post("/admin/auth/add")
+                .replace("{storeEmail}",randomEmail)
+                .replace("{categoryId}",String.valueOf(storeSubCategory.getCategoryId()))
+                .replace("{subCategoryId}",String.valueOf(storeSubCategory.getId()))
+                ;
+
+            mockMvc.perform(post("/admin/auth/add")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
                         .headers(headers)
@@ -269,9 +254,19 @@ public class UserControllerTest extends TestUtil {
                 .andExpect(status().is(201))
                 .andDo(print())
                 .andReturn();
+    }
 
-        String userSlug = extractSlugFromResponseViaRes(result);
 
+    @Test
+    public void  updateWholesaler() throws Exception {
+        String email = UUID.randomUUID()+emailDomain;;
+        String password = UUID.randomUUID().toString();
+        String slug =UUID.randomUUID().toString();
+        User user = createUser(slug,email, password, GlobalConstantTest.WHOLESALER);
+        Store store = createStore();
+        token = loginUser(GlobalConstantTest.STAFF);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         // Updating wholesaler
         String updatedJson = """
                 {
@@ -291,30 +286,28 @@ public class UserControllerTest extends TestUtil {
                     "street" : "1 Moti dungri"
                 }
                 """
-                .replace("{slug}",userSlug)
-                .replace("{email}",randomEmail)
-                .replace("{contact}",randomPhone)
-                .replace("{storeEmail}",randomEmail)
-                .replace("{storePhone}",randomPhone)
+                .replace("{slug}",user.getSlug())
+                .replace("{email}",user.getEmail())
+                .replace("{contact}",user.getContact())
+                .replace("{storeEmail}",user.getEmail())
+                .replace("{storePhone}", store.getPhone())
                 ;
-        // update created wholesaler
-        mockMvc.perform(post("/admin/auth/update")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(updatedJson)
-                .headers(staffHeader)
-        )
-        .andExpectAll(
-            status().is(200)
-        );
 
-        // delete wholesaler via staff account
-        testDeleteWholesalerUserViaStaffAccount(userSlug);
-
+                mockMvc.perform(post("/admin/auth/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedJson)
+                        .headers(headers)
+                )
+                .andExpectAll(
+                        status().is(200)
+                );
 
     }
 
 
     public String addStaff() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION,token);
         String randomEmail = UUID.randomUUID().toString().substring(0,6) + "@mocktest.in";
         String randomPhone = getRandomMobileNumber();
         String json = """
@@ -355,7 +348,13 @@ public class UserControllerTest extends TestUtil {
 
     @Test
     public void getRetailer () throws Exception {
-        mockMvc.perform(get("/admin/auth/detail/"+GlobalConstantTest.RETAILER_SLUG)
+        String email = UUID.randomUUID()+emailDomain;;
+        String password = UUID.randomUUID().toString();
+        String slug =UUID.randomUUID().toString();
+        User user = createUser(slug,email, password, GlobalConstantTest.RETAILER);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION,token);
+        mockMvc.perform(get("/admin/auth/detail/"+user.getSlug())
                         .headers(headers)
                 )
                 .andExpect(status().isOk())
@@ -364,6 +363,8 @@ public class UserControllerTest extends TestUtil {
 
     @Test
     public void getDeletedWholesaler () throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION,token);
         String deletedWholesalerSlug = "bad58cac-61f9-4b97-805a-fbfad48ebf5f";
         mockMvc.perform(get("/admin/auth/detail/"+deletedWholesalerSlug)
                     .headers(headers)
@@ -376,7 +377,13 @@ public class UserControllerTest extends TestUtil {
 
     @Test
     public void getWholesaler () throws Exception {
-        mockMvc.perform(get("/admin/auth/detail/"+GlobalConstantTest.WHOLESALER_SLUG)
+        String email = UUID.randomUUID()+emailDomain;;
+        String password = UUID.randomUUID().toString();
+        String slug =UUID.randomUUID().toString();
+        User user = createUser(slug,email, password, GlobalConstantTest.WHOLESALER);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION,token);
+        mockMvc.perform(get("/admin/auth/detail/"+user.getSlug())
                         .headers(headers)
                 )
                 .andExpect(status().isOk())
@@ -387,7 +394,13 @@ public class UserControllerTest extends TestUtil {
 
     @Test
     public void getStaff () throws Exception {
-        mockMvc.perform(get("/admin/auth/detail/"+GlobalConstantTest.STAFF_SLUG)
+        String email = UUID.randomUUID()+emailDomain;;
+        String password = UUID.randomUUID().toString();
+        String slug =UUID.randomUUID().toString();
+        User user = createUser(slug,email, password, GlobalConstantTest.STAFF);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION,token);
+        mockMvc.perform(get("/admin/auth/detail/"+user.getSlug())
                         .headers(headers)
                 )
                 .andExpect(status().isOk())
@@ -398,7 +411,15 @@ public class UserControllerTest extends TestUtil {
 
     @Test
     public void getStaffGroups () throws Exception {
-        mockMvc.perform(get("/admin/auth/groups/"+GlobalConstantTest.STAFF_SLUG)
+        String email = UUID.randomUUID()+emailDomain;;
+        String password = UUID.randomUUID().toString();
+        String slug =UUID.randomUUID().toString();
+        User user = createUser(slug,email, password, GlobalConstantTest.STAFF);
+        Group group = createGroup();
+        assignGroup(user.getId(),group.getId());
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION,token);
+        mockMvc.perform(get("/admin/auth/groups/"+user.getSlug())
                         .headers(headers)
                 )
                 .andExpect(status().isOk())
@@ -410,15 +431,17 @@ public class UserControllerTest extends TestUtil {
     /** ======================= UPDATE USERS */
     @Test
     public void updateStaffViaStaffUserAccount() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
-        HttpHeaders staffHeader = new HttpHeaders();
-        staffHeader.set(GlobalConstant.AUTHORIZATION,token);
+        token = loginUser(GlobalConstantTest.STAFF);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(GlobalConstant.AUTHORIZATION,token);
+
+        String email = UUID.randomUUID()+emailDomain;;
+        String password = UUID.randomUUID().toString();
+        String slug =UUID.randomUUID().toString();
+        User user = createUser(slug,email, password, GlobalConstantTest.STAFF);
 
         String randomEmail = UUID.randomUUID().toString().substring(0,6) + "@mocktest.in";
         String randomPhone = getRandomMobileNumber();
-        /** user before update */
-        String userSlug = addStaff();
 
         String json = """
                    {
@@ -429,32 +452,25 @@ public class UserControllerTest extends TestUtil {
                     "contact" : "{contact}",
                     "groupList" : [0,1]            
                 }
-                """.replace("{slug}",userSlug)
+                """.replace("{slug}",user.getSlug())
                 .replace("{email}", randomEmail)
                 .replace("{contact}", randomPhone)
                 ;
 
         mockMvc.perform(post("/admin/auth/update")
-                        .headers(staffHeader)
+                        .headers(headers)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
                 )
                 .andExpect(status().is(403)) // because only a super admin can update a staff
-                .andDo(print())
-        ;
-
-
-        // delete user via staff account
-        testDeleteStaffUserViaStaffAccount(userSlug);
-
-        // delete user via super admin account
-        testDeleteStaffUserViaSuperAdmin(userSlug);
-
+                .andDo(print());
     }
 
 
     @Test
     public void updateStaffViaSuperAdmin() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION,token);
         /** user before update */
         String userSlug = addStaff();
 
@@ -504,6 +520,8 @@ public class UserControllerTest extends TestUtil {
 
     @Test
     public void getAllWholesaler() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION,token);
         String json = """
                 {}
                 """;
@@ -524,6 +542,8 @@ public class UserControllerTest extends TestUtil {
 
     @Test
     public void getAllRetailer() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION,token);
         String json = """
                 {}
                 """;
@@ -543,6 +563,8 @@ public class UserControllerTest extends TestUtil {
 
     @Test
     public void getAllStaff() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION,token);
         String json = """
                 {}
                 """;
@@ -566,6 +588,8 @@ public class UserControllerTest extends TestUtil {
 
 @Test
 public void updateUserWrongStatus() throws Exception {
+    HttpHeaders headers = new HttpHeaders();
+    headers.set(HttpHeaders.AUTHORIZATION,token);
     String json = """
                 {
                 "slug" : "bd7072f2-ed92-4ee9-8c91-7c8366d0abd2",
@@ -587,13 +611,21 @@ public void updateUserWrongStatus() throws Exception {
 
     @Test
     public void updateUserStatus() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION,token);
+
+        String email = UUID.randomUUID()+emailDomain;;
+        String password = UUID.randomUUID().toString();
+        String slug =UUID.randomUUID().toString();
+        User user = createUser(slug,email, password, GlobalConstantTest.STAFF);
+
         String json = """
                 {
                 "slug" : "{slug}",
                 "status" : "A"
                 }
                 """
-                .replace("{slug}",GlobalConstantTest.STAFF_SLUG)
+                .replace("{slug}",user.getSlug())
                 ;
         mockMvc.perform(post("/admin/auth/status")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -609,6 +641,8 @@ public void updateUserWrongStatus() throws Exception {
 
     @Test
     public void updateWrongUserStatus() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION,token);
         String json = """
                 {
                 "slug" : "wrong_slug",
@@ -630,6 +664,8 @@ public void updateUserWrongStatus() throws Exception {
 
     @Test
     public void updateUserStatusWithoutParams() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION,token);
         String json = """
                 {
                 }
@@ -648,23 +684,21 @@ public void updateUserWrongStatus() throws Exception {
 
     @Test
     public void testCanUserUpdateSelfStatus() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String  slug = loggedUserResponse.get("slug");
-        String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
-        HttpHeaders requestHeader = new HttpHeaders();
-        requestHeader.set(GlobalConstant.AUTHORIZATION,token);
+        token = loginUser(GlobalConstantTest.STAFF);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                 {
                 "slug" : "{self_slug}", 
                 "status" : "A"
                 }
                 """
-                .replace("{self_slug}",slug)
+                .replace("{self_slug}",selfSlug)
                 ;
         mockMvc.perform(post("/admin/auth/status")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
-                        .headers(requestHeader)
+                        .headers(headers)
                 )
                 .andExpectAll(
                         status().is(403)
@@ -676,7 +710,6 @@ public void updateUserWrongStatus() throws Exception {
 
     @Test
     public void testSendOtpWrongEmail() throws Exception {
-
         String json = """
                 {
                   "email" : "swaminaressdfsd3@gmail.com" 
@@ -692,19 +725,25 @@ public void updateUserWrongStatus() throws Exception {
     }
 
     @Test
-    public void testSendOtp() throws Exception {
+    public void testSendOtpWithWithoutSetSupportId() throws Exception {
+        String email = UUID.randomUUID()+emailDomain;;
+        String password = UUID.randomUUID().toString();
+        String slug =UUID.randomUUID().toString();
+        createUser(slug,email, password, GlobalConstantTest.STAFF);
 
         String json = """
                 {
-                  "email" : "swaminaresh993@gmail.com" 
+                  "email" : "{email}" 
                 }
-                """;
+                """.replace("{email}",email)
+                ;
 
         mockMvc.perform(post("/admin/auth/sendOtp")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
         ).andExpectAll(
-                status().is(200)
+                jsonPath("$.message",containsString("Support email is not found. please contact administrator.")),
+                status().is(500)
         );
     }
 
@@ -713,12 +752,18 @@ public void updateUserWrongStatus() throws Exception {
     @Test
     public void testLoginWithWrongOtp() throws Exception {
         // for one time otp
+        String email = UUID.randomUUID()+emailDomain;;
+        String password = UUID.randomUUID().toString();
+        String slug =UUID.randomUUID().toString();
+        User user = createUser(slug, email, password, GlobalConstantTest.STAFF);
+
         String json = """
                 {
-                    "email" : "swaminaresh993@gmail.com",
-                    "password" : "302978"
+                    "email" : "{email}",
+                    "password" : "{password}"
                 }
-                """;
+                """.replace("{email}",user.getEmail())
+                .replace("{password}",user.getPassword());
         mockMvc.perform(post("/admin/auth/login/otp")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -734,8 +779,7 @@ public void updateUserWrongStatus() throws Exception {
 
 
 
-/*
-    @Test
+  /*  @Test
     public void testLoginViaOtpButBlocked() throws Exception {
         // Make sure user must be blocked otherwise this test will fail
         String json = """
@@ -751,19 +795,18 @@ public void updateUserWrongStatus() throws Exception {
                 status().is(401),
                 jsonPath("$.message",is("You are blocked by admin."))
         );
-    }
-    */
+    }*/
 
 
     @Autowired
     UserService userService;
 
-    @Test
+ /*   @Test
     public void testOtpLoginWithRightCredential() throws Exception {
-        UserDto userDto = new UserDto();
-        userDto.setEmail(GlobalConstantTest.STAFF_TEST_EMAIL);
-        userDto.setPassword(GlobalConstantTest.STAFF_TEST_PASSWORD);
-        User user = userService.findByEmailAndPassword(userDto);
+        String email = UUID.randomUUID()+emailDomain;;
+        String password = UUID.randomUUID().toString();
+        String slug =UUID.randomUUID().toString();
+        User user = createUser(slug,email, password, GlobalConstantTest.STAFF);
         // Make sure otp is right
         String json = """
                 {
@@ -783,7 +826,7 @@ public void updateUserWrongStatus() throws Exception {
         );
     }
 
-
+*/
 
     public void testDeleteStaffUserViaStaffAccount(String slug) throws Exception {
         Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);

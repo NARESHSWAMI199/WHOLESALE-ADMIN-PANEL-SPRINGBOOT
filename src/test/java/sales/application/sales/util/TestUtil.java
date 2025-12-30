@@ -78,9 +78,25 @@ public class TestUtil {
     @Autowired
     protected GroupRepository groupRepository;
 
+    @Autowired
+    protected UserGroupRepository userGroupRepository;
+
+    @Autowired
+    protected  PermissionRepository permissionRepository;
+
+
+    @Autowired
+    protected  StorePermissionsRepository storePermissionRepository;
+
+    @Autowired
+    protected WholesalePermissionRepository wholesalePermissionRepository;
+
     protected  Integer storeId;
 
     protected String storeSlug;
+
+    protected String selfSlug;
+
 
 
     protected String extractTokenFromResponse(MvcResult result) throws Exception {
@@ -211,6 +227,7 @@ public class TestUtil {
                 .avtar("abc.png")
                 .isDeleted("N")
                 .address(address)
+                .phone(getRandomMobileNumber())
                 .build();
         return storeRepository.save(store);
     }
@@ -232,13 +249,16 @@ public class TestUtil {
     }
 
     public User createUser(String slug,String email, String password ,String userType) {
+        String random  = getRandomMobileNumber();
         User user = User.builder()
+                .username("naresh")
                 .slug(slug)
                 .userType(userType)
                 .email(email)
                 .password(password)
                 .status("A")
                 .isDeleted("N")
+                .contact(random)
                 .build();
         return userRepository.save(user);
     }
@@ -266,6 +286,7 @@ public class TestUtil {
         User user = createUser(slug,email,password,userType);
         WholesalerPlans wholesalerPlans = createWholesalePlan(slug,user,currentTime,futureDate,servicePlan);
         user.setActivePlan(wholesalerPlans.getId());
+        selfSlug = slug;
         userRepository.save(user);
         if(userType.equals(GlobalConstantTest.WHOLESALER)){
             Store store = createStore();
@@ -426,7 +447,43 @@ public class TestUtil {
         return groupRepository.save(group);
     }
 
+    public UserGroups assignGroup(Integer userId,Integer groupId){
+        UserGroups userGroups = UserGroups.builder()
+                .groupId(groupId)
+                .userId(userId)
+                .build();
+        return userGroupRepository.save(userGroups);
+    }
 
+
+    public Permission createPermission(){
+        Permission permission = Permission.builder()
+                .permission("Test")
+                .permissionFor("Edit")
+                .accessUrl("test.com")
+                .build();
+        return permissionRepository.save(permission);
+    }
+
+
+    public StorePermissions createStorePermission(){
+        StorePermissions permission = StorePermissions.builder()
+                .permission("Test")
+                .permissionFor("Edit")
+                .accessUrl("test.com")
+                .defaultPermission("Y")
+                .build();
+        return storePermissionRepository.save(permission);
+    }
+
+    public WholesalerPermissions createWholesalerPermission(Integer userId){
+        Permission permission = createPermission();
+        WholesalerPermissions wholesalerPermissions = WholesalerPermissions.builder()
+                .permissionId(permission.getId())
+                .userId(userId)
+                .build();
+        return wholesalePermissionRepository.save(wholesalerPermissions);
+    }
 
 
 }

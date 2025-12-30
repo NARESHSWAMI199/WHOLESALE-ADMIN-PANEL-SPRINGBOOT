@@ -113,7 +113,7 @@ public class GroupService extends RepoContainer {
         Group group = groupRepository.findGroupBySlug(slug);
         if (group == null) throw new NotFoundException("No record found.");
 
-        List<Map<String, Object>> groupWithPermission = permissionRepository.getGroupPermissionByGroupId(group.getId());
+        List<Map<String, Object>> groupWithPermission = groupPermissionRepository.getGroupPermissionByGroupId(group.getId());
 
         Map<String, Object> formattedGroup = new HashMap<>();
         List<Integer> permissionList = new ArrayList<>();
@@ -130,7 +130,7 @@ public class GroupService extends RepoContainer {
 
     public Map<String, List<Object>> getAllPermissions() {
         logger.debug("Entering getAllPermissions");
-        List<Map<String, Object>> permissionList = permissionRepository.getAllPermissions();
+        List<Map<String, Object>> permissionList = groupPermissionRepository.getAllPermissions();
         Map<String, List<Object>> formattedPermissions = new HashMap<>();
         for (Map<String, Object> permission : permissionList) {
             String key = (String) permission.get("permission_for");
