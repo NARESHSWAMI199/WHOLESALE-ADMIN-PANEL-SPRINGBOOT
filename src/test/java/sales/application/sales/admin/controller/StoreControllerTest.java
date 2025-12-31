@@ -4,8 +4,9 @@ package sales.application.sales.admin.controller;
 import com.google.gson.Gson;
 import com.sales.SalesApplication;
 import com.sales.entities.Store;
+import com.sales.entities.StoreCategory;
+import com.sales.entities.StoreSubCategory;
 import com.sales.entities.User;
-import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,12 +38,11 @@ public class StoreControllerTest extends TestUtil {
 
     /**@Note : We are not adding any new store in this test, but from userController we can create store and wholesale user */
 
-
     private String token;
 
     @BeforeEach
     public void loginUserTest() throws Exception {
-        token = loginUser(GlobalConstantTest.STAFF);
+        token = loginUser(GlobalConstantTest.ADMIN);
     }
 
     @Test
@@ -86,30 +86,34 @@ public class StoreControllerTest extends TestUtil {
 
     @Test
     public  void testUpdateStore() throws Exception {
-
         String randomEmail = UUID.randomUUID().toString().substring(0,6) + "@mocktest.in";
         String randomPhone = getRandomMobileNumber();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
-        createStoreSubCategory();
+        Store store = createStore();
         String json = """
                 {
                     "storeSlug" : "{storeSlug}",
                     "storeName" : "Mock test store",
                     "storeEmail" : "{storeEmail}",
                     "description" : "test",
-                    "categoryId" : "1",
-                    "subCategoryId"  : "1",
+                    "categoryId" : "{categoryId}",
+                    "subCategoryId"  : "{subCategoryId}",
                     "storePhone" : "{storePhone}",
                     "zipCode" : "302013",
-                    "city" : "1",
-                    "state" : "1",
+                    "city" : "{city}",
+                    "state" : "{state}",
                     "street" : "1 Mock test jaipur"
                 }
             """
-                .replace("{storeSlug}",GlobalConstantTest.TEST_STORE_SLUG)
+                .replace("{storeSlug}",store.getSlug())
                 .replace("{storeEmail}",randomEmail)
-                .replace("{storePhone}",randomPhone);
+                .replace("{storePhone}",randomPhone)
+                .replace("{city}",String.valueOf(store.getAddress().getCity()))
+                .replace("{state}",String.valueOf(store.getAddress().getState()))
+                .replace("{categoryId}",String.valueOf(store.getStoreCategory().getId()))
+                .replace("{subCategoryId}",String.valueOf(store.getStoreSubCategory().getId()))
+                ;
 
         Map<String,String> params = new Gson().fromJson(json,Map.class);
         MockMultipartHttpServletRequestBuilder requestBuilder  = multipart("/admin/store/update");
@@ -151,10 +155,11 @@ public class StoreControllerTest extends TestUtil {
 
     @Test
     public void testGetStoreDetail() throws Exception {
+        Store store = createStore();
         HttpHeaders headers = new HttpHeaders();
 
         headers.set(GlobalConstant.AUTHORIZATION , token);
-        mockMvc.perform(get("/admin/store/detail/"+GlobalConstantTest.TEST_STORE_SLUG)
+        mockMvc.perform(get("/admin/store/detail/"+store.getSlug())
                 .headers(headers)
         ).andExpectAll(
                 status().isOk()
@@ -241,8 +246,6 @@ public class StoreControllerTest extends TestUtil {
 
     @Test
     public void testUpdateStoreStatusWithWrongSlug() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
 
@@ -265,10 +268,17 @@ public class StoreControllerTest extends TestUtil {
 
     @Test
     public void testUpdateStoreStatus() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
+
+        Store store = createStore();
+
+        String email = createRandomEmail();;
+        String password = UUID.randomUUID().toString();
+        String slug =UUID.randomUUID().toString();
+        User user = createUser(slug,email, password, GlobalConstantTest.WHOLESALER);
+        store.setUser(user);
+        storeRepository.save(store);
 
         // Make sure by default status is deactivated
         String json = """
@@ -277,7 +287,7 @@ public class StoreControllerTest extends TestUtil {
                     "status" : "A"
                 }
                 """
-                .replace("{slug}",GlobalConstantTest.TEST_STORE_SLUG)
+                .replace("{slug}",store.getSlug())
                 ;
 
         mockMvc.perform(post("/admin/store/status")
@@ -296,8 +306,6 @@ public class StoreControllerTest extends TestUtil {
 
     @Test
     public void testGetStoreSubcategory() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
@@ -316,8 +324,6 @@ public class StoreControllerTest extends TestUtil {
 
     @Test
     public void testGetStoreCategory() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
@@ -359,8 +365,6 @@ public class StoreControllerTest extends TestUtil {
 
     @Test
     public void testStoreCategoryAdd() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
@@ -382,17 +386,18 @@ public class StoreControllerTest extends TestUtil {
 
     @Test
     public void testStoreCategoryUpdate() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+        StoreCategory storeCategory = createStoreCategory();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                   {
-                  "id" : 1,
+                  "id" : {id},
                   "category" : "Mock Test Store updated Category {random}",
                   "icon": "Mock test icon"
                   }
-                """.replace("{random}", UUID.randomUUID().toString().substring(0,6)); // randomly added due to duplicate category issue.
+                """.replace("{random}", UUID.randomUUID().toString().substring(0,6))
+                .replace("{id}",String.valueOf(storeCategory.getId()))
+                ; // randomly added due to duplicate category issue.
         MvcResult result = mockMvc.perform(post("/admin/store/category/update")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
@@ -403,18 +408,14 @@ public class StoreControllerTest extends TestUtil {
                 .andReturn();
         String slug = extractSlugFromResponseViaRes(result);
 
-        // update store category via staff account
-        testDeleteCategoryViaStaff(slug);
-
-        // update store category via super admin account
-        testDeleteCategoryViaSuperAdmin(slug);
     }
 
 
 
-    public void testDeleteCategoryViaStaff(String slug) throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+    @Test
+    public void testDeleteCategoryViaStaff() throws Exception {
+        StoreCategory storeCategory = createStoreCategory();
+        token = loginUser(GlobalConstantTest.STAFF);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
@@ -422,7 +423,7 @@ public class StoreControllerTest extends TestUtil {
                     "slug" : "{slug}"
                 }
                 """
-                .replace("{slug}",slug);
+                .replace("{slug}",storeCategory.getSlug());
         mockMvc.perform(post("/admin/store/category/delete")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
@@ -434,9 +435,9 @@ public class StoreControllerTest extends TestUtil {
     }
 
 
-    public void testDeleteCategoryViaSuperAdmin(String slug) throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+    @Test
+    public void testDeleteCategoryViaSuperAdmin() throws Exception {
+        StoreCategory storeCategory = createStoreCategory();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
@@ -444,7 +445,7 @@ public class StoreControllerTest extends TestUtil {
                     "slug" : "{slug}"
                 }`
                 """
-                .replace("{slug}",slug); // use @Test and use valid slug for separate test
+                .replace("{slug}",storeCategory.getSlug()); // use @Test and use valid slug for separate test
         mockMvc.perform(post("/admin/store/category/delete")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
@@ -454,9 +455,11 @@ public class StoreControllerTest extends TestUtil {
         );
     }
 
-    public void testDeleteSubcategoryViaStaff(String slug) throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+
+    @Test
+    public void testDeleteSubcategoryViaStaff() throws Exception {
+        StoreSubCategory storeSubCategory = createStoreSubCategory();
+        token = loginUser(GlobalConstantTest.STAFF);
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
@@ -464,7 +467,7 @@ public class StoreControllerTest extends TestUtil {
                     "slug" : "{slug}"
                 }`
                 """
-                .replace("{slug}",slug); // use @Test and use valid slug for separate test
+                .replace("{slug}",storeSubCategory.getSlug()); // use @Test and use valid slug for separate test
         mockMvc.perform(post("/admin/store/subcategory/delete")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
@@ -475,9 +478,9 @@ public class StoreControllerTest extends TestUtil {
     }
 
 
-    public void testDeleteSubcategoryViaSuperAdmin(String slug) throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL, GlobalConstantTest.SUPER_ADMIN_TEST_PASSWORD);
-        String token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+    @Test
+    public void testDeleteSubcategoryViaSuperAdmin() throws Exception {
+        StoreSubCategory storeSubCategory = createStoreSubCategory();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
@@ -485,7 +488,7 @@ public class StoreControllerTest extends TestUtil {
                     "slug" : "{slug}"
                 }`
                 """
-                .replace("{slug}",slug); // use @Test and use valid slug for separate test
+                .replace("{slug}",storeSubCategory.getSlug()); // use @Test and use valid slug for separate test
         mockMvc.perform(post("/admin/store/subcategory/delete")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
@@ -500,17 +503,17 @@ public class StoreControllerTest extends TestUtil {
 
     @Test
     public void testStoreSubSCategoryAdd() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+        StoreCategory storeCategory = createStoreCategory();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                   {
-                    "categoryId" : 0,
+                    "categoryId" : {categoryId},
                     "subcategory" : "Mock test subcategory {random}",
                     "icon" : "test"
                   }
                 """
+                .replace("{categoryId}",String.valueOf(storeCategory.getId()))
                 .replace("{random}", UUID.randomUUID().toString().substring(0,6)); // random added due to duplicate category issue.
         mockMvc.perform(post("/admin/store/subcategory/add")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -525,20 +528,21 @@ public class StoreControllerTest extends TestUtil {
 
     @Test
     public void testStoreSubCategoryUpdate() throws Exception {
-        Map<String,String> loggedUserResponse = getLoginBeaverSlugAndToken(GlobalConstantTest.STAFF_TEST_EMAIL, GlobalConstantTest.STAFF_TEST_PASSWORD);
-        String  token = loggedUserResponse.get(ConstantResponseKeys.TOKEN);
+        StoreSubCategory storeSubCategory = createStoreSubCategory();
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
         String json = """
                   {
-                    "id" : 31,
-                    "categoryId" : 0,
+                    "id" : {id},
+                    "categoryId" : {categoryId},
                     "subcategory" : "Mock test subcategory {random}",
                     "icon" : "test"
                   }
                 """
+                .replace("{id}",String.valueOf(storeSubCategory.getId()))
+                .replace("{categoryId}",String.valueOf(storeSubCategory.getCategoryId()))
                 .replace("{random}", UUID.randomUUID().toString().substring(0,6)); // randomly added due to duplicate category issue.
-        MvcResult result = mockMvc.perform(post("/admin/store/subcategory/update")
+        mockMvc.perform(post("/admin/store/subcategory/update")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
                         .headers(headers)
@@ -546,14 +550,6 @@ public class StoreControllerTest extends TestUtil {
                         status().is(200)
                 ).andDo(print())
                 .andReturn();
-
-        String slug = extractSlugFromResponseViaRes(result);
-        // delete subcategory via staff account
-        testDeleteSubcategoryViaStaff(slug);
-
-        // delete subcategory via super admin account
-        testDeleteSubcategoryViaSuperAdmin(slug);
-
     }
 
 

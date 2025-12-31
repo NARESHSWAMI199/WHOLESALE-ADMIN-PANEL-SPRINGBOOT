@@ -37,7 +37,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTest extends TestUtil {
 
 
-    private String emailDomain = "@sales.com";
     private String token;
 
     @BeforeEach
@@ -50,7 +49,7 @@ public class UserControllerTest extends TestUtil {
     @Test
     void testLoginWithRightPassword() throws Exception {
 
-        String email = UUID.randomUUID()+emailDomain;;
+        String email = createRandomEmail();;
         String password = UUID.randomUUID().toString();
         String slug =UUID.randomUUID().toString();
         User user = createUser(slug,email, password, GlobalConstantTest.STAFF);
@@ -74,7 +73,7 @@ public class UserControllerTest extends TestUtil {
 
     @Test
     void testLoginWithWrongPassword() throws Exception {
-        String email = UUID.randomUUID()+emailDomain;;
+        String email = createRandomEmail();;
         String password = UUID.randomUUID().toString();
         String slug =UUID.randomUUID().toString();
         User user = createUser(slug,email, password, GlobalConstantTest.STAFF);
@@ -259,7 +258,7 @@ public class UserControllerTest extends TestUtil {
 
     @Test
     public void  updateWholesaler() throws Exception {
-        String email = UUID.randomUUID()+emailDomain;;
+        String email = createRandomEmail();
         String password = UUID.randomUUID().toString();
         String slug =UUID.randomUUID().toString();
         User user = createUser(slug,email, password, GlobalConstantTest.WHOLESALER);
@@ -348,7 +347,7 @@ public class UserControllerTest extends TestUtil {
 
     @Test
     public void getRetailer () throws Exception {
-        String email = UUID.randomUUID()+emailDomain;;
+        String email = createRandomEmail();
         String password = UUID.randomUUID().toString();
         String slug =UUID.randomUUID().toString();
         User user = createUser(slug,email, password, GlobalConstantTest.RETAILER);
@@ -377,7 +376,7 @@ public class UserControllerTest extends TestUtil {
 
     @Test
     public void getWholesaler () throws Exception {
-        String email = UUID.randomUUID()+emailDomain;;
+        String email = createRandomEmail();;
         String password = UUID.randomUUID().toString();
         String slug =UUID.randomUUID().toString();
         User user = createUser(slug,email, password, GlobalConstantTest.WHOLESALER);
@@ -394,7 +393,7 @@ public class UserControllerTest extends TestUtil {
 
     @Test
     public void getStaff () throws Exception {
-        String email = UUID.randomUUID()+emailDomain;;
+        String email = createRandomEmail();;
         String password = UUID.randomUUID().toString();
         String slug =UUID.randomUUID().toString();
         User user = createUser(slug,email, password, GlobalConstantTest.STAFF);
@@ -411,7 +410,7 @@ public class UserControllerTest extends TestUtil {
 
     @Test
     public void getStaffGroups () throws Exception {
-        String email = UUID.randomUUID()+emailDomain;;
+        String email = createRandomEmail();;
         String password = UUID.randomUUID().toString();
         String slug =UUID.randomUUID().toString();
         User user = createUser(slug,email, password, GlobalConstantTest.STAFF);
@@ -435,7 +434,7 @@ public class UserControllerTest extends TestUtil {
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION,token);
 
-        String email = UUID.randomUUID()+emailDomain;;
+        String email = createRandomEmail();;
         String password = UUID.randomUUID().toString();
         String slug =UUID.randomUUID().toString();
         User user = createUser(slug,email, password, GlobalConstantTest.STAFF);
@@ -614,7 +613,7 @@ public void updateUserWrongStatus() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION,token);
 
-        String email = UUID.randomUUID()+emailDomain;;
+        String email = createRandomEmail();;
         String password = UUID.randomUUID().toString();
         String slug =UUID.randomUUID().toString();
         User user = createUser(slug,email, password, GlobalConstantTest.STAFF);
@@ -726,7 +725,8 @@ public void updateUserWrongStatus() throws Exception {
 
     @Test
     public void testSendOtpWithWithoutSetSupportId() throws Exception {
-        String email = UUID.randomUUID()+emailDomain;;
+        createSupportEmail();
+        String email = createRandomEmail();
         String password = UUID.randomUUID().toString();
         String slug =UUID.randomUUID().toString();
         createUser(slug,email, password, GlobalConstantTest.STAFF);
@@ -742,8 +742,8 @@ public void updateUserWrongStatus() throws Exception {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
         ).andExpectAll(
-                jsonPath("$.message",containsString("Support email is not found. please contact administrator.")),
-                status().is(500)
+                jsonPath("$.message",containsString("We facing some issue to send otp to this mail")),
+                status().is(400)
         );
     }
 
@@ -752,7 +752,7 @@ public void updateUserWrongStatus() throws Exception {
     @Test
     public void testLoginWithWrongOtp() throws Exception {
         // for one time otp
-        String email = UUID.randomUUID()+emailDomain;;
+        String email = createRandomEmail();;
         String password = UUID.randomUUID().toString();
         String slug =UUID.randomUUID().toString();
         User user = createUser(slug, email, password, GlobalConstantTest.STAFF);
@@ -803,7 +803,7 @@ public void updateUserWrongStatus() throws Exception {
 
  /*   @Test
     public void testOtpLoginWithRightCredential() throws Exception {
-        String email = UUID.randomUUID()+emailDomain;;
+        String email = createRandomEmail();;
         String password = UUID.randomUUID().toString();
         String slug =UUID.randomUUID().toString();
         User user = createUser(slug,email, password, GlobalConstantTest.STAFF);

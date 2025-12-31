@@ -10,10 +10,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import sales.application.sales.testglobal.GlobalConstantTest;
 import sales.application.sales.util.TestUtil;
 
+import java.util.UUID;
+
 @SpringBootTest(classes = SalesApplication.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
+@ActiveProfiles("test")
 public class UserServiceTest extends TestUtil {
 
 
@@ -23,12 +28,14 @@ public class UserServiceTest extends TestUtil {
 
     @Test
     public void testFindUserUsingEmailAndPassword(){
-        UserDto userDto = new UserDto();
-        userDto.setEmail("naresh@gmail.com");
-        userDto.setPassword("123456");
+        String email = createRandomEmail();
+        String password = UUID.randomUUID().toString();
+        String slug =UUID.randomUUID().toString();
+        createUser(slug,email, password, GlobalConstantTest.ADMIN);
 
-/*        BDDMockito.given(userService.findByEmailAndPassword(userDto))
-                .willReturn();*/
+        UserDto userDto = new UserDto();
+        userDto.setEmail(email);
+        userDto.setPassword(password);
         User user = userService.findByEmailAndPassword(userDto);
         Assertions.assertEquals("naresh",user.getUsername());
         Assertions.assertEquals("SA",user.getUserType());

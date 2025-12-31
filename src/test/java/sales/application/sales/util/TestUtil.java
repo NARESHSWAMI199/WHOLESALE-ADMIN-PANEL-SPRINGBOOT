@@ -99,6 +99,10 @@ public class TestUtil {
 
 
 
+    protected String createRandomEmail(){
+       return UUID.randomUUID()+"@sales.com";
+    }
+
     protected String extractTokenFromResponse(MvcResult result) throws Exception {
         String responseBody = result.getResponse().getContentAsString();
         TokenResponse tokenResponse = objectMapper.readValue(responseBody, TokenResponse.class); // Create a TokenResponse class
@@ -429,13 +433,21 @@ public class TestUtil {
     }
 
 
-    public SupportEmail createSupportEmail () {
-        SupportEmail supportEmail = SupportEmail.builder()
-                .email(GlobalConstantTest.SUPER_ADMIN_TEST_EMAIL)
-                .supportType("SUPPORT")
-                .passwordKey("test")
-                .build();
-        return supportEmailsRepository.save(supportEmail);
+    public void createSupportEmail () {
+        boolean exists = false;
+        for (SupportEmail supportEmail : supportEmailsRepository.findAll()) {
+            if(supportEmail.getSupportType().equals("SUPPORT")){
+                return;
+            }
+        }
+        if(!exists){
+            SupportEmail supportEmail = SupportEmail.builder()
+                    .email(createRandomEmail())
+                    .supportType("SUPPORT")
+                    .passwordKey("test")
+                    .build();
+            supportEmailsRepository.save(supportEmail);
+        }
     }
 
 
