@@ -37,7 +37,7 @@ public class GlobalConstantTest {
     //window path
     // public static String IMAGE_FOLDER_PATH_TEST  = "C:/Users/DATA/Documents/demo/sales-backend/src/main/resources/public/removebg/349b224a-199d-4fa4-88ce-701435f074aa/";
     // ios path
-    public static String IMAGE_FOLDER_PATH_TEST =   "/Users/nareshswami/Downloads/png/";
-    public  static String IMAGE_NAME_TEST = "swamisale (3).png";
+    public static String IMAGE_FOLDER_PATH_TEST =   "images";
+    public  static String IMAGE_NAME_TEST = "swamisale.png";
 
 }

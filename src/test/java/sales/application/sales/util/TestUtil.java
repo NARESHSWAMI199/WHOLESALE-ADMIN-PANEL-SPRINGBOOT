@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sales.admin.repositories.*;
 import com.sales.entities.*;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.global.GlobalConstant;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,12 +20,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import sales.application.sales.testglobal.GlobalConstantTest;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class TestUtil {
@@ -368,19 +366,15 @@ public class TestUtil {
 
 
     public MockMultipartFile getImageMultipartFileToUpload(String parameterName) throws IOException {
-        String imageFolder = GlobalConstantTest.IMAGE_FOLDER_PATH_TEST;
-        String imageName = GlobalConstantTest.IMAGE_NAME_TEST;
-        Path path = Paths.get(imageFolder + imageName);
-        logger.debug("The image path ================= {}", path);
-        if (!Files.exists(path)) throw new FileNotFoundException(path + " not found ");
-        byte[] imageBytes = Files.readAllBytes(path);
-        MockMultipartFile file = new MockMultipartFile(
-                parameterName, // Name of the request parameter
-                imageName, // Original filename,
+        ClassPathResource resource =
+                new ClassPathResource(GlobalConstantTest.IMAGE_FOLDER_PATH_TEST+ GlobalConstant.PATH_SEPARATOR+GlobalConstantTest.IMAGE_NAME_TEST);
+        logger.info("The file path is : {}",resource.getURL());
+        return new MockMultipartFile(
+                parameterName,
+                GlobalConstantTest.IMAGE_NAME_TEST,
                 MediaType.IMAGE_PNG_VALUE,
-                imageBytes// File content as byte array
+                resource.getInputStream()
         );
-        return file;
 
     }
 
