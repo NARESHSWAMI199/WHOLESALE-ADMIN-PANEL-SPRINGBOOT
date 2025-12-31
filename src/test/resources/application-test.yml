@@ -71,9 +71,8 @@ cashfree :
 
 # ------------------ start public folder path
 public_folder :
-  absolute : /Users/nareshswami/Documents/springboot/backend/sales-admin/src/main/resources/public
-  #  absolute : C:\Users\abc\Documents\demo\sales-backend\src\main\resources\public
-  get : /Users/nareshswami/Documents/springboot/backend/sales-admin/src/main/resources/public
+  absolute : public
+  get : public
 
 # ------------------! end public folder path
 
