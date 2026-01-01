@@ -141,7 +141,7 @@ public class UserService {
         }
         catch (MessagingException mex)
         {
-            mex.printStackTrace();
+            logger.error("Fetching Exception : {} ",mex.getMessage());
         }
         return  sent;
     }

@@ -156,7 +156,7 @@ public class WholesaleUserService  {
         }
         catch (MessagingException mex)
         {
-            mex.printStackTrace();
+            logger.error("Fetching Exception : {} ",mex.getMessage());
         }
         logger.debug("Completed sendOtp method");
         return  sent;
