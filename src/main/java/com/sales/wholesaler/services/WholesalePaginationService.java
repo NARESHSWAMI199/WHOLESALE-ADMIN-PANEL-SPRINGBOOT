@@ -8,7 +8,11 @@ import com.sales.entities.UserPagination;
 import com.sales.exceptions.NotFoundException;
 import com.sales.specifications.PaginationSpecification;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.repository.WholesalePaginationHbRepository;
+import com.sales.wholesaler.repository.WholesalePaginationRepository;
+import com.sales.wholesaler.repository.WholesaleUserPaginationsRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.InternalException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -20,9 +24,12 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class WholesalePaginationService extends  WholesaleRepoContainer{
+@RequiredArgsConstructor
+public class WholesalePaginationService {
 
-
+    private final WholesaleUserPaginationsRepository wholesaleUserPaginationsRepository;
+    private final WholesalePaginationRepository wholesalePaginationRepository;
+    private final WholesalePaginationHbRepository wholesalePaginationHbRepository;
 
     public List<UserPagination> findAllUserPaginations(){
         return wholesaleUserPaginationsRepository.findAll();

@@ -8,9 +8,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,10 +19,10 @@ import java.util.UUID;
 
 @Component
 @Transactional
+@RequiredArgsConstructor
 public class ItemHbRepository{
 
-    @Autowired
-    EntityManager entityManager;
+    private final EntityManager entityManager;
 
     public int updateItems(ItemDto itemDto, User loggedUser){
         String hqQuery = "update Item set " +

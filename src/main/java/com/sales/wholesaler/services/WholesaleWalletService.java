@@ -7,25 +7,29 @@ import com.sales.entities.StoreNotifications;
 import com.sales.entities.User;
 import com.sales.entities.Wallet;
 import com.sales.exceptions.NotFoundException;
+import com.sales.wholesaler.repository.WholesaleNotificationHbRepository;
+import com.sales.wholesaler.repository.WholesaleServicePlanRepository;
+import com.sales.wholesaler.repository.WholesaleStoreRepository;
+import com.sales.wholesaler.repository.WholesaleWalletRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class WholesaleWalletService extends WholesaleRepoContainer {
+public class WholesaleWalletService  {
 
-      
+
     private static final Logger logger = LoggerFactory.getLogger(WholesaleWalletService.class);
 
-    @Autowired
-    private WholesaleServicePlanService servicePlanService;
-
-    @Autowired
-    private  WalletTransactionService walletTransactionService;
+    private final WholesaleNotificationHbRepository wholesaleNotificationHbRepository;
+    private final WholesaleWalletRepository wholesaleWalletRepository;
+    private final WholesaleStoreRepository wholesaleStoreRepository;
+    private final WholesaleServicePlanRepository wholesaleServicePlanRepository;
+    private final WalletTransactionService walletTransactionService;
+    private final WholesaleServicePlanService wholesaleServicePlanService;
 
     public Wallet getWalletDetail(Integer userId){
         return wholesaleWalletRepository.findByUserId(userId);
@@ -66,7 +70,7 @@ public class WholesaleWalletService extends WholesaleRepoContainer {
         if(wallet != null && walletAmount >= planPrice){
             wallet.setAmount(walletAmount-planPrice); // Updating wallet amount.
             wholesaleWalletRepository.save(wallet);
-            servicePlanService.assignOrAddFuturePlans(userId,servicePlan.getId());
+            wholesaleServicePlanService.assignOrAddFuturePlans(userId,servicePlan.getId());
             title = "Payment of "+planPrice;
             messageBody = "Your plan activated successfully. Plan Name : "+servicePlan.getName() + " for "+servicePlan.getMonths() + "Months.";
             walletTransactionDto.setStatus("S"); // Payment success.

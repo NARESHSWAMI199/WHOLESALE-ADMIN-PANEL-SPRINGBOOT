@@ -3,14 +3,14 @@ package com.sales.wholesaler.repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @Transactional
+@RequiredArgsConstructor
 public class WholesaleUserPlanHbRepository {
 
-    @Autowired
-    EntityManager entityManager;
+    private final EntityManager entityManager;
 
 }

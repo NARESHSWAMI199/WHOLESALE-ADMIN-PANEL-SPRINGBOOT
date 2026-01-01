@@ -1,5 +1,6 @@
 package com.sales.wholesaler.services;
 
+import com.sales.admin.repositories.AddressRepository;
 import com.sales.dto.AddressDto;
 import com.sales.dto.SearchFilters;
 import com.sales.dto.StoreDto;
@@ -10,6 +11,7 @@ import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -27,15 +29,22 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+import static com.sales.helpers.PaginationHelper.getPageable;
 import static com.sales.specifications.ItemReviewSpecifications.isUserId;
 import static com.sales.specifications.ItemReviewSpecifications.isWholesaleId;
 import static com.sales.utils.Utils.getCurrentMillis;
 
 @Service
 @RequiredArgsConstructor
-public class WholesaleStoreService extends WholesaleRepoContainer {
+public class WholesaleStoreService  {
 
-    
+    private final WholesaleCategoryRepository wholesaleCategoryRepository;
+    private final WholesaleSubCategoryRepository wholesaleSubCategoryRepository;
+    private final WholesaleAddressHbRepository wholesaleAddressHbRepository;
+    private final WholesaleStoreHbRepository wholesaleStoreHbRepository;
+    private final WholesaleStoreRepository wholesaleStoreRepository;
+    private final AddressRepository addressRepository;
+    private final WholesaleNotificationRepository wholesaleNotificationRepository;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleStoreService.class);
 
     @Value("${store.absolute}")
@@ -244,7 +253,7 @@ public class WholesaleStoreService extends WholesaleRepoContainer {
         logger.debug("Starting getAllStoreNotification method with filters: {}, loggedUser: {}", filters, loggedUser);
         Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(loggedUser.getId());
         Specification<StoreNotifications> specification = Specification.allOf(isUserId(loggedUser.getId()).or(isWholesaleId(storeId)));
-        Pageable pageable = getPageable(filters);
+        Pageable pageable = getPageable(logger,filters);
         Page<StoreNotifications> notifications = wholesaleNotificationRepository.findAll(specification, pageable);
         logger.debug("Completed getAllStoreNotification method");
         return notifications;

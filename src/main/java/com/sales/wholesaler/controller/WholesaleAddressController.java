@@ -1,6 +1,7 @@
 package com.sales.wholesaler.controller;
 
 
+import com.sales.admin.services.AddressService;
 import com.sales.entities.City;
 import com.sales.entities.State;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/wholesale/address")
 @RequiredArgsConstructor
-public class WholesaleAddressController extends WholesaleServiceContainer {
+public class WholesaleAddressController  {
 
-    
+    private final AddressService addressService;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleAddressController.class);
 
     @GetMapping("/city/{stateId}")

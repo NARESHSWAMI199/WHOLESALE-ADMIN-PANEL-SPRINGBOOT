@@ -7,8 +7,10 @@ import com.sales.entities.WholesalerFuturePlan;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.services.WholesaleFuturePlansService;
+import com.sales.wholesaler.services.WholesaleUserService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -23,11 +25,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("future/plans")
-public class WholesaleFuturePlansController extends WholesaleServiceContainer {
+@RequiredArgsConstructor
+public class WholesaleFuturePlansController  {
 
 
-    @Autowired
-    JwtToken jwtToken;
+    private final  JwtToken jwtToken;
+    private final WholesaleUserService wholesaleUserService;
+    private final WholesaleFuturePlansService wholesaleFuturePlansService;
 
 
     @PostMapping("/")

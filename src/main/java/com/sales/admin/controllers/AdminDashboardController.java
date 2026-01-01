@@ -1,5 +1,7 @@
 package com.sales.admin.controllers;
 
+import com.sales.admin.services.StoreService;
+import com.sales.admin.services.UserService;
 import com.sales.dto.GraphDto;
 import com.sales.global.ConstantResponseKeys;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +17,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("admin/dashboard")
 @RequiredArgsConstructor
-public class AdminDashboardController extends ServiceContainer {
+public class AdminDashboardController  {
 
-    
+    private final UserService userService;
+    private final StoreService storeService;
     private static final Logger logger = LoggerFactory.getLogger(AdminDashboardController.class);
 
     @GetMapping("/counts")

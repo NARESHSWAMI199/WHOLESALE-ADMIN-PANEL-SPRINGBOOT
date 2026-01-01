@@ -6,6 +6,9 @@ import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
+import com.sales.wholesaler.services.BlockListService;
+import com.sales.wholesaler.services.ChatService;
+import com.sales.wholesaler.services.WholesaleUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -32,10 +35,13 @@ import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
-public class ChatController extends WholesaleServiceContainer {
+public class ChatController  {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
     private final SimpMessagingTemplate messagingTemplate;
+    private final ChatService chatService;
+    private final WholesaleUserService wholesaleUserService;
+    private final BlockListService blockListService;
 
 
     /** @Note : Make sure all @MessageMappings 's prefix is /app/ */

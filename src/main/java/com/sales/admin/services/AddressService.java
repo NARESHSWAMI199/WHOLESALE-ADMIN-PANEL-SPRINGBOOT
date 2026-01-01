@@ -1,5 +1,7 @@
 package com.sales.admin.services;
 
+import com.sales.admin.repositories.AddressHbRepository;
+import com.sales.admin.repositories.AddressRepository;
 import com.sales.dto.AddressDto;
 import com.sales.entities.Address;
 import com.sales.entities.City;
@@ -18,8 +20,10 @@ import static com.sales.utils.Utils.getCurrentMillis;
 
 @Service
 @RequiredArgsConstructor
-public class AddressService extends RepoContainer {
+public class AddressService {
 
+    private final AddressRepository addressRepository;
+    private final AddressHbRepository addressHbRepository;
     
     private static final Logger logger = LoggerFactory.getLogger(AddressService.class);
 

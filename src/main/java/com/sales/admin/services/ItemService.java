@@ -3,7 +3,7 @@ package com.sales.admin.services;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sales.admin.repositories.ItemHbRepository;
+import com.sales.admin.repositories.*;
 import com.sales.dto.*;
 import com.sales.entities.*;
 import com.sales.exceptions.MyException;
@@ -12,6 +12,7 @@ import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
+import com.sales.utils.WriteExcelUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -35,8 +36,17 @@ import static com.sales.specifications.ItemsSpecifications.*;
 
 @Service
 @RequiredArgsConstructor
-public class ItemService extends RepoContainer{
+public class ItemService {
 
+
+    private final ItemRepository itemRepository;
+    private final WriteExcelUtil writeExcel;
+    private final ItemCategoryRepository itemCategoryRepository;
+    private final ItemSubCategoryRepository itemSubCategoryRepository;
+    private final StoreRepository storeRepository;
+    private final ItemHbRepository itemHbRepository;
+    private final StoreHbRepository storeHbRepository;
+    private final MeasurementUnitRepository measurementUnitRepository;
   
   private static final Logger logger = LoggerFactory.getLogger(ItemService.class);
 

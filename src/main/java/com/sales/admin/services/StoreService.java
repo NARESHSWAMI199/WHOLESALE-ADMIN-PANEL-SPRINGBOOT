@@ -1,5 +1,6 @@
 package com.sales.admin.services;
 
+import com.sales.admin.repositories.*;
 import com.sales.dto.*;
 import com.sales.entities.*;
 import com.sales.exceptions.MyException;
@@ -12,7 +13,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.data.domain.Page;
@@ -30,19 +30,24 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.*;
 
+import static com.sales.helpers.PaginationHelper.getPageable;
 import static com.sales.specifications.StoreSpecifications.*;
 
 
 @Service
 @RequiredArgsConstructor
-public class StoreService extends RepoContainer{
+public class StoreService {
 
-    
+    private final StoreRepository storeRepository;
+    private final ItemRepository itemRepository;
+    private final StoreHbRepository storeHbRepository;
+    private final StoreCategoryRepository storeCategoryRepository;
+    private final StoreSubCategoryRepository storeSubCategoryRepository;
+    private final UserHbRepository userHbRepository;
+    private final AddressHbRepository addressHbRepository;
+    private final UserRepository userRepository;
+    private final AddressService addressService;
     private static final Logger logger = LoggerFactory.getLogger(StoreService.class);
-
-    @Autowired
-    AddressService addressService;
-
 
     @Value("${store.absolute}")
     String storeImagePath;
@@ -58,7 +63,7 @@ public class StoreService extends RepoContainer{
                         .and(isStatus(filters.getStatus()))
                         .and(hasSlug(filters.getSlug()))
         );
-        Pageable pageable = getPageable(filters);
+        Pageable pageable = getPageable(logger,filters);
         Page<Store> storePage = storeRepository.findAll(specification,pageable);
         List<Store> storeList = storePage.getContent();
         storeList.forEach(store -> store.setTotalStoreItems(itemRepository.totalItemCountByWholesaleId(store.getId())));

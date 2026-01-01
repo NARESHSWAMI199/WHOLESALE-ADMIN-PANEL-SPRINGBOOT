@@ -3,6 +3,8 @@ package com.sales.wholesaler.controller;
 import com.sales.entities.BlockedUser;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.wholesaler.services.BlockListService;
+import com.sales.wholesaler.services.WholesaleUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -18,10 +20,12 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-public class BlockListController extends WholesaleServiceContainer {
+public class BlockListController  {
 
   
   private static final Logger logger = LoggerFactory.getLogger(BlockListController.class);
+    private final BlockListService blockListService;
+    private final WholesaleUserService wholesaleUserService;
 
     @GetMapping("/block/{recipient}")
     public ResponseEntity<Map<String,Object>> addUserInBlockList(@PathVariable String recipient, HttpServletRequest request){

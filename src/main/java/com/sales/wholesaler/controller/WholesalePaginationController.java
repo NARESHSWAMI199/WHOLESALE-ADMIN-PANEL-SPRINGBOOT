@@ -4,7 +4,9 @@ package com.sales.wholesaler.controller;
 import com.sales.dto.UserPaginationDto;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.wholesaler.services.WholesalePaginationService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +17,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/wholesale/pagination/")
-public class WholesalePaginationController extends WholesaleServiceContainer {
+@RequiredArgsConstructor
+public class WholesalePaginationController  {
 
+    private final WholesalePaginationService wholesalePaginationService;
     @GetMapping("all")
     public ResponseEntity<Map<String,Object>> findUserPaginationSetting(HttpServletRequest request){
         User loggedUser = (User) request.getAttribute("user");

@@ -5,6 +5,9 @@ import com.sales.entities.BlockedUser;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.repository.BlockListHbRepository;
+import com.sales.wholesaler.repository.BlockListRepository;
+import com.sales.wholesaler.repository.WholesaleUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,9 +15,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class BlockListService extends WholesaleRepoContainer {
+public class BlockListService  {
 
-  
+  private final WholesaleUserRepository wholesaleUserRepository;
+  private final BlockListRepository blockListRepository;
+  private final BlockListHbRepository blockListHbRepository;
   private static final Logger logger = LoggerFactory.getLogger(BlockListService.class);
 
     public BlockedUser addAUserInBlockList(User blockingBy, String blockedUserSlug) {

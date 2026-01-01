@@ -4,6 +4,7 @@ package com.sales.wholesaler.controller;
 import com.sales.dto.ItemReviewsFilterDto;
 import com.sales.entities.ItemReviews;
 import com.sales.entities.User;
+import com.sales.wholesaler.services.WholesaleItemReviewService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -19,10 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("wholesale/item/review")
 @RequiredArgsConstructor
-public class WholesaleItemReviewController extends WholesaleServiceContainer {
+public class WholesaleItemReviewController  {
 
-    
+    private final WholesaleItemReviewService wholesaleItemReviewService;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleItemReviewController.class);
+
 
     @PostMapping("all")
     public ResponseEntity<Page<ItemReviews>> getAllReviews(@RequestBody ItemReviewsFilterDto ItemReviewsFilterDto, HttpServletRequest request) {

@@ -4,7 +4,9 @@ import com.sales.dto.ChatRoomDto;
 import com.sales.entities.ChatRoom;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.wholesaler.services.ChatRoomService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +19,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("chat_room")
-public class ChatRoomController extends WholesaleServiceContainer{
+@RequiredArgsConstructor
+public class ChatRoomController {
 
+    private final ChatRoomService chatRoomService;
 
     @GetMapping("all")
     public ResponseEntity<List<ChatRoom>> getAllCharRooms() {

@@ -1,5 +1,6 @@
 package com.sales.admin.controllers;
 
+import com.sales.admin.services.ItemReviewService;
 import com.sales.dto.ItemReviewsFilterDto;
 import com.sales.entities.ItemReviews;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,10 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("admin/item/review")
 @RequiredArgsConstructor
-public class ItemReviewController extends ServiceContainer {
+public class ItemReviewController  {
 
-      
-  private static final Logger logger = LoggerFactory.getLogger(ItemReviewController.class);
+    private final ItemReviewService itemReviewService;
+    private static final Logger logger = LoggerFactory.getLogger(ItemReviewController.class);
 
     @PostMapping("all")
     public ResponseEntity<Page<ItemReviews>> getAllReviews(@RequestBody ItemReviewsFilterDto ItemReviewsFilterDto, HttpServletRequest httpServletRequest) {

@@ -6,12 +6,15 @@ import com.sales.exceptions.MyException;
 import com.sales.exceptions.NotFoundException;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.repository.ChatHbRepository;
+import com.sales.wholesaler.repository.ChatRepository;
+import com.sales.wholesaler.repository.ContactRepository;
+import com.sales.wholesaler.repository.WholesaleUserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,13 +22,14 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class ContactsService extends WholesaleRepoContainer {
+public class ContactsService  {
 
-    
+    private final ContactRepository contactRepository;
+    private final ChatRepository chatRepository;
+    private final WholesaleUserRepository wholesaleUserRepository;
+    private final ChatHbRepository chatHbRepository;
     private static final Logger logger = LoggerFactory.getLogger(ContactsService.class);
-
-    @Autowired
-    private BlockListService blockListService;
+    private final BlockListService blockListService;
 
     public List<User> getAllContactsByUserId(User loggedUser, HttpServletRequest request) {
         logger.debug("Starting getAllContactsByUserId method");

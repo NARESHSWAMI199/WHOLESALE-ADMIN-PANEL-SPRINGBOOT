@@ -5,6 +5,8 @@ import com.sales.dto.WalletTransactionDto;
 import com.sales.entities.Wallet;
 import com.sales.entities.WalletTransaction;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.repository.WalletTransactionRepository;
+import com.sales.wholesaler.repository.WholesaleWalletRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,15 +17,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+import static com.sales.helpers.PaginationHelper.getPageable;
 import static com.sales.specifications.WalletTransactionSpecification.*;
 
 @Service
 @RequiredArgsConstructor
-public class WalletTransactionService extends WholesaleRepoContainer{
+public class WalletTransactionService {
 
     
     private static final Logger logger = LoggerFactory.getLogger(WalletTransactionService.class);
-
+    private final WalletTransactionRepository walletTransactionRepository;
+    private final WholesaleWalletRepository wholesaleWalletRepository;
 
 
 
@@ -34,7 +38,7 @@ public class WalletTransactionService extends WholesaleRepoContainer{
             .and(lessThanOrEqualToToDate(searchFilters.getToDate())
             .and(hasUserId(userId))
         ));
-        Pageable pageable = getPageable(searchFilters);
+        Pageable pageable = getPageable(logger,searchFilters);
         return walletTransactionRepository.findAll(specification,pageable);
     }
 

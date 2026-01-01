@@ -8,6 +8,10 @@ import com.sales.entities.WholesalerFuturePlan;
 import com.sales.entities.WholesalerPlans;
 import com.sales.exceptions.NotFoundException;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.repository.WholesaleFuturePlansRepository;
+import com.sales.wholesaler.repository.WholesaleServicePlanRepository;
+import com.sales.wholesaler.repository.WholesaleUserHbRepository;
+import com.sales.wholesaler.repository.WholesaleUserPlansRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -20,14 +24,18 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import static com.sales.helpers.PaginationHelper.getPageable;
 import static com.sales.specifications.PlansSpecifications.*;
 
 @Service
 @RequiredArgsConstructor
-public class WholesaleServicePlanService extends WholesaleRepoContainer {
+public class WholesaleServicePlanService  {
 
     private final EntityManager entityManager;
-
+    private final WholesaleServicePlanRepository wholesaleServicePlanRepository;
+    private final WholesaleUserPlansRepository wholesaleUserPlansRepository;
+    private final WholesaleUserHbRepository wholesaleUserHbRepository;
+    private final WholesaleFuturePlansRepository wholesaleFuturePlansRepository;
       
   private static final Logger logger = LoggerFactory.getLogger(WholesaleServicePlanService.class);
 
@@ -151,7 +159,7 @@ public class WholesaleServicePlanService extends WholesaleRepoContainer {
                 .and(isStatus(searchFilters.getStatus()))
                 .and(isUserId(loggedUser.getId()))
         );
-        Pageable pageable = getPageable(searchFilters);
+        Pageable pageable = getPageable(logger,searchFilters);
         Page<WholesalerPlans> userPlans = wholesaleUserPlansRepository.findAll(specification,pageable);
         List<WholesalerPlans> userPlansList = userPlans.getContent().stream().map(wholesalerPlan -> {
             if(Objects.nonNull(wholesalerPlan)) {

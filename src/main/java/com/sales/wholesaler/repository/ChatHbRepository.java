@@ -5,21 +5,17 @@ import com.sales.dto.MessageDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 @Transactional
+@RequiredArgsConstructor
 public class ChatHbRepository {
 
-    @Autowired
-    private EntityManager entityManager;
-
-
-
-    @Autowired
-    private ChatRepository chatRepository;
+    private final EntityManager entityManager;
+    private final ChatRepository chatRepository;
 
 
     public boolean updateMessageToSent(long id){

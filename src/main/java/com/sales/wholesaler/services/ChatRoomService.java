@@ -7,7 +7,11 @@ import com.sales.entities.ChatRoomUser;
 import com.sales.entities.User;
 import com.sales.exceptions.NotFoundException;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.repository.ChatRoomHbRepository;
+import com.sales.wholesaler.repository.ChatRoomRepository;
+import com.sales.wholesaler.repository.WholesaleUserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,9 +19,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class ChatRoomService extends WholesaleRepoContainer {
+@RequiredArgsConstructor
+public class ChatRoomService  {
 
 
+    private final ChatRoomRepository chatRoomRepository;
+    private final WholesaleUserRepository wholesaleUserRepository;
+    private final ChatRoomHbRepository chatRoomHbRepository;
     public List<ChatRoom> getAllChatRoom(){
         return chatRoomRepository.findAll();
     }

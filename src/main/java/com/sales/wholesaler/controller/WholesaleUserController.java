@@ -8,7 +8,11 @@ import com.sales.entities.Store;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
+import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.services.WholesalePaginationService;
+import com.sales.wholesaler.services.WholesaleStoreService;
+import com.sales.wholesaler.services.WholesaleUserService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,9 +41,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("wholesale/auth")
 @RequiredArgsConstructor
-public class WholesaleUserController extends WholesaleServiceContainer {
+public class WholesaleUserController  {
 
-    
+    private final WholesaleUserService wholesaleUserService;
+    private final WholesaleStoreService wholesaleStoreService;
+    private final WholesalePaginationService wholesalePaginationService;
+    private final JwtToken jwtToken;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleUserController.class);
 
     @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(

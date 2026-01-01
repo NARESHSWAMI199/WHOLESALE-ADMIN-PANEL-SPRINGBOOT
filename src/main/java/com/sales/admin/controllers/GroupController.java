@@ -1,6 +1,7 @@
 package com.sales.admin.controllers;
 
 
+import com.sales.admin.services.GroupService;
 import com.sales.dto.DeleteDto;
 import com.sales.dto.GroupDto;
 import com.sales.dto.SearchFilters;
@@ -24,9 +25,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("group")
 @RequiredArgsConstructor
-public class GroupController extends ServiceContainer {
+public class GroupController  {
 
-    
+    private final GroupService groupService;
     private static final Logger logger = LoggerFactory.getLogger(GroupController.class);
 
     @PostMapping("/all")

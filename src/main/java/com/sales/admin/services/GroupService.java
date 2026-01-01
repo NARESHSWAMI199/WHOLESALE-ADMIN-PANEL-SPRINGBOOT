@@ -1,6 +1,9 @@
 package com.sales.admin.services;
 
 
+import com.sales.admin.repositories.GroupPermissionRepository;
+import com.sales.admin.repositories.GroupRepository;
+import com.sales.admin.repositories.PermissionHbRepository;
 import com.sales.dto.DeleteDto;
 import com.sales.dto.GroupDto;
 import com.sales.dto.SearchFilters;
@@ -27,13 +30,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.sales.helpers.PaginationHelper.getPageable;
 import static com.sales.specifications.GroupSpecifications.*;
 
 @Service
 @RequiredArgsConstructor
-public class GroupService extends RepoContainer {
+public class GroupService {
 
 
+    private final GroupRepository groupRepository;
+    private final GroupPermissionRepository groupPermissionRepository;
+    private final PermissionHbRepository permissionHbRepository;
     
     private static final Logger logger = LoggerFactory.getLogger(GroupService.class);
 
@@ -46,7 +53,7 @@ public class GroupService extends RepoContainer {
                         .and(hasSlug(filters.getSlug()))
                         .and(notSuperAdmin(loggedUser))
         );
-        Pageable pageable = getPageable(filters);
+        Pageable pageable = getPageable(logger,filters);
         Page<Group> result = groupRepository.findAll(specification, pageable);
         logger.debug("Exiting getAllGroups with result: {}", result);
         return result;

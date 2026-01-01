@@ -6,21 +6,28 @@ import com.sales.entities.User;
 import com.sales.entities.WholesalerFuturePlan;
 import com.sales.exceptions.NotFoundException;
 import com.sales.utils.Utils;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.sales.wholesaler.repository.WholesaleFuturePlansRepository;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-@Service
-public class WholesaleFuturePlansService extends WholesaleRepoContainer {
+import static com.sales.helpers.PaginationHelper.getPageable;
 
-    @Autowired
-    private WholesaleServicePlanService  wholesaleServicePlanService;
+@Service
+@RequiredArgsConstructor
+public class WholesaleFuturePlansService  {
+
+    private static final Logger logger = LoggerFactory.getLogger(WholesaleFuturePlansService.class);
+    private final  WholesaleServicePlanService  wholesaleServicePlanService;
+    private final WholesaleFuturePlansRepository wholesaleFuturePlansRepository;
 
     public Page<WholesalerFuturePlan> getWholesalerFuturePlans(User loggedUser, SearchFilters filters) {
-        Pageable pageable = getPageable(filters);
+        Pageable pageable = getPageable(logger,filters);
        return wholesaleFuturePlansRepository.findWholesalerFuturePlansByUserIdAndStatus(pageable,loggedUser.getId(),"N"); // Getting only new not old or used.
     }
 

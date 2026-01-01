@@ -1,6 +1,7 @@
 package com.sales.admin.services;
 
 
+import com.sales.admin.repositories.*;
 import com.sales.dto.*;
 import com.sales.entities.Store;
 import com.sales.entities.StorePermissions;
@@ -32,12 +33,19 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+import static com.sales.helpers.PaginationHelper.getPageable;
 import static com.sales.specifications.UserSpecifications.*;
 
 @Service
 @RequiredArgsConstructor
-public class UserService extends RepoContainer {
+public class UserService {
 
+    private final UserRepository userRepository;
+    private final UserHbRepository userHbRepository;
+    private final PermissionHbRepository permissionHbRepository;
+    private final StorePermissionsRepository storePermissionsRepository;
+    private final SupportEmailsRepository supportEmailsRepository;
+    private final StoreRepository storeRepository;
     
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final StoreService storeService;
@@ -208,8 +216,8 @@ public class UserService extends RepoContainer {
                         .and(hasNotUserType(notUserType))
         );
 
-        Pageable pageable = getPageable(filters);
-        return userRepository.findAll(specification,pageable);
+        Pageable pageable = getPageable(logger,filters);
+        return userRepository.findAll(specification, pageable);
     }
 
 

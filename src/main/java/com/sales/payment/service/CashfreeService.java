@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -56,8 +55,7 @@ public class CashfreeService extends PaymentRepoContainer {
     @Value("${cashfree.callback_uri}")
     String callbackUri;
 
-    @Autowired
-    WholesaleServicePlanService wholesaleServicePlanService;
+    private final WholesaleServicePlanService wholesaleServicePlanService;
 
     public Page<CashfreeTrans> getAllPaymentHistoryFromCashfree(CashfreeFilters cashfreeFilters) {
         Specification<CashfreeTrans> specification = Specification.allOf(

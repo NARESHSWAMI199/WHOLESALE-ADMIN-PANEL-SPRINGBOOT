@@ -4,8 +4,12 @@ package com.sales.wholesaler.controller;
 import com.sales.entities.User;
 import com.sales.entities.Wallet;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.services.WholesaleUserService;
+import com.sales.wholesaler.services.WholesaleWalletService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +22,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("wholesale/wallet")
-public class WholesaleWalletController extends WholesaleServiceContainer {
+@RequiredArgsConstructor
+public class WholesaleWalletController  {
+
+    private final JwtToken jwtToken;
+    private final WholesaleUserService wholesaleUserService;
+    private final WholesaleWalletService wholesaleWalletService;
 
     @GetMapping("/")
     public ResponseEntity<Wallet> getWalletDetail(HttpServletRequest request){

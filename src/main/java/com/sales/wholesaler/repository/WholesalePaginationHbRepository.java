@@ -6,16 +6,15 @@ import com.sales.entities.Pagination;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @Transactional
+@RequiredArgsConstructor
 public class WholesalePaginationHbRepository {
 
-
-    @Autowired
-    EntityManager entityManager;
+    private final EntityManager entityManager;
 
     public int updateUserPaginations(Pagination pagination, UserPaginationDto userPaginationDto){
         String hql = """

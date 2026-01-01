@@ -4,6 +4,8 @@ package com.sales.wholesaler.services;
 import com.sales.dto.StorePromotionDto;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.wholesaler.repository.WholesaleHbPromotionRepository;
+import com.sales.wholesaler.repository.WholesaleStoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +16,10 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class WholesalePromotionsService extends WholesaleRepoContainer {
+public class WholesalePromotionsService  {
 
-    
+    private final WholesaleStoreRepository wholesaleStoreRepository;
+    private final WholesaleHbPromotionRepository wholesaleHbPromotionRepository;
     private static final Logger logger = LoggerFactory.getLogger(WholesalePromotionsService.class);
 
     public Map<String,Object> insertItemPromotion(StorePromotionDto storePromotionDto, User loggedUser) {
@@ -24,7 +27,7 @@ public class WholesalePromotionsService extends WholesaleRepoContainer {
         Map<String,Object> response = new HashMap<>();
         Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(loggedUser.getId());
         storePromotionDto.setStoreId(storeId);
-        int isInserted = wholesaleHbPromotion.insertStorePromotions(storePromotionDto,loggedUser); // Create operation
+        int isInserted = wholesaleHbPromotionRepository.insertStorePromotions(storePromotionDto,loggedUser); // Create operation
         if(isInserted > 0){
             response.put(ConstantResponseKeys.MESSAGE,"Your item is going to promote.");
             response.put(ConstantResponseKeys.STATUS,200);

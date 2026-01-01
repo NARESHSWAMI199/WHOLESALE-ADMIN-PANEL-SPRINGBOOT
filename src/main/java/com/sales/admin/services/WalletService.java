@@ -1,6 +1,10 @@
 package com.sales.admin.services;
 
 
+import com.sales.admin.repositories.StoreHbRepository;
+import com.sales.admin.repositories.StoreRepository;
+import com.sales.admin.repositories.UserRepository;
+import com.sales.admin.repositories.WalletRepository;
 import com.sales.dto.WalletTransactionDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.StoreNotifications;
@@ -13,21 +17,20 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class WalletService extends RepoContainer {
+public class WalletService {
 
-    
+    private final UserRepository userRepository;
+    private final WalletRepository walletRepository;
+    private final StoreHbRepository storeHbRepository;
+    private final StoreRepository storeRepository;
+    private final ServicePlanService servicePlanService;
+    private final WholesaleServicePlanService wholesaleServicePlanService;
+    private final WalletTransactionService walletTransactionService;
     private static final Logger logger = LoggerFactory.getLogger(WalletService.class);
-
-    @Autowired
-    private WholesaleServicePlanService servicePlanService;
-
-    @Autowired
-    private WalletTransactionService walletTransactionService;
 
     public Wallet getWalletDetail(String userSlug){
         Integer userId = userRepository.getUserIdBySlug(userSlug);
@@ -70,7 +73,7 @@ public class WalletService extends RepoContainer {
         if(wallet != null && walletAmount >= planPrice){
             wallet.setAmount(walletAmount-planPrice); // Updating wallet amount.
             walletRepository.save(wallet);
-            servicePlanService.assignOrAddFuturePlans(user.getId(),servicePlan.getId());
+            wholesaleServicePlanService.assignOrAddFuturePlans(user.getId(),servicePlan.getId());
             title = "Payment of "+planPrice;
             messageBody = "Your plan activated successfully. Plan Name : "+servicePlan.getName() + " for "+servicePlan.getMonths() + "Months.";
             walletTransactionDto.setStatus("S"); // Payment success.

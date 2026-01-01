@@ -7,15 +7,15 @@ import com.sales.utils.Utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @Transactional
-public class WholesaleHbPromotion {
+@RequiredArgsConstructor
+public class WholesaleHbPromotionRepository {
 
-    @Autowired
-    EntityManager entityManager;
+    private final EntityManager entityManager;
 
 
     public int insertStorePromotions(StorePromotionDto storePromotionDto, User loggedUser){

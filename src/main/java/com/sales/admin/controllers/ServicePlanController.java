@@ -1,6 +1,8 @@
 package com.sales.admin.controllers;
 
 
+import com.sales.admin.services.ServicePlanService;
+import com.sales.admin.services.UserService;
 import com.sales.dto.DeleteDto;
 import com.sales.dto.ServicePlanDto;
 import com.sales.dto.StatusDto;
@@ -28,8 +30,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("admin/plans/")
 @RequiredArgsConstructor
-public class ServicePlanController extends ServiceContainer {
+public class ServicePlanController  {
 
+    private final UserService userService;
+    private final ServicePlanService servicePlanService;
     
     private static final Logger logger = LoggerFactory.getLogger(ServicePlanController.class);
 

@@ -1,5 +1,6 @@
 package com.sales.admin.services;
 
+import com.sales.admin.repositories.ItemReviewRepository;
 import com.sales.dto.ItemReviewsFilterDto;
 import com.sales.entities.ItemReviews;
 import lombok.RequiredArgsConstructor;
@@ -10,12 +11,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import static com.sales.helpers.PaginationHelper.getPageable;
 import static com.sales.specifications.ItemReviewSpecifications.*;
 
 
 @Service
 @RequiredArgsConstructor
-public class ItemReviewService extends  RepoContainer {
+public class ItemReviewService {
+
+    private final ItemReviewRepository itemReviewRepository;
 
   
   private static final Logger logger = LoggerFactory.getLogger(ItemReviewService.class);
@@ -30,7 +34,7 @@ public class ItemReviewService extends  RepoContainer {
                         .and(isItemId(filters.getItemId()))
                         .and(isParentComment(filters.getParentId()))
         );
-        Pageable pageable = getPageable(filters);
+        Pageable pageable = getPageable(logger,filters);
         return itemReviewRepository.findAll(specification,pageable);
     }
 

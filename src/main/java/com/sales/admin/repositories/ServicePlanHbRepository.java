@@ -5,16 +5,16 @@ import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
+@RequiredArgsConstructor
 public class ServicePlanHbRepository {
 
-    @Autowired
-    public EntityManager entityManager;
+    private final EntityManager entityManager;
 
     public int updateServicePlansStatus(String status, String slug, User loggedUser){
         String hql = "update ServicePlan set status =:status ,updatedAt=:updatedAt, updatedBy=:updatedBy where slug=:slug";

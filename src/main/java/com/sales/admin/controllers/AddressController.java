@@ -1,5 +1,6 @@
 package com.sales.admin.controllers;
 
+import com.sales.admin.services.AddressService;
 import com.sales.entities.City;
 import com.sales.entities.State;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +18,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/address")
 @RequiredArgsConstructor
-public class AddressController extends ServiceContainer {
+public class AddressController  {
 
-    
+
+    private final AddressService addressService;
     private static final Logger logger = LoggerFactory.getLogger(AddressController.class);
 
     @GetMapping("/city/{stateId}")

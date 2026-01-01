@@ -1,10 +1,13 @@
 package com.sales.admin.controllers;
 
 import com.sales.admin.repositories.ItemHbRepository;
+import com.sales.admin.services.ItemService;
+import com.sales.admin.services.StoreService;
 import com.sales.dto.*;
 import com.sales.entities.*;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
+import com.sales.utils.ReadExcel;
 import com.sales.utils.Utils;
 import com.sales.utils.WriteExcelUtil;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -35,10 +38,13 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = {"admin/item"})
 @RequiredArgsConstructor
-public class ItemController extends ServiceContainer {
+public class ItemController  {
 
 
     private final WriteExcelUtil writeExcel;
+    private final ItemService itemService;
+    private final StoreService storeService;
+    private final ReadExcel readExcel;
 
       
   private static final Logger logger = LoggerFactory.getLogger(ItemController.class);

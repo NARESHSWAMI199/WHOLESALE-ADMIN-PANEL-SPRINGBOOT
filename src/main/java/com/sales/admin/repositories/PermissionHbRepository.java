@@ -8,8 +8,8 @@ import com.sales.global.GlobalConstant;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.stereotype.Component;
 
@@ -18,10 +18,10 @@ import java.util.List;
 @Component
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class PermissionHbRepository {
 
-    @Autowired
-    EntityManager entityManager;
+    private final EntityManager entityManager;
 
 
     public int updateGroup(GroupDto groupDto,int groupId){

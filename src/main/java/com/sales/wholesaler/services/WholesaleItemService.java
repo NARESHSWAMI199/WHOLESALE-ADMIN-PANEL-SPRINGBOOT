@@ -18,6 +18,8 @@ import com.sales.global.GlobalConstant;
 import com.sales.utils.DateUtils;
 import com.sales.utils.UploadImageValidator;
 import com.sales.utils.Utils;
+import com.sales.utils.WriteExcelUtil;
+import com.sales.wholesaler.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -42,10 +44,16 @@ import static com.sales.specifications.ItemsSpecifications.*;
 
 @Service
 @RequiredArgsConstructor
-public class WholesaleItemService extends WholesaleRepoContainer {
+public class WholesaleItemService  {
 
     
     private static final Logger logger = LoggerFactory.getLogger(WholesaleItemService.class);
+    private final WholesaleItemRepository wholesaleItemRepository;
+    private final WholesaleItemHbRepository wholesaleItemHbRepository;
+    private final WholesaleItemSubCategoryRepository wholesaleItemSubCategoryRepository;
+    private final WholesaleItemCategoryRepository wholesaleItemCategoryRepository;
+    private final WholesaleStoreRepository wholesaleStoreRepository;
+    private final WriteExcelUtil writeExcel;
 
     @Value("${item.absolute}")
     String itemImagePath;

@@ -6,7 +6,10 @@ import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
 import com.sales.entities.WholesalerPlans;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.services.WholesaleServicePlanService;
+import com.sales.wholesaler.services.WholesaleUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -24,9 +27,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("wholesale/plan")
 @RequiredArgsConstructor
-public class WholesaleServicePlanController extends WholesaleServiceContainer {
+public class WholesaleServicePlanController  {
 
-    
+    private final WholesaleServicePlanService wholesaleServicePlanService;
+    private final JwtToken jwtToken;
+    private final WholesaleUserService wholesaleUserService;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleServicePlanController.class);
 
     @GetMapping("/all")

@@ -1,5 +1,8 @@
 package com.sales.admin.services;
 
+import com.sales.admin.repositories.StoreWalletTransactionRepository;
+import com.sales.admin.repositories.UserRepository;
+import com.sales.admin.repositories.WalletRepository;
 import com.sales.dto.SearchFilters;
 import com.sales.dto.WalletTransactionDto;
 import com.sales.entities.Wallet;
@@ -16,11 +19,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+import static com.sales.helpers.PaginationHelper.getPageable;
 import static com.sales.specifications.WalletTransactionSpecification.*;
 
 @Service
 @RequiredArgsConstructor
-public class StoreWalletTransactionService extends RepoContainer {
+public class StoreWalletTransactionService {
+
+
+    private final UserRepository userRepository;
+    private final StoreWalletTransactionRepository storeWalletTransactionRepository;
+    private final WalletRepository walletRepository;
 
       
   private static final Logger logger = LoggerFactory.getLogger(StoreWalletTransactionService.class);
@@ -37,7 +46,7 @@ public class StoreWalletTransactionService extends RepoContainer {
             .and(lessThanOrEqualToToDate(searchFilters.getToDate())
             .and(hasUserId(userId))
         ));
-        Pageable pageable = getPageable(searchFilters);
+        Pageable pageable = getPageable(logger,searchFilters);
         return storeWalletTransactionRepository.findAll(specification,pageable);
     }
 

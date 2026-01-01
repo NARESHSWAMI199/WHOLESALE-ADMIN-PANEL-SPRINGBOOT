@@ -1,9 +1,11 @@
 package com.sales.admin.controllers;
 
 
+import com.sales.admin.services.WalletService;
 import com.sales.entities.Wallet;
 import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +18,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("admin/store/wallet")
-public class WalletController extends ServiceContainer {
+@RequiredArgsConstructor
+public class WalletController  {
+
+    private final WalletService walletService;
 
     @GetMapping("/{userSlug}")
     public ResponseEntity<Wallet> getWalletDetail(@PathVariable String userSlug, HttpServletRequest request){

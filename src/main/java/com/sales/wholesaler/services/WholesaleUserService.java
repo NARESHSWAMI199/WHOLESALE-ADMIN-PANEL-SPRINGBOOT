@@ -10,11 +10,14 @@ import com.sales.exceptions.MyException;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.repository.WholesaleServicePlanRepository;
+import com.sales.wholesaler.repository.WholesaleSupportEmailsRepository;
+import com.sales.wholesaler.repository.WholesaleUserHbRepository;
+import com.sales.wholesaler.repository.WholesaleUserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,30 +33,27 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+import static com.sales.helpers.PaginationHelper.getPageable;
 import static com.sales.specifications.UserSpecifications.*;
 
 
 @Service
 @RequiredArgsConstructor
-public class WholesaleUserService extends WholesaleRepoContainer {
+public class WholesaleUserService  {
 
-    
     private static final Logger logger = LoggerFactory.getLogger(WholesaleUserService.class);
-
-    @Autowired
-    private WholesaleServicePlanService wholesaleServicePlanService;
-
-    @Autowired
-    private WholesalePaginationService wholesalePaginationService;
-
-    @Autowired
-    UserCacheService userCacheService;
+    private final WholesaleServicePlanService wholesaleServicePlanService;
+    private final WholesalePaginationService wholesalePaginationService;
+    private final UserCacheService userCacheService;
+    private final WholesaleUserRepository wholesaleUserRepository;
+    private final WholesaleUserHbRepository wholesaleUserHbRepository;
+    private final WholesaleSupportEmailsRepository wholesaleSupportEmailsRepository;
+    private final WholesaleServicePlanRepository wholesaleServicePlanRepository;
 
     @Value("${profile.absolute}")
     String profilePath;
 
-    @Autowired
-    WholesaleStoreService wholesaleStoreService;
+    private final WholesaleStoreService wholesaleStoreService;
 
     @Value("${default.password}")
     String password;
@@ -319,7 +319,7 @@ public class WholesaleUserService extends WholesaleRepoContainer {
                     .and(notHasSlug(loggedUser.getSlug()))
         );
 
-        Pageable pageable = getPageable(filters);
+        Pageable pageable = getPageable(logger,filters);
         Page<User> users = wholesaleUserRepository.findAll(specification,pageable);
         logger.debug("Completed getAllUsers method");
         return users;

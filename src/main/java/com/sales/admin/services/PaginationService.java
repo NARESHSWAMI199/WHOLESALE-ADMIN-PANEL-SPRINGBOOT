@@ -1,6 +1,9 @@
 package com.sales.admin.services;
 
 
+import com.sales.admin.repositories.PaginationHbRepository;
+import com.sales.admin.repositories.PaginationRepository;
+import com.sales.admin.repositories.UserPaginationsRepository;
 import com.sales.dto.UserPaginationDto;
 import com.sales.entities.Pagination;
 import com.sales.entities.User;
@@ -9,6 +12,7 @@ import com.sales.exceptions.NotFoundException;
 import com.sales.specifications.PaginationSpecification;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.InternalException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -20,9 +24,12 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class PaginationService extends  RepoContainer{
+@RequiredArgsConstructor
+public class PaginationService {
 
-
+    private final UserPaginationsRepository userPaginationsRepository;
+    private final PaginationRepository paginationRepository;
+    private final PaginationHbRepository paginationHbRepository;
 
     public List<UserPagination> findAllUserPaginations(){
         return userPaginationsRepository.findAll();

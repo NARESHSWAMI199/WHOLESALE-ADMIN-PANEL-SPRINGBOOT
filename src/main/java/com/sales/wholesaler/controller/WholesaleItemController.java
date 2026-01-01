@@ -11,8 +11,11 @@ import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import com.sales.helpers.ExcelHelper;
+import com.sales.utils.ReadExcel;
 import com.sales.utils.Utils;
 import com.sales.utils.WriteExcelUtil;
+import com.sales.wholesaler.services.WholesaleItemService;
+import com.sales.wholesaler.services.WholesaleStoreService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,11 +44,13 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = {"wholesale/item"})
 @RequiredArgsConstructor
-public class WholesaleItemController extends WholesaleServiceContainer {
+public class WholesaleItemController  {
 
     private final WriteExcelUtil writeExcel;
-      
-  private static final Logger logger = LoggerFactory.getLogger(WholesaleItemController.class);
+    private final WholesaleStoreService wholesaleStoreService;
+    private final WholesaleItemService wholesaleItemService;
+    private final ReadExcel readExcel;
+    private static final Logger logger = LoggerFactory.getLogger(WholesaleItemController.class);
 
     @PostMapping("/all")
     public ResponseEntity<Page<Item>> getAllItem(HttpServletRequest request,@RequestBody ItemSearchFields searchFilters) {

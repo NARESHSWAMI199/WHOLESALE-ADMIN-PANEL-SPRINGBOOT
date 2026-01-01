@@ -5,7 +5,10 @@ import com.sales.dto.SearchFilters;
 import com.sales.dto.StoreDto;
 import com.sales.entities.*;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.services.WholesaleStoreService;
+import com.sales.wholesaler.services.WholesaleUserService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,9 +31,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("wholesale/store")
 @RequiredArgsConstructor
-public class WholesaleStoreController extends WholesaleServiceContainer {
+public class WholesaleStoreController  {
 
-    
+    private final WholesaleStoreService wholesaleStoreService;
+    private final JwtToken jwtToken;
+    private final WholesaleUserService wholesaleUserService;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleStoreController.class);
 
     @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema =

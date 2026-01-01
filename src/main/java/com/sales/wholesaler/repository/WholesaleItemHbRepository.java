@@ -8,19 +8,19 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 @Component
 @Transactional
+@RequiredArgsConstructor
 public class WholesaleItemHbRepository {
 
-    @Autowired
-    EntityManager entityManager;
+    private final EntityManager entityManager;
 
 
     public int updateItems(ItemDto itemDto, User loggedUser){

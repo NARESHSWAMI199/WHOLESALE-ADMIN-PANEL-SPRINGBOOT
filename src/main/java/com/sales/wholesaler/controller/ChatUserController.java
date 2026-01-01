@@ -7,6 +7,7 @@ import com.sales.entities.ChatUser;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.services.ChatUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -22,10 +23,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("chat-users")
 @RequiredArgsConstructor
-public class ChatUserController extends WholesaleServiceContainer {
+public class ChatUserController  {
 
     
     private static final Logger logger = LoggerFactory.getLogger(ChatUserController.class);
+    private final ChatUserService chatUserService;
 
     @GetMapping("all")
     public ResponseEntity<List<User>> getAllChatUsers(HttpServletRequest request){

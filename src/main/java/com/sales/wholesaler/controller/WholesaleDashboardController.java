@@ -4,6 +4,8 @@ package com.sales.wholesaler.controller;
 import com.sales.dto.GraphDto;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.wholesaler.services.WholesaleItemService;
+import com.sales.wholesaler.services.WholesaleStoreService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -18,9 +20,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("wholesale/dashboard")
 @RequiredArgsConstructor
-public class WholesaleDashboardController extends WholesaleServiceContainer {
+public class WholesaleDashboardController  {
 
-    
+
+    private final WholesaleStoreService wholesaleStoreService;
+    private final WholesaleItemService wholesaleItemService;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleDashboardController.class);
 
     @GetMapping("/counts")

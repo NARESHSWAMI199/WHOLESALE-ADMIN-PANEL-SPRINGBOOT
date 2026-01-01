@@ -4,21 +4,21 @@ package com.sales.scheduler;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 
 @Component
 @Transactional
+@RequiredArgsConstructor
 public class ItemReviewsScheduler {
 
 
     // NOTE: If in future we need indexing on itemId, we can go with it from db side.
 
 
-    @Autowired
-    EntityManager entityManager;
+    private final EntityManager entityManager;
 
 
     @Scheduled(cron = "0 0/15 * * * *") // Auto run in every 15 minutes

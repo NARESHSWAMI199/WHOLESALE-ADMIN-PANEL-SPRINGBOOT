@@ -1,8 +1,10 @@
 package com.sales.admin.controllers;
 
 
+import com.sales.admin.services.ItemReportService;
 import com.sales.dto.SearchFilters;
 import com.sales.entities.ItemReport;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("admin/item/report/")
-public class ItemReportController extends ServiceContainer{
+@RequiredArgsConstructor
+public class ItemReportController {
 
+    private final ItemReportService itemReportService;
     @PostMapping("all")
     public ResponseEntity<Page<ItemReport>> findAllItemsReports(@RequestBody SearchFilters searchFilters){
         Page<ItemReport> itemReports = itemReportService.getAllReportByItemId(searchFilters);

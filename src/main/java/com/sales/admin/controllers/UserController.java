@@ -1,6 +1,8 @@
 package com.sales.admin.controllers;
 
 
+import com.sales.admin.services.PaginationService;
+import com.sales.admin.services.UserService;
 import com.sales.dto.*;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
@@ -34,10 +36,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("admin/auth")
 @RequiredArgsConstructor
-public class UserController extends ServiceContainer {
+public class UserController  {
 
-      
-  private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private final UserService userService;
+    private final PaginationService paginationService;
 
     private final JwtToken jwtToken;
 

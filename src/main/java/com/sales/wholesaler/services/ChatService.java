@@ -6,11 +6,13 @@ import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.repository.ChatHbRepository;
+import com.sales.wholesaler.repository.ChatRepository;
+import com.sales.wholesaler.repository.WholesaleUserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,20 +22,17 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class ChatService extends WholesaleRepoContainer {
+public class ChatService  {
 
-    
+    private final ChatRepository chatRepository;
+    private final ChatHbRepository chatHbRepository;
+    private final WholesaleUserRepository wholesaleUserRepository;
     private static final Logger logger = LoggerFactory.getLogger(ChatService.class);
 
     @Value("${chat.absolute}")
     private String chatAbsolutePath;
-
-    @Autowired
-    private ChatUserService chatUserService;
-
-
-    @Autowired
-    BlockListService blockListService;
+    private final ChatUserService chatUserService;
+    private final BlockListService blockListService;
     private final static String chatImagesPath = GlobalConstant.CHAT_STATIC_PATH;
 
 

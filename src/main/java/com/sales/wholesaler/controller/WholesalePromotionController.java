@@ -3,6 +3,7 @@ package com.sales.wholesaler.controller;
 
 import com.sales.dto.StorePromotionDto;
 import com.sales.entities.User;
+import com.sales.wholesaler.services.WholesalePromotionsService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -19,9 +20,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("wholesale/promotions")
 @RequiredArgsConstructor
-public class WholesalePromotionController extends WholesaleServiceContainer {
+public class WholesalePromotionController  {
 
-    
+    private final WholesalePromotionsService wholesalePromotionsService;
     private static final Logger logger = LoggerFactory.getLogger(WholesalePromotionController.class);
 
     @PostMapping("/")

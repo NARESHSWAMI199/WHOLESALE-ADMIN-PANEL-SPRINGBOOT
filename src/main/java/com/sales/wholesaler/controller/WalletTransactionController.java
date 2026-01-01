@@ -4,8 +4,12 @@ package com.sales.wholesaler.controller;
 import com.sales.dto.SearchFilters;
 import com.sales.entities.User;
 import com.sales.entities.WalletTransaction;
+import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.services.WalletTransactionService;
+import com.sales.wholesaler.services.WholesaleUserService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +19,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("wholesale/wallet/transactions/")
-public class WalletTransactionController extends WholesaleServiceContainer {
+@RequiredArgsConstructor
+public class WalletTransactionController  {
 
+
+    private final JwtToken jwtToken;
+    private final WholesaleUserService wholesaleUserService;
+    private final WalletTransactionService walletTransactionService;
 
     @PostMapping("all")
     public ResponseEntity<Page<WalletTransaction>> getAllWalletTransactionsByUserId(HttpServletRequest request, @RequestBody SearchFilters searchFilters){

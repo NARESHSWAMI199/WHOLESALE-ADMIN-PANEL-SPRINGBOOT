@@ -6,25 +6,27 @@ import com.sales.exceptions.MyException;
 import com.sales.exceptions.NotFoundException;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.repository.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ChatUserService extends WholesaleRepoContainer {
+public class ChatUserService  {
 
-    
-     private static final Logger logger = LoggerFactory.getLogger(ChatUserService.class);
-
-    @Autowired
-    protected BlockListService blockListService;
+    private final ChatUserRepository chatUserRepository;
+    private final ChatRepository chatRepository;
+    private final ChatHbRepository chatHbRepository;
+    private final WholesaleUserRepository wholesaleUserRepository;
+    private final ChatUserHbRepository chatUserHbRepository;
+    private static final Logger logger = LoggerFactory.getLogger(ChatUserService.class);
+    private final BlockListService blockListService;
 
     public List<User> getAllChatUsers(User loggedUser, HttpServletRequest request) {
         logger.debug("Starting getAllChatUsers method and the user id : {}",loggedUser.getId());

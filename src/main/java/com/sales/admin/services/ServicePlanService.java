@@ -1,6 +1,9 @@
 package com.sales.admin.services;
 
 
+import com.sales.admin.repositories.ServicePlanHbRepository;
+import com.sales.admin.repositories.ServicePlanRepository;
+import com.sales.admin.repositories.WholesalerPlansRepository;
 import com.sales.dto.DeleteDto;
 import com.sales.dto.ServicePlanDto;
 import com.sales.dto.StatusDto;
@@ -25,10 +28,15 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+import static com.sales.helpers.PaginationHelper.getPageable;
+
 @Service
 @RequiredArgsConstructor
-public class ServicePlanService extends  RepoContainer {
+public class ServicePlanService {
 
+    private final ServicePlanRepository servicePlanRepository;
+    private final WholesalerPlansRepository wholesalerPlansRepository;
+    private final ServicePlanHbRepository servicePlanHbRepository;
       
   private static final Logger logger = LoggerFactory.getLogger(ServicePlanService.class);
 
@@ -41,7 +49,7 @@ public class ServicePlanService extends  RepoContainer {
                         .and(ServicePlanSpecification.greaterThanOrEqualFromDate(servicePlanDto.getFromDate()))
                         .and(ServicePlanSpecification.lessThanOrEqualToToDate(servicePlanDto.getToDate()))
         );
-        Pageable pageable = getPageable(servicePlanDto);
+        Pageable pageable = getPageable(logger,servicePlanDto);
         Page<ServicePlan> result = servicePlanRepository.findAll(specification,pageable);
         logger.debug("Exiting getALlServicePlan");
         return result;
@@ -81,7 +89,7 @@ public class ServicePlanService extends  RepoContainer {
                 .and(PlansSpecifications.isStatus(searchFilters.getStatus()))
                 .and(PlansSpecifications.isUserId(userId))
         );
-        Pageable pageable = getPageable(searchFilters);
+        Pageable pageable = getPageable(logger,searchFilters);
         Page<WholesalerPlans> result = wholesalerPlansRepository.findAll(specification, pageable);
         logger.debug("Exiting getAllUserPlans");
         return result;

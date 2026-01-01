@@ -1,5 +1,6 @@
 package com.sales.admin.controllers;
 
+import com.sales.admin.services.StoreService;
 import com.sales.dto.*;
 import com.sales.entities.Store;
 import com.sales.entities.StoreCategory;
@@ -36,8 +37,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("admin/store")
 @RequiredArgsConstructor
-public class StoreController extends ServiceContainer{
+public class StoreController {
 
+    private final StoreService storeService;
     
     private static final Logger logger = LoggerFactory.getLogger(StoreController.class);
 

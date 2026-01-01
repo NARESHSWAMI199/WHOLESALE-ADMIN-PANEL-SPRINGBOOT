@@ -9,7 +9,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,9 +21,7 @@ public class WholesalerHbPermissionsRepository {
     
     private final Logger logger = LoggerFactory.getLogger(WholesalerHbPermissionsRepository.class);
 
-    @Autowired
-    EntityManager entityManager;
-
+    private final EntityManager entityManager;
 
 
         public int deleteWholesalerPermission(int userId){
