@@ -81,7 +81,7 @@ public class CashFreePgController extends PaymentServiceContainer {
 
 
 
-    @RequestMapping(value={"callback/{slug}/{userId}/{servicePlanId}","callback/{slug}/{userId}"})
+    @PostMapping(value={"callback/{slug}/{userId}/{servicePlanId}","callback/{slug}/{userId}"})
     public synchronized ResponseEntity<Map<String,Object>> saveCashfreeCallback(@PathVariable String slug, @PathVariable Integer userId,
                                                                    @PathVariable(required = false)  Integer servicePlanId, @RequestBody Map<String,Object> data) {
         Map<String,Object> result = new HashMap<>();

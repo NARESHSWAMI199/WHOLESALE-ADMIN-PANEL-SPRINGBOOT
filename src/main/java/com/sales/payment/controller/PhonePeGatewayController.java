@@ -100,7 +100,7 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
 
-    @RequestMapping("callback/{servicePlanId}/{userId}/{id}")
+    @PostMapping("callback/{servicePlanId}/{userId}/{id}")
     public ResponseEntity<Map<String,Object>>  phonePeCallbackResponse(HttpServletRequest request,@PathVariable(name = "servicePlanId")Integer servicePlanId, @PathVariable(name = "userId") Integer userId , @PathVariable( name = "id") Integer id, @RequestBody Map<String,Object> paramsBody){
         logger.debug("Received PhonePe callback for user: {}, service plan: {}", userId, servicePlanId);
         Map<String,Object> result = new HashMap<>();
@@ -173,7 +173,7 @@ public class PhonePeGatewayController extends PaymentServiceContainer {
         return new ResponseEntity<>(result, HttpStatus.valueOf((Integer) result.get("status")));
     }
 
-    @RequestMapping("refund-notify")
+    @PostMapping("refund-notify")
     public ResponseEntity<Map<String,Object>> getNotificationCallback(@RequestBody Map<String,Object> body){
         logger.debug("Received refund notification callback");
         return new ResponseEntity<>(body,HttpStatus.OK);
