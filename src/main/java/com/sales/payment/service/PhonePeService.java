@@ -10,6 +10,8 @@ import com.phonepe.sdk.pg.payments.v1.models.response.PgTransactionStatusRespons
 import com.phonepe.sdk.pg.payments.v1.models.response.UPIPaymentInstrumentResponse;
 import com.sales.dto.PhonePeDto;
 import com.sales.entities.PhonePeTrans;
+import com.sales.payment.repository.PhonePeHbRepository;
+import com.sales.payment.repository.PhonePeRepository;
 import com.sales.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -20,10 +22,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class PhonePeService extends PaymentRepoContainer {
+public class PhonePeService {
 
-  
-  private static final Logger logger = LoggerFactory.getLogger(PhonePeService.class);
+    private final PhonePeRepository phonePeRepository;
+    private final PhonePeHbRepository phonePeHbRepository;
+    private static final Logger logger = LoggerFactory.getLogger(PhonePeService.class);
 
     @Value("${phonepe.key}")
     String saltKey;

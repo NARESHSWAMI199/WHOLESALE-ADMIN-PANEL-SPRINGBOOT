@@ -15,6 +15,8 @@ import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
 import com.sales.payment.controller.CashFreePgController;
+import com.sales.payment.repository.CashfreeHbRepository;
+import com.sales.payment.repository.CashfreeRepository;
 import com.sales.utils.Utils;
 import com.sales.wholesaler.services.WholesaleServicePlanService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,12 +32,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+import static com.sales.helpers.PaginationHelper.getPageable;
 import static com.sales.specifications.CashfreeSpecification.*;
 
 @Service
 @RequiredArgsConstructor
-public class CashfreeService extends PaymentRepoContainer {
+public class CashfreeService {
 
+    private final CashfreeHbRepository cashfreeHbRepository;
+    private final CashfreeRepository cashfreeRepository;
     
     private static final Logger logger = LoggerFactory.getLogger(CashFreePgController.class);
 
@@ -64,7 +69,7 @@ public class CashfreeService extends PaymentRepoContainer {
                         .and(greaterThanOrEqualFromDate(cashfreeFilters.getFromDate()))
                         .and(lessThanOrEqualToToDate(cashfreeFilters.getToDate()))
         );
-        Pageable pageable = getPageable(cashfreeFilters);
+        Pageable pageable = getPageable(logger,cashfreeFilters);
         return cashfreeRepository.findAll(specification, pageable);
     }
 

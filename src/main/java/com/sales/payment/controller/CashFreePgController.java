@@ -4,6 +4,7 @@ package com.sales.payment.controller;
 import com.cashfree.ApiException;
 import com.cashfree.model.OrderEntity;
 import com.google.gson.Gson;
+import com.sales.admin.services.ServicePlanService;
 import com.sales.dto.CashfreeDto;
 import com.sales.dto.WalletTransactionDto;
 import com.sales.entities.ServicePlan;
@@ -11,7 +12,11 @@ import com.sales.entities.User;
 import com.sales.entities.WalletTransaction;
 import com.sales.exceptions.NotFoundException;
 import com.sales.global.ConstantResponseKeys;
+import com.sales.jwtUtils.JwtToken;
+import com.sales.payment.service.CashfreeService;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.services.WalletTransactionService;
+import com.sales.wholesaler.services.WholesaleUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
@@ -30,8 +35,13 @@ import java.util.Map;
 @Controller
 @RequestMapping("cashfree")
 @RequiredArgsConstructor
-public class CashFreePgController extends PaymentServiceContainer {
+public class CashFreePgController {
 
+    private final WholesaleUserService wholesaleUserService;
+    private final ServicePlanService servicePlanService;
+    private final CashfreeService cashfreeService;
+    private final JwtToken jwtToken;
+    private final WalletTransactionService walletTransactionService;
     
     private static final Logger logger = LoggerFactory.getLogger(CashFreePgController.class);
 

@@ -8,13 +8,18 @@ import com.phonepe.sdk.pg.payments.v1.PhonePePaymentClient;
 import com.phonepe.sdk.pg.payments.v1.models.request.PgPayRequest;
 import com.phonepe.sdk.pg.payments.v1.models.response.PayPageInstrumentResponse;
 import com.phonepe.sdk.pg.payments.v1.models.response.PgPayResponse;
+import com.sales.admin.services.ServicePlanService;
 import com.sales.dto.PhonePeDto;
 import com.sales.entities.PhonePeTrans;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
+import com.sales.jwtUtils.JwtToken;
+import com.sales.payment.service.PhonePeService;
 import com.sales.utils.Utils;
+import com.sales.wholesaler.services.WholesaleServicePlanService;
+import com.sales.wholesaler.services.WholesaleUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
@@ -35,8 +40,12 @@ import java.util.UUID;
 @Controller
 @RequestMapping("pg/")
 @RequiredArgsConstructor
-public class PhonePeGatewayController extends PaymentServiceContainer {
-
+public class PhonePeGatewayController {
+    private final JwtToken jwtToken;
+    private final WholesaleUserService wholesaleUserService;
+    private final ServicePlanService servicePlanService;
+    private final PhonePeService phonePeService;
+    private final WholesaleServicePlanService wholesaleServicePlanService;
     
     private static final Logger logger = LoggerFactory.getLogger(PhonePeGatewayController.class);
 
