@@ -38,6 +38,7 @@ public class Utils {
     }
 
     public static String mobileRegex = "^[6789]\\d{9}$";
+    private static final Random random = new Random();
 
     public static String getMillisToDate(Long millis){
         DateFormat format = new SimpleDateFormat("dd MMM yyyy HH:mm:ss:SSS Z");
@@ -135,7 +136,6 @@ public class Utils {
 
 
     public static int generateOTP(int length) {
-        Random random = new Random();
         int otp = 0;
         for (int i = 0; i < length; i++) {
             otp = otp * 10 + random.nextInt(10);
