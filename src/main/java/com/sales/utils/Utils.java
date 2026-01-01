@@ -18,11 +18,11 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,7 +38,7 @@ public class Utils {
     }
 
     public static String mobileRegex = "^[6789]\\d{9}$";
-    private static final Random random = new Random();
+    private static final SecureRandom random = new SecureRandom();
 
     public static String getMillisToDate(Long millis){
         DateFormat format = new SimpleDateFormat("dd MMM yyyy HH:mm:ss:SSS Z");
