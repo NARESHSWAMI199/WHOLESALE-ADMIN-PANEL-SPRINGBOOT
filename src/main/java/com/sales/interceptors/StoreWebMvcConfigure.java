@@ -2,17 +2,20 @@ package com.sales.interceptors;
 
 import com.sales.global.GlobalConstant;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 
-@Configuration
-@EnableWebMvc
-
+//@Configuration
+//@EnableWebMvc
+@Component
 @RequiredArgsConstructor
 public class StoreWebMvcConfigure implements WebMvcConfigurer {
 

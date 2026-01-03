@@ -21,6 +21,7 @@ import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,10 +59,12 @@ public class UserService {
     private String password;
 
 
+    public User findByEmail(String email){
+        return userRepository.findByEmail(email).orElseThrow( () -> new UsernameNotFoundException("User not found."));
+    }
 
-    public User findByEmailAndPassword(UserDto userDto) {
-        logger.debug("Finding user by email and password: {}", userDto.getEmail());
-        return userRepository.findByEmailAndPassword(userDto.getEmail(), userDto.getPassword());
+    public User findByEmailAndPassword(String email,String password) {
+        return userRepository.findByEmailAndPassword(email,password).orElseThrow(() -> new UsernameNotFoundException("User not fond."));
     }
 
     public User findUserByOtpAndEmail(UserDto userDto) {
@@ -93,7 +96,7 @@ public class UserService {
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
 
-        User user = userRepository.findUserByEmail(userDto.getEmail());
+        User user = userRepository.findUserByEmail(userDto.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         if(user == null) throw new IllegalArgumentException("We are unable to send mail on this mail id "+userDto.getEmail());
         
         String recipient = user.getEmail();
@@ -560,6 +563,4 @@ public class UserService {
         }
         return responseObject;
     }
-
-
 }

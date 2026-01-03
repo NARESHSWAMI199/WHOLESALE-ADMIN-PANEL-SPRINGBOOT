@@ -22,6 +22,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,18 +38,20 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("admin/auth")
+@RequestMapping("/admin/auth")
 @RequiredArgsConstructor
 public class UserController  {
 
+    private final AuthenticationManager authenticationManager;
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
     private final PaginationService paginationService;
-
     private final JwtToken jwtToken;
 
+    @PreAuthorize("hasAuthority('users.all')")
     @PostMapping("/{userType}/all")
-    public ResponseEntity<Page<User>> getAllUsers(HttpServletRequest request,@RequestBody UserSearchFilters searchFilters, @PathVariable(required = true) String userType) {
+    public ResponseEntity<Page<User>> getAllUsers(Authentication authentication,HttpServletRequest request,@RequestBody UserSearchFilters searchFilters, @PathVariable(required = true) String userType) {
+        logger.info("authentication  authorities : {}",authentication.getAuthorities());
         logger.debug("Fetching all users of type: {}", userType);
         searchFilters.setUserType(userType);
         User loggedUser = (User) request.getAttribute("user");
@@ -64,15 +70,17 @@ public class UserController  {
                     """)
     ))
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> findByEmailAndPassword(@RequestBody UserDto userDetails) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody UserDto userDetails) {
         logger.debug("Admin login attempt with email: {}", userDetails.getEmail());
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(userDetails.getEmail(),userDetails.getPassword()
+        ));
+        String email = authentication.getName();
+        logger.info("The name of user : {}",email);
+        User user = userService.findByEmail(email);
         Map<String, Object> responseObj = new HashMap<>();
-        User user = userService.findByEmailAndPassword(userDetails);
         String message;
-        if (user == null) {
-            message = "Invalid credentials.";
-            responseObj.put(ConstantResponseKeys.STATUS, 401);
-        } else if (user.getStatus().equalsIgnoreCase("A")) {
+        if (user.getStatus().equalsIgnoreCase("A")) {
             message = ConstantResponseKeys.SUCCESS;
             Map<String, Object> paginations = paginationService.findUserPaginationsByUserId(user);
             responseObj.put(ConstantResponseKeys.TOKEN, GlobalConstant.AUTH_TOKEN_PREFIX + jwtToken.generateToken(user));

@@ -10,7 +10,7 @@ import java.util.UUID;
 import static com.sales.utils.Utils.getCurrentMillis;
 
 @Entity
-@Table(name = "groups")
+@Table(name = "`groups`")
 @Getter
 @Setter
 @AllArgsConstructor

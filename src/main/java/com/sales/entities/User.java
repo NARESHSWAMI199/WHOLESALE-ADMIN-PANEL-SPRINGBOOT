@@ -8,8 +8,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
 import static com.sales.utils.Utils.getCurrentMillis;
@@ -79,6 +81,9 @@ public class User implements Serializable {
 
     @Transient
     public String accepted;
+
+    @Transient
+    List<GrantedAuthority> authorities;
 
     public User (User loggedUser) {
         this.slug = UUID.randomUUID().toString();
