@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.MDC;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -45,16 +46,14 @@ public class JwtFilter extends OncePerRequestFilter {
                                     @NotNull HttpServletResponse response,
                                     @NotNull FilterChain filterChain)
             throws ServletException, IOException {
-
-        log.info("The request path : {}",request.getRequestURI());
-
         String authHeader = request.getHeader(GlobalConstant.AUTHORIZATION);
         String authHeader1 = request.getHeader(GlobalConstant.AUTHORIZATION.toLowerCase());
-        log.info("The request authHeader : {},{}",authHeader,authHeader1);
         if (authHeader != null && authHeader.startsWith(GlobalConstant.AUTH_TOKEN_PREFIX)) {
             String token = authHeader.substring(7);
-            log.info("The request token : {}",token);
             String slug = jwtUtil.getSlugFromToken(token);
+            if (slug != null) {
+                MDC.put("userSlug", slug);
+            }
             User user = userCacheService.getCacheUser(slug);
             if(user == null){
                 user = userRepository.findUserBySlug(slug);

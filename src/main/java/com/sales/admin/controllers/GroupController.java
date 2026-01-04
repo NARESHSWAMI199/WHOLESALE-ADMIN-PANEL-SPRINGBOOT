@@ -7,6 +7,7 @@ import com.sales.dto.GroupDto;
 import com.sales.dto.SearchFilters;
 import com.sales.entities.AuthUser;
 import com.sales.entities.Group;
+import com.sales.entities.SalesUser;
 import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;

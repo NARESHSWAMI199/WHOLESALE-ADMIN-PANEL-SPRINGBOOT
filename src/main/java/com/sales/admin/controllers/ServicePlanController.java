@@ -8,6 +8,7 @@ import com.sales.dto.ServicePlanDto;
 import com.sales.dto.StatusDto;
 import com.sales.dto.UserPlanDto;
 import com.sales.entities.AuthUser;
+import com.sales.entities.SalesUser;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.WholesalerPlans;
 import com.sales.global.ConstantResponseKeys;

@@ -4,6 +4,7 @@ package com.sales.wholesaler.controller;
 import com.sales.dto.ItemReviewsFilterDto;
 import com.sales.entities.AuthUser;
 import com.sales.entities.ItemReviews;
+import com.sales.entities.SalesUser;
 import com.sales.wholesaler.services.WholesaleItemReviewService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

@@ -3,6 +3,7 @@ package com.sales.wholesaler.controller;
 
 import com.sales.dto.UserPaginationDto;
 import com.sales.entities.AuthUser;
+import com.sales.entities.SalesUser;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.wholesaler.services.WholesalePaginationService;
 import jakarta.servlet.http.HttpServletRequest;

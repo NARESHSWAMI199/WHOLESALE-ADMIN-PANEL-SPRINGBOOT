@@ -25,7 +25,7 @@ import static com.sales.utils.Utils.getCurrentMillis;
 @Table(name = "`user`")
 @SQLRestriction("is_deleted != 'Y' ")
 @Builder
-public class User implements Serializable,AuthUser{
+public class User implements AuthUser,Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
