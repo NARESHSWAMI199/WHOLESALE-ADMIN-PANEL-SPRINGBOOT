@@ -47,7 +47,7 @@ public class JwtFilter extends OncePerRequestFilter {
                                     @NotNull FilterChain filterChain)
             throws ServletException, IOException {
         String authHeader = request.getHeader(GlobalConstant.AUTHORIZATION);
-        String authHeader1 = request.getHeader(GlobalConstant.AUTHORIZATION.toLowerCase());
+        log.info("The request token : {}",authHeader);
         if (authHeader != null && authHeader.startsWith(GlobalConstant.AUTH_TOKEN_PREFIX)) {
             String token = authHeader.substring(7);
             String slug = jwtUtil.getSlugFromToken(token);
@@ -61,6 +61,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 user.setAuthorities(authorities);
                 userCacheService.saveCacheUser(user);
             }
+            log.info("The request user : {}",user);
             AuthUser userDetails = new SalesUser(user);
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(

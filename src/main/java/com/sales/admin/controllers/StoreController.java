@@ -226,10 +226,10 @@ public class StoreController {
 
 
     @PostMapping("category/delete")
-    public ResponseEntity<Map<String,Object>> deleteItemCategoryById(HttpServletRequest request ,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public ResponseEntity<Map<String,Object>> deleteItemCategoryById(Authentication authentication,HttpServletRequest request ,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Deleting store category with slug: {}", deleteDto.getSlug());
         Map<String,Object> responseObj = new HashMap<>();
-        User user = (User) request.getAttribute("user");
+        AuthUser user = (SalesUser) authentication.getPrincipal();
         int isUpdated = storeService.deleteStoreCategory(deleteDto,user);
         if (isUpdated > 0) {
             responseObj.put(ConstantResponseKeys.MESSAGE, "Store's category was successfully deleted.");
@@ -252,10 +252,10 @@ public class StoreController {
 
 
     @PostMapping("subcategory/delete")
-    public ResponseEntity<Map<String,Object>> deleteItemSubCategoryById(HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public ResponseEntity<Map<String,Object>> deleteItemSubCategoryById(Authentication authentication,HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Deleting store subcategory with slug: {}", deleteDto.getSlug());
         Map<String,Object> responseObj = new HashMap<>();
-        User user = (User) request.getAttribute("user");
+        AuthUser user = (SalesUser) authentication.getPrincipal();
         int isUpdated = storeService.deleteStoreSubCategory(deleteDto,user);
         if (isUpdated > 0) {
             responseObj.put(ConstantResponseKeys.MESSAGE, "Store's subcategory successfully deleted.");

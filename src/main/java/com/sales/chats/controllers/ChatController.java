@@ -128,10 +128,10 @@ public class ChatController  {
 
 
     @PostMapping("/chat/seen")
-    public ResponseEntity<Map<String,Object>> getUserStatus(@RequestBody MessageDto message, HttpServletRequest request){
+    public ResponseEntity<Map<String,Object>> getUserStatus(Authentication authentication,@RequestBody MessageDto message, HttpServletRequest request){
         logger.debug("Updating seen status for message: {}", message);
         Map<String,Object> result = new HashMap<>();
-        User  loggedUser = (User) request.getAttribute("user");
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         message.setReceiver(loggedUser.getSlug());
         wholesaleUserService.updateSeenMessages(message);
         result.put(ConstantResponseKeys.MESSAGE,"Message successfully updated.");

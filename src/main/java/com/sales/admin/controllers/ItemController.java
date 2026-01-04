@@ -107,13 +107,13 @@ public class ItemController  {
 
 
     @PostMapping(value = {"/importExcel/{wholesaleSlug}"})
-    public ResponseEntity<Object> importItemsFromExcelSheet(HttpServletRequest request, @RequestParam("excelfile") MultipartFile excelSheet, @PathVariable(value = "wholesaleSlug") String wholesaleSlug) {
+    public ResponseEntity<Object> importItemsFromExcelSheet(Authentication authentication,HttpServletRequest request, @RequestParam("excelfile") MultipartFile excelSheet, @PathVariable(value = "wholesaleSlug") String wholesaleSlug) {
         logger.debug("Importing items from Excel sheet for wholesaleSlug: {}", wholesaleSlug);
         Map<String,Object> responseObj = new HashMap<>();
         try {
             if (excelSheet != null) {
                 Map<String,List<String>> result = readExcel.getExcelDataInJsonFormat(excelSheet);
-                User user = (User) request.getAttribute("user");
+                  AuthUser user = (SalesUser) authentication.getPrincipal();
                 Integer wholesaleId = storeService.getStoreIdByStoreSlug(wholesaleSlug);
                 if (wholesaleId == null) {
                     logger.error("Wholesale not found.");

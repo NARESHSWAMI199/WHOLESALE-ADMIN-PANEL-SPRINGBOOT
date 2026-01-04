@@ -1,6 +1,7 @@
 package com.sales.wholesaler.controller;
 
-import com.sales.entities.User;
+import com.sales.entities.AuthUser;
+import com.sales.entities.SalesUser;
 import com.sales.global.GlobalConstant;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -45,9 +47,9 @@ public class RemoveBg {
     String relativePath;
 
     @PostMapping("/")
-    public ResponseEntity<Map<String,String>> uploadImage(HttpServletRequest request, @RequestParam("image") MultipartFile file) throws IOException {
+    public ResponseEntity<Map<String,String>> uploadImage(Authentication authentication,HttpServletRequest request, @RequestParam("image") MultipartFile file) throws IOException {
         logger.debug("Starting uploadImage method");
-        User user = (User) request.getAttribute("user");
+        AuthUser user = (SalesUser) authentication.getPrincipal();
         String baseUrl = GlobalConstant.removeBgUrl; // Replace with your Flask API URL
         Path baseDir = Paths.get(outputPath).toAbsolutePath().normalize();
         Path userFolder = baseDir.resolve(user.getSlug()).normalize();
@@ -102,9 +104,9 @@ public class RemoveBg {
 
 
     @GetMapping("/{filename}")
-    public ResponseEntity<Resource> getFile( HttpServletRequest request, @PathVariable(required = true) String filename) throws MalformedURLException {
+    public ResponseEntity<Resource> getFile(Authentication authentication,HttpServletRequest request, @PathVariable(required = true) String filename) throws MalformedURLException {
         logger.debug("Starting getFile method");
-        User user = (User) request.getAttribute("user");
+          AuthUser user = (SalesUser) authentication.getPrincipal();
         Path relative = Paths.get(relativePath);
         Path userSlug = relative.resolve(user.getSlug()).normalize();
         Path path = userSlug.resolve(filename).normalize();

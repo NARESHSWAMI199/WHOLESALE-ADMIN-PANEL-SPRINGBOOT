@@ -433,7 +433,7 @@ public class StoreService {
     }
 
 
-    public int deleteStoreCategory(DeleteDto deleteDto,User user) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public int deleteStoreCategory(DeleteDto deleteDto,AuthUser user) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Entering deleteStoreCategory with deleteDto: {}, user: {}", deleteDto, user);
         // Validating required fields if they are null, this will throw an Exception
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
@@ -447,7 +447,7 @@ public class StoreService {
         return result;
     }
 
-    public int deleteStoreSubCategory(DeleteDto deleteDto,User user) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public int deleteStoreSubCategory(DeleteDto deleteDto,AuthUser user) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Entering deleteStoreSubCategory with deleteDto: {}, user: {}", deleteDto, user);
         // Validating required fields if they are null this will throw an Exception
         Utils.checkRequiredFields(deleteDto,List.of("slug"));

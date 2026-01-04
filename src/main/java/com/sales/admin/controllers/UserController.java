@@ -109,10 +109,7 @@ public class UserController  {
     public ResponseEntity<Map<String, Object>> findUserByOtp(@RequestBody UserDto userDetails) {
         logger.debug("Admin OTP login attempt with email: {}", userDetails.getEmail());
         Map<String, Object> responseObj = new HashMap<>();
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userDetails.getEmail(),userDetails.getPassword()
-                ));
-        SalesUser user = (SalesUser) authentication.getPrincipal();
+        AuthUser user = userService.findUserByOtpAndEmail(userDetails);
         if (user == null) {
             responseObj.put(ConstantResponseKeys.MESSAGE, "Wrong otp password.");
             responseObj.put(ConstantResponseKeys.STATUS, 401);

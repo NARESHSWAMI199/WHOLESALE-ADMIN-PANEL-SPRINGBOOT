@@ -57,8 +57,8 @@ public class PermissionHbRepository {
         if (groupId == GlobalConstant.groupId) throw new PermissionDeniedDataAccessException("We can't delete this group.",new Exception());
         deleteGroupPermissionByGroupId(groupId);
         deleteGroupFromUser(groupId);
-        String sql = "delete from `groups` where slug=:slug";
-        Query query = entityManager.createNativeQuery(sql);
+        String sql = "delete from Group where slug=:slug";
+        Query query = entityManager.createQuery(sql);
         query.setParameter("slug",slug);
         return query.executeUpdate();
     }

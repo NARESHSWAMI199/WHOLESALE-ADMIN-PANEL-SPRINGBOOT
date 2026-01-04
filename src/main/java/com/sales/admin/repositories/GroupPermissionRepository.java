@@ -24,19 +24,16 @@ public interface GroupPermissionRepository extends JpaRepository<GroupPermission
             where ug.user_id = :userId
             """,nativeQuery = true)
     Set<String> getUserAllPermission(@Param("userId") int userId);
-
-
-
     @Query(value = """
             select 
                 g.name,
                 p.id,
                 p.permission 
-            from group_permissions gp 
-            left join `groups` g on g.id = gp.group_id
-            left join permissions p on p.id= gp.permission_id 
+            from GroupPermission gp 
+            left join Group g on g.id = gp.group.id
+            left join Permission p on p.id= gp.permissions.id 
             where g.id =:groupId
-            """,nativeQuery = true)
+            """)
     List<Map<String,Object>> getGroupPermissionByGroupId(@Param("groupId") Integer groupId);
 
 

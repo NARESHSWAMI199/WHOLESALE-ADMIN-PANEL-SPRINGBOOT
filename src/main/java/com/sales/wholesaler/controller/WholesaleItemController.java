@@ -172,8 +172,8 @@ public class WholesaleItemController  {
 
 
     @PostMapping(value = {"importExcel"})
-    public ResponseEntity<Map<String, Object>> importItemsFromExcelSheet(HttpServletRequest request, @RequestParam("excelfile") MultipartFile excelSheet) {
-        User user = (User) request.getAttribute("user");
+    public ResponseEntity<Map<String, Object>> importItemsFromExcelSheet(Authentication authentication,HttpServletRequest request, @RequestParam("excelfile") MultipartFile excelSheet) {
+          AuthUser user = (SalesUser) authentication.getPrincipal();
         logger.debug("Importing items from Excel sheet for userSlug: {}", user.getSlug());
         Map<String,Object> responseObj = new HashMap<>();
         try {

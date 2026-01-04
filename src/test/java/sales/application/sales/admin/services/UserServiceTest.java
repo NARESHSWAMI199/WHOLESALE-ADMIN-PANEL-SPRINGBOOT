@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
 import sales.application.sales.testglobal.GlobalConstantTest;
 import sales.application.sales.util.TestUtil;
@@ -16,7 +17,7 @@ import sales.application.sales.util.TestUtil;
 import java.util.UUID;
 
 @SpringBootTest(classes = SalesApplication.class)
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class UserServiceTest extends TestUtil {
 
@@ -42,18 +43,17 @@ public class UserServiceTest extends TestUtil {
 
     @Test
     public void testFindUserUsingEmailAndPasswordWithWrongDetails(){
-        User user = userService.findByEmailAndPassword(email,password);
-        Assertions.assertNull(user);
+        Assertions.assertThrows(UsernameNotFoundException.class,() -> userService.findByEmailAndPassword(email,UUID.randomUUID().toString()));
     }
     @Test
-    public void testFindUserUsingEmailAndPasswordWithBlankPassword(){
-        User user = userService.findByEmailAndPassword("test.naresh@gmail.com",null);
-        Assertions.assertNull(user);
+    public void testFindUserUsingEmailAndPasswordWithBlankPassword() {
+        createUser(UUID.randomUUID().toString(),email,password,GlobalConstantTest.STAFF);
+        Assertions.assertThrows(UsernameNotFoundException.class,() -> userService.findByEmailAndPassword(email,null));
     }
     @Test
     public void testFindUserUsingEmailAndPasswordWithBlank(){
-        User user = userService.findByEmailAndPassword(null,null);
-        Assertions.assertNull(user);
+        Assertions.assertThrows(UsernameNotFoundException.class,() -> userService.findByEmailAndPassword(null,null));
     }
+
 
 }
