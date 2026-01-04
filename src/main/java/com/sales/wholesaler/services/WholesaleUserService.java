@@ -67,7 +67,6 @@ public class WholesaleUserService  {
         String password = param.get("password");
         User user = wholesaleUserRepository.findByEmailAndPassword(email,password);
         logger.debug("Completed findByEmailAndPassword method");
-        userCacheService.saveCacheUser(user);
         return user;
     }
 
@@ -77,7 +76,6 @@ public class WholesaleUserService  {
         Utils.checkRequiredFields(userDto,List.of("slug","password"));
         User user = wholesaleUserRepository.findUserByOtpAndSlug(userDto.getSlug(),userDto.getPassword());
         logger.debug("Completed findUserByOtpAndSlug method");
-        userCacheService.saveCacheUser(user);
         return user;
     }
 
@@ -85,7 +83,6 @@ public class WholesaleUserService  {
         logger.debug("Starting findUserByOtpAndEmail method with userDto: {}", userDto);
         User user = wholesaleUserRepository.findUserByOtpAndEmail(userDto.getEmail(),userDto.getPassword());
         logger.debug("Completed findUserByOtpAndEmail method");
-        userCacheService.saveCacheUser(user);
         return user;
     }
 
@@ -289,9 +286,6 @@ public class WholesaleUserService  {
 
         // updating default pagination settings also for both kind of user "W" and "R"
         wholesalePaginationService.setUserDefaultPaginationForSettings(insertedUser);
-
-        // Save user in redis
-        userCacheService.saveCacheUser(insertedUser);
         return insertedUser;
     }
 
