@@ -3,8 +3,8 @@ package com.sales.admin.repositories;
 
 import com.sales.dto.AddressDto;
 import com.sales.entities.City;
+import com.sales.entities.SalesUser;
 import com.sales.entities.State;
-import com.sales.entities.User;
 import com.sales.utils.Utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -21,7 +21,7 @@ public class AddressHbRepository {
 
     private final EntityManager entityManager;
 
-    public int updateAddress(AddressDto addressDto, User loggedUser){
+    public int updateAddress(AddressDto addressDto, SalesUser loggedUser){
         String hqQuery ="update Address set " +
                 "street =:street,"+
                 "zipCode =:zipCode,"+

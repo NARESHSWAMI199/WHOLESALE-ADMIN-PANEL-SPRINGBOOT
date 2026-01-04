@@ -2,7 +2,7 @@ package com.sales.specifications;
 
 import com.sales.entities.Group;
 import com.sales.entities.Group_;
-import com.sales.entities.User;
+import com.sales.entities.SalesUser;
 import org.springframework.data.jpa.domain.Specification;
 
 public class GroupSpecifications {
@@ -45,7 +45,7 @@ public class GroupSpecifications {
         };
     }
 
-    public static Specification<Group> notSuperAdmin(User loggedUser) {
+    public static Specification<Group> notSuperAdmin(SalesUser loggedUser) {
         return (root, query, criteriaBuilder) -> {
             if(loggedUser.getUserType().equals("SA")) return  null;
             return criteriaBuilder.notEqual(root.get(Group_.ID), 0);

@@ -2,6 +2,7 @@ package com.sales.wholesaler.services;
 
 
 import com.sales.entities.BlockedUser;
+import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.utils.Utils;
@@ -22,7 +23,7 @@ public class BlockListService  {
   private final BlockListHbRepository blockListHbRepository;
   private static final Logger logger = LoggerFactory.getLogger(BlockListService.class);
 
-    public BlockedUser addAUserInBlockList(User blockingBy, String blockedUserSlug) {
+    public BlockedUser addAUserInBlockList(SalesUser blockingBy, String blockedUserSlug) {
         logger.debug("Starting addAUserInBlockList method");
         User blockedUser = wholesaleUserRepository.findUserBySlug(blockedUserSlug);
         if (blockedUser == null) {
@@ -46,7 +47,7 @@ public class BlockListService  {
 
 
 
-    public boolean isReceiverBlockedBySender(User loggedUser, User receiver) {
+    public boolean isReceiverBlockedBySender(SalesUser loggedUser, User receiver) {
         logger.debug("Starting isReceiverBlockedBySender method the loggedUser : {} and the receiver : {} ",loggedUser,receiver);
         BlockedUser blockedUser = blockListRepository.findByUserIdAndBlockedUser(loggedUser.getId(),receiver);
         boolean exists = blockedUser != null;
@@ -55,13 +56,13 @@ public class BlockListService  {
     }
 
 
-    public boolean isSenderBlockedByReceiver(User loggedUser, User receiver) {
+    public boolean isSenderBlockedByReceiver(SalesUser loggedUser, User receiver) {
         logger.debug("Starting isSenderBlockedGyReceiver method");
         if (receiver == null) {
             logger.debug("Receiver is null, returning false");
             return false;
         }
-        BlockedUser blockedUser = blockListRepository.findByUserIdAndBlockedUser(receiver.getId(), loggedUser);
+        BlockedUser blockedUser = blockListRepository.findByUserIdAndBlockedUser(receiver.getId(), User.builder().id(loggedUser.getId()).build());
         boolean exists = blockedUser != null;
         logger.debug("Completed isSenderBlockedGyReceiver method");
         return exists;

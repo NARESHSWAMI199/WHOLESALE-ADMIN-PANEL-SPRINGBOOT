@@ -5,8 +5,8 @@ import com.sales.admin.repositories.AddressRepository;
 import com.sales.dto.AddressDto;
 import com.sales.entities.Address;
 import com.sales.entities.City;
+import com.sales.entities.SalesUser;
 import com.sales.entities.State;
-import com.sales.entities.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ public class AddressService {
     private static final Logger logger = LoggerFactory.getLogger(AddressService.class);
 
     @Transactional
-    public Address insertAddress(AddressDto addressDto, User loggedUser) {
+    public Address insertAddress(AddressDto addressDto, SalesUser loggedUser) {
         logger.debug("Entering insertAddress with addressDto: {}, loggedUser: {}", addressDto, loggedUser);
         Address address = new Address();
         address.setSlug(UUID.randomUUID().toString());

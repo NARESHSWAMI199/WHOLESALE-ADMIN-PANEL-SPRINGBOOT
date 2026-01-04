@@ -2,10 +2,7 @@ package com.sales.wholesaler.services;
 
 
 import com.sales.dto.WalletTransactionDto;
-import com.sales.entities.ServicePlan;
-import com.sales.entities.StoreNotifications;
-import com.sales.entities.User;
-import com.sales.entities.Wallet;
+import com.sales.entities.*;
 import com.sales.exceptions.NotFoundException;
 import com.sales.wholesaler.repository.WholesaleNotificationHbRepository;
 import com.sales.wholesaler.repository.WholesaleServicePlanRepository;
@@ -37,18 +34,18 @@ public class WholesaleWalletService  {
 
 
     @Transactional
-    public void sendNotification(String title,String messageBody,int storeId,User loggedUser){
+    public void sendNotification(String title, String messageBody, int storeId, SalesUser loggedUser){
         logger.debug("Entering sendNotification with title: {}, messageBody: {}, storeId: {}, loggedUser: {}", title, messageBody, storeId, loggedUser);
         StoreNotifications storeNotifications = new StoreNotifications();
         storeNotifications.setTitle(title);
         storeNotifications.setMessageBody(messageBody);
         storeNotifications.setWholesaleId(storeId);
-        storeNotifications.setCreatedBy(loggedUser);
+        storeNotifications.setCreatedBy(User.builder().id(loggedUser.getId()).build());
         wholesaleNotificationHbRepository.insertStoreNotifications(storeNotifications);
         logger.debug("Exiting sendNotification");
     }
 
-    public boolean paymentViaWallet(String servicePlanSlug, User loggedUser) {
+    public boolean paymentViaWallet(String servicePlanSlug, SalesUser loggedUser) {
         boolean payment = false;
         int userId = loggedUser.getId();
         Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(userId);

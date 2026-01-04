@@ -1,7 +1,9 @@
 package com.sales.wholesaler.controller;
 
+import com.sales.cachemanager.services.UserCacheService;
 import com.sales.dto.MessageDto;
 import com.sales.entities.Chat;
+import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.ConstantResponseKeys;
@@ -24,6 +26,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.Path;
@@ -42,15 +45,15 @@ public class ChatController  {
     private final ChatService chatService;
     private final WholesaleUserService wholesaleUserService;
     private final BlockListService blockListService;
-
+    private final UserCacheService userCacheService;
 
     /** @Note : Make sure all @MessageMappings 's prefix is /app/ */
 
 
     @PostMapping("/chats/all")
-    public ResponseEntity<Map<String, List<Chat>>> getALlUsers(@RequestBody MessageDto message , HttpServletRequest request){
+    public ResponseEntity<Map<String, List<Chat>>> getALlUsers(Authentication authentication,@RequestBody MessageDto message , HttpServletRequest request){
         logger.debug("Fetching all users for message: {}", message);
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         message.setSender(loggedUser.getSlug());
         Map<String, List<Chat>> formatedChatList = chatService.getAllChatBySenderAndReceiverKey(message,request);
         return new ResponseEntity<>(formatedChatList, HttpStatus.valueOf(200));
@@ -58,9 +61,9 @@ public class ChatController  {
 
 
     @GetMapping("/chats/message/{parentId}")
-    public ResponseEntity<Chat> getParentChatMessageByParentId(@PathVariable Long parentId , HttpServletRequest request){
+    public ResponseEntity<Chat> getParentChatMessageByParentId(Authentication authentication,@PathVariable Long parentId , HttpServletRequest request){
         logger.debug("Fetching parent chat using parentId: {}", parentId);
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         Chat parentChat = chatService.getParentMessageById(parentId,loggedUser,request);
         return new ResponseEntity<>(parentChat, HttpStatus.valueOf(200));
     }
@@ -106,15 +109,16 @@ public class ChatController  {
 
     /** Upload images and other files with chat */
     @PostMapping("/chat/upload")
-    public ResponseEntity<Map<String,Object>> uploadImages(@ModelAttribute MessageDto message ,HttpServletRequest request){
+    public ResponseEntity<Map<String,Object>> uploadImages(Authentication authentication,@ModelAttribute MessageDto message ,HttpServletRequest request){
         logger.debug("Uploading images for message: {}", message);
         Map<String,Object> result = new HashMap<>();
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         String recipient = message.getReceiver();
         User receiver = wholesaleUserService.findUserBySlug(recipient);
         if (receiver == null) throw new MyException("Please provide a valid recipient");
 
-        boolean verified = chatService.verifyBeforeSend(loggedUser, recipient);
+        User user = userCacheService.getCacheUser(loggedUser.getSlug());
+        boolean verified = chatService.verifyBeforeSend(new SalesUser(user), recipient);
         if(!verified) return null;
 
         List<String> allImagesName = chatService.saveAllImages(message, loggedUser);
@@ -154,7 +158,7 @@ public class ChatController  {
             User user = wholesaleUserService.findUserBySlug(slug);
             if(user == null) throw new MyException("Not valid user to connect for chat.");
             user.setOnline(true);
-            wholesaleUserService.updateLastSeen(user);
+            wholesaleUserService.updateLastSeen(new SalesUser(user));
             GlobalConstant.onlineUsers.put(slug, user);
         }catch (Exception e){
             logger.error("Exception during user connection : {}",e.getMessage());
@@ -173,7 +177,7 @@ public class ChatController  {
             User user = GlobalConstant.onlineUsers.get(slug);
             if(user == null) throw new MyException("Not valid user to connect for chat.");
             user.setOnline(false);
-            wholesaleUserService.updateLastSeen(user);
+            wholesaleUserService.updateLastSeen(new SalesUser(user));
             GlobalConstant.onlineUsers.put(slug, user);
         }catch (Exception e){
             logger.error("Exception during userDisconnected : {}",e.getMessage());
@@ -184,14 +188,14 @@ public class ChatController  {
 
     @MessageMapping("/chats/was-seen/{recipient}")
     public void isReceiverSeen(@DestinationVariable("recipient") String recipient,SimpMessageHeaderAccessor headerAccessor){
-        User loggedUser = (User) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("user");
+        User chatLoggedUser = (User) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("user");
         User receiver = wholesaleUserService.findUserBySlug(recipient);
         if (recipient == null) throw new MyException("Please provide a valid recipient");
         logger.debug("Seen Called.....");
         /* Check If you already blocked by receiver or not if blocked, then do nothing eat fivestar */
-        boolean isYouBlockedByReceiver = blockListService.isSenderBlockedByReceiver(loggedUser,receiver);
+        boolean isYouBlockedByReceiver = blockListService.isSenderBlockedByReceiver(new SalesUser(chatLoggedUser),receiver);
         /* Check you blocked the receiver or not */
-        boolean isYouBlockedReceiver = blockListService.isReceiverBlockedBySender(loggedUser,receiver);
+        boolean isYouBlockedReceiver = blockListService.isReceiverBlockedBySender(new SalesUser(chatLoggedUser),receiver);
         boolean seen = !isYouBlockedByReceiver && !isYouBlockedReceiver;
         logger.debug("Message seen or not :  {} ",seen);
         /* you need to subscribe like  /user/{userId}/queue/private/chat/seen */
@@ -249,10 +253,10 @@ public class ChatController  {
 
 
     @PostMapping("/chat/delete")
-    public ResponseEntity<Map<String,Object>> deleteBySlug(@RequestBody MessageDto messageDto,HttpServletRequest request){
+    public ResponseEntity<Map<String,Object>> deleteBySlug(Authentication authentication, @RequestBody MessageDto messageDto, HttpServletRequest request){
         logger.debug("Deleting message: {}", messageDto);
         Map<String,Object> result = new HashMap<>();
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         int isDeleted = chatService.deleteMessage(loggedUser, messageDto);
         if(isDeleted > 0){
             result.put(ConstantResponseKeys.MESSAGE,"deleted successfully");

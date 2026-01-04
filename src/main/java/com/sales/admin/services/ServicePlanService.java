@@ -8,8 +8,8 @@ import com.sales.dto.DeleteDto;
 import com.sales.dto.ServicePlanDto;
 import com.sales.dto.StatusDto;
 import com.sales.dto.UserPlanDto;
+import com.sales.entities.SalesUser;
 import com.sales.entities.ServicePlan;
-import com.sales.entities.User;
 import com.sales.entities.WholesalerPlans;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.specifications.PlansSpecifications;
@@ -98,7 +98,7 @@ public class ServicePlanService {
 
 
     @Transactional
-    public ServicePlan insertServicePlan(User loggedUser, ServicePlanDto servicePlanDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public ServicePlan insertServicePlan(SalesUser loggedUser, ServicePlanDto servicePlanDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Entering insertServicePlan with loggedUser: {}, servicePlanDto: {}", loggedUser, servicePlanDto);
         if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("You don't have permission to perform this action. Contact to your administrator.",new Exception());
 
@@ -127,7 +127,7 @@ public class ServicePlanService {
         return result;
     }
 
-    public Map<String,Object> updateServicePlanStatus(StatusDto statusDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public Map<String,Object> updateServicePlanStatus(StatusDto statusDto, SalesUser loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Entering updateServicePlanStatus with statusDto: {}, loggedUser: {}", statusDto, loggedUser);
         // Validating required fields if there we found any required field is null, then it will throw an Exception
         Utils.checkRequiredFields(statusDto, List.of("status","slug"));
@@ -158,7 +158,7 @@ public class ServicePlanService {
         }
     }
 
-    public Map<String,Object> deletedServicePlan(DeleteDto deleteDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public Map<String,Object> deletedServicePlan(DeleteDto deleteDto, SalesUser loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Entering deletedServicePlan with deleteDto: {}, loggedUser: {}", deleteDto, loggedUser);
         // Validating required fields if their we found any required field is null, then it will throw an Exception
         Utils.checkRequiredFields(deleteDto, List.of("slug"));

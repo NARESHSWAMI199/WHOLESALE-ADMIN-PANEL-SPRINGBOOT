@@ -3,12 +3,13 @@ package com.sales.admin.controllers;
 
 import com.sales.admin.services.PaginationService;
 import com.sales.dto.UserPaginationDto;
-import com.sales.entities.User;
+import com.sales.entities.SalesUser;
 import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -23,17 +24,17 @@ public class PaginationController  {
     private final PaginationService paginationService;
 
     @GetMapping("all")
-    public ResponseEntity<Map<String,Object>> findAllUserPaginations(HttpServletRequest request){
-        User loggedUser = (User) request.getAttribute("user");
+    public ResponseEntity<Map<String,Object>> findAllUserPaginations(Authentication authentication, HttpServletRequest request){
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         Map<String,Object> allUserPaginations = paginationService.findUserPaginationsByUserId(loggedUser);
         return new ResponseEntity<>(allUserPaginations, HttpStatus.valueOf(200));
     }
 
 
     @PostMapping("update")
-    public ResponseEntity<Map<String,Object>> updatePaginationRowNumber(HttpServletRequest request, @RequestBody UserPaginationDto userPaginationDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public ResponseEntity<Map<String,Object>> updatePaginationRowNumber(Authentication authentication,HttpServletRequest request, @RequestBody UserPaginationDto userPaginationDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> responseObj = new HashMap<>();
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         userPaginationDto.setUserId(loggedUser.getId());
         int updated = paginationService.updateUserPaginationRowsNumber(userPaginationDto);
         if(updated > 0) {

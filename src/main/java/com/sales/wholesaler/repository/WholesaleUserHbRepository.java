@@ -2,7 +2,7 @@ package com.sales.wholesaler.repository;
 
 import com.sales.dto.MessageDto;
 import com.sales.dto.UserDto;
-import com.sales.entities.User;
+import com.sales.entities.SalesUser;
 import com.sales.utils.Utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -17,7 +17,7 @@ public class WholesaleUserHbRepository {
 
     private final EntityManager entityManager;
 
-    public int updateUser(UserDto userDto,User loggedUser){
+    public int updateUser(UserDto userDto, SalesUser loggedUser){
         String strQuery = "update User set " +
                 "username=:username , " +
                 "email=:email,"+

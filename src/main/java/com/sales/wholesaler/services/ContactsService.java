@@ -1,6 +1,7 @@
 package com.sales.wholesaler.services;
 
 import com.sales.entities.Contact;
+import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.exceptions.NotFoundException;
@@ -31,7 +32,7 @@ public class ContactsService  {
     private static final Logger logger = LoggerFactory.getLogger(ContactsService.class);
     private final BlockListService blockListService;
 
-    public List<User> getAllContactsByUserId(User loggedUser, HttpServletRequest request) {
+    public List<User> getAllContactsByUserId(SalesUser loggedUser, HttpServletRequest request) {
         logger.debug("Starting getAllContactsByUserId method");
         List<User> userList = contactRepository.getContactByUserId(loggedUser.getId()).stream().filter(Objects::nonNull).toList();
         for (User user : userList) {
@@ -47,7 +48,7 @@ public class ContactsService  {
         return userList;
     }
 
-    public Contact addNewContact(User loggedUser, String contactSlug) {
+    public Contact addNewContact(SalesUser loggedUser, String contactSlug) {
         logger.debug("Starting addNewContact method loggedUser slug : {} and contactSlug : {}",loggedUser.getSlug(),contactSlug);
         // TODO : check if user already in contact list not chat list
 //        Integer userFound = chatRepository.isUserExistsInChatList(loggedUser.getSlug(), contactSlug);
@@ -70,7 +71,7 @@ public class ContactsService  {
     }
 
     @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
-    public int removeContact(User loggedUser,String contactUserSlug,Boolean deleteChats) {
+    public int removeContact(SalesUser loggedUser,String contactUserSlug,Boolean deleteChats) {
         logger.debug("Going to remove contact from contact list with loggedUser  {} : and contactUserSlug {} ",loggedUser,contactUserSlug);
         User contactUser = wholesaleUserRepository.findUserBySlug(contactUserSlug);
         if(contactUser == null) throw new NotFoundException("No contact user found to delete.");

@@ -17,7 +17,7 @@ public interface GroupPermissionRepository extends JpaRepository<GroupPermission
 
     @Query(value = """
             select 
-                p.access_url
+                p.permission
             from user_groups ug
             right join group_permissions gp on gp.group_id = ug.group_id
             right join permissions p on p.id = gp.permission_id 

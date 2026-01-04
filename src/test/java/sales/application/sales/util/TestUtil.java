@@ -466,7 +466,6 @@ public class TestUtil {
         Permission permission = Permission.builder()
                 .permission("Test")
                 .permissionFor("Edit")
-                .accessUrl("test.com")
                 .build();
         return permissionRepository.save(permission);
     }
@@ -476,7 +475,6 @@ public class TestUtil {
         StorePermissions permission = StorePermissions.builder()
                 .permission("Test")
                 .permissionFor("Edit")
-                .accessUrl("test.com")
                 .defaultPermission("Y")
                 .build();
         return storePermissionRepository.save(permission);

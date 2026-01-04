@@ -54,7 +54,7 @@ public class ItemService {
     String itemImagePath;
 
 
-    public Page<Item> getAllItems(ItemSearchFields searchFilters,User loggedUser) {
+    public Page<Item> getAllItems(ItemSearchFields searchFilters,SalesUser loggedUser) {
         logger.debug("Entering getAllItems with searchFilters: {}", searchFilters);
         Sort sort = searchFilters.getOrder().equalsIgnoreCase("asc") ?
                 Sort.by(searchFilters.getOrderBy()).ascending() :
@@ -75,7 +75,7 @@ public class ItemService {
     }
 
 
-    public String createItemsExcelSheet(ItemSearchFields searchFilters,String wholesaleSlug,User loggedUser) throws IOException {
+    public String createItemsExcelSheet(ItemSearchFields searchFilters,String wholesaleSlug,SalesUser loggedUser) throws IOException {
         logger.debug("Entering createItemsExcelSheet with searchFilters: {}", searchFilters);
         Specification<Item> specification = Specification.allOf(
                 containsName(searchFilters.getSearchKey().trim())
@@ -163,7 +163,7 @@ public class ItemService {
     }
 
     @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class,})
-    public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser,String path) throws InvocationTargetException, NoSuchMethodException, IOException, IllegalAccessException {
+    public Map<String, Object> createOrUpdateItem(ItemDto itemDto, SalesUser loggedUser,String path) throws InvocationTargetException, NoSuchMethodException, IOException, IllegalAccessException {
         logger.debug("Entering createOrUpdateItem with itemDto: {}, loggedUser: {}, path: {}", itemDto, loggedUser, path);
         // if there is any required field null, then this will throw IllegalArgumentException
         validateRequiredFields(itemDto);
@@ -219,7 +219,7 @@ public class ItemService {
 
 
     @Transactional
-    public Item createItem (ItemDto itemDto, User loggedUser) throws IOException {
+    public Item createItem (ItemDto itemDto, SalesUser loggedUser) throws IOException {
         logger.debug("Entering createItem with itemDto: {}, loggedUser: {}", itemDto, loggedUser);
         Item item = new Item();
         Store store = storeRepository.findStoreBySlug(itemDto.getWholesaleSlug());
@@ -250,7 +250,7 @@ public class ItemService {
 
 
     @Transactional
-    public int updateItem(ItemDto itemDto, User loggedUser) {
+    public int updateItem(ItemDto itemDto, SalesUser loggedUser) {
         logger.debug("Entering updateItem with itemDto: {}, loggedUser: {}", itemDto, loggedUser);
         Item item = findItemBySLug(itemDto.getSlug());
         String title = "Item " + item.getName() + " updated.";
@@ -265,19 +265,19 @@ public class ItemService {
 
 
     @Transactional
-    public void sendNotification(String title,String messageBody,int storeId,User loggedUser){
+    public void sendNotification(String title,String messageBody,int storeId,SalesUser loggedUser){
         logger.debug("Entering sendNotification with title: {}, messageBody: {}, storeId: {}, loggedUser: {}", title, messageBody, storeId, loggedUser);
         StoreNotifications storeNotifications = new StoreNotifications();
         storeNotifications.setTitle(title);
         storeNotifications.setMessageBody(messageBody);
         storeNotifications.setWholesaleId(storeId);
-        storeNotifications.setCreatedBy(loggedUser);
+        storeNotifications.setCreatedBy(User.builder().id(loggedUser.getId()).build());
         storeHbRepository.insertStoreNotifications(storeNotifications);
         logger.debug("Exiting sendNotification");
     }
 
     @Transactional
-    public int deleteItem(DeleteDto deleteDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public int deleteItem(DeleteDto deleteDto,SalesUser loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Entering deleteItem with deleteDto: {}, loggedUser: {}", deleteDto, loggedUser);
         // Verify required fields if any issue found this will throw  IllegalArgumentException
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
@@ -305,7 +305,7 @@ public class ItemService {
         throw new IllegalArgumentException("The key slug can't be blank.");
     }
 
-    public int updateStatusBySlug(StatusDto statusDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public int updateStatusBySlug(StatusDto statusDto,SalesUser loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Entering updateStatusBySlug with statusDto: {}, loggedUser: {}", statusDto, loggedUser);
         // Verify required fields update item status
         Utils.checkRequiredFields(statusDto, List.of("status","slug"));
@@ -498,7 +498,7 @@ public class ItemService {
         return result;
     }
 
-    public int deleteItemCategory(DeleteDto deleteDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public int deleteItemCategory(DeleteDto deleteDto,SalesUser loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Entering deleteItemCategory with deleteDto: {}, loggedUser: {}", deleteDto, loggedUser);
         // Validating required fields if they are null, this will throw an Exception
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
@@ -514,7 +514,7 @@ public class ItemService {
 
     }
 
-    public int deleteItemSubCategory(DeleteDto deleteDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public int deleteItemSubCategory(DeleteDto deleteDto,SalesUser loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Entering deleteItemSubCategory with deleteDto: {}, loggedUser: {}", deleteDto, loggedUser);
         // Validating required fields if they are null, this will throw an Exception
         Utils.checkRequiredFields(deleteDto,List.of("slug"));

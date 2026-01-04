@@ -6,7 +6,7 @@ import com.sales.dto.DeleteDto;
 import com.sales.dto.GroupDto;
 import com.sales.dto.SearchFilters;
 import com.sales.entities.Group;
-import com.sales.entities.User;
+import com.sales.entities.SalesUser;
 import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -31,9 +32,9 @@ public class GroupController  {
     private static final Logger logger = LoggerFactory.getLogger(GroupController.class);
 
     @PostMapping("/all")
-    public ResponseEntity<Page<Group>> getAllGroup(HttpServletRequest request, @RequestBody SearchFilters searchFilters) {
+    public ResponseEntity<Page<Group>> getAllGroup(Authentication authentication,HttpServletRequest request, @RequestBody SearchFilters searchFilters) {
         logger.debug("Fetching all groups with filters: {}", searchFilters);
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         Page<Group> storePage = groupService.getAllGroups(searchFilters, loggedUser);
         return new ResponseEntity<>(storePage, HttpStatus.OK);
     }
@@ -47,9 +48,9 @@ public class GroupController  {
 
     @Transactional
     @PostMapping(value = {"create", "update"})
-    public ResponseEntity<Map<String, Object>> createOrUpdate(HttpServletRequest request, @RequestBody GroupDto groupDto) throws Exception {
+    public ResponseEntity<Map<String, Object>> createOrUpdate(Authentication authentication,HttpServletRequest request, @RequestBody GroupDto groupDto) throws Exception {
         logger.debug("Creating or updating group: {}", groupDto);
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         String path = request.getRequestURI();
         Map<String, Object> response = groupService.createOrUpdateGroup(groupDto, loggedUser, path);
         return new ResponseEntity<>(response, HttpStatus.valueOf((Integer) response.get(ConstantResponseKeys.STATUS)));
@@ -67,10 +68,10 @@ public class GroupController  {
 
     @Transactional
     @PostMapping("/delete")
-    public ResponseEntity<Map<String, Object>> deleteGroupBySlug(HttpServletRequest request, @RequestBody DeleteDto deleteDto) throws Exception {
+    public ResponseEntity<Map<String, Object>> deleteGroupBySlug(Authentication authentication,HttpServletRequest request, @RequestBody DeleteDto deleteDto) throws Exception {
         logger.debug("Deleting group with slug: {}", deleteDto);
         Map<String, Object> responseObj = new HashMap<>();
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         int isUpdated = groupService.deleteGroupBySlug(deleteDto, loggedUser);
         if (isUpdated > 0) {
             responseObj.put(ConstantResponseKeys.MESSAGE, "User has been successfully deleted.");

@@ -3,7 +3,6 @@ package sales.application.sales.admin.services;
 
 import com.sales.SalesApplication;
 import com.sales.admin.services.UserService;
-import com.sales.dto.UserDto;
 import com.sales.entities.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,6 +24,8 @@ public class UserServiceTest extends TestUtil {
     @Autowired
     private UserService userService;
 
+    private final String email = "test.naresh@gmail.com";
+    private final String password = "123456";
 
     @Test
     public void testFindUserUsingEmailAndPassword(){
@@ -32,11 +33,7 @@ public class UserServiceTest extends TestUtil {
         String password = UUID.randomUUID().toString();
         String slug =UUID.randomUUID().toString();
         createUser(slug,email, password, GlobalConstantTest.ADMIN);
-
-        UserDto userDto = new UserDto();
-        userDto.setEmail(email);
-        userDto.setPassword(password);
-        User user = userService.findByEmailAndPassword(userDto);
+        User user = userService.findByEmailAndPassword(email,password);
         Assertions.assertEquals("naresh",user.getUsername());
         Assertions.assertEquals("SA",user.getUserType());
 
@@ -45,25 +42,18 @@ public class UserServiceTest extends TestUtil {
 
     @Test
     public void testFindUserUsingEmailAndPasswordWithWrongDetails(){
-        UserDto userDto = new UserDto();
-        userDto.setEmail("test.naresh@gmail.com");
-        userDto.setPassword("123456");
-        User user = userService.findByEmailAndPassword(userDto);
-        Assertions.assertEquals(null,user);
+        User user = userService.findByEmailAndPassword(email,password);
+        Assertions.assertNull(user);
     }
     @Test
     public void testFindUserUsingEmailAndPasswordWithBlankPassword(){
-        UserDto userDto = new UserDto();
-        userDto.setEmail("test.naresh@gmail.com");
-
-        User user = userService.findByEmailAndPassword(userDto);
-        Assertions.assertEquals(null,user);
+        User user = userService.findByEmailAndPassword("test.naresh@gmail.com",null);
+        Assertions.assertNull(user);
     }
     @Test
     public void testFindUserUsingEmailAndPasswordWithBlank(){
-        UserDto userDto = new UserDto();
-        User user = userService.findByEmailAndPassword(userDto);
-        Assertions.assertEquals(null,user);
+        User user = userService.findByEmailAndPassword(null,null);
+        Assertions.assertNull(user);
     }
 
 }
