@@ -3,7 +3,7 @@ package com.sales.wholesaler.controller;
 
 import com.sales.cachemanager.services.UserCacheService;
 import com.sales.dto.UserPlanDto;
-import com.sales.entities.SalesUser;
+import com.sales.entities.AuthUser;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.WholesalerPlans;
 import com.sales.global.ConstantResponseKeys;
@@ -56,7 +56,7 @@ public class WholesaleServicePlanController  {
     @PostMapping("/my-plans")
     public ResponseEntity<Page<WholesalerPlans>> getMyAllPlans(HttpServletRequest request, @RequestBody UserPlanDto searchFilters) {
         logger.debug("Starting getMyAllPlans method");
-        SalesUser loggedUser = Utils.getUserFromRequest(request, jwtToken, wholesaleUserService);
+        AuthUser loggedUser = Utils.getUserFromRequest(request, jwtToken, wholesaleUserService);
         Page<WholesalerPlans> allUserPlans = wholesaleServicePlanService.getAllUserPlans(loggedUser, searchFilters);
         logger.debug("Completed getMyAllPlans method");
         return new ResponseEntity<>(allUserPlans, HttpStatusCode.valueOf(200));
@@ -65,7 +65,7 @@ public class WholesaleServicePlanController  {
     @GetMapping("is-active")
     public ResponseEntity<Map<String,Object>> isUserPlanActive(HttpServletRequest request){
         logger.debug("Starting isUserPlanActive method");
-        SalesUser loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
+        AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         Map<String,Object> result = new HashMap<>();
         boolean planIsActive = wholesaleServicePlanService.isPlanActive(loggedUser.getActivePlan());
         result.put("planIsActive",planIsActive);
@@ -76,7 +76,7 @@ public class WholesaleServicePlanController  {
 
     @GetMapping("activate/{planSlug}")
     public ResponseEntity<Map<String,Object>> updateMyCurrentPlan(HttpServletRequest request , @PathVariable String planSlug){
-        SalesUser loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
+        AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         Map<String,Object> result = new HashMap<>();
         int isUpdated = wholesaleServicePlanService.updatedUserCurrentPlan(planSlug,loggedUser);
         if(isUpdated > 0){

@@ -2,7 +2,7 @@ package com.sales.wholesaler.controller;
 
 
 import com.sales.dto.SearchFilters;
-import com.sales.entities.SalesUser;
+import com.sales.entities.AuthUser;
 import com.sales.entities.WholesalerFuturePlan;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.jwtUtils.JwtToken;
@@ -36,7 +36,7 @@ public class WholesaleFuturePlansController  {
 
     @PostMapping("/")
     public ResponseEntity<Page<WholesalerFuturePlan>> getAllWholesalerFuturePlans(HttpServletRequest request, @RequestBody SearchFilters searchFilters) {
-        SalesUser loggedUser = Utils.getUserFromRequest(request,jwtToken, wholesaleUserService);
+        AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken, wholesaleUserService);
         Page<WholesalerFuturePlan> wholesalerFuturePlans = wholesaleFuturePlansService.getWholesalerFuturePlans(loggedUser,searchFilters);
         return new ResponseEntity<>(wholesalerFuturePlans, HttpStatusCode.valueOf(200));
     }
@@ -44,7 +44,7 @@ public class WholesaleFuturePlansController  {
 
     @PostMapping("/activate")
     public ResponseEntity<Map<String,Object>> activateFuturePlan(HttpServletRequest request, @RequestBody Map<String,String> data){
-        SalesUser loggedUser = Utils.getUserFromRequest(request,jwtToken, wholesaleUserService);
+        AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken, wholesaleUserService);
         String slug = data.get("slug");
         Map<String,Object> result = new HashMap<>();
         int activated = wholesaleFuturePlansService.activateWholesalerFuturePlans(loggedUser, slug);

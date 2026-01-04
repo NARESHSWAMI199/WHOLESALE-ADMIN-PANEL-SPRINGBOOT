@@ -46,7 +46,7 @@ public class ItemReviewSpecifications {
             };
         }
 
-        public static Specification<ItemReviews> notSuperAdmin(SalesUser loggedUser) {
+        public static Specification<ItemReviews> notSuperAdmin(AuthUser loggedUser) {
             return (root, query, criteriaBuilder) -> {
                 if(loggedUser.getId() == 0) return  null;
                 return criteriaBuilder.notEqual(root.get(ItemReviews_.ID), 0);

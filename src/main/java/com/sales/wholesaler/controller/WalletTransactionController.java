@@ -2,7 +2,7 @@ package com.sales.wholesaler.controller;
 
 
 import com.sales.dto.SearchFilters;
-import com.sales.entities.SalesUser;
+import com.sales.entities.AuthUser;
 import com.sales.entities.WalletTransaction;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;
@@ -29,7 +29,7 @@ public class WalletTransactionController  {
 
     @PostMapping("all")
     public ResponseEntity<Page<WalletTransaction>> getAllWalletTransactionsByUserId(HttpServletRequest request, @RequestBody SearchFilters searchFilters){
-        SalesUser loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
+        AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         Page<WalletTransaction> transactions = walletTransactionService.getAllWalletTransactionByUserId(searchFilters, loggedUser.getId());
         return new ResponseEntity<>(transactions,HttpStatus.valueOf(200));
     }

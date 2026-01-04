@@ -1,7 +1,7 @@
 package com.sales.admin.repositories;
 
 import com.sales.dto.StoreDto;
-import com.sales.entities.SalesUser;
+import com.sales.entities.AuthUser;
 import com.sales.entities.StoreNotifications;
 import com.sales.utils.Utils;
 import jakarta.persistence.EntityManager;
@@ -17,7 +17,7 @@ public class StoreHbRepository {
 
     private final EntityManager entityManager;
 
-    public int deleteStore(String slug, SalesUser loggedUser){
+    public int deleteStore(String slug, AuthUser loggedUser){
         String hql = """
                     Update Store set 
                         isDeleted='Y', 
@@ -51,7 +51,7 @@ public class StoreHbRepository {
         return query.executeUpdate();
     }
 
-    public int updateStore(StoreDto storeDto, SalesUser loggedUser){
+    public int updateStore(StoreDto storeDto, AuthUser loggedUser){
         String strQuery = """
                 update Store set
                     storeName=:name,

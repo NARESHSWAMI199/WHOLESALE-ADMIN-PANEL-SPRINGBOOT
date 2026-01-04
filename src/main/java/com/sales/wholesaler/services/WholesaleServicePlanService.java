@@ -2,7 +2,7 @@ package com.sales.wholesaler.services;
 
 
 import com.sales.dto.UserPlanDto;
-import com.sales.entities.SalesUser;
+import com.sales.entities.AuthUser;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.WholesalerFuturePlan;
 import com.sales.entities.WholesalerPlans;
@@ -148,7 +148,7 @@ public class WholesaleServicePlanService  {
     }
 
 
-    public Page<WholesalerPlans> getAllUserPlans(SalesUser loggedUser, UserPlanDto searchFilters) {
+    public Page<WholesalerPlans> getAllUserPlans(AuthUser loggedUser, UserPlanDto searchFilters) {
         logger.debug("Starting getAllUserPlans method with loggedUser: {}, searchFilters: {}", loggedUser, searchFilters);
         Specification<WholesalerPlans> specification = Specification.allOf(
                 hasSlug(searchFilters.getSlug())
@@ -181,7 +181,7 @@ public class WholesaleServicePlanService  {
     }
 
 
-    public int updatedUserCurrentPlan(String plansSlug,SalesUser loggedUser) {
+    public int updatedUserCurrentPlan(String plansSlug,AuthUser loggedUser) {
         logger.debug("Starting updatedUserCurrentPlan method.");
         Integer wholesaleUserPlanId = wholesaleUserPlansRepository.getWholesaleUserPlanId(loggedUser.getId(),plansSlug);
         if(wholesaleUserPlanId == null) throw new IllegalArgumentException("Not a valid active plan.");

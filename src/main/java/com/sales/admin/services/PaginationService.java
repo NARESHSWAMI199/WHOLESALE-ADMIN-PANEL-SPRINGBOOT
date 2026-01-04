@@ -5,8 +5,8 @@ import com.sales.admin.repositories.PaginationHbRepository;
 import com.sales.admin.repositories.PaginationRepository;
 import com.sales.admin.repositories.UserPaginationsRepository;
 import com.sales.dto.UserPaginationDto;
+import com.sales.entities.AuthUser;
 import com.sales.entities.Pagination;
-import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import com.sales.entities.UserPagination;
 import com.sales.exceptions.NotFoundException;
@@ -36,7 +36,7 @@ public class PaginationService {
         return userPaginationsRepository.findAll();
     }
 
-    public Map<String,Object> findUserPaginationsByUserId(SalesUser loggedUser){
+    public Map<String,Object> findUserPaginationsByUserId(AuthUser loggedUser){
         List<UserPagination> userPaginations = userPaginationsRepository.getUserPaginationByUserId(loggedUser.getId());
         Map<String,Object> result = new LinkedHashMap<>();
         for(UserPagination userPagination : userPaginations) {
@@ -61,14 +61,14 @@ public class PaginationService {
         );
         List<Pagination> allPagination = paginationRepository.findAll(specification);
         for (Pagination pagination : allPagination) {
-            UserPagination userPagination = insertUserPagination(pagination, new SalesUser(user) , 25); // default rows are 25
+            UserPagination userPagination = insertUserPagination(pagination,user, 25); // default rows are 25
             if(userPagination == null) throw new InternalException("We are unable to save your default pagination settings.");
 
         }
     }
 
     @Transactional(rollbackOn = {InternalException.class, RuntimeException.class,Exception.class })
-    public UserPagination insertUserPagination(Pagination pagination,SalesUser loggedUser,Integer rowNumbers) {
+    public UserPagination insertUserPagination(Pagination pagination,AuthUser loggedUser,Integer rowNumbers) {
         UserPagination userPagination = new UserPagination();
         userPagination.setPagination(pagination);
         userPagination.setUserId(loggedUser.getId());

@@ -1,15 +1,15 @@
-package com.sales.wholesaler.services;
+package com.sales.chats.services;
 
 
+import com.sales.chats.repositories.ChatRoomHbRepository;
+import com.sales.chats.repositories.ChatRoomRepository;
 import com.sales.dto.ChatRoomDto;
+import com.sales.entities.AuthUser;
 import com.sales.entities.ChatRoom;
 import com.sales.entities.ChatRoomUser;
-import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import com.sales.exceptions.NotFoundException;
 import com.sales.utils.Utils;
-import com.sales.wholesaler.repository.ChatRoomHbRepository;
-import com.sales.wholesaler.repository.ChatRoomRepository;
 import com.sales.wholesaler.repository.WholesaleUserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -65,8 +65,8 @@ public class ChatRoomService  {
 
 
     @Transactional
-    public int updateRoom(ChatRoomDto chatRoomDto, SalesUser loggedUser) {
-        return chatRoomHbRepository.updateChatRoom(chatRoomDto,loggedUser);
+    public int updateRoom(ChatRoomDto chatRoomDto, AuthUser loggedUser) {
+        return chatRoomHbRepository.updateChatRoom(chatRoomDto);
     }
 
 

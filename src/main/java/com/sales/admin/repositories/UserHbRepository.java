@@ -2,7 +2,7 @@ package com.sales.admin.repositories;
 
 
 import com.sales.dto.UserDto;
-import com.sales.entities.SalesUser;
+import com.sales.entities.AuthUser;
 import com.sales.utils.Utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -17,7 +17,7 @@ public class UserHbRepository {
 
     private final EntityManager entityManager;
 
-    public int updateUser(UserDto userDto, SalesUser loggedUser) {
+    public int updateUser(UserDto userDto, AuthUser loggedUser) {
         String strQuery = "update User set " +
                 "username=:username , " +
                 "email=:email,"+

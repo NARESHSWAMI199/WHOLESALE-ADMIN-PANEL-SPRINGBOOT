@@ -1,10 +1,11 @@
-package com.sales.wholesaler.controller;
+package com.sales.chats.controllers;
 
+import com.sales.chats.services.BlockListService;
+import com.sales.entities.AuthUser;
 import com.sales.entities.BlockedUser;
 import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
-import com.sales.wholesaler.services.BlockListService;
 import com.sales.wholesaler.services.WholesaleUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class BlockListController  {
     public ResponseEntity<Map<String,Object>> addUserInBlockList(Authentication authentication,@PathVariable String recipient, HttpServletRequest request){
         logger.debug("Blocking user: {}", recipient);
         Map<String,Object> result = new HashMap<>();
-        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         BlockedUser blockedUser = blockListService.addAUserInBlockList(loggedUser, recipient);
         if(blockedUser.getId() > 0){
             result.put(ConstantResponseKeys.MESSAGE,"User has been successfully blocked");
@@ -51,7 +52,7 @@ public class BlockListController  {
     public ResponseEntity<Map<String,Object>> removeUserFromBlockList(Authentication authentication,@PathVariable String recipient, HttpServletRequest request){
         logger.debug("Unblocking user: {}", recipient);
         Map<String,Object> result = new HashMap<>();
-        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         boolean unblocked = blockListService.removeUserFromBlockList(loggedUser.getId(), recipient);
         if(unblocked){
             result.put(ConstantResponseKeys.MESSAGE,"User has been successfully unblocked");
@@ -66,7 +67,7 @@ public class BlockListController  {
 
     @GetMapping("is-blocked/{receiverSlug}")
     public ResponseEntity<Boolean> isReceiverBlocked(Authentication authentication, @PathVariable String receiverSlug, HttpServletRequest request) {
-        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         User receiver = wholesaleUserService.findUserBySlug(receiverSlug);
         boolean blocked = blockListService.isReceiverBlockedBySender(loggedUser, receiver);
         return new ResponseEntity<>(blocked,HttpStatus.valueOf(200));

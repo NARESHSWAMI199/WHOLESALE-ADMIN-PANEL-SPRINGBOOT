@@ -4,6 +4,7 @@ import com.sales.admin.repositories.GroupPermissionRepository;
 import com.sales.admin.repositories.StorePermissionsRepository;
 import com.sales.admin.repositories.UserRepository;
 import com.sales.cachemanager.services.UserCacheService;
+import com.sales.entities.AuthUser;
 import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
@@ -61,7 +62,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 user.setAuthorities(authorities);
                 userCacheService.saveCacheUser(user);
             }
-            SalesUser userDetails = new SalesUser(user);
+            AuthUser userDetails = new SalesUser(user);
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
                             userDetails, slug, userDetails.getAuthorities());

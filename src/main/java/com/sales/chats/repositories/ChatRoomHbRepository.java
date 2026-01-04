@@ -1,8 +1,7 @@
-package com.sales.wholesaler.repository;
+package com.sales.chats.repositories;
 
 
 import com.sales.dto.ChatRoomDto;
-import com.sales.entities.SalesUser;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -17,7 +16,7 @@ public class ChatRoomHbRepository {
     private final EntityManager entityManager;
 
 
-    public int updateChatRoom(ChatRoomDto chatRoomDto, SalesUser loggedUser) {
+    public int updateChatRoom(ChatRoomDto chatRoomDto) {
         // TODO : Must add updated_by to db side and also here.
         String hql = "update set name=:name,description =:description where slug=:slug";
         Query query = entityManager.createQuery(hql);

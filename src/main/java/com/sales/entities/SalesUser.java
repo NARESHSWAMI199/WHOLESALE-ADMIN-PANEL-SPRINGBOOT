@@ -1,11 +1,10 @@
 package com.sales.entities;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-public class SalesUser implements UserDetails {
+public class SalesUser implements AuthUser {
 
     private final User user;
 
@@ -13,23 +12,25 @@ public class SalesUser implements UserDetails {
         this.user = user;
     }
 
-    public Integer getId(){
+    @Override
+    public int getId(){
         return user.getId();
     }
 
+    @Override
     public String getSlug(){
         return user.getSlug();
     }
 
-
+    @Override
     public String getUserType(){
         return user.getUserType();
     }
 
+    @Override
     public Integer getActivePlan(){
         return user.getActivePlan();
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -34,7 +34,7 @@ public class WholesaleWalletService  {
 
 
     @Transactional
-    public void sendNotification(String title, String messageBody, int storeId, SalesUser loggedUser){
+    public void sendNotification(String title, String messageBody, int storeId, AuthUser loggedUser){
         logger.debug("Entering sendNotification with title: {}, messageBody: {}, storeId: {}, loggedUser: {}", title, messageBody, storeId, loggedUser);
         StoreNotifications storeNotifications = new StoreNotifications();
         storeNotifications.setTitle(title);
@@ -45,7 +45,7 @@ public class WholesaleWalletService  {
         logger.debug("Exiting sendNotification");
     }
 
-    public boolean paymentViaWallet(String servicePlanSlug, SalesUser loggedUser) {
+    public boolean paymentViaWallet(String servicePlanSlug, AuthUser loggedUser) {
         boolean payment = false;
         int userId = loggedUser.getId();
         Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(userId);

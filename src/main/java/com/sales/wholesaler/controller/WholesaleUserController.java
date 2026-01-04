@@ -5,6 +5,7 @@ import com.sales.cachemanager.services.UserCacheService;
 import com.sales.dto.PasswordDto;
 import com.sales.dto.UserDto;
 import com.sales.dto.UserSearchFilters;
+import com.sales.entities.AuthUser;
 import com.sales.entities.SalesUser;
 import com.sales.entities.Store;
 import com.sales.entities.User;
@@ -188,7 +189,7 @@ public class WholesaleUserController  {
     @PostMapping(value = {"/update"})
     public ResponseEntity<Map<String, Object>> updateAuth(Authentication authentication,HttpServletRequest request, @RequestBody UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting updateAuth method");
-        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         Map<String,Object> responseObj = wholesaleUserService.updateUserProfile(userDto, loggedUser);
         logger.debug("Completed updateAuth method");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -199,7 +200,7 @@ public class WholesaleUserController  {
     public ResponseEntity<Map<String, Object>> getDetailUser(@PathVariable(required = false) String slug, HttpServletRequest request) {
         logger.debug("Starting getDetailUser method");
         Map<String,Object> responseObj = new HashMap<>();
-        SalesUser user = null;
+        AuthUser user = null;
         if(slug == null){
             user = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         }else {
@@ -222,7 +223,7 @@ public class WholesaleUserController  {
     public ResponseEntity<Map<String, Object>> resetUserPasswordBySlug(Authentication authentication,HttpServletRequest request ,@RequestBody PasswordDto passwordDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting resetUserPasswordBySlug method");
         Map<String,Object> responseObj = new HashMap<>();
-        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         User updatedUser = wholesaleUserService.resetPasswordByUserSlug(passwordDto,loggedUser);
         responseObj.put(ConstantResponseKeys.RES,updatedUser);
         responseObj.put(ConstantResponseKeys.MESSAGE, "User password has been successfully updated.");
@@ -237,7 +238,7 @@ public class WholesaleUserController  {
     public ResponseEntity<Map<String, Object>> updateProfileImage(Authentication authentication,HttpServletRequest request, @RequestPart MultipartFile profileImage) throws IOException {
         logger.debug("Starting updateProfileImage method");
         Map<String,Object> responseObj = new HashMap<>();
-        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         String  imageName = wholesaleUserService.updateProfileImage(profileImage,loggedUser);
         if(imageName!=null) {
             responseObj.put("imageName",imageName);
@@ -294,7 +295,7 @@ public class WholesaleUserController  {
     public ResponseEntity<Map<String,Object>> updateUserLastSeen(Authentication authentication,HttpServletRequest request){
         logger.debug("Starting updateUserLastSeen method");
         Map<String,Object> result = new HashMap<>();
-        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         int isUpdated = wholesaleUserService.updateLastSeen(loggedUser);
 
         User user = userCacheService.getCacheUser(loggedUser.getSlug());
@@ -320,7 +321,7 @@ public class WholesaleUserController  {
     @PostMapping("chat/users")
     public ResponseEntity<Page<User>> getAllChatUser(Authentication authentication,HttpServletRequest request, @RequestBody UserSearchFilters userSearchFilters){
         logger.debug("Starting getAllChatUser method");
-        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         Page<User> allUsers = wholesaleUserService.getAllUsers(userSearchFilters, loggedUser);
         logger.debug("Completed getAllChatUser method");
         return new ResponseEntity<>(allUsers,HttpStatus.OK);

@@ -2,7 +2,7 @@ package com.sales.wholesaler.services;
 
 
 import com.sales.dto.StorePromotionDto;
-import com.sales.entities.SalesUser;
+import com.sales.entities.AuthUser;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.wholesaler.repository.WholesaleHbPromotionRepository;
 import com.sales.wholesaler.repository.WholesaleStoreRepository;
@@ -22,7 +22,7 @@ public class WholesalePromotionsService  {
     private final WholesaleHbPromotionRepository wholesaleHbPromotionRepository;
     private static final Logger logger = LoggerFactory.getLogger(WholesalePromotionsService.class);
 
-    public Map<String,Object> insertItemPromotion(StorePromotionDto storePromotionDto, SalesUser loggedUser) {
+    public Map<String,Object> insertItemPromotion(StorePromotionDto storePromotionDto, AuthUser loggedUser) {
         logger.debug("Starting insertItemPromotion method with storePromotionDto: {}, loggedUser: {}", storePromotionDto, loggedUser);
         Map<String,Object> response = new HashMap<>();
         Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(loggedUser.getId());

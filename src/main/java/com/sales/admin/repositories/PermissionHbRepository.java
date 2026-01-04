@@ -2,7 +2,7 @@ package com.sales.admin.repositories;
 
 
 import com.sales.dto.GroupDto;
-import com.sales.entities.SalesUser;
+import com.sales.entities.AuthUser;
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
 import jakarta.persistence.EntityManager;
@@ -93,7 +93,7 @@ public class PermissionHbRepository {
 
 
 
-    public int assignGroupsToUser(int userId, List<Integer> groups, SalesUser loggedUser) throws MyException {
+    public int assignGroupsToUser(int userId, List<Integer> groups, AuthUser loggedUser) throws MyException {
         if(groups.contains(GlobalConstant.groupId) && loggedUser.getId() != GlobalConstant.suId) groups.remove((Integer) GlobalConstant.groupId);
         deleteUserGroups(userId);
         if(groups.isEmpty()) throw new MyException("Please provide at least one group.");

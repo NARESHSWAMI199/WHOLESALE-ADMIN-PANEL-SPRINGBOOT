@@ -71,7 +71,7 @@ public class Store implements Serializable {
 
 
 
-    public Store (SalesUser loggedUser) {
+    public Store (AuthUser loggedUser) {
         this.createdAt = getCurrentMillis();
         this.createdBy = loggedUser.getId();
         this.updatedAt = getCurrentMillis();

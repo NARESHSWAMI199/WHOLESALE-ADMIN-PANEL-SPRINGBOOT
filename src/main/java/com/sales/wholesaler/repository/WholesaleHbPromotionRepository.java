@@ -2,7 +2,7 @@ package com.sales.wholesaler.repository;
 
 
 import com.sales.dto.StorePromotionDto;
-import com.sales.entities.SalesUser;
+import com.sales.entities.AuthUser;
 import com.sales.utils.Utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -18,7 +18,7 @@ public class WholesaleHbPromotionRepository {
     private final EntityManager entityManager;
 
 
-    public int insertStorePromotions(StorePromotionDto storePromotionDto, SalesUser loggedUser){
+    public int insertStorePromotions(StorePromotionDto storePromotionDto, AuthUser loggedUser){
         String hql = "INSERT INTO store_promotions " +
                         "(banner_img, promotion_type, store_id, item_id, priority, priority_hours, max_repeat, state, city, created_date, start_date, expiry_date, created_by, is_deleted) " +
                         "VALUES (:bannerImage,:promotionType,:storeId,:itemId,:priority,:priorityHours,:maxRepeat,:stateId,:cityId,:createdDate,:startDate,:expiryDate, :createdBy,'N')";

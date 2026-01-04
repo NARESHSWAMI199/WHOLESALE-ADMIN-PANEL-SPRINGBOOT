@@ -25,7 +25,7 @@ import static com.sales.utils.Utils.getCurrentMillis;
 @Table(name = "`user`")
 @SQLRestriction("is_deleted != 'Y' ")
 @Builder
-public class User implements Serializable {
+public class User implements Serializable,AuthUser{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -85,7 +85,7 @@ public class User implements Serializable {
     @Transient
     List<GrantedAuthority> authorities;
 
-    public User (SalesUser loggedUser) {
+    public User (AuthUser loggedUser) {
         this.slug = UUID.randomUUID().toString();
         this.createdAt = getCurrentMillis();
         this.createdBy = loggedUser.getId();
@@ -104,4 +104,8 @@ public class User implements Serializable {
         this.isDeleted = "N";
     }
 
+    @Override
+    public boolean isEnabled() {
+        return this.status.equals("A");
+    }
 }

@@ -2,7 +2,7 @@ package com.sales.wholesaler.services;
 
 
 import com.sales.dto.SearchFilters;
-import com.sales.entities.SalesUser;
+import com.sales.entities.AuthUser;
 import com.sales.entities.WholesalerFuturePlan;
 import com.sales.exceptions.NotFoundException;
 import com.sales.utils.Utils;
@@ -26,14 +26,14 @@ public class WholesaleFuturePlansService  {
     private final  WholesaleServicePlanService  wholesaleServicePlanService;
     private final WholesaleFuturePlansRepository wholesaleFuturePlansRepository;
 
-    public Page<WholesalerFuturePlan> getWholesalerFuturePlans(SalesUser loggedUser, SearchFilters filters) {
+    public Page<WholesalerFuturePlan> getWholesalerFuturePlans(AuthUser loggedUser, SearchFilters filters) {
         Pageable pageable = getPageable(logger,filters);
        return wholesaleFuturePlansRepository.findWholesalerFuturePlansByUserIdAndStatus(pageable,loggedUser.getId(),"N"); // Getting only new not old or used.
     }
 
 
 
-    public int activateWholesalerFuturePlans(SalesUser loggedUser,String futurePlanSlug){
+    public int activateWholesalerFuturePlans(AuthUser loggedUser,String futurePlanSlug){
         Map<String,Object> futurePlan = wholesaleFuturePlansRepository.getNewFuturePlanByUserIdAndSlug(futurePlanSlug,loggedUser.getId());
         Object servicePlanId = futurePlan.get("servicePlanId");
         Object wholesalerFuturePlanId = futurePlan.get("wholesalerFuturePlanId");

@@ -1,15 +1,14 @@
-package com.sales.wholesaler.controller;
+package com.sales.chats.controllers;
 
-import com.sales.cachemanager.services.UserCacheService;
+import com.sales.chats.services.ChatService;
 import com.sales.dto.MessageDto;
+import com.sales.entities.AuthUser;
 import com.sales.entities.Chat;
 import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
-import com.sales.wholesaler.services.BlockListService;
-import com.sales.wholesaler.services.ChatService;
 import com.sales.wholesaler.services.WholesaleUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +20,6 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +29,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,16 +38,13 @@ public class ChatController  {
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatService chatService;
     private final WholesaleUserService wholesaleUserService;
-    private final BlockListService blockListService;
-    private final UserCacheService userCacheService;
 
-    /** @Note : Make sure all @MessageMappings 's prefix is /app/ */
 
 
     @PostMapping("/chats/all")
     public ResponseEntity<Map<String, List<Chat>>> getALlUsers(Authentication authentication,@RequestBody MessageDto message , HttpServletRequest request){
         logger.debug("Fetching all users for message: {}", message);
-        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         message.setSender(loggedUser.getSlug());
         Map<String, List<Chat>> formatedChatList = chatService.getAllChatBySenderAndReceiverKey(message,request);
         return new ResponseEntity<>(formatedChatList, HttpStatus.valueOf(200));
@@ -63,7 +54,7 @@ public class ChatController  {
     @GetMapping("/chats/message/{parentId}")
     public ResponseEntity<Chat> getParentChatMessageByParentId(Authentication authentication,@PathVariable Long parentId , HttpServletRequest request){
         logger.debug("Fetching parent chat using parentId: {}", parentId);
-        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         Chat parentChat = chatService.getParentMessageById(parentId,loggedUser,request);
         return new ResponseEntity<>(parentChat, HttpStatus.valueOf(200));
     }
@@ -78,33 +69,6 @@ public class ChatController  {
 
 
 
-    @MessageMapping("/chat.sendMessage")
-    @SendTo("/topic/public")
-    public MessageDto sendMessage(MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
-        logger.debug("Sending public message: {}", message);
-        // Get the sender's username
-        String sender = (String) headerAccessor.getSessionAttributes().get("username");
-        // Set the sender in the message
-        message.setSender(sender);
-        return message;
-    }
-
-
-    /** Here we are using two for receiving and sending chats
-     * @sendPrivateMessage : Using for just only text because websocket are faster compare to api
-     * @uploadImages : Using api for upload images because we are facing some issue share files or images with websocket
-     * */
-
-    @MessageMapping("/chat/private/{recipient}")
-    public void sendPrivateMessage(@DestinationVariable String recipient, MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
-        logger.debug("Sending private message to recipient: {}", recipient);
-        User loggedUser = (User) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("user");
-        Chat sentMessage = chatService.sendMessage(message,loggedUser,message.getReceiver());
-        if(sentMessage == null) return;
-        /* you need to subscribe like  /user/{userId}/queue/private */
-        messagingTemplate.convertAndSendToUser(recipient, "/queue/private", sentMessage);
-    }
-
 
 
     /** Upload images and other files with chat */
@@ -112,13 +76,11 @@ public class ChatController  {
     public ResponseEntity<Map<String,Object>> uploadImages(Authentication authentication,@ModelAttribute MessageDto message ,HttpServletRequest request){
         logger.debug("Uploading images for message: {}", message);
         Map<String,Object> result = new HashMap<>();
-        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         String recipient = message.getReceiver();
         User receiver = wholesaleUserService.findUserBySlug(recipient);
         if (receiver == null) throw new MyException("Please provide a valid recipient");
-
-        User user = userCacheService.getCacheUser(loggedUser.getSlug());
-        boolean verified = chatService.verifyBeforeSend(new SalesUser(user), recipient);
+        boolean verified = chatService.verifyBeforeSend(loggedUser, recipient);
         if(!verified) return null;
 
         List<String> allImagesName = chatService.saveAllImages(message, loggedUser);
@@ -148,68 +110,11 @@ public class ChatController  {
 
 
 
-    @MessageMapping("/chat/connect/{slug}")
-    public void userConnected(@DestinationVariable String slug, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
-        logger.debug("User connected with slug: {}", slug);
-        logger.debug("Connected");
-        try{
-            String sender = Objects.requireNonNull(simpMessageHeaderAccessor.getSessionAttributes()).get("username").toString();
-            logger.debug("The sender is : {}",sender);
-            User user = wholesaleUserService.findUserBySlug(slug);
-            if(user == null) throw new MyException("Not valid user to connect for chat.");
-            user.setOnline(true);
-            wholesaleUserService.updateLastSeen(new SalesUser(user));
-            GlobalConstant.onlineUsers.put(slug, user);
-        }catch (Exception e){
-            logger.error("Exception during user connection : {}",e.getMessage());
-        }
-
-    }
 
 
 
 
-    @MessageMapping("/chat/deactivate/{slug}")
-    public void disconnectUser(@DestinationVariable String slug) {
-        logger.debug("User disconnected with slug: {}", slug);
-        logger.debug("Disconnected");
-        try{
-            User user = GlobalConstant.onlineUsers.get(slug);
-            if(user == null) throw new MyException("Not valid user to connect for chat.");
-            user.setOnline(false);
-            wholesaleUserService.updateLastSeen(new SalesUser(user));
-            GlobalConstant.onlineUsers.put(slug, user);
-        }catch (Exception e){
-            logger.error("Exception during userDisconnected : {}",e.getMessage());
-        }
-    }
 
-
-
-    @MessageMapping("/chats/was-seen/{recipient}")
-    public void isReceiverSeen(@DestinationVariable("recipient") String recipient,SimpMessageHeaderAccessor headerAccessor){
-        User chatLoggedUser = (User) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("user");
-        User receiver = wholesaleUserService.findUserBySlug(recipient);
-        if (recipient == null) throw new MyException("Please provide a valid recipient");
-        logger.debug("Seen Called.....");
-        /* Check If you already blocked by receiver or not if blocked, then do nothing eat fivestar */
-        boolean isYouBlockedByReceiver = blockListService.isSenderBlockedByReceiver(new SalesUser(chatLoggedUser),receiver);
-        /* Check you blocked the receiver or not */
-        boolean isYouBlockedReceiver = blockListService.isReceiverBlockedBySender(new SalesUser(chatLoggedUser),receiver);
-        boolean seen = !isYouBlockedByReceiver && !isYouBlockedReceiver;
-        logger.debug("Message seen or not :  {} ",seen);
-        /* you need to subscribe like  /user/{userId}/queue/private/chat/seen */
-        messagingTemplate.convertAndSendToUser(recipient, "/queue/private/chat/seen",seen);
-    }
-
-
-    @MessageMapping("/chat/{slug}/userStatus")
-    public void getUserStatus(@DestinationVariable String slug, SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
-        logger.debug("Checking user status for slug: {}", slug);
-        String sender = (String) Objects.requireNonNull(simpMessageHeaderAccessor.getSessionAttributes()).get("username");
-        /* you need to subscribe like  /user/{userId}/queue/private/status */
-        messagingTemplate.convertAndSendToUser(sender, "/queue/private/status",GlobalConstant.onlineUsers.getOrDefault(slug,new User()));
-    }
 
 
 
@@ -256,7 +161,7 @@ public class ChatController  {
     public ResponseEntity<Map<String,Object>> deleteBySlug(Authentication authentication, @RequestBody MessageDto messageDto, HttpServletRequest request){
         logger.debug("Deleting message: {}", messageDto);
         Map<String,Object> result = new HashMap<>();
-        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         int isDeleted = chatService.deleteMessage(loggedUser, messageDto);
         if(isDeleted > 0){
             result.put(ConstantResponseKeys.MESSAGE,"deleted successfully");

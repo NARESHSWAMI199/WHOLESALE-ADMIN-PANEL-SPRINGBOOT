@@ -41,7 +41,7 @@ public class Group implements Serializable {
     Integer updatedBy;
 
 
-    public Group (SalesUser loggedUser) {
+    public Group (AuthUser loggedUser) {
         this.slug = UUID.randomUUID().toString();
         this.createdAt = getCurrentMillis();
         this.createdBy = loggedUser.getId();

@@ -2,8 +2,8 @@ package com.sales.wholesaler.services;
 
 
 import com.sales.dto.UserPaginationDto;
+import com.sales.entities.AuthUser;
 import com.sales.entities.Pagination;
-import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import com.sales.entities.UserPagination;
 import com.sales.exceptions.NotFoundException;
@@ -36,7 +36,7 @@ public class WholesalePaginationService {
         return wholesaleUserPaginationsRepository.findAll();
     }
 
-    public Map<String,Object> findUserPaginationsByUserId(SalesUser loggedUser){
+    public Map<String,Object> findUserPaginationsByUserId(AuthUser loggedUser){
         List<UserPagination> userPaginations = wholesaleUserPaginationsRepository.getUserPaginationByUserId(loggedUser.getId());
         Map<String,Object> result = new LinkedHashMap<>();
         for(UserPagination userPagination : userPaginations) {
@@ -69,7 +69,7 @@ public class WholesalePaginationService {
     }
 
     @Transactional(rollbackOn = {InternalException.class, RuntimeException.class,Exception.class })
-    public UserPagination insertUserPagination(Pagination pagination,User loggedUser,Integer rowNumbers) {
+    public UserPagination insertUserPagination(Pagination pagination,AuthUser loggedUser,Integer rowNumbers) {
         UserPagination userPagination = new UserPagination();
         userPagination.setPagination(pagination);
         userPagination.setUserId(loggedUser.getId());

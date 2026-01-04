@@ -3,7 +3,7 @@ package com.sales.wholesaler.services;
 
 import com.sales.cachemanager.services.UserCacheService;
 import com.sales.dto.*;
-import com.sales.entities.SalesUser;
+import com.sales.entities.AuthUser;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.SupportEmail;
 import com.sales.entities.User;
@@ -182,7 +182,7 @@ public class WholesaleUserService  {
         return storeDto;
     }
 
-    public Map<String, Object> updateUserProfile(UserDto userDto, SalesUser loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public Map<String, Object> updateUserProfile(UserDto userDto, AuthUser loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting updateUserProfile method with userDto: {}, loggedUser: {}", userDto, loggedUser);
         // Validating required fields. If there we found any required field is null, this will throw an Exception
         Utils.checkRequiredFields(userDto,List.of("slug","username","email","contact"));
@@ -210,7 +210,7 @@ public class WholesaleUserService  {
     }
 
     @Transactional
-    public int updateUser(UserDto userDto, SalesUser loggedUser) {
+    public int updateUser(UserDto userDto, AuthUser loggedUser) {
         logger.debug("Starting updateUser method with userDto: {}, loggedUser: {}", userDto, loggedUser);
         int updateCount = wholesaleUserHbRepository.updateUser(userDto, loggedUser); // Update operation
         logger.debug("Completed updateUser method");
@@ -225,7 +225,7 @@ public class WholesaleUserService  {
     }
 
     @Transactional
-    public User resetPasswordByUserSlug(PasswordDto passwordDto, SalesUser loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public User resetPasswordByUserSlug(PasswordDto passwordDto, AuthUser loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting resetPasswordByUserSlug method with passwordDto: {}, loggedUser: {}", passwordDto, loggedUser);
         // Validating required fields. If their we found any required field is null, this will throw an Exception
         Utils.checkRequiredFields(passwordDto,List.of("password"));
@@ -237,7 +237,7 @@ public class WholesaleUserService  {
         return updatedUser;
     }
 
-    public String updateProfileImage(MultipartFile profileImage,SalesUser loggedUser) throws IOException {
+    public String updateProfileImage(MultipartFile profileImage,AuthUser loggedUser) throws IOException {
         logger.debug("Starting updateProfileImage method with profileImage: {}, loggedUser: {}", profileImage, loggedUser);
         String slug = loggedUser.getSlug();
         String imageName = UUID.randomUUID().toString().substring(0,5)+"_"+ Objects.requireNonNull(profileImage.getOriginalFilename()).replaceAll(" ","_");
@@ -295,7 +295,7 @@ public class WholesaleUserService  {
         return insertedUser;
     }
 
-    public int updateLastSeen(SalesUser loggedUser) {
+    public int updateLastSeen(AuthUser loggedUser) {
         logger.debug("Starting updateLastSeen method with loggedUser: {}", loggedUser);
         int updateCount = wholesaleUserHbRepository.updatedUserLastSeen(loggedUser.getSlug()); // Update operation
         logger.debug("Completed updateLastSeen method");
@@ -311,7 +311,7 @@ public class WholesaleUserService  {
 
 
     /** Getting all retailers and wholesalers for chat purpose */
-    public Page<User> getAllUsers(UserSearchFilters filters, SalesUser loggedUser) {
+    public Page<User> getAllUsers(UserSearchFilters filters, AuthUser loggedUser) {
         logger.debug("Starting getAllUsers method with filters: {}, loggedUser: {}", filters, loggedUser);
         Specification<User> specification = Specification.allOf(
                 (containsName(filters.getSearchKey()).or(containsEmail(filters.getSearchKey())))
