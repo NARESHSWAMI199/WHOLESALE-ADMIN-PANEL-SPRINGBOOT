@@ -10,7 +10,7 @@ import java.util.UUID;
 import static com.sales.utils.Utils.getCurrentMillis;
 
 @Entity
-@Table(name = "`groups`")
+@Table(name = "`GROUPS`")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -41,7 +41,7 @@ public class Group implements Serializable {
     Integer updatedBy;
 
 
-    public Group (User loggedUser) {
+    public Group (SalesUser loggedUser) {
         this.slug = UUID.randomUUID().toString();
         this.createdAt = getCurrentMillis();
         this.createdBy = loggedUser.getId();

@@ -126,7 +126,7 @@ public class CashfreeService {
     }
 
 
-    public OrderEntity getOrderEntityForCashfreePaymentForPlans(HttpServletRequest httpServletRequest,CashfreeDto cashfreeDto, User loggedUser, ServicePlan servicePlan, String givenRedirectUri, String env) throws ApiException {
+    public OrderEntity getOrderEntityForCashfreePaymentForPlans(HttpServletRequest httpServletRequest, CashfreeDto cashfreeDto, User loggedUser, ServicePlan servicePlan, String givenRedirectUri, String env) throws ApiException {
         logger.debug("Started getOrderEntityForCashfreePaymentForPlans with params : cashfreeDto : {} and loggedUser : {} and servicePlan : {} and redirectUri : {} and env : {}", cashfreeDto, loggedUser, servicePlan, givenRedirectUri, env);
         long amount = (servicePlan.getPrice() - servicePlan.getDiscount());
         String slug = UUID.randomUUID().toString();

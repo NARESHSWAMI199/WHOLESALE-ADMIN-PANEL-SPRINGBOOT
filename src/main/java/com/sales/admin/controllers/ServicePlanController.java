@@ -7,8 +7,8 @@ import com.sales.dto.DeleteDto;
 import com.sales.dto.ServicePlanDto;
 import com.sales.dto.StatusDto;
 import com.sales.dto.UserPlanDto;
+import com.sales.entities.SalesUser;
 import com.sales.entities.ServicePlan;
-import com.sales.entities.User;
 import com.sales.entities.WholesalerPlans;
 import com.sales.global.ConstantResponseKeys;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -65,9 +66,9 @@ public class ServicePlanController  {
             """))
     )
     @PostMapping("add")
-    public ResponseEntity<Map<String,Object>> insertServicePlans(HttpServletRequest request , @RequestBody ServicePlanDto servicePlanDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public ResponseEntity<Map<String,Object>> insertServicePlans(Authentication authentication,HttpServletRequest request , @RequestBody ServicePlanDto servicePlanDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Inserting new service plan: {}", servicePlanDto);
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         Map<String,Object> result = new HashMap<>();
         ServicePlan servicePlan = servicePlanService.insertServicePlan(loggedUser,servicePlanDto);
         result.put(ConstantResponseKeys.RES,servicePlan);
@@ -78,18 +79,18 @@ public class ServicePlanController  {
 
 
     @PostMapping(ConstantResponseKeys.STATUS)
-    public ResponseEntity<Map<String,Object>> updateStatus(HttpServletRequest request, @RequestBody StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public ResponseEntity<Map<String,Object>> updateStatus(Authentication authentication,HttpServletRequest request, @RequestBody StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Updating status for service plan: {}", statusDto);
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         Map<String, Object> result = servicePlanService.updateServicePlanStatus(statusDto, loggedUser);
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
     }
 
 
     @PostMapping("delete")
-    public ResponseEntity<Map<String,Object>> deleteStatus(@RequestBody DeleteDto deleteDto, HttpServletRequest request) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public ResponseEntity<Map<String,Object>> deleteStatus(Authentication authentication,@RequestBody DeleteDto deleteDto, HttpServletRequest request) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Deleting service plan: {}", deleteDto);
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         Map<String, Object> result = servicePlanService.deletedServicePlan(deleteDto,loggedUser);
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
     }

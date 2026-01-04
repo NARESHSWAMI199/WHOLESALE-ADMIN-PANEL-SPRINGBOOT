@@ -1,7 +1,7 @@
 package com.sales.wholesaler.repository;
 
 import com.sales.dto.StoreDto;
-import com.sales.entities.User;
+import com.sales.entities.SalesUser;
 import com.sales.utils.Utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -42,7 +42,7 @@ public class WholesaleStoreHbRepository {
         return query.executeUpdate();
     }
 
-    public int updateStore(StoreDto storeDto, User loggedUser){
+    public int updateStore(StoreDto storeDto, SalesUser loggedUser){
         String strQuery = "update Store set " +
                 "storeName=:name , " +
                 "email=:email, "+

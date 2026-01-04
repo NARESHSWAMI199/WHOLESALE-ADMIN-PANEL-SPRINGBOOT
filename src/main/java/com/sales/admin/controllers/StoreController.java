@@ -2,10 +2,7 @@ package com.sales.admin.controllers;
 
 import com.sales.admin.services.StoreService;
 import com.sales.dto.*;
-import com.sales.entities.Store;
-import com.sales.entities.StoreCategory;
-import com.sales.entities.StoreSubCategory;
-import com.sales.entities.User;
+import com.sales.entities.*;
 import com.sales.exceptions.MyException;
 import com.sales.global.ConstantResponseKeys;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,10 +50,10 @@ public class StoreController {
 
     @Transactional
     @PostMapping("delete")
-    public ResponseEntity<Map<String,Object>> deleteStore(HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public ResponseEntity<Map<String,Object>> deleteStore(Authentication authentication,HttpServletRequest request, @RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Deleting store with slug: {}", deleteDto.getSlug());
         Map<String,Object> responseObj = new HashMap<>();
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         int isUpdated = storeService.deleteStoreBySlug(deleteDto,loggedUser);
         if (isUpdated > 0) {
             responseObj.put(ConstantResponseKeys.MESSAGE, "Store has been successfully deleted.");
@@ -123,9 +121,9 @@ public class StoreController {
     ))
     @Transactional
     @PostMapping(value = {"/add","/update"})
-    public ResponseEntity<Map<String,Object>> addStoreOrUpdateStore(HttpServletRequest request,  @ModelAttribute StoreDto storeDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public ResponseEntity<Map<String,Object>> addStoreOrUpdateStore(Authentication authentication,HttpServletRequest request,  @ModelAttribute StoreDto storeDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Adding or updating store with details: {}", storeDto);
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         String path = request.getRequestURI().toLowerCase();
         Map<String,Object> responseObj = storeService.createOrUpdateStore(storeDto,loggedUser,path);
         return new ResponseEntity<>(responseObj,HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));

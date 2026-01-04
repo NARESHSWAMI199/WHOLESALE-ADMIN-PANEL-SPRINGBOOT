@@ -1,9 +1,11 @@
 package com.sales.wholesaler.controller;
 
 
+import com.sales.cachemanager.services.UserCacheService;
 import com.sales.dto.PasswordDto;
 import com.sales.dto.UserDto;
 import com.sales.dto.UserSearchFilters;
+import com.sales.entities.SalesUser;
 import com.sales.entities.Store;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
@@ -27,6 +29,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,6 +51,7 @@ public class WholesaleUserController  {
     private final WholesalePaginationService wholesalePaginationService;
     private final JwtToken jwtToken;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleUserController.class);
+    private final UserCacheService userCacheService;
 
     @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(schema = @Schema(
             example = """
@@ -71,9 +75,9 @@ public class WholesaleUserController  {
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         }else if (user.getStatus().equalsIgnoreCase("A")) {
             message = ConstantResponseKeys.SUCCESS;
-            responseObj.put(ConstantResponseKeys.TOKEN, GlobalConstant.AUTH_TOKEN_PREFIX + jwtToken.generateToken(user));
+            responseObj.put(ConstantResponseKeys.TOKEN, GlobalConstant.AUTH_TOKEN_PREFIX + jwtToken.generateToken(user.getSlug()));
             Store storeDetails = wholesaleStoreService.getStoreByUserId(user.getId());
-            Map<String,Object> paginationsObj = wholesalePaginationService.findUserPaginationsByUserId(user);
+            Map<String,Object> paginationsObj = wholesalePaginationService.findUserPaginationsByUserId(new SalesUser(user));
             responseObj.put("user", user);
             responseObj.put(ConstantResponseKeys.STORE, storeDetails);
             responseObj.put(ConstantResponseKeys.PAGINATIONS,paginationsObj);
@@ -98,9 +102,9 @@ public class WholesaleUserController  {
             responseObj.put(ConstantResponseKeys.MESSAGE, "Wrong otp password.");
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
-            responseObj.put(ConstantResponseKeys.TOKEN, GlobalConstant.AUTH_TOKEN_PREFIX + jwtToken.generateToken(user));
+            responseObj.put(ConstantResponseKeys.TOKEN, GlobalConstant.AUTH_TOKEN_PREFIX + jwtToken.generateToken(user.getSlug()));
             Store store = wholesaleStoreService.getStoreByUserId(user.getId());
-            Map<String,Object> paginations = wholesalePaginationService.findUserPaginationsByUserId(user);
+            Map<String,Object> paginations = wholesalePaginationService.findUserPaginationsByUserId(new SalesUser(user));
             responseObj.put(ConstantResponseKeys.MESSAGE, ConstantResponseKeys.SUCCESS);
             responseObj.put("user", user);
             responseObj.put(ConstantResponseKeys.STORE, store);
@@ -135,8 +139,8 @@ public class WholesaleUserController  {
             responseObj.put(ConstantResponseKeys.STATUS, 401);
         } else if (user.getStatus().equalsIgnoreCase("A")) {
             Store store = wholesaleStoreService.getStoreByUserId(user.getId());
-            Map<String,Object> paginations = wholesalePaginationService.findUserPaginationsByUserId(user);
-            responseObj.put(ConstantResponseKeys.TOKEN, GlobalConstant.AUTH_TOKEN_PREFIX + jwtToken.generateToken(user));
+            Map<String,Object> paginations = wholesalePaginationService.findUserPaginationsByUserId(new SalesUser(user));
+            responseObj.put(ConstantResponseKeys.TOKEN, GlobalConstant.AUTH_TOKEN_PREFIX + jwtToken.generateToken(user.getSlug()));
             responseObj.put(ConstantResponseKeys.MESSAGE, ConstantResponseKeys.SUCCESS);
             responseObj.put("user", user);
             responseObj.put(ConstantResponseKeys.STORE, store);
@@ -182,9 +186,9 @@ public class WholesaleUserController  {
             """)
             ))
     @PostMapping(value = {"/update"})
-    public ResponseEntity<Map<String, Object>> updateAuth(HttpServletRequest request, @RequestBody UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public ResponseEntity<Map<String, Object>> updateAuth(Authentication authentication,HttpServletRequest request, @RequestBody UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting updateAuth method");
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         Map<String,Object> responseObj = wholesaleUserService.updateUserProfile(userDto, loggedUser);
         logger.debug("Completed updateAuth method");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -195,11 +199,11 @@ public class WholesaleUserController  {
     public ResponseEntity<Map<String, Object>> getDetailUser(@PathVariable(required = false) String slug, HttpServletRequest request) {
         logger.debug("Starting getDetailUser method");
         Map<String,Object> responseObj = new HashMap<>();
-        User user = null;
+        SalesUser user = null;
         if(slug == null){
             user = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         }else {
-            user = wholesaleUserService.findUserBySlug(slug);
+            user = new SalesUser(wholesaleUserService.findUserBySlug(slug));
         }
         if(slug == null){
             Store store = wholesaleStoreService.getStoreByUserSlug(user.getId());
@@ -215,10 +219,10 @@ public class WholesaleUserController  {
 
     @Transactional
     @PostMapping("/password")
-    public ResponseEntity<Map<String, Object>> resetUserPasswordBySlug(HttpServletRequest request ,@RequestBody PasswordDto passwordDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public ResponseEntity<Map<String, Object>> resetUserPasswordBySlug(Authentication authentication,HttpServletRequest request ,@RequestBody PasswordDto passwordDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting resetUserPasswordBySlug method");
         Map<String,Object> responseObj = new HashMap<>();
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         User updatedUser = wholesaleUserService.resetPasswordByUserSlug(passwordDto,loggedUser);
         responseObj.put(ConstantResponseKeys.RES,updatedUser);
         responseObj.put(ConstantResponseKeys.MESSAGE, "User password has been successfully updated.");
@@ -230,10 +234,10 @@ public class WholesaleUserController  {
 
 
     @PostMapping("/update_profile")
-    public ResponseEntity<Map<String, Object>> updateProfileImage(HttpServletRequest request, @RequestPart MultipartFile profileImage) throws IOException {
+    public ResponseEntity<Map<String, Object>> updateProfileImage(Authentication authentication,HttpServletRequest request, @RequestPart MultipartFile profileImage) throws IOException {
         logger.debug("Starting updateProfileImage method");
         Map<String,Object> responseObj = new HashMap<>();
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         String  imageName = wholesaleUserService.updateProfileImage(profileImage,loggedUser);
         if(imageName!=null) {
             responseObj.put("imageName",imageName);
@@ -287,14 +291,16 @@ public class WholesaleUserController  {
 
 
     @GetMapping("last-seen")
-    public ResponseEntity<Map<String,Object>> updateUserLastSeen(HttpServletRequest request){
+    public ResponseEntity<Map<String,Object>> updateUserLastSeen(Authentication authentication,HttpServletRequest request){
         logger.debug("Starting updateUserLastSeen method");
         Map<String,Object> result = new HashMap<>();
-        User loggedUser = (User)request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         int isUpdated = wholesaleUserService.updateLastSeen(loggedUser);
-        loggedUser.setOnline(false);
+
+        User user = userCacheService.getCacheUser(loggedUser.getSlug());
+        user.setOnline(false);
         wholesaleUserService.updateLastSeen(loggedUser);
-        GlobalConstant.onlineUsers.put(loggedUser.getSlug(), loggedUser);
+        GlobalConstant.onlineUsers.put(loggedUser.getSlug(), user);
         if(isUpdated > 0){
             result.put(ConstantResponseKeys.MESSAGE, "User's last seen successfully updated.");
             result.put(ConstantResponseKeys.STATUS, 200);
@@ -312,9 +318,9 @@ public class WholesaleUserController  {
     /** Returning a list of users where users are retailer and wholesaler only for chat purpose.*/
 
     @PostMapping("chat/users")
-    public ResponseEntity<Page<User>> getAllChatUser(HttpServletRequest request, @RequestBody UserSearchFilters userSearchFilters){
+    public ResponseEntity<Page<User>> getAllChatUser(Authentication authentication,HttpServletRequest request, @RequestBody UserSearchFilters userSearchFilters){
         logger.debug("Starting getAllChatUser method");
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         Page<User> allUsers = wholesaleUserService.getAllUsers(userSearchFilters, loggedUser);
         logger.debug("Completed getAllChatUser method");
         return new ResponseEntity<>(allUsers,HttpStatus.OK);

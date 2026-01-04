@@ -13,6 +13,24 @@ public class SalesUser implements UserDetails {
         this.user = user;
     }
 
+    public Integer getId(){
+        return user.getId();
+    }
+
+    public String getSlug(){
+        return user.getSlug();
+    }
+
+
+    public String getUserType(){
+        return user.getUserType();
+    }
+
+    public Integer getActivePlan(){
+        return user.getActivePlan();
+    }
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return user.getAuthorities();
@@ -25,6 +43,10 @@ public class SalesUser implements UserDetails {
 
     @Override
     public String getUsername() {
+        return user.getUsername();
+    }
+
+    public String getEmail() {
         return user.getEmail();
     }
 

@@ -4,6 +4,7 @@ package com.sales.wholesaler.services;
 import com.sales.dto.ChatRoomDto;
 import com.sales.entities.ChatRoom;
 import com.sales.entities.ChatRoomUser;
+import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import com.sales.exceptions.NotFoundException;
 import com.sales.utils.Utils;
@@ -64,7 +65,7 @@ public class ChatRoomService  {
 
 
     @Transactional
-    public int updateRoom(ChatRoomDto chatRoomDto,User loggedUser) {
+    public int updateRoom(ChatRoomDto chatRoomDto, SalesUser loggedUser) {
         return chatRoomHbRepository.updateChatRoom(chatRoomDto,loggedUser);
     }
 

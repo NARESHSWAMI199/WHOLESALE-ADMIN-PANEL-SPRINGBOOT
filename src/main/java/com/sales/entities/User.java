@@ -85,7 +85,7 @@ public class User implements Serializable {
     @Transient
     List<GrantedAuthority> authorities;
 
-    public User (User loggedUser) {
+    public User (SalesUser loggedUser) {
         this.slug = UUID.randomUUID().toString();
         this.createdAt = getCurrentMillis();
         this.createdBy = loggedUser.getId();

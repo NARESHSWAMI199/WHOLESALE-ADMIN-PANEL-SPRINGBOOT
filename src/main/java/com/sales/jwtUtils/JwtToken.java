@@ -1,7 +1,6 @@
 package com.sales.jwtUtils;
 
 
-import com.sales.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -51,9 +50,9 @@ public class JwtToken implements Serializable {
     }
 
     //generate token for user
-    public String generateToken(User user) {
+    public String generateToken(String slug) {
         Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, user.getSlug());
+        return doGenerateToken(claims, slug);
     }
 
     //while creating the token -

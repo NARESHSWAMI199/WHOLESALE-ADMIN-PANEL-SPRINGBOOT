@@ -2,7 +2,7 @@ package com.sales.wholesaler.controller;
 
 
 import com.sales.dto.GraphDto;
-import com.sales.entities.User;
+import com.sales.entities.SalesUser;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.wholesaler.services.WholesaleItemService;
 import com.sales.wholesaler.services.WholesaleStoreService;
@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -28,9 +29,9 @@ public class WholesaleDashboardController  {
     private static final Logger logger = LoggerFactory.getLogger(WholesaleDashboardController.class);
 
     @GetMapping("/counts")
-    public ResponseEntity<Map<String, Object>> getAllDashboardCount(HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> getAllDashboardCount(Authentication authentication,HttpServletRequest request) {
         logger.debug("Starting getAllDashboardCount method");
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
         Map<String,Object> responseObj = new HashMap<>();
         responseObj.put("items" , wholesaleItemService.getItemCounts(storeId));
@@ -44,10 +45,10 @@ public class WholesaleDashboardController  {
     }
 
     @PostMapping("graph/months/")
-    public ResponseEntity<Map<String, Object>> getAllGraphData(HttpServletRequest request,@RequestBody GraphDto graphDto) {
+    public ResponseEntity<Map<String, Object>> getAllGraphData(Authentication authentication, HttpServletRequest request, @RequestBody GraphDto graphDto) {
         logger.debug("Starting getAllGraphData method");
         Map<String,Object> responseObj = new HashMap<>();
-        User loggedUser = (User) request.getAttribute("user");
+        SalesUser loggedUser = (SalesUser) authentication.getPrincipal();
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
         responseObj.put(ConstantResponseKeys.RES ,wholesaleItemService.getItemCountByMonths(graphDto,storeId));
         responseObj.put(ConstantResponseKeys.STATUS, 200);

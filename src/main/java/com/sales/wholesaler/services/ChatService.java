@@ -2,6 +2,7 @@ package com.sales.wholesaler.services;
 
 import com.sales.dto.MessageDto;
 import com.sales.entities.Chat;
+import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
@@ -43,7 +44,7 @@ public class ChatService  {
         Chat savedMessage = saveMessage(message, null);
 
         // verifying user sender or receiver blocked or not.
-        boolean readyToSend = verifyBeforeSend(loggedUser, recipient);
+        boolean readyToSend = verifyBeforeSend( new SalesUser(loggedUser), recipient);
         if(!readyToSend) return null;
 
         // Going to update a message
@@ -53,7 +54,7 @@ public class ChatService  {
     }
 
 
-    public boolean verifyBeforeSend(User loggedUser,String recipient) {
+    public boolean verifyBeforeSend(SalesUser loggedUser,String recipient) {
         if (recipient == null) throw new MyException("Please provide a valid recipient");
 
         User receiver = wholesaleUserRepository.findUserBySlug(recipient);
@@ -61,12 +62,12 @@ public class ChatService  {
         /* Added new user in to sender's chat list →
         sender = loggedUser | receiver = who receives this message | status = sender Accepted
         or not default it's A  */
-        chatUserService.addNewChatUser(loggedUser, receiver,"A");
+        chatUserService.addNewChatUser(loggedUser, new SalesUser(receiver),"A");
 
         /* Added sender in to the recipient chat list →
         sender = loggedUser | receiver = who receives this message | status =s
         receiver accepted or not default it's P */
-        chatUserService.addNewChatUser(receiver, loggedUser,"P");
+        chatUserService.addNewChatUser(new SalesUser(receiver), loggedUser,"P");
 
         /* Check you are blocked by receiver or not */
         boolean isYouBlockedByReceiver = blockListService.isSenderBlockedByReceiver(loggedUser,receiver);
@@ -154,7 +155,7 @@ public class ChatService  {
     }
 
 
-    public Chat getParentMessageById(Long parentId,User loggedUser,HttpServletRequest request){
+    public Chat getParentMessageById(Long parentId,SalesUser loggedUser,HttpServletRequest request){
         logger.debug("Starting getParentMessageById method with parentId : {} ",parentId);
         Optional<Chat> chatOptional = chatRepository.findById(parentId);
         if (chatOptional.isPresent()){
@@ -197,7 +198,7 @@ public class ChatService  {
 
 
 
-    public List<String> saveAllImages(MessageDto messageDto, User loggedUser) {
+    public List<String> saveAllImages(MessageDto messageDto, SalesUser loggedUser) {
         logger.debug("Starting saveAllImages method");
         List<String> imagesNames = new ArrayList<>();
         String folderPath = chatAbsolutePath + loggedUser.getSlug() + "_" + messageDto.getReceiver() + File.separator;
@@ -224,7 +225,7 @@ public class ChatService  {
         return imagesNames;
     }
 
-    public MessageDto addImagesList(MessageDto message, HttpServletRequest request, List<String> allImagesName, User loggedUser, String recipient) {
+    public MessageDto addImagesList(MessageDto message, HttpServletRequest request, List<String> allImagesName, SalesUser loggedUser, String recipient) {
         logger.debug("Starting addImagesList method");
         message.setImages(null);
         List<String> imageUrls = allImagesName.stream().map(name -> Utils.getHostUrl(request) + "/chat/images/" + loggedUser.getSlug() + GlobalConstant.PATH_SEPARATOR + message.getReceiver() + GlobalConstant.PATH_SEPARATOR + name).toList();
@@ -244,7 +245,7 @@ public class ChatService  {
     }
 
 
-    public int deleteMessage(User loggedUser,MessageDto messageDto){
+    public int deleteMessage(SalesUser loggedUser,MessageDto messageDto){
         logger.debug("Starting deleteMessage method with loggedUser: {}, messageDto: {}", loggedUser, messageDto);
         switch (messageDto.getIsDeleted()){
             case "S": // delete sender's message
