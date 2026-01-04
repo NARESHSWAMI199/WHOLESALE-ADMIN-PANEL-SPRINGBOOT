@@ -29,7 +29,7 @@ public class ContactController  {
 
     @GetMapping("all")
     public ResponseEntity<List<User>> getAllContactsByUserId(Authentication authentication,HttpServletRequest request){
-        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         logger.debug("Fetching all contacts for logged user: {}", loggedUser.getId());
         List<User> allContactsByUserId = contactService.getAllContactsByUserId(loggedUser,request);
         return new ResponseEntity<>(allContactsByUserId, HttpStatus.valueOf(200));
@@ -38,7 +38,7 @@ public class ContactController  {
     @PostMapping("add")
     public ResponseEntity<Map<String,Object>> addNewContactInContactList(Authentication authentication,@RequestBody ContactDto contactDto, HttpServletRequest request){
         Map<String,Object> result = new HashMap<>();
-        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         logger.debug("Adding new contact for logged user: {}", loggedUser.getId());
         Contact contact = contactService.addNewContact(loggedUser, contactDto.getContactSlug());
         if(contact != null){
@@ -57,7 +57,7 @@ public class ContactController  {
     @PostMapping("remove")
     public ResponseEntity<Map<String,Object>> removeContactAndHisChat(Authentication authentication, @RequestBody ContactDto contactDto, HttpServletRequest request){
         Map<String,Object> result = new HashMap<>();
-        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         logger.debug("Removing new contact for logged user: {}", loggedUser.getId());
         int contact = contactService.removeContact(loggedUser, contactDto.getContactSlug(),contactDto.getDeleteChats());
         if(contact>0){

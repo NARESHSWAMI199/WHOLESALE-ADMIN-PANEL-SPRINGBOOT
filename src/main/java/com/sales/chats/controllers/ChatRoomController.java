@@ -41,7 +41,7 @@ public class ChatRoomController {
 
     @PostMapping("update")
     public ResponseEntity<Map<String, Object>> updateChatRoom(Authentication authentication, @RequestBody ChatRoomDto chatRoomDto, HttpServletRequest request) {
-        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         Map<String,Object> result = new HashMap<>();
         int isUpdated = chatRoomService.updateRoom(chatRoomDto, loggedUser);
         if(isUpdated > 0){

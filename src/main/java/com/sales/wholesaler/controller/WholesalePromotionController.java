@@ -29,7 +29,7 @@ public class WholesalePromotionController  {
     @PostMapping("/")
     public ResponseEntity<Map<String,Object>> insertPromotedItem(Authentication authentication, HttpServletRequest request, @ModelAttribute StorePromotionDto storePromotionDto){
         logger.debug("Starting insertPromotedItem method");
-        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         Map<String,Object> response = wholesalePromotionsService.insertItemPromotion(storePromotionDto,loggedUser);
         logger.debug("Completed insertPromotedItem method");
         return new ResponseEntity<>(response,HttpStatus.valueOf((Integer) response.get("status")));

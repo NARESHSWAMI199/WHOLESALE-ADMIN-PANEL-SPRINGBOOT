@@ -30,7 +30,7 @@ public class WholesaleItemReviewController  {
     @PostMapping("all")
     public ResponseEntity<Page<ItemReviews>> getAllReviews(Authentication authentication, @RequestBody ItemReviewsFilterDto ItemReviewsFilterDto, HttpServletRequest request) {
         logger.debug("Starting getAllUsers method");
-        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         Page<ItemReviews> ItemReviewsPage = wholesaleItemReviewService.getAllItemReview(ItemReviewsFilterDto, loggedUser);
         logger.debug("Completed getAllUsers method");
         return new ResponseEntity<>(ItemReviewsPage, HttpStatus.OK);

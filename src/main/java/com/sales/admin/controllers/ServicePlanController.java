@@ -68,7 +68,7 @@ public class ServicePlanController  {
     @PostMapping("add")
     public ResponseEntity<Map<String,Object>> insertServicePlans(Authentication authentication,HttpServletRequest request , @RequestBody ServicePlanDto servicePlanDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Inserting new service plan: {}", servicePlanDto);
-        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         Map<String,Object> result = new HashMap<>();
         ServicePlan servicePlan = servicePlanService.insertServicePlan(loggedUser,servicePlanDto);
         result.put(ConstantResponseKeys.RES,servicePlan);
@@ -81,7 +81,7 @@ public class ServicePlanController  {
     @PostMapping(ConstantResponseKeys.STATUS)
     public ResponseEntity<Map<String,Object>> updateStatus(Authentication authentication,HttpServletRequest request, @RequestBody StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Updating status for service plan: {}", statusDto);
-        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         Map<String, Object> result = servicePlanService.updateServicePlanStatus(statusDto, loggedUser);
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
     }
@@ -90,7 +90,7 @@ public class ServicePlanController  {
     @PostMapping("delete")
     public ResponseEntity<Map<String,Object>> deleteStatus(Authentication authentication,@RequestBody DeleteDto deleteDto, HttpServletRequest request) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Deleting service plan: {}", deleteDto);
-        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         Map<String, Object> result = servicePlanService.deletedServicePlan(deleteDto,loggedUser);
         return new ResponseEntity<>(result,HttpStatus.valueOf((Integer) result.get(ConstantResponseKeys.STATUS)));
     }

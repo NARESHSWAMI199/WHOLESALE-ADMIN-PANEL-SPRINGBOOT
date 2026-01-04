@@ -50,7 +50,7 @@ public class StoreNotifications implements Serializable {
 
 
 
-//    public StoreNotifications(AuthUser){
+//    public StoreNotifications(SalesUser){
 //        this.createdBy = loggedUser;
 //        this.createAt = Utils.getCurrentMillis();
 //    }

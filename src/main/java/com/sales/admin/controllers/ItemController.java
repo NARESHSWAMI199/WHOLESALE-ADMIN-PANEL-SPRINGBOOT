@@ -52,7 +52,7 @@ public class ItemController  {
     @PostMapping("/all")
     public ResponseEntity<Page<Item>> getAllItem(Authentication authentication, @RequestBody ItemSearchFields searchFilters, HttpServletRequest request) {
         logger.debug("Fetching all items with filters: {}", searchFilters);
-        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         Page<Item> alItems = itemService.getAllItems(searchFilters,loggedUser);
         return new ResponseEntity<>(alItems, HttpStatus.OK);
     }
@@ -98,7 +98,7 @@ public class ItemController  {
     @PostMapping(value = {"/add", "/update"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> addOrUpdateItems(Authentication authentication,HttpServletRequest request, @ModelAttribute ItemDto itemDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Adding or updating item: {}", itemDto);
-        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         String path = request.getRequestURI();
         logger.error(itemDto.toString());
         Map<String,Object> responseObj = itemService.createOrUpdateItem(itemDto, loggedUser,path);
@@ -149,7 +149,7 @@ public class ItemController  {
     @PostMapping(value = {"/exportExcel/{wholesaleSlug}","exportExcel"})
     public ResponseEntity<Object> exportItemsFromExcel(Authentication authentication,@PathVariable(required = false) String wholesaleSlug, @RequestBody ItemSearchFields searchFilters,HttpServletRequest request) {
         logger.debug("Exporting items to Excel for wholesaleSlug: {}", wholesaleSlug);
-        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         Map<String,Object> responseObj = new HashMap<>();
         try {
             Store wholesale = storeService.getStoreDetails(wholesaleSlug);
@@ -186,7 +186,7 @@ public class ItemController  {
     public ResponseEntity<Map<String, Object>> deleteItemBySlug(Authentication authentication,HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Deleting item with slug: {}", deleteDto);
         Map<String,Object> responseObj = new HashMap<>();
-        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         int isUpdated = itemService.deleteItem(deleteDto,loggedUser);
         if (isUpdated > 0) {
             responseObj.put(ConstantResponseKeys.MESSAGE, "Item has been successfully deleted.");
@@ -230,7 +230,7 @@ public class ItemController  {
     public ResponseEntity<Map<String, Object>> updateItemStatus(Authentication authentication,HttpServletRequest request ,@RequestBody StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Updating status for item with statusDto: {}", statusDto);
         Map<String,Object> responseObj = new HashMap<>();
-        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         int isUpdated = itemService.updateStatusBySlug(statusDto,loggedUser);
         if (isUpdated > 0) {
             responseObj.put(ConstantResponseKeys.MESSAGE, "Item's status has been successfully updated.");
@@ -291,7 +291,7 @@ public class ItemController  {
     public ResponseEntity<Map<String,Object>> deleteItemCategoryById(Authentication authentication,HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Deleting item category with id: {}", deleteDto);
         Map<String,Object> responseObj = new HashMap<>();
-        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         int isUpdated = itemService.deleteItemCategory(deleteDto,loggedUser);
         if (isUpdated > 0) {
             responseObj.put(ConstantResponseKeys.MESSAGE, "Item's category delete successfully.");
@@ -345,7 +345,7 @@ public class ItemController  {
     public ResponseEntity<Map<String,Object>> deleteItemSubCategoryById(Authentication authentication,HttpServletRequest request,@RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Deleting item subcategory with id: {}", deleteDto);
         Map<String,Object> responseObj = new HashMap<>();
-        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         int isUpdated = itemService.deleteItemSubCategory(deleteDto,loggedUser);
         if (isUpdated > 0) {
             responseObj.put(ConstantResponseKeys.MESSAGE, "Item's subcategory deleted successfully");
