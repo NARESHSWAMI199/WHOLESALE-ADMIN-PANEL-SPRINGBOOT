@@ -3,7 +3,6 @@ package com.sales.wholesaler.controller;
 
 import com.sales.dto.UserPaginationDto;
 import com.sales.entities.AuthUser;
-import com.sales.entities.SalesUser;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.wholesaler.services.WholesalePaginationService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +24,7 @@ public class WholesalePaginationController  {
     private final WholesalePaginationService wholesalePaginationService;
     @GetMapping("all")
     public ResponseEntity<Map<String,Object>> findUserPaginationSetting(Authentication authentication,HttpServletRequest request){
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         Map<String,Object> allUserPaginations = wholesalePaginationService.findUserPaginationsByUserId(loggedUser);
         return new ResponseEntity<>(allUserPaginations, HttpStatus.valueOf(200));
     }
@@ -34,7 +33,7 @@ public class WholesalePaginationController  {
     @PostMapping("update")
     public ResponseEntity<Map<String,Object>> updatePaginationRowNumber(Authentication authentication, HttpServletRequest request, @RequestBody UserPaginationDto userPaginationDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> responseObj = new HashMap<>();
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         userPaginationDto.setUserId(loggedUser.getId());
         int updated = wholesalePaginationService.updateUserPaginationRowsNumber(userPaginationDto);
         if(updated > 0) {

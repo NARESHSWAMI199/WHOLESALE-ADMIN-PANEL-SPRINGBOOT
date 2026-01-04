@@ -56,7 +56,7 @@ public class UserController  {
         logger.info("authentication  authorities : {}",authentication.getAuthorities());
         logger.debug("Fetching all users of type: {}", userType);
         searchFilters.setUserType(userType);
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         Page<User> userPage = userService.getAllUser(searchFilters,loggedUser);
         return new ResponseEntity<>(userPage, HttpStatus.OK);
     }
@@ -77,7 +77,7 @@ public class UserController  {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userDetails.getEmail(),userDetails.getPassword()
         ));
-        SalesUser user = (SalesUser) authentication.getPrincipal();
+        SalesUser user = (AuthUser) authentication.getPrincipal();
         Map<String, Object> responseObj = new HashMap<>();
         String message;
         if (user.isEnabled()) {
@@ -112,7 +112,7 @@ public class UserController  {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userDetails.getEmail(),userDetails.getPassword()
                 ));
-        SalesUser user = (SalesUser) authentication.getPrincipal();
+        SalesUser user = (AuthUser) authentication.getPrincipal();
         if (user == null) {
             responseObj.put(ConstantResponseKeys.MESSAGE, "Wrong otp password.");
             responseObj.put(ConstantResponseKeys.STATUS, 401);
@@ -185,7 +185,7 @@ public class UserController  {
     @PostMapping(value = {"/add", "/update"})
     public ResponseEntity<Map<String, Object>> register(Authentication authentication,HttpServletRequest request, @RequestBody UserDto userDto) throws Exception {
         logger.debug("Registering or updating user with email: {}", userDto.getEmail());
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         String path = request.getRequestURI();
         Map<String,Object> responseObj = userService.createOrUpdateUser(userDto, loggedUser,path);
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -196,7 +196,7 @@ public class UserController  {
     public ResponseEntity<Map<String, Object>> getDetailUser(Authentication authentication,HttpServletRequest request,@PathVariable String slug) {
         logger.debug("Fetching details for user with slug: {}", slug);
         Map<String,Object> responseObj = new HashMap<>();
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         User user = userService.getUserDetail(slug,loggedUser);
         if (user != null) {
             responseObj.put(ConstantResponseKeys.RES, user);
@@ -213,7 +213,7 @@ public class UserController  {
     public ResponseEntity<Map<String, Object>> deleteUserBySlug(Authentication authentication,HttpServletRequest request, @RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Deleting user with slug: {}", deleteDto.getSlug());
         Map<String,Object> responseObj = new HashMap<>();
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         int isUpdated = userService.deleteUserBySlug(deleteDto,loggedUser);
         if (isUpdated > 0) {
             responseObj.put(ConstantResponseKeys.MESSAGE, "User has been successfully deleted.");
@@ -230,7 +230,7 @@ public class UserController  {
     public ResponseEntity<Map<String, Object>> resetUserPasswordBySlug(Authentication authentication,HttpServletRequest request ,@RequestBody PasswordDto passwordDto) {
         logger.debug("Resetting password for user with slug: {}", passwordDto.getSlug());
         Map<String,Object> responseObj = new HashMap<>();
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         int isUpdated = userService.resetPasswordByUserSlug(passwordDto,loggedUser);
         if (isUpdated > 0 || loggedUser.getId() == GlobalConstant.suId) {
             responseObj.put(ConstantResponseKeys.MESSAGE, "User password has been successfully updated.");
@@ -247,7 +247,7 @@ public class UserController  {
     public ResponseEntity<Map<String, Object>> stockSlug(Authentication authentication,HttpServletRequest request,@RequestBody StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Updating status for user with slug: {}", statusDto.getSlug());
         Map<String,Object> responseObj = new HashMap<>();
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         int isUpdated = userService.updateStatusBySlug(statusDto,loggedUser);
         if (isUpdated > 0) {
             responseObj.put(ConstantResponseKeys.MESSAGE, "User's status updated successfully.");
@@ -269,7 +269,7 @@ public class UserController  {
         logger.debug("Updating profile image for user with slug: {}", slug);
         Map<String,Object> responseObj = new HashMap<>();
         try {
-            AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+            AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
             String  imageName = userService.updateProfileImage(profileImage,slug,loggedUser);
             if(imageName!=null) {
                 responseObj.put(ConstantResponseKeys.STATUS , 200);

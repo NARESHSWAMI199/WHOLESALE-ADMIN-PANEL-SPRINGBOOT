@@ -4,7 +4,6 @@ import com.sales.chats.services.ChatService;
 import com.sales.dto.MessageDto;
 import com.sales.entities.AuthUser;
 import com.sales.entities.Chat;
-import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.ConstantResponseKeys;
@@ -44,7 +43,7 @@ public class ChatController  {
     @PostMapping("/chats/all")
     public ResponseEntity<Map<String, List<Chat>>> getALlUsers(Authentication authentication,@RequestBody MessageDto message , HttpServletRequest request){
         logger.debug("Fetching all users for message: {}", message);
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         message.setSender(loggedUser.getSlug());
         Map<String, List<Chat>> formatedChatList = chatService.getAllChatBySenderAndReceiverKey(message,request);
         return new ResponseEntity<>(formatedChatList, HttpStatus.valueOf(200));
@@ -54,7 +53,7 @@ public class ChatController  {
     @GetMapping("/chats/message/{parentId}")
     public ResponseEntity<Chat> getParentChatMessageByParentId(Authentication authentication,@PathVariable Long parentId , HttpServletRequest request){
         logger.debug("Fetching parent chat using parentId: {}", parentId);
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         Chat parentChat = chatService.getParentMessageById(parentId,loggedUser,request);
         return new ResponseEntity<>(parentChat, HttpStatus.valueOf(200));
     }
@@ -76,7 +75,7 @@ public class ChatController  {
     public ResponseEntity<Map<String,Object>> uploadImages(Authentication authentication,@ModelAttribute MessageDto message ,HttpServletRequest request){
         logger.debug("Uploading images for message: {}", message);
         Map<String,Object> result = new HashMap<>();
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         String recipient = message.getReceiver();
         User receiver = wholesaleUserService.findUserBySlug(recipient);
         if (receiver == null) throw new MyException("Please provide a valid recipient");
@@ -161,7 +160,7 @@ public class ChatController  {
     public ResponseEntity<Map<String,Object>> deleteBySlug(Authentication authentication, @RequestBody MessageDto messageDto, HttpServletRequest request){
         logger.debug("Deleting message: {}", messageDto);
         Map<String,Object> result = new HashMap<>();
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         int isDeleted = chatService.deleteMessage(loggedUser, messageDto);
         if(isDeleted > 0){
             result.put(ConstantResponseKeys.MESSAGE,"deleted successfully");

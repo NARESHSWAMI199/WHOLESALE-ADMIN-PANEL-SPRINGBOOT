@@ -3,7 +3,6 @@ package com.sales.wholesaler.controller;
 
 import com.sales.dto.StorePromotionDto;
 import com.sales.entities.AuthUser;
-import com.sales.entities.SalesUser;
 import com.sales.wholesaler.services.WholesalePromotionsService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,7 @@ public class WholesalePromotionController  {
     @PostMapping("/")
     public ResponseEntity<Map<String,Object>> insertPromotedItem(Authentication authentication, HttpServletRequest request, @ModelAttribute StorePromotionDto storePromotionDto){
         logger.debug("Starting insertPromotedItem method");
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         Map<String,Object> response = wholesalePromotionsService.insertItemPromotion(storePromotionDto,loggedUser);
         logger.debug("Completed insertPromotedItem method");
         return new ResponseEntity<>(response,HttpStatus.valueOf((Integer) response.get("status")));

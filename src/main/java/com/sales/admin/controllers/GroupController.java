@@ -7,7 +7,6 @@ import com.sales.dto.GroupDto;
 import com.sales.dto.SearchFilters;
 import com.sales.entities.AuthUser;
 import com.sales.entities.Group;
-import com.sales.entities.SalesUser;
 import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -35,7 +34,7 @@ public class GroupController  {
     @PostMapping("/all")
     public ResponseEntity<Page<Group>> getAllGroup(Authentication authentication,HttpServletRequest request, @RequestBody SearchFilters searchFilters) {
         logger.debug("Fetching all groups with filters: {}", searchFilters);
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         Page<Group> storePage = groupService.getAllGroups(searchFilters, loggedUser);
         return new ResponseEntity<>(storePage, HttpStatus.OK);
     }
@@ -51,7 +50,7 @@ public class GroupController  {
     @PostMapping(value = {"create", "update"})
     public ResponseEntity<Map<String, Object>> createOrUpdate(Authentication authentication,HttpServletRequest request, @RequestBody GroupDto groupDto) throws Exception {
         logger.debug("Creating or updating group: {}", groupDto);
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         String path = request.getRequestURI();
         Map<String, Object> response = groupService.createOrUpdateGroup(groupDto, loggedUser, path);
         return new ResponseEntity<>(response, HttpStatus.valueOf((Integer) response.get(ConstantResponseKeys.STATUS)));
@@ -72,7 +71,7 @@ public class GroupController  {
     public ResponseEntity<Map<String, Object>> deleteGroupBySlug(Authentication authentication,HttpServletRequest request, @RequestBody DeleteDto deleteDto) throws Exception {
         logger.debug("Deleting group with slug: {}", deleteDto);
         Map<String, Object> responseObj = new HashMap<>();
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         int isUpdated = groupService.deleteGroupBySlug(deleteDto, loggedUser);
         if (isUpdated > 0) {
             responseObj.put(ConstantResponseKeys.MESSAGE, "User has been successfully deleted.");

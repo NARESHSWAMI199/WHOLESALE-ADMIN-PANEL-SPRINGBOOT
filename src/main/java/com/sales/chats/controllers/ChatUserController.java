@@ -6,7 +6,6 @@ import com.sales.dto.ChatUserDto;
 import com.sales.dto.ContactDto;
 import com.sales.entities.AuthUser;
 import com.sales.entities.ChatUser;
-import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;
@@ -34,7 +33,7 @@ public class ChatUserController  {
 
     @GetMapping("all")
     public ResponseEntity<List<User>> getAllChatUsers(Authentication authentication,HttpServletRequest request){
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         logger.debug("Fetching all chat users for logged user: {}", loggedUser.getId());
         List<User> allContactsByUserId = chatUserService.getAllChatUsers(loggedUser,request);
         return new ResponseEntity<>(allContactsByUserId, HttpStatus.valueOf(200));
@@ -43,7 +42,7 @@ public class ChatUserController  {
 
     @GetMapping("is-accepted/{receiver}")
     public ResponseEntity<String> isChatRequestAcceptedByLoggedUser(Authentication authentication,@PathVariable String receiver, HttpServletRequest request){
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         logger.debug("Fetching isChatRequestAcceptedByLoggedUser for logged user: {}", loggedUser.getId());
         String accepted =  chatUserService.isChatRequestAcceptedByLoggedUser(loggedUser,receiver);
         return new ResponseEntity<>(accepted, HttpStatus.valueOf(200));
@@ -53,7 +52,7 @@ public class ChatUserController  {
     @PostMapping("add")
     public ResponseEntity<Map<String,Object>> addNewChatUser(Authentication authentication,@RequestBody ContactDto contactDto, HttpServletRequest request){
         Map<String,Object> result = new HashMap<>();
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         logger.debug("Adding new chat user for logged user: {}", loggedUser.getId());
         ChatUser chatUser = chatUserService.addNewChatUser(loggedUser, contactDto.getContactSlug(),"A");
         if(chatUser != null){
@@ -73,7 +72,7 @@ public class ChatUserController  {
     @PostMapping("remove")
     public ResponseEntity<Map<String,Object>> removeChatUserAndHisChat(Authentication authentication,@RequestBody ContactDto contactDto, HttpServletRequest request){
         Map<String,Object> result = new HashMap<>();
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         logger.debug("Removing Chat user for logged user: {}", loggedUser.getId());
         int contact = chatUserService.removeChatUser(loggedUser, contactDto.getContactSlug(),contactDto.getDeleteChats());
         if(contact>0){
@@ -91,7 +90,7 @@ public class ChatUserController  {
 
     @PostMapping("/accept")
     public ResponseEntity<Map<String,Object>> updateChatAcceptStatus(Authentication authentication, HttpServletRequest request, @RequestBody ChatUserDto chatUserDto) {
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         logger.debug("Updating chat accept status for user: {}", loggedUser.getId());
         Map<String,Object> result = new HashMap<>();
 

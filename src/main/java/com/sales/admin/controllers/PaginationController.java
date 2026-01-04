@@ -4,7 +4,6 @@ package com.sales.admin.controllers;
 import com.sales.admin.services.PaginationService;
 import com.sales.dto.UserPaginationDto;
 import com.sales.entities.AuthUser;
-import com.sales.entities.SalesUser;
 import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +25,7 @@ public class PaginationController  {
 
     @GetMapping("all")
     public ResponseEntity<Map<String,Object>> findAllUserPaginations(Authentication authentication, HttpServletRequest request){
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         Map<String,Object> allUserPaginations = paginationService.findUserPaginationsByUserId(loggedUser);
         return new ResponseEntity<>(allUserPaginations, HttpStatus.valueOf(200));
     }
@@ -35,7 +34,7 @@ public class PaginationController  {
     @PostMapping("update")
     public ResponseEntity<Map<String,Object>> updatePaginationRowNumber(Authentication authentication,HttpServletRequest request, @RequestBody UserPaginationDto userPaginationDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> responseObj = new HashMap<>();
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         userPaginationDto.setUserId(loggedUser.getId());
         int updated = paginationService.updateUserPaginationRowsNumber(userPaginationDto);
         if(updated > 0) {

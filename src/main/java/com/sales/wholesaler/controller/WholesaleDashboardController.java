@@ -3,7 +3,6 @@ package com.sales.wholesaler.controller;
 
 import com.sales.dto.GraphDto;
 import com.sales.entities.AuthUser;
-import com.sales.entities.SalesUser;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.wholesaler.services.WholesaleItemService;
 import com.sales.wholesaler.services.WholesaleStoreService;
@@ -32,7 +31,7 @@ public class WholesaleDashboardController  {
     @GetMapping("/counts")
     public ResponseEntity<Map<String, Object>> getAllDashboardCount(Authentication authentication,HttpServletRequest request) {
         logger.debug("Starting getAllDashboardCount method");
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
         Map<String,Object> responseObj = new HashMap<>();
         responseObj.put("items" , wholesaleItemService.getItemCounts(storeId));
@@ -49,7 +48,7 @@ public class WholesaleDashboardController  {
     public ResponseEntity<Map<String, Object>> getAllGraphData(Authentication authentication, HttpServletRequest request, @RequestBody GraphDto graphDto) {
         logger.debug("Starting getAllGraphData method");
         Map<String,Object> responseObj = new HashMap<>();
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
         responseObj.put(ConstantResponseKeys.RES ,wholesaleItemService.getItemCountByMonths(graphDto,storeId));
         responseObj.put(ConstantResponseKeys.STATUS, 200);

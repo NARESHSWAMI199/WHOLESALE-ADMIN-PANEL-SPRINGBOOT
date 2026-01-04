@@ -53,7 +53,7 @@ public class WholesaleItemController  {
     @PostMapping("/all")
     public ResponseEntity<Page<Item>> getAllItem(Authentication authentication,HttpServletRequest request,@RequestBody ItemSearchFields searchFilters) {
         logger.debug("Starting getAllItem method");
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
         Page<Item> alItems = wholesaleItemService.getAllItems(searchFilters,storeId);
         logger.debug("Completed getAllItem method");
@@ -100,7 +100,7 @@ public class WholesaleItemController  {
     @PostMapping(value = {"/add", "/update"})
     public ResponseEntity<Map<String, Object>> addOrUpdateItems(Authentication authentication,HttpServletRequest request, @ModelAttribute ItemDto itemDto) throws Exception {
         logger.debug("Starting addOrUpdateItems method");
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         String path = request.getRequestURI();
         Map<String,Object> responseObj = wholesaleItemService.createOrUpdateItem(itemDto, loggedUser,path);
         logger.debug("Completed addOrUpdateItems method");
@@ -111,7 +111,7 @@ public class WholesaleItemController  {
     public ResponseEntity<Map<String,Object>> deleteItemBySlug(Authentication authentication,HttpServletRequest request, @RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting deleteItemBySlug method");
         Map<String,Object> responseObj = new HashMap<>();
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
         int isUpdated = wholesaleItemService.deleteItem(deleteDto,storeId);
         if (isUpdated > 0) {
@@ -137,7 +137,7 @@ public class WholesaleItemController  {
     public ResponseEntity<Map<String,Object>> updateItemStock (Authentication authentication, HttpServletRequest request, @RequestBody Map<String,String> params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting updateItemStock method");
         Map<String,Object> responseObj = new HashMap<>();
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         Integer storeId = wholesaleStoreService.getStoreIdByUserSlug(loggedUser.getId());
         int isUpdated = wholesaleItemService.updateStock(params,storeId);
         if (isUpdated > 0) {
@@ -208,7 +208,7 @@ public class WholesaleItemController  {
 
     @PostMapping(value = {"exportExcel"})
     public ResponseEntity<Object> exportItemsFromExcel(Authentication authentication,@RequestBody ItemSearchFields searchFilters ,HttpServletRequest request) {
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         logger.debug("Exporting items to Excel for user : {}", loggedUser );
         Map<String,Object> responseObj = new HashMap<>();
         try {

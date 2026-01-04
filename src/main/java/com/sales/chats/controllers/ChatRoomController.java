@@ -4,7 +4,6 @@ import com.sales.chats.services.ChatRoomService;
 import com.sales.dto.ChatRoomDto;
 import com.sales.entities.AuthUser;
 import com.sales.entities.ChatRoom;
-import com.sales.entities.SalesUser;
 import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +41,7 @@ public class ChatRoomController {
 
     @PostMapping("update")
     public ResponseEntity<Map<String, Object>> updateChatRoom(Authentication authentication, @RequestBody ChatRoomDto chatRoomDto, HttpServletRequest request) {
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         Map<String,Object> result = new HashMap<>();
         int isUpdated = chatRoomService.updateRoom(chatRoomDto, loggedUser);
         if(isUpdated > 0){

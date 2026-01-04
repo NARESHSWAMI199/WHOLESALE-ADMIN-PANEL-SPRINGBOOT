@@ -4,7 +4,6 @@ package com.sales.wholesaler.controller;
 import com.sales.dto.ItemReviewsFilterDto;
 import com.sales.entities.AuthUser;
 import com.sales.entities.ItemReviews;
-import com.sales.entities.SalesUser;
 import com.sales.wholesaler.services.WholesaleItemReviewService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,7 @@ public class WholesaleItemReviewController  {
     @PostMapping("all")
     public ResponseEntity<Page<ItemReviews>> getAllReviews(Authentication authentication, @RequestBody ItemReviewsFilterDto ItemReviewsFilterDto, HttpServletRequest request) {
         logger.debug("Starting getAllUsers method");
-        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
+        AuthUser loggedUser = (AuthUser) authentication.getPrincipal();
         Page<ItemReviews> ItemReviewsPage = wholesaleItemReviewService.getAllItemReview(ItemReviewsFilterDto, loggedUser);
         logger.debug("Completed getAllUsers method");
         return new ResponseEntity<>(ItemReviewsPage, HttpStatus.OK);

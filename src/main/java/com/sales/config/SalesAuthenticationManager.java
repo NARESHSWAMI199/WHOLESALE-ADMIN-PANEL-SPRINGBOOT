@@ -1,6 +1,7 @@
 package com.sales.config;
 
 import com.sales.admin.repositories.UserRepository;
+import com.sales.entities.AuthUser;
 import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class SalesAuthenticationManager implements AuthenticationManager {
         String email = authentication.getName();
         String password = (String) authentication.getCredentials();
         User user = userRepository.findByEmailAndPassword(email,password).orElseThrow(() -> new UsernameNotFoundException("Invalid Credentials !"));
-        SalesUser userDetails = new SalesUser(user);
+        AuthUser userDetails = new SalesUser(user);
         //TODO : make sure password encrypt here..
         return new UsernamePasswordAuthenticationToken(
                 userDetails,password,null
