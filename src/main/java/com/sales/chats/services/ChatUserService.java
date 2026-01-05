@@ -4,7 +4,7 @@ import com.sales.chats.repositories.ChatHbRepository;
 import com.sales.chats.repositories.ChatRepository;
 import com.sales.chats.repositories.ChatUserHbRepository;
 import com.sales.chats.repositories.ChatUserRepository;
-import com.sales.entities.AuthUser;
+import com.sales.claims.AuthUser;
 import com.sales.entities.ChatUser;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;

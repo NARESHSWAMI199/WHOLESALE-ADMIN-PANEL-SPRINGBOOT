@@ -2,11 +2,11 @@ package com.sales.chats.controllers;
 
 
 import com.sales.chats.services.ChatUserService;
+import com.sales.claims.AuthUser;
+import com.sales.claims.SalesUser;
 import com.sales.dto.ChatUserDto;
 import com.sales.dto.ContactDto;
-import com.sales.entities.AuthUser;
 import com.sales.entities.ChatUser;
-import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;

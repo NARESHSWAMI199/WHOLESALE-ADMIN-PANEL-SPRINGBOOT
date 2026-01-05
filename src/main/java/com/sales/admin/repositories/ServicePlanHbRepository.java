@@ -1,6 +1,6 @@
 package com.sales.admin.repositories;
 
-import com.sales.entities.AuthUser;
+import com.sales.claims.AuthUser;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.utils.Utils;
 import jakarta.persistence.EntityManager;

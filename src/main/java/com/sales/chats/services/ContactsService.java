@@ -3,7 +3,7 @@ package com.sales.chats.services;
 import com.sales.chats.repositories.ChatHbRepository;
 import com.sales.chats.repositories.ChatRepository;
 import com.sales.chats.repositories.ContactRepository;
-import com.sales.entities.AuthUser;
+import com.sales.claims.AuthUser;
 import com.sales.entities.Contact;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;

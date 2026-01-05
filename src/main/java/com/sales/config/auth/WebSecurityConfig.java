@@ -1,4 +1,4 @@
-package com.sales.config;
+package com.sales.config.auth;
 
 
 import com.sales.filters.JwtFilter;
@@ -17,18 +17,6 @@ public class WebSecurityConfig {
 
     private final JwtFilter jwtFilter;
     private final SalesAuthenticationManager authenticationManager;
-
-/*
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/**").permitAll()
-        ).csrf(AbstractHttpConfigurer::disable).cors(corsConfigurer -> {});
-        return http.build();
-    }
-*/
-
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

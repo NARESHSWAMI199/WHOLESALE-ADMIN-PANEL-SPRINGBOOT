@@ -1,4 +1,4 @@
-package com.sales.entities;
+package com.sales.claims;
 
 import org.springframework.security.core.GrantedAuthority;
 

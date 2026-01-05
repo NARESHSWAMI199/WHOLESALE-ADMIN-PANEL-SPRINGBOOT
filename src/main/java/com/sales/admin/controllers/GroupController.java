@@ -2,12 +2,12 @@ package com.sales.admin.controllers;
 
 
 import com.sales.admin.services.GroupService;
+import com.sales.claims.AuthUser;
+import com.sales.claims.SalesUser;
 import com.sales.dto.DeleteDto;
 import com.sales.dto.GroupDto;
 import com.sales.dto.SearchFilters;
-import com.sales.entities.AuthUser;
 import com.sales.entities.Group;
-import com.sales.entities.SalesUser;
 import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;

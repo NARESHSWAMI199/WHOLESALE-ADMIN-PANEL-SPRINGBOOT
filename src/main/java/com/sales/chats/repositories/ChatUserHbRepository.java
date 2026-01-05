@@ -1,7 +1,7 @@
 package com.sales.chats.repositories;
 
 
-import com.sales.entities.AuthUser;
+import com.sales.claims.AuthUser;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;

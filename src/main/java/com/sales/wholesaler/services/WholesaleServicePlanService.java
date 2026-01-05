@@ -1,8 +1,8 @@
 package com.sales.wholesaler.services;
 
 
+import com.sales.claims.AuthUser;
 import com.sales.dto.UserPlanDto;
-import com.sales.entities.AuthUser;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.WholesalerFuturePlan;
 import com.sales.entities.WholesalerPlans;

@@ -2,11 +2,11 @@ package com.sales.wholesaler.controller;
 
 
 import com.sales.cachemanager.services.UserCacheService;
+import com.sales.claims.AuthUser;
+import com.sales.claims.SalesUser;
 import com.sales.dto.PasswordDto;
 import com.sales.dto.UserDto;
 import com.sales.dto.UserSearchFilters;
-import com.sales.entities.AuthUser;
-import com.sales.entities.SalesUser;
 import com.sales.entities.Store;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;

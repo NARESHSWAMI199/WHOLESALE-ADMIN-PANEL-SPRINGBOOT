@@ -1,7 +1,7 @@
 package com.sales.wholesaler.controller;
 
-import com.sales.entities.AuthUser;
-import com.sales.entities.SalesUser;
+import com.sales.claims.AuthUser;
+import com.sales.claims.SalesUser;
 import com.sales.global.GlobalConstant;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

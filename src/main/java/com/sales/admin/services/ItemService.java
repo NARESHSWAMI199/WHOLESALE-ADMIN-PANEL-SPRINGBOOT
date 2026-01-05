@@ -4,6 +4,7 @@ package com.sales.admin.services;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sales.admin.repositories.*;
+import com.sales.claims.AuthUser;
 import com.sales.dto.*;
 import com.sales.entities.*;
 import com.sales.exceptions.MyException;
@@ -54,7 +55,7 @@ public class ItemService {
     String itemImagePath;
 
 
-    public Page<Item> getAllItems(ItemSearchFields searchFilters,AuthUser loggedUser) {
+    public Page<Item> getAllItems(ItemSearchFields searchFilters, AuthUser loggedUser) {
         logger.debug("Entering getAllItems with searchFilters: {}", searchFilters);
         Sort sort = searchFilters.getOrder().equalsIgnoreCase("asc") ?
                 Sort.by(searchFilters.getOrderBy()).ascending() :

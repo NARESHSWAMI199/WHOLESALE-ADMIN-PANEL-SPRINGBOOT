@@ -3,8 +3,8 @@ package com.sales.chats.services;
 
 import com.sales.chats.repositories.ChatRoomHbRepository;
 import com.sales.chats.repositories.ChatRoomRepository;
+import com.sales.claims.AuthUser;
 import com.sales.dto.ChatRoomDto;
-import com.sales.entities.AuthUser;
 import com.sales.entities.ChatRoom;
 import com.sales.entities.ChatRoomUser;
 import com.sales.entities.User;

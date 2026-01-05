@@ -1,7 +1,7 @@
 package com.sales.wholesaler.controller;
 
 
-import com.sales.entities.AuthUser;
+import com.sales.claims.AuthUser;
 import com.sales.entities.Wallet;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.jwtUtils.JwtToken;

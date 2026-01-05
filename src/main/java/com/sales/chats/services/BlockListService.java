@@ -3,7 +3,7 @@ package com.sales.chats.services;
 
 import com.sales.chats.repositories.BlockListHbRepository;
 import com.sales.chats.repositories.BlockListRepository;
-import com.sales.entities.AuthUser;
+import com.sales.claims.AuthUser;
 import com.sales.entities.BlockedUser;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;

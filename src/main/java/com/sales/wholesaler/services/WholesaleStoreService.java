@@ -1,6 +1,7 @@
 package com.sales.wholesaler.services;
 
 import com.sales.admin.repositories.AddressRepository;
+import com.sales.claims.AuthUser;
 import com.sales.dto.AddressDto;
 import com.sales.dto.SearchFilters;
 import com.sales.dto.StoreDto;

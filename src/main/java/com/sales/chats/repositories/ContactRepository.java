@@ -1,7 +1,7 @@
 package com.sales.chats.repositories;
 
 
-import com.sales.entities.AuthUser;
+import com.sales.claims.AuthUser;
 import com.sales.entities.Contact;
 import com.sales.entities.User;
 import jakarta.transaction.Transactional;

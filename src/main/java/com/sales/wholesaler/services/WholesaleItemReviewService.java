@@ -1,7 +1,7 @@
 package com.sales.wholesaler.services;
 
+import com.sales.claims.AuthUser;
 import com.sales.dto.ItemReviewsFilterDto;
-import com.sales.entities.AuthUser;
 import com.sales.entities.ItemReviews;
 import com.sales.wholesaler.repository.WholesaleItemReviewRepository;
 import lombok.RequiredArgsConstructor;

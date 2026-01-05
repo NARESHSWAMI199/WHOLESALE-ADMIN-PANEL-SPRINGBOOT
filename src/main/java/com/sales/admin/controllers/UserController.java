@@ -3,9 +3,9 @@ package com.sales.admin.controllers;
 
 import com.sales.admin.services.PaginationService;
 import com.sales.admin.services.UserService;
+import com.sales.claims.AuthUser;
+import com.sales.claims.SalesUser;
 import com.sales.dto.*;
-import com.sales.entities.AuthUser;
-import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;

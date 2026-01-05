@@ -1,9 +1,9 @@
 package com.sales.wholesaler.controller;
 
 
+import com.sales.claims.AuthUser;
+import com.sales.claims.SalesUser;
 import com.sales.dto.StorePromotionDto;
-import com.sales.entities.AuthUser;
-import com.sales.entities.SalesUser;
 import com.sales.wholesaler.services.WholesalePromotionsService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

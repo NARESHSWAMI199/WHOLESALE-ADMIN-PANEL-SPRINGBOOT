@@ -1,8 +1,8 @@
 package com.sales.dao;
 
+import com.sales.claims.AuthUser;
 import com.sales.dto.ItemDto;
 import com.sales.dto.SearchFilters;
-import com.sales.entities.AuthUser;
 import com.sales.entities.Item;
 import org.springframework.data.domain.Page;
 

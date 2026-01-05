@@ -1,8 +1,8 @@
 package com.sales.wholesaler.controller;
 
 
+import com.sales.claims.AuthUser;
 import com.sales.dto.SearchFilters;
-import com.sales.entities.AuthUser;
 import com.sales.entities.WalletTransaction;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;

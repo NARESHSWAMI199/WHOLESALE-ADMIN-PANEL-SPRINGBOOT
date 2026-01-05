@@ -1,10 +1,10 @@
 package com.sales.chats.controllers;
 
 import com.sales.chats.services.ContactsService;
+import com.sales.claims.AuthUser;
+import com.sales.claims.SalesUser;
 import com.sales.dto.ContactDto;
-import com.sales.entities.AuthUser;
 import com.sales.entities.Contact;
-import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,8 +1,8 @@
 package com.sales.wholesaler.repository;
 
 
+import com.sales.claims.AuthUser;
 import com.sales.dto.AddressDto;
-import com.sales.entities.AuthUser;
 import com.sales.entities.City;
 import com.sales.entities.State;
 import com.sales.utils.Utils;

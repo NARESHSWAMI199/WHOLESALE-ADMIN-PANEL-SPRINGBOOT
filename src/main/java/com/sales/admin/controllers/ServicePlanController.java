@@ -3,12 +3,12 @@ package com.sales.admin.controllers;
 
 import com.sales.admin.services.ServicePlanService;
 import com.sales.admin.services.UserService;
+import com.sales.claims.AuthUser;
+import com.sales.claims.SalesUser;
 import com.sales.dto.DeleteDto;
 import com.sales.dto.ServicePlanDto;
 import com.sales.dto.StatusDto;
 import com.sales.dto.UserPlanDto;
-import com.sales.entities.AuthUser;
-import com.sales.entities.SalesUser;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.WholesalerPlans;
 import com.sales.global.ConstantResponseKeys;

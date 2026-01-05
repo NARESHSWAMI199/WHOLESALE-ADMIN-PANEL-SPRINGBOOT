@@ -1,7 +1,7 @@
 package com.sales.utils;
 
-import com.sales.entities.AuthUser;
-import com.sales.entities.SalesUser;
+import com.sales.claims.AuthUser;
+import com.sales.claims.SalesUser;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.exceptions.NotFoundException;

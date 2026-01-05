@@ -2,8 +2,8 @@ package com.sales.wholesaler.services;
 
 
 import com.sales.cachemanager.services.UserCacheService;
+import com.sales.claims.AuthUser;
 import com.sales.dto.*;
-import com.sales.entities.AuthUser;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.SupportEmail;
 import com.sales.entities.User;

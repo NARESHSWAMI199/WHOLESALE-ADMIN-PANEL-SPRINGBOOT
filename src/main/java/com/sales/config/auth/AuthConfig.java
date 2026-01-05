@@ -1,4 +1,4 @@
-package com.sales.config;
+package com.sales.config.auth;
 
 
 import org.springframework.context.annotation.Bean;

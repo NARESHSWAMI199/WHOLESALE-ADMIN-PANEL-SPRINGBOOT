@@ -1,8 +1,8 @@
-package com.sales.config;
+package com.sales.config.auth;
 
 import com.sales.admin.repositories.UserRepository;
-import com.sales.entities.AuthUser;
-import com.sales.entities.SalesUser;
+import com.sales.claims.AuthUser;
+import com.sales.claims.SalesUser;
 import com.sales.entities.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -2,9 +2,9 @@ package com.sales.admin.services;
 
 import com.sales.admin.repositories.AddressHbRepository;
 import com.sales.admin.repositories.AddressRepository;
+import com.sales.claims.AuthUser;
 import com.sales.dto.AddressDto;
 import com.sales.entities.Address;
-import com.sales.entities.AuthUser;
 import com.sales.entities.City;
 import com.sales.entities.State;
 import jakarta.transaction.Transactional;

@@ -1,8 +1,8 @@
 package com.sales.admin.repositories;
 
 
+import com.sales.claims.AuthUser;
 import com.sales.dto.UserDto;
-import com.sales.entities.AuthUser;
 import com.sales.utils.Utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;

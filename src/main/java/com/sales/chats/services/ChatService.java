@@ -2,8 +2,8 @@ package com.sales.chats.services;
 
 import com.sales.chats.repositories.ChatHbRepository;
 import com.sales.chats.repositories.ChatRepository;
+import com.sales.claims.AuthUser;
 import com.sales.dto.MessageDto;
-import com.sales.entities.AuthUser;
 import com.sales.entities.Chat;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;

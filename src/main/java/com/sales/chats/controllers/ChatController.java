@@ -1,10 +1,10 @@
 package com.sales.chats.controllers;
 
 import com.sales.chats.services.ChatService;
+import com.sales.claims.AuthUser;
+import com.sales.claims.SalesUser;
 import com.sales.dto.MessageDto;
-import com.sales.entities.AuthUser;
 import com.sales.entities.Chat;
-import com.sales.entities.SalesUser;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.ConstantResponseKeys;

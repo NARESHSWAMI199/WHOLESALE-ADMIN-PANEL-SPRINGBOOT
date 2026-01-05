@@ -1,8 +1,8 @@
 package com.sales.wholesaler.services;
 
 
+import com.sales.claims.AuthUser;
 import com.sales.dto.StorePromotionDto;
-import com.sales.entities.AuthUser;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.wholesaler.repository.WholesaleHbPromotionRepository;
 import com.sales.wholesaler.repository.WholesaleStoreRepository;

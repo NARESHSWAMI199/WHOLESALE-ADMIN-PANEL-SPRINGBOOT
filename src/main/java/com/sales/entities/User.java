@@ -2,6 +2,7 @@ package com.sales.entities;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sales.claims.AuthUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

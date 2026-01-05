@@ -1,5 +1,6 @@
 package com.sales.entities;
 
+import com.sales.claims.AuthUser;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;

@@ -1,6 +1,7 @@
 package com.sales.admin.services;
 
 import com.sales.admin.repositories.*;
+import com.sales.claims.AuthUser;
 import com.sales.dto.*;
 import com.sales.entities.*;
 import com.sales.exceptions.MyException;
@@ -147,7 +148,7 @@ public class StoreService {
 
 
     @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class})
-    public Map<String, Object> createOrUpdateStore(StoreDto storeDto,AuthUser loggedUser,String path) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public Map<String, Object> createOrUpdateStore(StoreDto storeDto, AuthUser loggedUser, String path) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Entering createOrUpdateStore with storeDto: {}, loggedUser: {}, path: {}", storeDto, loggedUser, path);
             Map<String, Object> responseObj = new HashMap<>();
             // if there is any required field null, then this will throw IllegalArgumentException

@@ -1,6 +1,10 @@
 package com.sales.specifications;
 
-import com.sales.entities.*;
+import com.sales.claims.AuthUser;
+import com.sales.entities.ItemReviews;
+import com.sales.entities.ItemReviews_;
+import com.sales.entities.StoreNotifications;
+import com.sales.entities.StoreNotifications_;
 import org.springframework.data.jpa.domain.Specification;
 
 public class ItemReviewSpecifications {

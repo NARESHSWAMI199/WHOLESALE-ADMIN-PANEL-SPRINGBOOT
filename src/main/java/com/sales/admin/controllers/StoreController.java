@@ -1,8 +1,12 @@
 package com.sales.admin.controllers;
 
 import com.sales.admin.services.StoreService;
+import com.sales.claims.AuthUser;
+import com.sales.claims.SalesUser;
 import com.sales.dto.*;
-import com.sales.entities.*;
+import com.sales.entities.Store;
+import com.sales.entities.StoreCategory;
+import com.sales.entities.StoreSubCategory;
 import com.sales.exceptions.MyException;
 import com.sales.global.ConstantResponseKeys;
 import io.swagger.v3.oas.annotations.media.Content;

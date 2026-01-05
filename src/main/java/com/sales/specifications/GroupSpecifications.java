@@ -1,6 +1,6 @@
 package com.sales.specifications;
 
-import com.sales.entities.AuthUser;
+import com.sales.claims.AuthUser;
 import com.sales.entities.Group;
 import com.sales.entities.Group_;
 import org.springframework.data.jpa.domain.Specification;

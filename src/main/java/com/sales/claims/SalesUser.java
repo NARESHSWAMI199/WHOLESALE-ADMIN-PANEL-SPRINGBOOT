@@ -1,5 +1,6 @@
-package com.sales.entities;
+package com.sales.claims;
 
+import com.sales.entities.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
