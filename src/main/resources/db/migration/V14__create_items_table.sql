@@ -1,0 +1,31 @@
+-- test.item definition
+
+CREATE TABLE `items` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `store_id` int DEFAULT NULL,
+  `label` enum('O','N') DEFAULT NULL,
+  `capacity` float DEFAULT NULL,
+  `price` float NOT NULL,
+  `discount` float DEFAULT NULL,
+  `category` int DEFAULT NULL,
+  `subcategory` int DEFAULT NULL,
+  `description` text NOT NULL,
+  `avatar` text,
+  `rating` float DEFAULT NULL,
+  `total_rating_count` int DEFAULT '0',
+  `total_reviews` int DEFAULT '0',
+  `total_reports_count` int DEFAULT '0',
+  `status` enum('A','D') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `is_deleted` enum('Y','N') DEFAULT NULL,
+  `created_at` bigint NOT NULL,
+  `created_by` int NOT NULL,
+  `updated_at` bigint DEFAULT NULL,
+  `updated_by` int DEFAULT NULL,
+  `slug` varchar(50) DEFAULT NULL,
+  `in_stock` enum('Y','N') DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `wholesale_id` (`wholesale_id`),
+  CONSTRAINT `item_ibfk_1`
+  FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=95 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

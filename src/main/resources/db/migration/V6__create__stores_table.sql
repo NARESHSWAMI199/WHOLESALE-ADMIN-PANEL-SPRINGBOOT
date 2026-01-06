@@ -1,0 +1,32 @@
+-- test.store definition
+
+CREATE TABLE `stores` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `slug` varchar(50) DEFAULT NULL,
+  `category` int DEFAULT NULL,
+  `subcategory` int DEFAULT NULL,
+  `name` varchar(100) NOT NULL,
+  `avtar` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `address` int DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `phone` varchar(12) DEFAULT NULL,
+  `discription` text,
+  `rating` float DEFAULT NULL,
+  `status` enum('A','D') DEFAULT NULL,
+  `is_deleted` enum('Y','N') DEFAULT NULL,
+  `expiry_date` bigint DEFAULT NULL,
+  `created_at` bigint DEFAULT NULL,
+  `created_by` int DEFAULT NULL,
+  `updated_at` bigint DEFAULT NULL,
+  `updated_by` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `store_user_id` (`user_id`),
+  UNIQUE KEY `store_email` (`email`),
+  UNIQUE KEY `store_phone` (`phone`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `store_ibfk_1`,
+  FOREIGN KEY (user_id) REFERENCES users(user_id),
+  FOREIGN KEY (category) REFERENCES store_categories(id),
+  FOREIGN KEY (subcategory) REFERENCES store_subcategories(id)
+) ENGINE=InnoDB AUTO_INCREMENT=139 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

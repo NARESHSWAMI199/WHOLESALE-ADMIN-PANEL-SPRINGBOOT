@@ -1,0 +1,15 @@
+-- test.`groups` definition
+
+CREATE TABLE `groups` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `slug` varchar(50) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `is_deleted` enum('Y','N') DEFAULT NULL,
+  `created_at` bigint DEFAULT NULL,
+  `created_by` int DEFAULT NULL,
+  `updated_at` bigint DEFAULT NULL,
+  `updated_by` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `slug` (`slug`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
