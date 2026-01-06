@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +40,9 @@ public class ServicePlanController  {
     
     private static final Logger logger = LoggerFactory.getLogger(ServicePlanController.class);
 
+
     @PostMapping(value = {"user-plans/{userSlug}","user-plans"})
+    @PreAuthorize("hasAnyAuthority('user.plan.all','user.plan.detail')")
     public ResponseEntity< Page<WholesalerPlans>> getUserPlans(@PathVariable(required = false) String userSlug, @RequestBody UserPlanDto searchFilters){
         logger.debug("Fetching user plans for userSlug: {}", userSlug);
         Integer userId = userService.getUserIdBySlug(userSlug);
@@ -49,6 +52,7 @@ public class ServicePlanController  {
 
 
     @PostMapping("service-plans")
+    @PreAuthorize("hasAuthority('service-plans.all')")
     public ResponseEntity<Page<ServicePlan>> getAllPlans(@RequestBody ServicePlanDto servicePlanDto) {
         logger.debug("Fetching all service plans with filters: {}", servicePlanDto);
         return new ResponseEntity<>(servicePlanService.getALlServicePlan(servicePlanDto), HttpStatusCode.valueOf(200));
@@ -67,6 +71,7 @@ public class ServicePlanController  {
             """))
     )
     @PostMapping("add")
+    @PreAuthorize("hasAuthority('service-plans.add')")
     public ResponseEntity<Map<String,Object>> insertServicePlans(Authentication authentication,HttpServletRequest request , @RequestBody ServicePlanDto servicePlanDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Inserting new service plan: {}", servicePlanDto);
         AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
@@ -79,6 +84,7 @@ public class ServicePlanController  {
     }
 
 
+    @PreAuthorize("hasAuthority('service-plans.status.update')")
     @PostMapping(ConstantResponseKeys.STATUS)
     public ResponseEntity<Map<String,Object>> updateStatus(Authentication authentication,HttpServletRequest request, @RequestBody StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Updating status for service plan: {}", statusDto);
@@ -88,6 +94,7 @@ public class ServicePlanController  {
     }
 
 
+    @PreAuthorize("hasAuthority('service-plans.delete')")
     @PostMapping("delete")
     public ResponseEntity<Map<String,Object>> deleteStatus(Authentication authentication,@RequestBody DeleteDto deleteDto, HttpServletRequest request) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Deleting service plan: {}", deleteDto);

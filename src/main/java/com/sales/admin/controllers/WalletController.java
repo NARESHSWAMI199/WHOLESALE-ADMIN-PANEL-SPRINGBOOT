@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,7 @@ public class WalletController  {
 
     private final WalletService walletService;
 
+    @PreAuthorize("hasAuthority('wallet.detail')")
     @GetMapping("/{userSlug}")
     public ResponseEntity<Wallet> getWalletDetail(@PathVariable String userSlug, HttpServletRequest request){
         Wallet walletDetail = walletService.getWalletDetail(userSlug);
@@ -30,6 +32,7 @@ public class WalletController  {
     }
 
 
+    @PreAuthorize("hasAuthority('wallet.pay')")
     @GetMapping("pay/{userSlug}/{servicePlanSlug}")
     public ResponseEntity<Map<String,Object>> payUsingWallet(@PathVariable String userSlug , @PathVariable String servicePlanSlug,HttpServletRequest request) {
         Map<String,Object> result = new HashMap<>();

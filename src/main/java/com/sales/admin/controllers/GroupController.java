@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +34,7 @@ public class GroupController  {
     private static final Logger logger = LoggerFactory.getLogger(GroupController.class);
 
     @PostMapping("/all")
+    @PreAuthorize("hasAuthority('group.all')")
     public ResponseEntity<Page<Group>> getAllGroup(Authentication authentication,HttpServletRequest request, @RequestBody SearchFilters searchFilters) {
         logger.debug("Fetching all groups with filters: {}", searchFilters);
         AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
@@ -41,6 +43,7 @@ public class GroupController  {
     }
 
     @GetMapping("/permissions/all")
+    @PreAuthorize("hasAuthority('group.permission.all')")
     public ResponseEntity<Map<String, List<Object>>> getAllPermissions(HttpServletRequest request) {
         logger.debug("Fetching all permissions");
         Map<String, List<Object>> permissions = groupService.getAllPermissions();
@@ -49,6 +52,7 @@ public class GroupController  {
 
     @Transactional
     @PostMapping(value = {"create", "update"})
+    @PreAuthorize("hasAnyAuthority('group.permission.add','group.permission.update','group.permission.edit')")
     public ResponseEntity<Map<String, Object>> createOrUpdate(Authentication authentication,HttpServletRequest request, @RequestBody GroupDto groupDto) throws Exception {
         logger.debug("Creating or updating group: {}", groupDto);
         AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
@@ -58,6 +62,7 @@ public class GroupController  {
     }
 
     @GetMapping("/detail/{slug}")
+    @PreAuthorize("hasAuthority('group.detail')")
     public ResponseEntity<Map<String, Object>> getDetailGroup(@PathVariable String slug) {
         logger.debug("Fetching group details for slug: {}", slug);
         Map<String, Object> responseObj = new HashMap<>();
@@ -69,6 +74,7 @@ public class GroupController  {
 
     @Transactional
     @PostMapping("/delete")
+    @PreAuthorize("hasAuthority('group.delete')")
     public ResponseEntity<Map<String, Object>> deleteGroupBySlug(Authentication authentication,HttpServletRequest request, @RequestBody DeleteDto deleteDto) throws Exception {
         logger.debug("Deleting group with slug: {}", deleteDto);
         Map<String, Object> responseObj = new HashMap<>();

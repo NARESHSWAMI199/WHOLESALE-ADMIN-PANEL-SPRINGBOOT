@@ -50,7 +50,7 @@ public class UserController  {
     private final PaginationService paginationService;
     private final JwtToken jwtToken;
 
-    @PreAuthorize("hasAuthority('users.all')")
+    @PreAuthorize("hasAuthority('user.all')")
     @PostMapping("/{userType}/all")
     public ResponseEntity<Page<User>> getAllUsers(Authentication authentication,HttpServletRequest request,@RequestBody UserSearchFilters searchFilters, @PathVariable(required = true) String userType) {
         logger.info("authentication  authorities : {}",authentication.getAuthorities());
@@ -178,6 +178,7 @@ public class UserController  {
                 }
             """)
     ))
+    @PreAuthorize("hasAnyAuthority('user.add','user.edit','user.update')")
     @Transactional
     @PostMapping(value = {"/add", "/update"})
     public ResponseEntity<Map<String, Object>> register(Authentication authentication,HttpServletRequest request, @RequestBody UserDto userDto) throws Exception {
@@ -189,6 +190,7 @@ public class UserController  {
 
     }
 
+    @PreAuthorize("hasAuthority('user.detail')")
     @GetMapping("/detail/{slug}")
     public ResponseEntity<Map<String, Object>> getDetailUser(Authentication authentication,HttpServletRequest request,@PathVariable String slug) {
         logger.debug("Fetching details for user with slug: {}", slug);
@@ -206,6 +208,7 @@ public class UserController  {
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('user.delete')")
     @PostMapping("/delete")
     public ResponseEntity<Map<String, Object>> deleteUserBySlug(Authentication authentication,HttpServletRequest request, @RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Deleting user with slug: {}", deleteDto.getSlug());
@@ -222,6 +225,7 @@ public class UserController  {
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
     }
 
+    @PreAuthorize("hasAuthority('user.reset.password')")
     @Transactional
     @PostMapping("/password")
     public ResponseEntity<Map<String, Object>> resetUserPasswordBySlug(Authentication authentication,HttpServletRequest request ,@RequestBody PasswordDto passwordDto) {
@@ -240,6 +244,7 @@ public class UserController  {
     }
 
 
+    @PreAuthorize("hasAuthority('user.status')")
     @PostMapping("/status")
     public ResponseEntity<Map<String, Object>> stockSlug(Authentication authentication,HttpServletRequest request,@RequestBody StatusDto statusDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Updating status for user with slug: {}", statusDto.getSlug());
@@ -261,6 +266,7 @@ public class UserController  {
 
 
     @Transactional
+    @PreAuthorize("hasAuthority('user.profile.edit')")
     @PostMapping("/update_profile/{slug}")
     public ResponseEntity<Map<String, Object>> updateProfileImage(Authentication authentication,HttpServletRequest request, @RequestPart MultipartFile profileImage, @PathVariable String slug ) {
         logger.debug("Updating profile image for user with slug: {}", slug);
@@ -288,6 +294,7 @@ public class UserController  {
     @Value("${profile.get}")
     String filePath;
 
+    @PreAuthorize("hasAuthority('user.profile')")
     @GetMapping("/profile/{slug}/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename ,@PathVariable String slug) throws Exception {
         logger.debug("Fetching profile image: {} for user with slug: {}", filename, slug);
@@ -298,6 +305,7 @@ public class UserController  {
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
     }
 
+    @PreAuthorize("hasAuthority('user.groups')")
     @GetMapping("/groups/{slug}")
     public ResponseEntity<Map<String,Object>> getUserGroupsIdsBySlug(HttpServletRequest request,@PathVariable String slug){
         logger.debug("Fetching group IDs for user with slug: {}", slug);
@@ -315,7 +323,7 @@ public class UserController  {
 
 
 
-
+    @PreAuthorize("hasAuthority('wholesaler.permission')")
     @GetMapping("wholesale/permissions/{slug}")
     public ResponseEntity<Map<String,Object>> getAllAssignedPermissionsForWholesaler(HttpServletRequest request,@PathVariable String slug){
         logger.debug("Fetching all assigned permissions for wholesaler with slug: {}", slug);
@@ -344,6 +352,7 @@ public class UserController  {
             """)
     ))
     @Transactional
+    @PreAuthorize("hasAuthority('wholesaler.permission.update')")
     @PostMapping("wholesaler/permissions/update")
     public ResponseEntity<Map<String,Object>> updateWholesalerPermissions(Authentication authentication,HttpServletRequest request, @RequestBody UserDto userDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Updating permissions for wholesaler with slug: {}", userDto.getSlug());
