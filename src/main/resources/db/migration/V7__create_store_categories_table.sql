@@ -1,4 +1,4 @@
--- test.store_category definition
+
 
 CREATE TABLE `store_categories` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -8,4 +8,4 @@ CREATE TABLE `store_categories` (
   `is_deleted` enum('Y','N') DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `store_category_unique` (`slug`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);

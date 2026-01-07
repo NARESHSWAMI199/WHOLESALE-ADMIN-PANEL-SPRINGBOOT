@@ -1,4 +1,4 @@
--- test.store definition
+
 
 CREATE TABLE `stores` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -29,4 +29,4 @@ CREATE TABLE `stores` (
   FOREIGN KEY (user_id) REFERENCES users(user_id),
   FOREIGN KEY (category) REFERENCES store_categories(id),
   FOREIGN KEY (subcategory) REFERENCES store_subcategories(id)
-) ENGINE=InnoDB AUTO_INCREMENT=139 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);

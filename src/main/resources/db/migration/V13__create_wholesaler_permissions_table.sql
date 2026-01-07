@@ -6,4 +6,4 @@ CREATE TABLE `wholesaler_permissions` (
   PRIMARY KEY (`user_id`,`permission_id`),
   FOREIGN KEY (user_id) REFERENCES users(user_id),
   FOREIGN KEY (permission_id) REFERENCES store_permissions(id)
-) ENGINE=InnoDB AUTO_INCREMENT=691 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);

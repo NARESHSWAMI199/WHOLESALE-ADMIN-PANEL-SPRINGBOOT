@@ -1,4 +1,4 @@
--- test.store_subcategory definition
+
 
 CREATE TABLE `store_subcategories` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -11,4 +11,4 @@ CREATE TABLE `store_subcategories` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `store_subcategory_unique` (`slug`),
   FOREIGN KEY (category_id) REFERENCES store_subcategories(id)
-) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);

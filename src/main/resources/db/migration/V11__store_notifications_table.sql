@@ -13,4 +13,4 @@ CREATE TABLE `store_notifications` (
   PRIMARY KEY (`id`),
   FOREIGN KEY store_id REFERENCES stores(id),
   FOREIGN KEY user_id REFERENCES users(user_id)
-) ENGINE=InnoDB AUTO_INCREMENT=186 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);

@@ -10,4 +10,4 @@ CREATE TABLE `store_ratings` (
   PRIMARY KEY (`id`),
   FOREIGN KEY (user_id) REFERENCES users(user_id),
   FOREIGN KEY (store_id) REFERENCES stores(store_id)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
