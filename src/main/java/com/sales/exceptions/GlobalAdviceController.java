@@ -36,7 +36,7 @@ public class GlobalAdviceController {
     @ExceptionHandler(value = PermissionDeniedDataAccessException.class)
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
     public ErrorDto permissionDeniedDataAccessException (PermissionDeniedDataAccessException ex , WebRequest request){
-        logger.error("PermissionDeniedDataAccessException: {}", ex.getMessage());
+        logger.error("PermissionDeniedDataAccessException: {}", ex.getMessage(),ex);
         return new ErrorDto(ex.getMessage(), 403);
     }
 
@@ -44,7 +44,7 @@ public class GlobalAdviceController {
     @ExceptionHandler(value = NotFoundException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ErrorDto notFoundException (NotFoundException ex , WebRequest request){
-        logger.error("NotFoundException: {}", ex.getMessage());
+        logger.error("NotFoundException: {}", ex.getMessage(),ex);
         return new ErrorDto(ex.getMessage(), 404);
     }
 
@@ -52,7 +52,7 @@ public class GlobalAdviceController {
     @ExceptionHandler(value = IllegalArgumentException.class)
     @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
     public ErrorDto illegalArgumentException (IllegalArgumentException ex , WebRequest request){
-        logger.error("IllegalArgumentException: {}", ex.getMessage());
+        logger.error("IllegalArgumentException: {}", ex.getMessage(),ex);
         return new ErrorDto(ex.getMessage(), 406);
     }
 
@@ -60,7 +60,7 @@ public class GlobalAdviceController {
     @ExceptionHandler(value = JsonMappingException.class)
     @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
     public ErrorDto jsonMappingExceptionHandle (JsonMappingException ex , WebRequest request){
-        logger.error("JsonMappingException: {}", ex.getMessage());
+        logger.error("JsonMappingException: {}", ex.getMessage(),ex);
         return new ErrorDto(ex.getMessage(), 406);
     }
 
@@ -68,7 +68,7 @@ public class GlobalAdviceController {
     @ExceptionHandler(value = {MultipartException.class})
     @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
     public ErrorDto noMultipartException (MultipartException ex , WebRequest request){
-        logger.error("MultipartException: {}", ex.getMessage());
+        logger.error("MultipartException: {}", ex.getMessage(),ex);
         return new ErrorDto("This is not a multipart request", 400);
     }
 
@@ -84,7 +84,7 @@ public class GlobalAdviceController {
     @ExceptionHandler(value = {ObjectNotFoundException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ErrorDto resourceNotFoundException(ObjectNotFoundException ex, WebRequest request) {
-        logger.error("ObjectNotFoundException: {}", ex.getMessage());
+        logger.error("ObjectNotFoundException: {}", ex.getMessage(),ex);
         String errorMessage = ex.getMessage();
         errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
         ErrorDto message = new ErrorDto(errorMessage,404);
@@ -95,7 +95,7 @@ public class GlobalAdviceController {
     @ExceptionHandler(value = {SQLIntegrityConstraintViolationException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorDto resourceNotFoundException(SQLIntegrityConstraintViolationException ex, WebRequest request) {
-        logger.error("SQLIntegrityConstraintViolationException: {}", ex.getMessage());
+        logger.error("SQLIntegrityConstraintViolationException: {}", ex.getMessage(),ex);
         String errorMessage = ex.getMessage();
         errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
         ErrorDto message = new ErrorDto(errorMessage,500);
@@ -106,7 +106,7 @@ public class GlobalAdviceController {
     @ExceptionHandler(value = {NullPointerException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorDto resourceNotFoundException(NullPointerException ex, WebRequest request) {
-        logger.error("NullPointerException: {}", ex.getMessage());
+        logger.error("NullPointerException: {}", ex.getMessage(),ex);
         ErrorDto message = new ErrorDto("Something went wrong there is a null pointer exception.",400);
         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         return message;
@@ -116,7 +116,7 @@ public class GlobalAdviceController {
     @ExceptionHandler(value = {DataIntegrityViolationException.class})
     @ResponseStatus(value = HttpStatus.CONFLICT)
     public ErrorDto dataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
-        logger.error("DataIntegrityViolationException: {}", ex.getMessage());
+        logger.error("DataIntegrityViolationException: {}", ex.getMessage(),ex);
         String errorMessage = getCauseMessage(ex);
         errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
         ErrorDto err = new ErrorDto(errorMessage,409);
@@ -127,7 +127,7 @@ public class GlobalAdviceController {
     @ExceptionHandler(value = {ConstraintViolationException.class})
     @ResponseStatus(value = HttpStatus.CONFLICT)
     public ErrorDto sqlExceptionHelper(ConstraintViolationException ex, WebRequest request) {
-        logger.error("ConstraintViolationException : {}", ex.getMessage());
+        logger.error("ConstraintViolationException : {}", ex.getMessage(),ex);
         String errorMessage = extractDuplicateEntryMessage(ex.getMessage());
         errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
         return new ErrorDto(errorMessage,409);
@@ -137,7 +137,7 @@ public class GlobalAdviceController {
     @ExceptionHandler(value = {HttpMessageNotReadableException.class})
     @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
     public ErrorDto httpMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest request) {
-        logger.error("HttpMessageNotReadableException: {}", ex.getMessage());
+        logger.error("HttpMessageNotReadableException: {}", ex.getMessage(),ex);
         ErrorDto message = new ErrorDto(ex.getMessage(),406);
         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         return message;
@@ -147,7 +147,7 @@ public class GlobalAdviceController {
     @ExceptionHandler(value = {MyException.class})
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto myException(MyException ex, WebRequest request) {
-        logger.error("MyException: {}", ex.getMessage());
+        logger.error("MyException: {}", ex.getMessage(),ex);
         String errorMessage = ex.getMessage();
         errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
         ErrorDto message = new ErrorDto(errorMessage,500);
@@ -159,7 +159,7 @@ public class GlobalAdviceController {
     @ExceptionHandler(value = {UserException.class})
     @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
     public ErrorDto userException(UserException ex, WebRequest request) {
-        logger.error("UserException: {}", ex.getMessage());
+        logger.error("UserException: {}", ex.getMessage(),ex);
         String errorMessage = ex.getMessage();
         errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
         ErrorDto message = new ErrorDto(errorMessage,500);
@@ -171,7 +171,7 @@ public class GlobalAdviceController {
     @ExceptionHandler(value = {UnexpectedRollbackException.class})
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto unexpectedRollbackException(UnexpectedRollbackException ex, WebRequest request) {
-        logger.error("UnexpectedRollbackException: {}", ex.getMessage());
+        logger.error("UnexpectedRollbackException: {}", ex.getMessage(),ex);
         String errorMessage = ex.getLocalizedMessage();
         errorMessage = errorMessage.contains(";") ? errorMessage.substring(0, errorMessage.indexOf(";")) : errorMessage;
         ErrorDto message = new ErrorDto(errorMessage,500);
