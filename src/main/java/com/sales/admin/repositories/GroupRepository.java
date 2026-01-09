@@ -19,13 +19,13 @@ public interface GroupRepository extends JpaRepository<Group,Long> , JpaSpecific
 
     @Query(value = """
             select 
-                g.name,
-                p.id,
-                p.permission 
+                g.name as name,
+                p.id as id,
+                p.permission as permission 
             from Group g
-            left join g.permissions gp
+            left join g.permissions p
             where g.id =:groupId
-            """,nativeQuery = true)
+            """)
     List<Map<String,Object>> findGroupAndPermissionsByGroupId(@Param("groupId") Integer groupId);
 
 
