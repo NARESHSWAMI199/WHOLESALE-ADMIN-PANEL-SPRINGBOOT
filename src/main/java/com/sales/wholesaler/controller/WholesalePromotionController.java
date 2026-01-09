@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,7 @@ public class WholesalePromotionController  {
     private static final Logger logger = LoggerFactory.getLogger(WholesalePromotionController.class);
 
     @PostMapping("/")
+    @PreAuthorize("hasAuthority('wholesale.promoted.item.add')")
     public ResponseEntity<Map<String,Object>> insertPromotedItem(Authentication authentication, HttpServletRequest request, @ModelAttribute StorePromotionDto storePromotionDto){
         logger.debug("Starting insertPromotedItem method");
         AuthUser loggedUser = (SalesUser) authentication.getPrincipal();

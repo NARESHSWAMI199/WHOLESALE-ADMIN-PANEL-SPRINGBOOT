@@ -30,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -220,6 +221,7 @@ public class WholesaleUserController  {
 
     @Transactional
     @PostMapping("/password")
+    @PreAuthorize("hasAuthority('wholesale.password.reset')")
     public ResponseEntity<Map<String, Object>> resetUserPasswordBySlug(Authentication authentication,HttpServletRequest request ,@RequestBody PasswordDto passwordDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting resetUserPasswordBySlug method");
         Map<String,Object> responseObj = new HashMap<>();
@@ -235,6 +237,7 @@ public class WholesaleUserController  {
 
 
     @PostMapping("/update_profile")
+    @PreAuthorize("hasAnyAuthority('wholesale.profile.update','wholesale.profile.edit')")
     public ResponseEntity<Map<String, Object>> updateProfileImage(Authentication authentication,HttpServletRequest request, @RequestPart MultipartFile profileImage) throws IOException {
         logger.debug("Starting updateProfileImage method");
         Map<String,Object> responseObj = new HashMap<>();

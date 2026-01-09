@@ -25,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,6 +65,7 @@ public class WholesaleStoreController  {
     )))
     @Transactional
     @PostMapping(value = {"/update"})
+    @PreAuthorize("hasAnyAuthority('wholesale.store.udpate','wholesale.store.edit')")
     public ResponseEntity<Map<String, Object>> updateStore(Authentication authentication,HttpServletRequest request, @ModelAttribute StoreDto storeDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting updateStore method");
         AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
@@ -75,6 +77,7 @@ public class WholesaleStoreController  {
 
     @Transactional
     @PostMapping(value = {"notifications"})
+    @PreAuthorize("hasAuthority('wholesale.store.notifications')")
     public ResponseEntity<Page<StoreNotifications>> getAllStoreNotification(Authentication authentication,HttpServletRequest request, @RequestBody SearchFilters searchFilters) {
         logger.debug("Starting getAllStoreNotification method");
         AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
@@ -94,10 +97,11 @@ public class WholesaleStoreController  {
     )))
     @Transactional
     @PostMapping(value = {"update/notifications"})
-    public ResponseEntity<String> getAllStoreNotification(@RequestBody StoreDto storeDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        logger.debug("Starting getAllStoreNotification method");
+    @PreAuthorize("hasAuthority('wholesale.store.notifications.seen')")
+    public ResponseEntity<String> updateStoreNotification(@RequestBody StoreDto storeDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        logger.debug("Starting updateStoreNotification method");
         wholesaleStoreService.updateSeen(storeDto);
-        logger.debug("Completed getAllStoreNotification method");
+        logger.debug("Completed updateStoreNotification method");
         return new ResponseEntity<>(ConstantResponseKeys.SUCCESS, HttpStatus.valueOf(200));
     }
 
@@ -139,6 +143,7 @@ public class WholesaleStoreController  {
                 """
     )))
     @PostMapping(value = "add",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAnyAuthority('wholesale.store.add','wholesale.store.create')")
     @Transactional
     public ResponseEntity<Map<String,Object>> addNewStore(HttpServletRequest request,@ModelAttribute StoreDto storeDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting addNewStore method");
