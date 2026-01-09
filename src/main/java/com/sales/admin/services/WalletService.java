@@ -5,6 +5,8 @@ import com.sales.admin.repositories.StoreHbRepository;
 import com.sales.admin.repositories.StoreRepository;
 import com.sales.admin.repositories.UserRepository;
 import com.sales.admin.repositories.WalletRepository;
+import com.sales.claims.AuthUser;
+import com.sales.claims.SalesUser;
 import com.sales.dto.WalletTransactionDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.StoreNotifications;
@@ -40,13 +42,13 @@ public class WalletService {
 
 
     @Transactional
-    public void sendNotification(String title,String messageBody,int storeId,User loggedUser){
+    public void sendNotification(String title, String messageBody, int storeId, AuthUser loggedUser){
         logger.debug("Entering sendNotification with title: {}, messageBody: {}, storeId: {}, loggedUser: {}", title, messageBody, storeId, loggedUser);
         StoreNotifications storeNotifications = new StoreNotifications();
         storeNotifications.setTitle(title);
         storeNotifications.setMessageBody(messageBody);
         storeNotifications.setWholesaleId(storeId);
-        storeNotifications.setCreatedBy(loggedUser);
+        storeNotifications.setCreatedBy(User.builder().id(loggedUser.getId()).build());
         storeHbRepository.insertStoreNotifications(storeNotifications);
         logger.debug("Exiting sendNotification");
     }
@@ -87,7 +89,7 @@ public class WalletService {
         walletTransactionService.addWalletTransaction(walletTransactionDto,user.getId());
         // Send notification also
         Integer storeId = storeRepository.getStoreIdByUserId(user.getId());
-        sendNotification(title,messageBody,storeId,user);
+        sendNotification(title,messageBody,storeId,new SalesUser(user));
         return payment;
     }
 

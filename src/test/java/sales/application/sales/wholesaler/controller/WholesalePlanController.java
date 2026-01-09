@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = {SalesApplication.class})
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class WholesalePlanController extends TestUtil {
 

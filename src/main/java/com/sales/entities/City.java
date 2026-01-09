@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 
 @Entity
-@Table(name = "city")
+@Table(name = "cities")
 @Getter
 @Setter
 @NoArgsConstructor

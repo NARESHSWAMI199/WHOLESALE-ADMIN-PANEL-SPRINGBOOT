@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = {SalesApplication.class})
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class ItemReviewControllerTest extends TestUtil {
 
@@ -39,7 +39,7 @@ public class ItemReviewControllerTest extends TestUtil {
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpectAll(
-                status().is(401)
+                status().is(403)
         ).andDo(print());
     }
 

@@ -1,7 +1,7 @@
 package com.sales.wholesaler.controller;
 
 
-import com.sales.entities.User;
+import com.sales.claims.AuthUser;
 import com.sales.entities.Wallet;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.jwtUtils.JwtToken;
@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,15 +32,16 @@ public class WholesaleWalletController  {
 
     @GetMapping("/")
     public ResponseEntity<Wallet> getWalletDetail(HttpServletRequest request){
-        User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
+        AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         Wallet walletDetail = wholesaleWalletService.getWalletDetail(loggedUser.getId());
         return new ResponseEntity<>(walletDetail, HttpStatus.OK);
     }
 
 
     @GetMapping("pay/{servicePlanSlug}")
+    @PreAuthorize("hasAuthority('wholesale.wallet.pay')")
     public ResponseEntity<Map<String,Object>> payUsingWallet(@PathVariable String servicePlanSlug,HttpServletRequest request) {
-        User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
+        AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         Map<String,Object> result = new HashMap<>();
         boolean payment = wholesaleWalletService.paymentViaWallet(servicePlanSlug, loggedUser);
         if(payment){

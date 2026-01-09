@@ -8,7 +8,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
-@Table(name = "measurement_unit")
+@Table(name = "item_measurement_units")
 @Entity
 @Getter
 @Setter

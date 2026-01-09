@@ -1,35 +1,26 @@
 package com.sales.entities;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Table;
 import lombok.*;
 
 import java.io.Serializable;
 
-@Entity
 @Table(name = "group_permissions")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Embeddable
 public class GroupPermission implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    @JsonIgnore
-    int id;
+    @Column(name = "group_id")
+    Long groupId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id", referencedColumnName = "id")
-    Group group;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "permission_id" , referencedColumnName = "id")
-    Permission permissions;
-
-
+    @Column(name = "permission_id")
+    Permission permissionId;
 
 }

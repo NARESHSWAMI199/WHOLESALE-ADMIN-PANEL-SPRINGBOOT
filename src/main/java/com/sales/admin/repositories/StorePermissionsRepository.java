@@ -23,7 +23,7 @@ public interface StorePermissionsRepository extends JpaRepository<StorePermissio
     @Query(value = "select sp.id from store_permissions sp left join wholesaler_permissions wp on wp.permission_id = sp.id where wp.user_id=:userId ",nativeQuery = true)
     List<Integer> getAllAssignedPermissionsIdByUserId(@Param("userId") Integer userId);
 
-    @Query(value = "select access_url from store_permissions sp left join wholesaler_permissions wp on wp.permission_id = sp.id where wp.user_id=:userId ",nativeQuery = true)
+    @Query(value = "select permission from store_permissions sp left join wholesaler_permissions wp on wp.permission_id = sp.id where wp.user_id=:userId ",nativeQuery = true)
     Set<String> getAllAssignedPermissionByUserId(@Param("userId") Integer userId);
 
 

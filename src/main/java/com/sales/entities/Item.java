@@ -14,7 +14,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 @Entity(name = "Item")
-@Table(name = "item")
+@Table(name = "items")
 @SQLRestriction("is_deleted != 'y'")
 public class Item implements Serializable {
     @Id
@@ -62,7 +62,7 @@ public class Item implements Serializable {
     @Column(name = "in_stock")
     String inStock;
 
-    @Column(name = "wholesale_id")
+    @Column(name = "store_id")
     Integer wholesaleId;
 
 

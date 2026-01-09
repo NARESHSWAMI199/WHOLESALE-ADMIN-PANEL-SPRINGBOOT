@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
-@Table(name = "store_category")
+@Table(name = "store_categories")
 @Getter
 @Setter
 @NoArgsConstructor

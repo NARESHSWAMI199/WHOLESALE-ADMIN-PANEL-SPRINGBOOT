@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = SalesApplication.class)
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 public class WholesaleDashboardControllerTest extends TestUtil {
@@ -46,7 +46,7 @@ public class WholesaleDashboardControllerTest extends TestUtil {
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpectAll(
-                status().is(401)
+                status().is(403)
         ).andDo(print());
     }
 
@@ -73,7 +73,7 @@ public class WholesaleDashboardControllerTest extends TestUtil {
     public void testCountWithoutLogin() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/dashboard/counts")
         ).andExpectAll(
-                status().is(401)
+                status().is(403)
         ).andDo(print());
     }
 

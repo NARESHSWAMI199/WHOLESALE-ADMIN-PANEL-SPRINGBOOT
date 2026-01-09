@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @SpringBootTest(classes=SalesApplication.class)
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class ItemControllerTest extends TestUtil {
 

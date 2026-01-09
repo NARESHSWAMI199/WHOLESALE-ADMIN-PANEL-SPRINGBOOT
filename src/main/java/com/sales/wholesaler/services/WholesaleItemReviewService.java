@@ -1,8 +1,8 @@
 package com.sales.wholesaler.services;
 
+import com.sales.claims.AuthUser;
 import com.sales.dto.ItemReviewsFilterDto;
 import com.sales.entities.ItemReviews;
-import com.sales.entities.User;
 import com.sales.wholesaler.repository.WholesaleItemReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ public class WholesaleItemReviewService  {
     private final WholesaleItemReviewRepository wholesaleItemReviewRepository;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleItemReviewService.class);
 
-    public Page<ItemReviews> getAllItemReview(ItemReviewsFilterDto filters, User loggedUser) {
+    public Page<ItemReviews> getAllItemReview(ItemReviewsFilterDto filters, AuthUser loggedUser) {
         logger.debug("Starting getALlItemReview method with filters: {}, loggedUser: {}", filters, loggedUser);
         if(filters.getItemId() == 0) {
             logger.error("Invalid itemId provided");

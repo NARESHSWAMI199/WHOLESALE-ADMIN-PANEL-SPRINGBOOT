@@ -1,6 +1,7 @@
 package com.sales.admin.services;
 
 import com.sales.admin.repositories.*;
+import com.sales.claims.AuthUser;
 import com.sales.dto.*;
 import com.sales.entities.*;
 import com.sales.exceptions.MyException;
@@ -147,7 +148,7 @@ public class StoreService {
 
 
     @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class})
-    public Map<String, Object> createOrUpdateStore(StoreDto storeDto,User loggedUser,String path) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public Map<String, Object> createOrUpdateStore(StoreDto storeDto, AuthUser loggedUser, String path) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Entering createOrUpdateStore with storeDto: {}, loggedUser: {}, path: {}", storeDto, loggedUser, path);
             Map<String, Object> responseObj = new HashMap<>();
             // if there is any required field null, then this will throw IllegalArgumentException
@@ -221,7 +222,7 @@ public class StoreService {
 
 
     @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class})
-    public Store createStore(StoreDto storeDto , User loggedUser) throws MyException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public Store createStore(StoreDto storeDto , AuthUser loggedUser) throws MyException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Entering createStore with storeDto: {}, loggedUser: {}", storeDto, loggedUser);
         /** inserting address during create a wholesale */
         AddressDto addressDto = getAddressObjFromStore(storeDto);
@@ -250,7 +251,7 @@ public class StoreService {
     }
 
     @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class})
-    public int updateStore(StoreDto storeDto, User loggedUser){
+    public int updateStore(StoreDto storeDto, AuthUser loggedUser){
         logger.debug("Entering updateStore with storeDto: {}, loggedUser: {}", storeDto, loggedUser);
         AddressDto address = new AddressDto();
         address.setStreet(storeDto.getStreet());
@@ -267,7 +268,7 @@ public class StoreService {
     }
 
     @Transactional(rollbackOn = {MyException.class,IllegalArgumentException.class,RuntimeException.class,Exception.class})
-    public int deleteStoreBySlug(DeleteDto deleteDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public int deleteStoreBySlug(DeleteDto deleteDto,AuthUser loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Entering deleteStoreBySlug with deleteDto: {}, loggedUser: {}", deleteDto, loggedUser);
         // Validate required fields. if we found any required field this will throw IllegalArgumentException
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
@@ -433,7 +434,7 @@ public class StoreService {
     }
 
 
-    public int deleteStoreCategory(DeleteDto deleteDto,User user) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public int deleteStoreCategory(DeleteDto deleteDto,AuthUser user) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Entering deleteStoreCategory with deleteDto: {}, user: {}", deleteDto, user);
         // Validating required fields if they are null, this will throw an Exception
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
@@ -447,7 +448,7 @@ public class StoreService {
         return result;
     }
 
-    public int deleteStoreSubCategory(DeleteDto deleteDto,User user) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public int deleteStoreSubCategory(DeleteDto deleteDto,AuthUser user) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Entering deleteStoreSubCategory with deleteDto: {}, user: {}", deleteDto, user);
         // Validating required fields if they are null this will throw an Exception
         Utils.checkRequiredFields(deleteDto,List.of("slug"));
