@@ -28,5 +28,7 @@ public class StorePermissions implements Serializable {
     @Column(name="default_permission")
     String defaultPermission;
 
+    @Column(name="display_name")
+    String displayName;
 
 }

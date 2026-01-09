@@ -523,18 +523,16 @@ public class UserService {
         List<StorePermissions> storePermissionsList = storePermissionsRepository.findAll();
         Map<String,Object> result = new HashMap<>();
         for(StorePermissions storePermissions : storePermissionsList){
+            Map<String,Object> newPermission = new HashMap<>();
             String key= storePermissions.getPermissionFor();
+            newPermission.put("permission",storePermissions.getPermission());
+            newPermission.put("displayName",storePermissions.getDisplayName());
+            newPermission.put("id",storePermissions.getId());
             if(result.containsKey(key)){
-                Map<String,Object> newPermission = new HashMap<>();
-                newPermission.put("permission",storePermissions.getPermission());
-                newPermission.put("id",storePermissions.getId());
                 List<Object> oldList = (List<Object>) result.get(key);
                 oldList.add(newPermission);
                 result.put(key,oldList);
             }else{
-                Map<String,Object> newPermission = new HashMap<>();
-                newPermission.put("permission",storePermissions.getPermission());
-                newPermission.put("id",storePermissions.getId());
                 List<Object> newList = new ArrayList<>();
                 newList.add(newPermission);
                 result.put(key,newList);

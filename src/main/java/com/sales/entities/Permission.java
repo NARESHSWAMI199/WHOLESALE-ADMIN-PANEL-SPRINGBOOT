@@ -25,6 +25,7 @@ public class Permission implements Serializable {
     @Column(name = "permission_for")
     String permissionFor;
 
-
+    @Column(name = "display_name")
+    String displayName;
 
 }
