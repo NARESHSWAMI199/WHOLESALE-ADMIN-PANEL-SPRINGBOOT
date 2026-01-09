@@ -13,8 +13,8 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.sales.utils.Utils.getCurrentMillis;
