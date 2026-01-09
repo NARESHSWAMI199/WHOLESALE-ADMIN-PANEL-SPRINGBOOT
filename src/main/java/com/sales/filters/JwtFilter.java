@@ -1,6 +1,5 @@
 package com.sales.filters;
 
-import com.sales.admin.repositories.GroupPermissionRepository;
 import com.sales.admin.repositories.StorePermissionsRepository;
 import com.sales.admin.repositories.UserRepository;
 import com.sales.cachemanager.services.UserCacheService;
@@ -37,7 +36,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtToken jwtUtil;
     private final UserRepository userRepository;
-    private final GroupPermissionRepository groupPermissionRepository;
     private final StorePermissionsRepository storePermissionsRepository;
     private final UserCacheService userCacheService;
 
@@ -76,7 +74,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private List<GrantedAuthority> grantedAuthorities(User user){
         Set<String> permissions = new HashSet<>();
         if(user.getUserType().equals("S")  || user.getUserType().equals("SA")){
-            permissions = groupPermissionRepository.getUserAllPermission(user.getId());
+            permissions = userRepository.findAllPermissionsByUserId(user.getId());
         }else if(user.getUserType().equals("W")){
             permissions = storePermissionsRepository.getAllAssignedPermissionByUserId(user.getId());
         }

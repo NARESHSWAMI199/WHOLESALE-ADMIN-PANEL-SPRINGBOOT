@@ -320,6 +320,7 @@ public class ItemController  {
 
 
     @GetMapping("category/{categoryId}")
+    @PreAuthorize("hasAuthority('item.subcategory.detail')")
     public ResponseEntity<ItemCategory> getAllCategory(@PathVariable Integer categoryId) {
         logger.debug("Fetching item category with id: {}", categoryId);
         ItemCategory itemCategories = itemService.getItemCategoryById(categoryId);
