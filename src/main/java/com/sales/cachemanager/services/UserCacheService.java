@@ -13,6 +13,8 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -36,7 +38,7 @@ public class UserCacheService {
 
     @CachePut(value = RedisConstants.USER_REDIS_CACHE_NAME, key = "#user.slug")
     public User saveCacheUser(User user){
-        logger.debug("Saving a user in cache : {}",user.getSlug());
+        logger.debug("Saving a user in cache : {}", Objects.nonNull(user) ? user.getSlug() :null);
         return user;
     }
 
