@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -37,6 +38,7 @@ public class WholesaleServicePlanController  {
     private static final Logger logger = LoggerFactory.getLogger(WholesaleServicePlanController.class);
 
     @GetMapping("/all")
+    @PreAuthorize("hasAuthority('wholesale.plan.all')")
     public ResponseEntity<List<ServicePlan>> getAllPlans() {
         logger.debug("Starting getAllPlans method");
         ResponseEntity<List<ServicePlan>> response = new ResponseEntity<>(wholesaleServicePlanService.getAllServicePlan(), HttpStatusCode.valueOf(200));
@@ -46,6 +48,7 @@ public class WholesaleServicePlanController  {
 
 
     @GetMapping("detail/{slug}")
+    @PreAuthorize("hasAuthority('wholesale.plan.detail')")
     public ResponseEntity<ServicePlan> getPlanDetailBySlug(@PathVariable String slug) {
         logger.debug("Starting getPlanDetailBySlug method");
         ResponseEntity<ServicePlan> response = new ResponseEntity<>(wholesaleServicePlanService.findBySlug(slug), HttpStatusCode.valueOf(200));
@@ -63,6 +66,7 @@ public class WholesaleServicePlanController  {
     }
 
     @GetMapping("is-active")
+    @PreAuthorize("hasAuthority('wholesale.plan.active')")
     public ResponseEntity<Map<String,Object>> isUserPlanActive(HttpServletRequest request){
         logger.debug("Starting isUserPlanActive method");
         AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
@@ -75,6 +79,7 @@ public class WholesaleServicePlanController  {
     }
 
     @GetMapping("activate/{planSlug}")
+    @PreAuthorize("hasAuthority('wholesale.my.current.plan')")
     public ResponseEntity<Map<String,Object>> updateMyCurrentPlan(HttpServletRequest request , @PathVariable String planSlug){
         AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         Map<String,Object> result = new HashMap<>();

@@ -31,6 +31,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,6 +56,7 @@ public class WholesaleItemController  {
     private static final Logger logger = LoggerFactory.getLogger(WholesaleItemController.class);
 
     @PostMapping("/all")
+    @PreAuthorize("hasAuthority('wholesale.item.all')")
     public ResponseEntity<Page<Item>> getAllItem(Authentication authentication,HttpServletRequest request,@RequestBody ItemSearchFields searchFilters) {
         logger.debug("Starting getAllItem method");
         AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
@@ -65,6 +67,7 @@ public class WholesaleItemController  {
     }
 
     @GetMapping("/detail/{slug}")
+    @PreAuthorize("hasAuthority('wholesale.item.detail')")
     public ResponseEntity<Map<String, Object>> getItem(@PathVariable String slug) {
         logger.debug("Starting getItem method");
         Map<String, Object> responseObj = new HashMap<>();
@@ -102,6 +105,7 @@ public class WholesaleItemController  {
                     """
     )))
     @PostMapping(value = {"/add", "/update"})
+    @PreAuthorize("hasAnyAuthority('wholesale.item.add','wholesale.item.update','wholesale.item.edit')")
     public ResponseEntity<Map<String, Object>> addOrUpdateItems(Authentication authentication,HttpServletRequest request, @ModelAttribute ItemDto itemDto) throws Exception {
         logger.debug("Starting addOrUpdateItems method");
         AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
@@ -112,6 +116,7 @@ public class WholesaleItemController  {
     }
 
     @PostMapping("/delete")
+    @PreAuthorize("hasAuthority('wholesale.item.delete')")
     public ResponseEntity<Map<String,Object>> deleteItemBySlug(Authentication authentication,HttpServletRequest request, @RequestBody DeleteDto deleteDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting deleteItemBySlug method");
         Map<String,Object> responseObj = new HashMap<>();
@@ -138,6 +143,7 @@ public class WholesaleItemController  {
                     """
     )))
     @PostMapping("/stock")
+    @PreAuthorize("hasAuthority('wholesale.item.stock.update')")
     public ResponseEntity<Map<String,Object>> updateItemStock (Authentication authentication, HttpServletRequest request, @RequestBody Map<String,String> params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting updateItemStock method");
         Map<String,Object> responseObj = new HashMap<>();
@@ -176,6 +182,7 @@ public class WholesaleItemController  {
 
 
     @PostMapping(value = {"importExcel"})
+    @PreAuthorize("hasAuthority('wholesale.item.import')")
     public ResponseEntity<Map<String, Object>> importItemsFromExcelSheet(Authentication authentication,HttpServletRequest request, @RequestParam("excelfile") MultipartFile excelSheet) {
           AuthUser user = (SalesUser) authentication.getPrincipal();
         logger.debug("Importing items from Excel sheet for userSlug: {}", user.getSlug());
@@ -211,6 +218,7 @@ public class WholesaleItemController  {
 
 
     @PostMapping(value = {"exportExcel"})
+    @PreAuthorize("hasAuthority('wholesale.item.export')")
     public ResponseEntity<Object> exportItemsFromExcel(Authentication authentication,@RequestBody ItemSearchFields searchFilters ,HttpServletRequest request) {
         AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         logger.debug("Exporting items to Excel for user : {}", loggedUser );
@@ -244,6 +252,7 @@ public class WholesaleItemController  {
 
 
     @GetMapping(value = {"download/update/template"})
+    @PreAuthorize("hasAuthority('wholesale.item.template.download')")
     public ResponseEntity<Object> downloadExcelUpdateTemplate() throws IOException {
         logger.debug("Download excel sheet template for update items" );
         Path path = Paths.get(updateItemTemplate);
@@ -258,6 +267,7 @@ public class WholesaleItemController  {
     @Value("${excel.notUpdated.absolute}")
     String excelNotUpdateItemsFolderPath;
     @GetMapping(value = {"notUpdated/{folderName}/{filename}"})
+    @PreAuthorize("hasAuthority('wholesale.item.not.updated.download')")
     public ResponseEntity<Object> downloadExcelUpdateTemplate(@PathVariable String folderName ,@PathVariable String filename) throws IOException {
         Path filePathObj = Paths.get(excelNotUpdateItemsFolderPath);
         Path filePathDynamic = filePathObj.resolve(folderName).normalize();

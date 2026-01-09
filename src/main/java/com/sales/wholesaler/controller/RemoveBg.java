@@ -15,6 +15,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -47,6 +48,7 @@ public class RemoveBg {
     String relativePath;
 
     @PostMapping("/")
+    @PreAuthorize("hasAuthority('remove.bg.image.upload')")
     public ResponseEntity<Map<String,String>> uploadImage(Authentication authentication,HttpServletRequest request, @RequestParam("image") MultipartFile file) throws IOException {
         logger.debug("Starting uploadImage method");
         AuthUser user = (SalesUser) authentication.getPrincipal();
@@ -104,6 +106,7 @@ public class RemoveBg {
 
 
     @GetMapping("/{filename}")
+    @PreAuthorize("hasAuthority('remove.bg.image.download')")
     public ResponseEntity<Resource> getFile(Authentication authentication,HttpServletRequest request, @PathVariable(required = true) String filename) throws MalformedURLException {
         logger.debug("Starting getFile method");
           AuthUser user = (SalesUser) authentication.getPrincipal();

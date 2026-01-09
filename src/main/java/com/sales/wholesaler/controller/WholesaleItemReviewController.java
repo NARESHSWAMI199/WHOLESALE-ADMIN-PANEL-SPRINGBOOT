@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +30,7 @@ public class WholesaleItemReviewController  {
 
 
     @PostMapping("all")
+    @PreAuthorize("hasAuthority('wholesale.review.all')")
     public ResponseEntity<Page<ItemReviews>> getAllReviews(Authentication authentication, @RequestBody ItemReviewsFilterDto ItemReviewsFilterDto, HttpServletRequest request) {
         logger.debug("Starting getAllUsers method");
         AuthUser loggedUser = (SalesUser) authentication.getPrincipal();

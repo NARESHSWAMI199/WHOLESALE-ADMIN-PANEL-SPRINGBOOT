@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,7 @@ public class WalletTransactionController  {
     private final WalletTransactionService walletTransactionService;
 
     @PostMapping("all")
+    @PreAuthorize("hasAuthority('wallet.transactiona.all')")
     public ResponseEntity<Page<WalletTransaction>> getAllWalletTransactionsByUserId(HttpServletRequest request, @RequestBody SearchFilters searchFilters){
         AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         Page<WalletTransaction> transactions = walletTransactionService.getAllWalletTransactionByUserId(searchFilters, loggedUser.getId());

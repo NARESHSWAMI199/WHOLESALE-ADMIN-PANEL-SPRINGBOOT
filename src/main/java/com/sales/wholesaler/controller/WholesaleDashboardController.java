@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +31,7 @@ public class WholesaleDashboardController  {
     private static final Logger logger = LoggerFactory.getLogger(WholesaleDashboardController.class);
 
     @GetMapping("/counts")
+    @PreAuthorize("hasAuthority('wholesale.dashboard.count')")
     public ResponseEntity<Map<String, Object>> getAllDashboardCount(Authentication authentication,HttpServletRequest request) {
         logger.debug("Starting getAllDashboardCount method");
         AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
@@ -46,6 +48,7 @@ public class WholesaleDashboardController  {
     }
 
     @PostMapping("graph/months/")
+    @PreAuthorize("hasAuthority('wallet.dashboard.graph')")
     public ResponseEntity<Map<String, Object>> getAllGraphData(Authentication authentication, HttpServletRequest request, @RequestBody GraphDto graphDto) {
         logger.debug("Starting getAllGraphData method");
         Map<String,Object> responseObj = new HashMap<>();
