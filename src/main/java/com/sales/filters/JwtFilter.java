@@ -72,14 +72,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
     private List<GrantedAuthority> grantedAuthorities(User user){
-        log.info("the user type is : {}",user.getUserType());
         Set<String> permissions = new HashSet<>();
         if(user.getUserType().equals("S")  || user.getUserType().equals("SA")){
             permissions = userRepository.findAllPermissionsByUserId(user.getId());
         }else if(user.getUserType().equals("W")){
             permissions = storePermissionsRepository.getAllAssignedPermissionByUserId(user.getId());
         }
-        log.info("permission : {}",permissions);
         List<GrantedAuthority> authorities = new ArrayList<>();
         permissions.forEach(permission -> {
             authorities.add(new SimpleGrantedAuthority(permission));
