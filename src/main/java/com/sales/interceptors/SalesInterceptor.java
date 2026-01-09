@@ -86,7 +86,7 @@ public class SalesInterceptor implements HandlerInterceptor {
 //                sendError(response, "You don't permissions to access "+requestUrI+".Please contact your administrator.", 400);
 //                return false;
 //            }
-            request.setAttribute("user",user);
+//            request.setAttribute("user",user);
             return true;
         }
         sendError(response,"Invalid authorization.",401);

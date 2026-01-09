@@ -1,8 +1,8 @@
 package com.sales.wholesaler.repository;
 
 
+import com.sales.claims.AuthUser;
 import com.sales.dto.ItemDto;
-import com.sales.entities.User;
 import com.sales.utils.Utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -23,7 +23,7 @@ public class WholesaleItemHbRepository {
     private final EntityManager entityManager;
 
 
-    public int updateItems(ItemDto itemDto, User loggedUser){
+    public int updateItems(ItemDto itemDto, AuthUser loggedUser){
         String hqQuery = "update Item set " +
                 "name =:name," +
                 "capacity =:capacity," +

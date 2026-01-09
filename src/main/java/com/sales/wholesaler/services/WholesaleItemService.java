@@ -3,6 +3,7 @@ package com.sales.wholesaler.services;
 
 import com.google.gson.Gson;
 import com.sales.admin.repositories.ItemHbRepository;
+import com.sales.claims.AuthUser;
 import com.sales.dto.DeleteDto;
 import com.sales.dto.GraphDto;
 import com.sales.dto.ItemDto;
@@ -10,7 +11,6 @@ import com.sales.dto.ItemSearchFields;
 import com.sales.entities.Item;
 import com.sales.entities.ItemCategory;
 import com.sales.entities.ItemSubCategory;
-import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.exceptions.NotFoundException;
 import com.sales.global.ConstantResponseKeys;
@@ -188,7 +188,7 @@ public class WholesaleItemService  {
 
 
     @Transactional(rollbackOn = {IllegalArgumentException.class,MyException.class, RuntimeException.class,Exception.class})
-    public Map<String, Object> createOrUpdateItem(ItemDto itemDto, User loggedUser,String path) throws Exception {
+    public Map<String, Object> createOrUpdateItem(ItemDto itemDto, AuthUser loggedUser, String path) throws Exception {
         logger.debug("Starting createOrUpdateItem method with itemDto: {}, loggedUser: {}, path: {}", itemDto, loggedUser, path);
         // if there is any required field null then this will throw IllegalArgumentException
         validateRequiredFields(itemDto);
@@ -247,7 +247,7 @@ public class WholesaleItemService  {
     }
 
     @Transactional(rollbackOn = {IllegalArgumentException.class,MyException.class, RuntimeException.class,Exception.class})
-    public Item createItem (ItemDto itemDto, User loggedUser) throws MyException, IOException {
+    public Item createItem (ItemDto itemDto, AuthUser loggedUser) throws MyException, IOException {
         logger.debug("Starting createItem method with itemDto: {}, loggedUser: {}", itemDto, loggedUser);
         String slug = UUID.randomUUID().toString();
         Item item = new Item();
@@ -332,7 +332,7 @@ public class WholesaleItemService  {
 
 
 
-    public int updateItem(ItemDto itemDto, User loggedUser) {
+    public int updateItem(ItemDto itemDto, AuthUser loggedUser) {
         logger.debug("Starting updateItem method with itemDto: {}, loggedUser: {}", itemDto, loggedUser);
         int updateCount = wholesaleItemHbRepository.updateItems(itemDto,loggedUser); // Update operation
         logger.debug("Completed updateItem method");
@@ -415,7 +415,7 @@ public class WholesaleItemService  {
 
 
 
-    public String createItemsExcelSheet(ItemSearchFields searchFilters,User loggedUser) throws IOException {
+    public String createItemsExcelSheet(ItemSearchFields searchFilters,AuthUser loggedUser) throws IOException {
         logger.debug("Entering createItemsExcelSheet with searchFilters: {}", searchFilters);
         int wholesaleId = searchFilters.getStoreId();
         Specification<Item> specification = Specification.allOf(

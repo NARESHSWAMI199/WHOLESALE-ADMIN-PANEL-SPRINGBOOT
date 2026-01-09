@@ -1,6 +1,10 @@
 package com.sales.specifications;
 
-import com.sales.entities.*;
+import com.sales.claims.AuthUser;
+import com.sales.entities.ItemReviews;
+import com.sales.entities.ItemReviews_;
+import com.sales.entities.StoreNotifications;
+import com.sales.entities.StoreNotifications_;
 import org.springframework.data.jpa.domain.Specification;
 
 public class ItemReviewSpecifications {
@@ -46,7 +50,7 @@ public class ItemReviewSpecifications {
             };
         }
 
-        public static Specification<ItemReviews> notSuperAdmin(User loggedUser) {
+        public static Specification<ItemReviews> notSuperAdmin(AuthUser loggedUser) {
             return (root, query, criteriaBuilder) -> {
                 if(loggedUser.getId() == 0) return  null;
                 return criteriaBuilder.notEqual(root.get(ItemReviews_.ID), 0);

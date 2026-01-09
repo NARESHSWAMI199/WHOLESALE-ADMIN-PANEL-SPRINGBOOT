@@ -1,13 +1,14 @@
-package com.sales.wholesaler.services;
+package com.sales.chats.services;
 
+import com.sales.chats.repositories.ChatHbRepository;
+import com.sales.chats.repositories.ChatRepository;
+import com.sales.claims.AuthUser;
 import com.sales.dto.MessageDto;
 import com.sales.entities.Chat;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.global.GlobalConstant;
 import com.sales.utils.Utils;
-import com.sales.wholesaler.repository.ChatHbRepository;
-import com.sales.wholesaler.repository.ChatRepository;
 import com.sales.wholesaler.repository.WholesaleUserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class ChatService  {
     private final static String chatImagesPath = GlobalConstant.CHAT_STATIC_PATH;
 
 
-    public Chat sendMessage(MessageDto message, User loggedUser, String recipient){
+    public Chat sendMessage(MessageDto message, AuthUser loggedUser, String recipient){
         message.setSender(loggedUser.getSlug());
         message.setReceiver(recipient);
         //message.setMessage(HtmlUtils.htmlEscape(message.getMessage()));
@@ -53,7 +54,7 @@ public class ChatService  {
     }
 
 
-    public boolean verifyBeforeSend(User loggedUser,String recipient) {
+    public boolean verifyBeforeSend(AuthUser loggedUser,String recipient) {
         if (recipient == null) throw new MyException("Please provide a valid recipient");
 
         User receiver = wholesaleUserRepository.findUserBySlug(recipient);
@@ -61,7 +62,7 @@ public class ChatService  {
         /* Added new user in to sender's chat list →
         sender = loggedUser | receiver = who receives this message | status = sender Accepted
         or not default it's A  */
-        chatUserService.addNewChatUser(loggedUser, receiver,"A");
+        chatUserService.addNewChatUser(loggedUser,receiver,"A");
 
         /* Added sender in to the recipient chat list →
         sender = loggedUser | receiver = who receives this message | status =s
@@ -154,7 +155,7 @@ public class ChatService  {
     }
 
 
-    public Chat getParentMessageById(Long parentId,User loggedUser,HttpServletRequest request){
+    public Chat getParentMessageById(Long parentId, AuthUser loggedUser, HttpServletRequest request){
         logger.debug("Starting getParentMessageById method with parentId : {} ",parentId);
         Optional<Chat> chatOptional = chatRepository.findById(parentId);
         if (chatOptional.isPresent()){
@@ -197,7 +198,7 @@ public class ChatService  {
 
 
 
-    public List<String> saveAllImages(MessageDto messageDto, User loggedUser) {
+    public List<String> saveAllImages(MessageDto messageDto, AuthUser loggedUser) {
         logger.debug("Starting saveAllImages method");
         List<String> imagesNames = new ArrayList<>();
         String folderPath = chatAbsolutePath + loggedUser.getSlug() + "_" + messageDto.getReceiver() + File.separator;
@@ -224,7 +225,7 @@ public class ChatService  {
         return imagesNames;
     }
 
-    public MessageDto addImagesList(MessageDto message, HttpServletRequest request, List<String> allImagesName, User loggedUser, String recipient) {
+    public MessageDto addImagesList(MessageDto message, HttpServletRequest request, List<String> allImagesName, AuthUser loggedUser, String recipient) {
         logger.debug("Starting addImagesList method");
         message.setImages(null);
         List<String> imageUrls = allImagesName.stream().map(name -> Utils.getHostUrl(request) + "/chat/images/" + loggedUser.getSlug() + GlobalConstant.PATH_SEPARATOR + message.getReceiver() + GlobalConstant.PATH_SEPARATOR + name).toList();
@@ -244,7 +245,7 @@ public class ChatService  {
     }
 
 
-    public int deleteMessage(User loggedUser,MessageDto messageDto){
+    public int deleteMessage(AuthUser loggedUser,MessageDto messageDto){
         logger.debug("Starting deleteMessage method with loggedUser: {}, messageDto: {}", loggedUser, messageDto);
         switch (messageDto.getIsDeleted()){
             case "S": // delete sender's message

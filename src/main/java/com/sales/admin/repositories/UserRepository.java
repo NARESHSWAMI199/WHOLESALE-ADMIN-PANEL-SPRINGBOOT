@@ -16,7 +16,7 @@ import java.util.Set;
 public interface UserRepository  extends JpaRepository<User, Integer> , JpaSpecificationExecutor<User> {
 
     @Query(value = "from User where email=:email and password=:password and (userType='S' or userType='SA') ")
-    User findByEmailAndPassword(@Param("email") String email, @Param("password") String password);
+    Optional<User> findByEmailAndPassword(@Param("email") String email, @Param("password") String password);
 
 
     @Query(value = "from User where slug=:slug and userType='W'")
@@ -28,7 +28,7 @@ public interface UserRepository  extends JpaRepository<User, Integer> , JpaSpeci
     User findUserByOtpAndEmail(@Param("email") String email, @Param("otp") String otp);
 
     @Query(value = "from User where email=:email and (userType='S' or userType='SA')   ")
-    User findUserByEmail(@Param("email") String email);
+    Optional<User> findUserByEmail(@Param("email") String email);
 
     @Query("select id from User where slug=:slug")
     Integer getUserIdBySlug(String slug);
@@ -60,5 +60,7 @@ public interface UserRepository  extends JpaRepository<User, Integer> , JpaSpeci
             WHERE u.id = :userId
             """)
     Set<String> findAllPermissionsByUserId(@Param("userId") Integer userId);
+
+    Optional<User> findByEmail(String email);
 
 }

@@ -1,6 +1,7 @@
 package com.sales.wholesaler.services;
 
 
+import com.sales.claims.AuthUser;
 import com.sales.dto.UserPaginationDto;
 import com.sales.entities.Pagination;
 import com.sales.entities.User;
@@ -35,7 +36,7 @@ public class WholesalePaginationService {
         return wholesaleUserPaginationsRepository.findAll();
     }
 
-    public Map<String,Object> findUserPaginationsByUserId(User loggedUser){
+    public Map<String,Object> findUserPaginationsByUserId(AuthUser loggedUser){
         List<UserPagination> userPaginations = wholesaleUserPaginationsRepository.getUserPaginationByUserId(loggedUser.getId());
         Map<String,Object> result = new LinkedHashMap<>();
         for(UserPagination userPagination : userPaginations) {
@@ -55,20 +56,20 @@ public class WholesalePaginationService {
 
 
     @Transactional(rollbackOn = {InternalException.class, RuntimeException.class,Exception.class })
-    public void setUserDefaultPaginationForSettings(User loggedUser) {
+    public void setUserDefaultPaginationForSettings(User user) {
         Specification<Pagination> specification = Specification.allOf(PaginationSpecification.whoCanSee("B")
                 .or(PaginationSpecification.whoCanSee("W"))
         );
         List<Pagination> allPagination = wholesalePaginationRepository.findAll(specification);
         for (Pagination pagination : allPagination) {
-            UserPagination userPagination = insertUserPagination(pagination, loggedUser , 25); // default rows are 25
+            UserPagination userPagination = insertUserPagination(pagination, user , 25); // default rows are 25
             if(userPagination == null) throw new InternalException("We are unable to save your default pagination settings.");
 
         }
     }
 
     @Transactional(rollbackOn = {InternalException.class, RuntimeException.class,Exception.class })
-    public UserPagination insertUserPagination(Pagination pagination,User loggedUser,Integer rowNumbers) {
+    public UserPagination insertUserPagination(Pagination pagination,AuthUser loggedUser,Integer rowNumbers) {
         UserPagination userPagination = new UserPagination();
         userPagination.setPagination(pagination);
         userPagination.setUserId(loggedUser.getId());

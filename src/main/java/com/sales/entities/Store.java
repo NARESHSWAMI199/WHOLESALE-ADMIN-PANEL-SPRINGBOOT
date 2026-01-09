@@ -1,5 +1,6 @@
 package com.sales.entities;
 
+import com.sales.claims.AuthUser;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
@@ -71,7 +72,7 @@ public class Store implements Serializable {
 
 
 
-    public Store (User loggedUser) {
+    public Store (AuthUser loggedUser) {
         this.createdAt = getCurrentMillis();
         this.createdBy = loggedUser.getId();
         this.updatedAt = getCurrentMillis();

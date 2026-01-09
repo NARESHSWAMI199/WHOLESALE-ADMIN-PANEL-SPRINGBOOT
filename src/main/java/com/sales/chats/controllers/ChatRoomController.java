@@ -1,15 +1,17 @@
-package com.sales.wholesaler.controller;
+package com.sales.chats.controllers;
 
+import com.sales.chats.services.ChatRoomService;
+import com.sales.claims.AuthUser;
+import com.sales.claims.SalesUser;
 import com.sales.dto.ChatRoomDto;
 import com.sales.entities.ChatRoom;
-import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
-import com.sales.wholesaler.services.ChatRoomService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -39,8 +41,8 @@ public class ChatRoomController {
     }
 
     @PostMapping("update")
-    public ResponseEntity<Map<String, Object>> updateChatRoom(@RequestBody ChatRoomDto chatRoomDto, HttpServletRequest request) {
-        User loggedUser = (User) request.getAttribute("user");
+    public ResponseEntity<Map<String, Object>> updateChatRoom(Authentication authentication, @RequestBody ChatRoomDto chatRoomDto, HttpServletRequest request) {
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         Map<String,Object> result = new HashMap<>();
         int isUpdated = chatRoomService.updateRoom(chatRoomDto, loggedUser);
         if(isUpdated > 0){

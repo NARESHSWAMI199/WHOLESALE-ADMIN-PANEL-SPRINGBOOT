@@ -1,4 +1,4 @@
-package com.sales.config;
+package com.sales.config.auth;
 
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;

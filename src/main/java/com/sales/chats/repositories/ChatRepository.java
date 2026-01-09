@@ -1,4 +1,4 @@
-package com.sales.wholesaler.repository;
+package com.sales.chats.repositories;
 
 import com.sales.entities.Chat;
 import org.springframework.data.jpa.repository.JpaRepository;

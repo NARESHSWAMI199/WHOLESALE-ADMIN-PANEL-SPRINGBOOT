@@ -1,8 +1,8 @@
-package com.sales.wholesaler.repository;
+package com.sales.chats.repositories;
 
 
+import com.sales.claims.AuthUser;
 import com.sales.entities.ChatUser;
-import com.sales.entities.User;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -22,13 +22,13 @@ public interface ChatUserRepository extends JpaRepository<ChatUser,Integer> {
    List<ChatUser> getChatUserByUserId(Integer userId);
 
     @Query("select senderAcceptStatus from ChatUser where userId=:userId and chatUser=:chatUser")
-    String getSenderAcceptStatus(Integer userId,User chatUser);
+    String getSenderAcceptStatus(Integer userId,AuthUser chatUser);
 
 
-    ChatUser findByUserIdAndChatUser(Integer userId , User chatUser);
+    ChatUser findByUserIdAndChatUser(Integer userId , AuthUser chatUser);
 
     @Modifying
     @Transactional
     @Query("delete from ChatUser where userId=:userId and chatUser=:chatUser")
-    Integer deleteChatUserFromChatList(Integer userId,User chatUser);
+    Integer deleteChatUserFromChatList(Integer userId,AuthUser chatUser);
 }

@@ -1,9 +1,14 @@
 package com.sales.wholesaler.controller;
 
 
+import com.sales.claims.AuthUser;
+import com.sales.claims.SalesUser;
 import com.sales.dto.SearchFilters;
 import com.sales.dto.StoreDto;
-import com.sales.entities.*;
+import com.sales.entities.Store;
+import com.sales.entities.StoreCategory;
+import com.sales.entities.StoreNotifications;
+import com.sales.entities.StoreSubCategory;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;
@@ -20,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -58,9 +64,9 @@ public class WholesaleStoreController  {
     )))
     @Transactional
     @PostMapping(value = {"/update"})
-    public ResponseEntity<Map<String, Object>> updateStore(HttpServletRequest request, @ModelAttribute StoreDto storeDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public ResponseEntity<Map<String, Object>> updateStore(Authentication authentication,HttpServletRequest request, @ModelAttribute StoreDto storeDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting updateStore method");
-        User loggedUser = (User) request.getAttribute("user");
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         Map<String,Object> responseObj = wholesaleStoreService.updateStoreBySlug(storeDto, loggedUser);
         logger.debug("Completed updateStore method");
         return new ResponseEntity<>(responseObj, HttpStatus.valueOf((Integer) responseObj.get(ConstantResponseKeys.STATUS)));
@@ -69,9 +75,9 @@ public class WholesaleStoreController  {
 
     @Transactional
     @PostMapping(value = {"notifications"})
-    public ResponseEntity<Page<StoreNotifications>> getAllStoreNotification(HttpServletRequest request, @RequestBody SearchFilters searchFilters) {
+    public ResponseEntity<Page<StoreNotifications>> getAllStoreNotification(Authentication authentication,HttpServletRequest request, @RequestBody SearchFilters searchFilters) {
         logger.debug("Starting getAllStoreNotification method");
-        User loggedUser = (User) request.getAttribute("user");
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         Page<StoreNotifications> storeNotifications = wholesaleStoreService.getAllStoreNotification(searchFilters,loggedUser);
         logger.debug("Completed getAllStoreNotification method");
         return new ResponseEntity<>(storeNotifications, HttpStatus.OK);
@@ -137,7 +143,7 @@ public class WholesaleStoreController  {
     public ResponseEntity<Map<String,Object>> addNewStore(HttpServletRequest request,@ModelAttribute StoreDto storeDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting addNewStore method");
         Map<String,Object> result = new HashMap<>();
-        User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
+        AuthUser loggedUser = (SalesUser) Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         Store isInserted = wholesaleStoreService.createStore(storeDto,loggedUser);
         if(isInserted.getId() > 0){
             result.put(ConstantResponseKeys.MESSAGE,"Store created successfully. Welcome in Swami Sales");

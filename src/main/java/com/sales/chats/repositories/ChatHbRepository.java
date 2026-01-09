@@ -1,4 +1,4 @@
-package com.sales.wholesaler.repository;
+package com.sales.chats.repositories;
 
 
 import com.sales.dto.MessageDto;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 public class ChatHbRepository {
 
     private final EntityManager entityManager;
-    private final ChatRepository chatRepository;
 
 
     public boolean updateMessageToSent(long id){

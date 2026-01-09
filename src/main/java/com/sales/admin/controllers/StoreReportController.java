@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ public class StoreReportController  {
 
     private final StoreReportService storeReportService;
 
+    @PreAuthorize("hasAuthority('store.report.all')")
     @PostMapping("all")
     public ResponseEntity<Page<StoreReport>> findAllItemsReports(@RequestBody SearchFilters searchFilters){
         Page<StoreReport> storeReports = storeReportService.getAllReportByStoreId(searchFilters);

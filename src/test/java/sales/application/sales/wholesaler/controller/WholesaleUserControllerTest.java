@@ -141,7 +141,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
         ).andExpectAll(
-                status().is(401)
+                status().is(403)
         );
 
     }
@@ -161,7 +161,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
         mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/auth/last-seen")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpectAll(
-                status().is(401)
+                status().is(403)
         );
     }
 
@@ -171,7 +171,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
         mockMvc.perform(MockMvcRequestBuilders.post("/wholesale/auth/chat/users")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpectAll(
-                status().is(401)
+                status().is(403)
         );
     }
 
@@ -181,7 +181,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
             mockMvc.perform(MockMvcRequestBuilders.post("/wholesale/password")
                     .contentType(MediaType.APPLICATION_JSON)
             ).andExpectAll(
-                    status().is(401)
+                    status().is(403)
             );
     }
 
@@ -244,7 +244,7 @@ public class WholesaleUserControllerTest  extends TestUtil {
         HttpHeaders headers = new HttpHeaders();
         headers.set(GlobalConstant.AUTHORIZATION , token);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/auth/detail/"+GlobalConstantTest.WHOLESALER_SLUG)
+        mockMvc.perform(MockMvcRequestBuilders.get("/wholesale/auth/detail/"+selfSlug)
                 .headers(headers)
         ).andExpectAll(
                 status().isOk()

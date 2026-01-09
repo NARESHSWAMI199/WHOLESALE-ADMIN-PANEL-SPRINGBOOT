@@ -4,6 +4,7 @@ package com.sales.admin.services;
 import com.sales.admin.repositories.GroupRepository;
 import com.sales.admin.repositories.PermissionHbRepository;
 import com.sales.admin.repositories.PermissionRepository;
+import com.sales.claims.AuthUser;
 import com.sales.dto.DeleteDto;
 import com.sales.dto.GroupDto;
 import com.sales.dto.SearchFilters;
@@ -45,7 +46,7 @@ public class GroupService {
     
     private static final Logger logger = LoggerFactory.getLogger(GroupService.class);
 
-    public Page<Group> getAllGroups(SearchFilters filters, User loggedUser) {
+    public Page<Group> getAllGroups(SearchFilters filters, AuthUser loggedUser) {
         logger.debug("Entering getAllGroups with filters: {}, loggedUser: {}", filters, loggedUser);
         Specification<Group> specification = Specification.allOf(
                 (containsName(filters.getSearchKey()))
@@ -69,7 +70,7 @@ public class GroupService {
     }
 
     @Transactional(rollbackOn = {IllegalArgumentException.class, NotFoundException.class, RuntimeException.class, Exception.class})
-    public Map<String, Object> createOrUpdateGroup(GroupDto groupDto, User loggedUser, String path) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public Map<String, Object> createOrUpdateGroup(GroupDto groupDto, AuthUser loggedUser, String path) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Entering createOrUpdateGroup with groupDto: {}, loggedUser: {}, path: {}", groupDto, loggedUser, path);
         Map<String, Object> responseObject = new HashMap<>();
 
@@ -157,7 +158,7 @@ public class GroupService {
     }
 
     @Transactional(rollbackOn = {IllegalArgumentException.class, PermissionDeniedDataAccessException.class, RuntimeException.class, Exception.class})
-    public int deleteGroupBySlug(DeleteDto deleteDto, User loggedUser) throws Exception {
+    public int deleteGroupBySlug(DeleteDto deleteDto, AuthUser loggedUser) throws Exception {
         logger.debug("Entering deleteGroupBySlug with deleteDto: {}, loggedUser: {}", deleteDto, loggedUser);
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(deleteDto, List.of("slug"));
@@ -174,7 +175,7 @@ public class GroupService {
         return result;
     }
 
-    public int assignGroupsToUser(UserPermissionsDto userPermissionsDto, User loggedUser) throws Exception {
+    public int assignGroupsToUser(UserPermissionsDto userPermissionsDto, AuthUser loggedUser) throws Exception {
         logger.debug("Entering assignGroupsToUser with userPermissionsDto: {}, loggedUser: {}", userPermissionsDto, loggedUser);
         int userId = userPermissionsDto.getUserId();
         int result = permissionHbRepository.assignGroupsToUser(userId, userPermissionsDto.getGroupList(), loggedUser);

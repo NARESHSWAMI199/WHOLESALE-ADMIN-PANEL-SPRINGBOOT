@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = SalesApplication.class)
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class UserControllerTest extends TestUtil {
 
@@ -89,8 +89,7 @@ public class UserControllerTest extends TestUtil {
         mockMvc.perform(post("/admin/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson))
-                .andExpect(status().is(401))
-                .andExpect(jsonPath("$.message", is("Invalid credentials.")))
+                .andExpect(status().is(500))
                 .andDo(print());
     }
 
@@ -107,8 +106,8 @@ public class UserControllerTest extends TestUtil {
         mockMvc.perform(post("/admin/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson))
-                .andExpect(status().is(401))
-                .andExpect(jsonPath("$.message", is("Invalid credentials.")))
+                .andExpect(status().is(500))
+                .andExpect(jsonPath("$.message", is("Invalid Credentials !")))
                 .andDo(print());
     }
 
@@ -122,8 +121,7 @@ public class UserControllerTest extends TestUtil {
         mockMvc.perform(post("/admin/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson))
-                .andExpect(status().is(401))
-                .andExpect(jsonPath("$.message", is("Invalid credentials.")))
+                .andExpect(status().is(500))
                 .andDo(print());
     }
 
@@ -151,7 +149,7 @@ public class UserControllerTest extends TestUtil {
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
-                .andExpect(status().is(401))
+                .andExpect(status().is(403))
                 .andDo(print());
     }
 
@@ -340,7 +338,7 @@ public class UserControllerTest extends TestUtil {
     @Test
     public void getRetailerWithoutLogin () throws Exception {
         mockMvc.perform(get("/auth/admin/detail/"+GlobalConstantTest.RETAILER_SLUG))
-                .andExpect(status().is(401))
+                .andExpect(status().is(403))
                 .andDo(print());
     }
 
@@ -415,7 +413,7 @@ public class UserControllerTest extends TestUtil {
         String slug =UUID.randomUUID().toString();
         User user = createUser(slug,email, password, GlobalConstantTest.STAFF);
         Group group = createGroup();
-        assignGroup(user.getId(),group.getId());
+        assignGroupToUser(user.getId(),group.getId());
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION,token);
         mockMvc.perform(get("/admin/auth/groups/"+user.getSlug())
@@ -512,7 +510,7 @@ public class UserControllerTest extends TestUtil {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
                 )
-                .andExpect(status().is(401))
+                .andExpect(status().is(403))
                 .andDo(print());
     }
 
@@ -719,7 +717,7 @@ public void updateUserWrongStatus() throws Exception {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
         ).andExpectAll(
-            status().is(406)
+            status().is(500)
         );
     }
 

@@ -86,6 +86,9 @@ public class TestUtil {
     @Autowired
     protected WholesalePermissionRepository wholesalePermissionRepository;
 
+    @Autowired
+    protected GroupPermissionRepository groupPermissionRepository;
+
     protected  Integer storeId;
 
     protected String storeSlug;
@@ -285,8 +288,14 @@ public class TestUtil {
         User user = createUser(slug,email,password,userType);
         WholesalerPlans wholesalerPlans = createWholesalePlan(slug,user,currentTime,futureDate,servicePlan);
         user.setActivePlan(wholesalerPlans.getId());
+        Group group = createGroup();
+        // assign permissions to group.
+        Permission permission = createPermission("users.all","Users");
+        assignGroupPermission(group,permission);
         selfSlug = slug;
-        userRepository.save(user);
+        user = userRepository.save(user);
+        // assign to group
+        assignGroupToUser(user.getId(),group.getId());
         if(userType.equals(GlobalConstantTest.WHOLESALER)){
             Store store = createStore();
             store.setUser(user);
@@ -450,22 +459,21 @@ public class TestUtil {
         return groupRepository.save(group);
     }
 
-    public UserGroups assignGroup(Integer userId,Integer groupId){
+    public void assignGroupToUser(Integer userId, Integer groupId){
         UserGroups userGroups = UserGroups.builder()
                 .groupId(groupId)
                 .userId(userId)
                 .build();
-        return userGroupRepository.save(userGroups);
+        userGroupRepository.save(userGroups);
     }
 
 
-    public Permission createPermission(){
-        Permission permission = Permission.builder()
-                .permission("Test")
-                .permissionFor("Edit")
-                .accessUrl("test.com")
+    public Permission createPermission(String permission, String permissionFor){
+        Permission permissionObj = Permission.builder()
+                .permission(permission)
+                .permissionFor(permissionFor)
                 .build();
-        return permissionRepository.save(permission);
+        return permissionRepository.save(permissionObj);
     }
 
 
@@ -473,19 +481,27 @@ public class TestUtil {
         StorePermissions permission = StorePermissions.builder()
                 .permission("Test")
                 .permissionFor("Edit")
-                .accessUrl("test.com")
                 .defaultPermission("Y")
                 .build();
         return storePermissionRepository.save(permission);
     }
 
     public WholesalerPermissions createWholesalerPermission(Integer userId){
-        Permission permission = createPermission();
+        Permission permission = createPermission("users.all","Users");
         WholesalerPermissions wholesalerPermissions = WholesalerPermissions.builder()
                 .permissionId(permission.getId())
                 .userId(userId)
                 .build();
         return wholesalePermissionRepository.save(wholesalerPermissions);
+    }
+
+
+    public void assignGroupPermission(Group group, Permission permission){
+        GroupPermission groupPermission = GroupPermission.builder()
+            .group(group)
+            .permissions(permission)
+            .build();
+            groupPermissionRepository.save(groupPermission);
     }
 
 

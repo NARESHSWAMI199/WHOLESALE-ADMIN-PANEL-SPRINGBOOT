@@ -1,6 +1,7 @@
 package com.sales.wholesaler.services;
 
 
+import com.sales.claims.AuthUser;
 import com.sales.dto.WalletTransactionDto;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.StoreNotifications;
@@ -37,18 +38,18 @@ public class WholesaleWalletService  {
 
 
     @Transactional
-    public void sendNotification(String title,String messageBody,int storeId,User loggedUser){
+    public void sendNotification(String title, String messageBody, int storeId, AuthUser loggedUser){
         logger.debug("Entering sendNotification with title: {}, messageBody: {}, storeId: {}, loggedUser: {}", title, messageBody, storeId, loggedUser);
         StoreNotifications storeNotifications = new StoreNotifications();
         storeNotifications.setTitle(title);
         storeNotifications.setMessageBody(messageBody);
         storeNotifications.setWholesaleId(storeId);
-        storeNotifications.setCreatedBy(loggedUser);
+        storeNotifications.setCreatedBy(User.builder().id(loggedUser.getId()).build());
         wholesaleNotificationHbRepository.insertStoreNotifications(storeNotifications);
         logger.debug("Exiting sendNotification");
     }
 
-    public boolean paymentViaWallet(String servicePlanSlug, User loggedUser) {
+    public boolean paymentViaWallet(String servicePlanSlug, AuthUser loggedUser) {
         boolean payment = false;
         int userId = loggedUser.getId();
         Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(userId);

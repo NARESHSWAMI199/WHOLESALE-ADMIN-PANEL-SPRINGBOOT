@@ -1,6 +1,7 @@
-package com.sales.wholesaler.repository;
+package com.sales.chats.repositories;
 
 
+import com.sales.claims.AuthUser;
 import com.sales.entities.Contact;
 import com.sales.entities.User;
 import jakarta.transaction.Transactional;
@@ -21,6 +22,6 @@ public interface ContactRepository extends JpaRepository<Contact,Integer> {
     @Modifying
     @Transactional
     @Query("delete from Contact where userId=:userId and contactUser=:contactUser")
-    Integer deleteContactUserFromContact(Integer userId,User contactUser);
+    Integer deleteContactUserFromContact(Integer userId, AuthUser contactUser);
 
 }

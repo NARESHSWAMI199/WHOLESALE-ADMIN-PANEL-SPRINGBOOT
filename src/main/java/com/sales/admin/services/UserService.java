@@ -2,6 +2,7 @@ package com.sales.admin.services;
 
 
 import com.sales.admin.repositories.*;
+import com.sales.claims.AuthUser;
 import com.sales.dto.*;
 import com.sales.entities.Store;
 import com.sales.entities.StorePermissions;
@@ -21,6 +22,7 @@ import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,10 +60,12 @@ public class UserService {
     private String password;
 
 
+    public User findByEmail(String email){
+        return userRepository.findByEmail(email).orElseThrow( () -> new UsernameNotFoundException("User not found."));
+    }
 
-    public User findByEmailAndPassword(UserDto userDto) {
-        logger.debug("Finding user by email and password: {}", userDto.getEmail());
-        return userRepository.findByEmailAndPassword(userDto.getEmail(), userDto.getPassword());
+    public User findByEmailAndPassword(String email,String password) {
+        return userRepository.findByEmailAndPassword(email,password).orElseThrow(() -> new UsernameNotFoundException("User not fond."));
     }
 
     public User findUserByOtpAndEmail(UserDto userDto) {
@@ -93,7 +97,7 @@ public class UserService {
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
 
-        User user = userRepository.findUserByEmail(userDto.getEmail());
+        User user = userRepository.findUserByEmail(userDto.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         if(user == null) throw new IllegalArgumentException("We are unable to send mail on this mail id "+userDto.getEmail());
         
         String recipient = user.getEmail();
@@ -196,7 +200,7 @@ public class UserService {
 
 
 
-    public Page<User> getAllUser(UserSearchFilters filters, User loggedUser) {
+    public Page<User> getAllUser(UserSearchFilters filters, AuthUser loggedUser) {
         logger.debug("Getting all users with filters: {}", filters);
        String notUserType = null;
         if(filters.getUserType().equals("SA") && loggedUser.getId() !=GlobalConstant.suId){
@@ -285,7 +289,7 @@ public class UserService {
         @Important : There are two types of user @loggedUser and @requestUser both are different
      */
     @Transactional(rollbackOn = {MyException.class, RuntimeException.class})
-    public Map<String, Object> createOrUpdateUser(UserDto userDto, User loggedUser,String path) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public Map<String, Object> createOrUpdateUser(UserDto userDto, AuthUser loggedUser,String path) throws MyException, IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Creating or updating user: {}", userDto);
         Map<String, Object> responseObj = new HashMap<>();
         StoreDto storeDto;
@@ -384,7 +388,7 @@ public class UserService {
 
 
     @Transactional
-    public User createUser(UserDto userDto, User loggedUser) {
+    public User createUser(UserDto userDto, AuthUser loggedUser) {
         logger.debug("Creating user: {}", userDto);
         User user = new User(loggedUser);
         user.setUsername(userDto.getUsername());
@@ -397,12 +401,12 @@ public class UserService {
     }
 
     @Transactional
-    public int updateUser(UserDto userDto, User loggedUser) {
+    public int updateUser(UserDto userDto, AuthUser loggedUser) {
         logger.debug("Updating user: {}", userDto);
         return userHbRepository.updateUser(userDto,loggedUser);
     }
 
-    public User getUserDetail(String slug ,User loggedUser){
+    public User getUserDetail(String slug ,AuthUser loggedUser){
         logger.debug("Getting user detail for slug: {}", slug);
        User user = userRepository.findUserBySlug(slug);
         if(user !=null && (user.getId() !=GlobalConstant.suId || loggedUser.getId() == GlobalConstant.suId )){
@@ -421,7 +425,7 @@ public class UserService {
     }
 
     @Transactional(rollbackOn = {PermissionDeniedDataAccessException.class,IllegalArgumentException.class,RuntimeException.class,Exception.class})
-    public int deleteUserBySlug(DeleteDto deleteDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public int deleteUserBySlug(DeleteDto deleteDto,AuthUser loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Deleting user by slug: {}", deleteDto.getSlug());
         // if there is any required field null, then this will throw IllegalArgumentException
         Utils.checkRequiredFields(deleteDto, List.of("slug"));
@@ -437,7 +441,7 @@ public class UserService {
 
 
     @Transactional
-    public int resetPasswordByUserSlug(PasswordDto passwordDto,User loggedUser){
+    public int resetPasswordByUserSlug(PasswordDto passwordDto,AuthUser loggedUser){
         logger.debug("Resetting password for user with slug: {}", passwordDto.getSlug());
         password = !Utils.isEmpty(password) ?  passwordDto.getPassword() : password;
         User user = userRepository.findUserBySlug(passwordDto.getSlug());
@@ -447,7 +451,7 @@ public class UserService {
     }
 
     @Transactional
-    public int updateStatusBySlug(StatusDto statusDto,User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public int updateStatusBySlug(StatusDto statusDto,AuthUser loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Updating status for user with slug: {}", statusDto.getSlug());
         try {
             // if there is any required field null, then this will throw IllegalArgumentException
@@ -484,7 +488,7 @@ public class UserService {
 
 
 
-    public String updateProfileImage(MultipartFile profileImage,String slug,User loggedUser) throws IOException {
+    public String updateProfileImage(MultipartFile profileImage, String slug, AuthUser loggedUser) throws IOException {
         logger.debug("Updating profile image for user with slug: {}", slug);
         User user = userRepository.findUserBySlug(slug);
         Utils.canUpdateAStaff(slug,user.getUserType(),loggedUser);
@@ -541,7 +545,7 @@ public class UserService {
 
 
     @Transactional(rollbackOn = {MyException.class,RuntimeException.class})
-    public Map<String,Object> updateWholesalerPermissions(UserDto userDto, User loggededUser) throws MyException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public Map<String,Object> updateWholesalerPermissions(UserDto userDto) throws MyException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Updating wholesaler permissions for user with slug: {}", userDto.getSlug());
         // Validating required field is there is any null field this will throw Exception
         Utils.checkRequiredFields(userDto,List.of("slug","userType","storePermissions"));
@@ -560,6 +564,4 @@ public class UserService {
         }
         return responseObject;
     }
-
-
 }

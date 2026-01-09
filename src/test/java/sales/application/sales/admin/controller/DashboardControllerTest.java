@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = {SalesApplication.class})
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class DashboardControllerTest extends TestUtil {
 
@@ -39,7 +39,7 @@ public class DashboardControllerTest extends TestUtil {
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpectAll(
-                status().is(401)
+                status().is(403)
         ).andDo(print());
     }
 
@@ -66,7 +66,7 @@ public class DashboardControllerTest extends TestUtil {
     public void testCountWithoutLogin() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/admin/dashboard/counts")
         ).andExpectAll(
-                status().is(401)
+                status().is(403)
         ).andDo(print());
     }
 
