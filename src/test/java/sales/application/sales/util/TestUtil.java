@@ -77,9 +77,6 @@ public class TestUtil {
     protected GroupRepository groupRepository;
 
     @Autowired
-    protected UserGroupRepository userGroupRepository;
-
-    @Autowired
     protected  PermissionRepository permissionRepository;
 
 

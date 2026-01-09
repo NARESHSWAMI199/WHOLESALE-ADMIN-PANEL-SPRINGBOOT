@@ -1,0 +1,8 @@
+-- test.permissions definition
+
+CREATE TABLE `permissions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `permission` varchar(50) DEFAULT NULL,
+  `permission_for` varchar(100) NOT NULL DEFAULT 'Others',
+  PRIMARY KEY (`id`)
+);

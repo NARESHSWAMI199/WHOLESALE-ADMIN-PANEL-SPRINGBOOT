@@ -10,6 +10,8 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.sales.utils.Utils.getCurrentMillis;
@@ -63,6 +65,14 @@ public class User implements Serializable {
 
     @Column(name = "last_seen")
     Long lastSeen;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_groups",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id")
+    )
+    private Set<Group> groups = new HashSet<>();
 
 
     @Transient

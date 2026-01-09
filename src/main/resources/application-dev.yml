@@ -14,7 +14,7 @@ spring:
     locations: classpath:db/migration
 
   datasource:
-    url: jdbc:mysql://localhost:3306/test
+    url: jdbc:mysql://localhost:3306/test1
     username: root
     password: password
     #    url: jdbc:mysql://db:3306/sales #docker

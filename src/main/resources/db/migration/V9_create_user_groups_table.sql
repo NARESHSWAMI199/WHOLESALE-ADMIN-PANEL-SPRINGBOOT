@@ -5,5 +5,4 @@ CREATE TABLE `user_groups` (
   PRIMARY KEY(user_id,group_id),
   FOREIGN kEY(user_id) REFERENCES users(user_id),
   FOREIGN kEY(group_id) REFERENCES groups(id),
-  PRIMARY KEY (`id`)
 );

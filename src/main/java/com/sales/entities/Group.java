@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.sales.utils.Utils.getCurrentMillis;
@@ -39,6 +41,14 @@ public class Group implements Serializable {
 
     @Column(name = "updated_by")
     Integer updatedBy;
+
+    @ManyToMany
+    @JoinTable(
+            name = "group_permissions",
+            joinColumns = @JoinColumn(name = "group_id" , referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id")
+    )
+    private Set<Permission> permissions = new HashSet<>();
 
 
     public Group (User loggedUser) {

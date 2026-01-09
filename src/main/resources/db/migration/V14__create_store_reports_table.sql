@@ -1,8 +1,8 @@
 
 CREATE TABLE `store_report` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `store_id` int DEFAULT NULL,
-  `user_id` int DEFAULT NULL,
+  `user_id` BIGINT DEFAULT NULL,
   `message` text,
   `created_at` mediumtext,
   `updated_at` mediumtext,

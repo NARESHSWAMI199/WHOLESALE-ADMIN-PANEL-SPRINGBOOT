@@ -1,6 +1,6 @@
 CREATE TABLE `user_paginations` (
 `id` int NOT NULL AUTO_INCREMENT,
-`user_id` int NOT NULL,
+`user_id` BIGINT NOT NULL,
 `pagination_id` int NOT NULL,
 `rows_number` int NOT NULL DEFAULT '25',
 PRIMARY KEY (`id`),

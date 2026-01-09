@@ -1,6 +1,6 @@
 
 CREATE TABLE `users` (
-  `user_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` BIGINT NOT NULL AUTO_INCREMENT,
   `slug` varchar(50) DEFAULT NULL,
   `otp` varchar(6) DEFAULT NULL,
   `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,

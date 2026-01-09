@@ -503,7 +503,7 @@ public class UserService {
 
     public List<Integer> getUserGroupsIdBySlug(String slug) {
         logger.debug("Getting user groups ID by slug: {}", slug);
-        return userRepository.getUserGroupsIdBySlug(slug);
+        return userRepository.findGroupIdsBySlug(slug);
     }
 
 

@@ -1,12 +1,13 @@
 package com.sales.entities;
 
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Table;
 import lombok.*;
 
 import java.io.Serializable;
 
-@Entity
 @Table(name = "group_permissions")
 @Getter
 @Setter
@@ -16,14 +17,10 @@ import java.io.Serializable;
 @Embeddable
 public class GroupPermission implements Serializable {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id", referencedColumnName = "id")
-    Group group;
+    @Column(name = "group_id")
+    Long groupId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "permission_id" , referencedColumnName = "id")
-    Permission permissions;
-
-
+    @Column(name = "permission_id")
+    Permission permissionId;
 
 }

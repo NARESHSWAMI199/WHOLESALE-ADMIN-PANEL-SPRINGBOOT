@@ -2,7 +2,7 @@
 
 CREATE TABLE `item_orders` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `item_id` int DEFAULT NULL,
+  `item_id` BIGINT DEFAULT NULL,
   `user_id` bigint DEFAULT NULL,
   `quantity` int DEFAULT NULL,
   `status` enum('A','D') DEFAULT NULL,
@@ -11,6 +11,6 @@ CREATE TABLE `item_orders` (
   `is_deleted` enum('Y','N') DEFAULT NULL,
   `updated_by` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (item_id) REFERENCES items(item_id),
+  FOREIGN KEY (item_id) REFERENCES items(id),
   FOREIGN KEY (user_id) REFERENCES users(user_id)
 );

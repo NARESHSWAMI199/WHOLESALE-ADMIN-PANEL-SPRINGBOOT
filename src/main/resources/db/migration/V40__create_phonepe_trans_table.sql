@@ -1,7 +1,7 @@
 CREATE TABLE `phonepe_trans` (
     `id` bigint NOT NULL AUTO_INCREMENT,
     `merchant_transaction_id` varchar(50) DEFAULT NULL,
-    `user_id` int DEFAULT NULL,
+    `user_id` BIGINT DEFAULT NULL,
     `order_id` bigint DEFAULT NULL,
     `amount` float DEFAULT NULL,
     `x_verify` text,

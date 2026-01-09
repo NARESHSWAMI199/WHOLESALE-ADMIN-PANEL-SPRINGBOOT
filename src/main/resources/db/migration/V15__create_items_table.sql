@@ -24,7 +24,5 @@ CREATE TABLE `items` (
   `slug` varchar(50) DEFAULT NULL,
   `in_stock` enum('Y','N') DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `wholesale_id` (`wholesale_id`),
-  CONSTRAINT `item_ibfk_1`,
   FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`)
 );

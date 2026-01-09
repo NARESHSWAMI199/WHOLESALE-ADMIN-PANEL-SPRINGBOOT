@@ -1,7 +1,7 @@
 
 CREATE TABLE `user_wallet` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int NOT NULL,
+  `user_id` BIGINT NOT NULL,
   `amount` float DEFAULT NULL,
   `updated_at` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),

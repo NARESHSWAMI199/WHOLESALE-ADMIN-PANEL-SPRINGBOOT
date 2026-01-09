@@ -1,14 +1,15 @@
 package com.sales.admin.services;
 
 
-import com.sales.admin.repositories.GroupPermissionRepository;
 import com.sales.admin.repositories.GroupRepository;
 import com.sales.admin.repositories.PermissionHbRepository;
+import com.sales.admin.repositories.PermissionRepository;
 import com.sales.dto.DeleteDto;
 import com.sales.dto.GroupDto;
 import com.sales.dto.SearchFilters;
 import com.sales.dto.UserPermissionsDto;
 import com.sales.entities.Group;
+import com.sales.entities.Permission;
 import com.sales.entities.User;
 import com.sales.exceptions.NotFoundException;
 import com.sales.global.ConstantResponseKeys;
@@ -39,7 +40,7 @@ public class GroupService {
 
 
     private final GroupRepository groupRepository;
-    private final GroupPermissionRepository groupPermissionRepository;
+    private final PermissionRepository permissionRepository;
     private final PermissionHbRepository permissionHbRepository;
     
     private static final Logger logger = LoggerFactory.getLogger(GroupService.class);
@@ -120,7 +121,7 @@ public class GroupService {
         Group group = groupRepository.findGroupBySlug(slug);
         if (group == null) throw new NotFoundException("No record found.");
 
-        List<Map<String, Object>> groupWithPermission = groupPermissionRepository.getGroupPermissionByGroupId(group.getId());
+        List<Map<String, Object>> groupWithPermission = groupRepository.findGroupAndPermissionsByGroupId(group.getId());
 
         Map<String, Object> formattedGroup = new HashMap<>();
         List<Integer> permissionList = new ArrayList<>();
@@ -137,10 +138,10 @@ public class GroupService {
 
     public Map<String, List<Object>> getAllPermissions() {
         logger.debug("Entering getAllPermissions");
-        List<Map<String, Object>> permissionList = groupPermissionRepository.getAllPermissions();
+        List<Permission> permissionList = permissionRepository.findAll();
         Map<String, List<Object>> formattedPermissions = new HashMap<>();
-        for (Map<String, Object> permission : permissionList) {
-            String key = (String) permission.get("permission_for");
+        for (Permission permission : permissionList) {
+            String key = permission.getPermissionFor();
             if (formattedPermissions.containsKey(key)) {
                 List<Object> addedPermissions = formattedPermissions.get(key);
                 addedPermissions.add(permission);

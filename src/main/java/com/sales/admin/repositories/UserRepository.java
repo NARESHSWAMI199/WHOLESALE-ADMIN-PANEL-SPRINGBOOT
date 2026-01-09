@@ -10,9 +10,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
-public interface UserRepository  extends JpaRepository<User, Integer> , JpaSpecificationExecutor {
+public interface UserRepository  extends JpaRepository<User, Integer> , JpaSpecificationExecutor<User> {
 
     @Query(value = "from User where email=:email and password=:password and (userType='S' or userType='SA') ")
     User findByEmailAndPassword(@Param("email") String email, @Param("password") String password);
@@ -44,8 +45,20 @@ public interface UserRepository  extends JpaRepository<User, Integer> , JpaSpeci
     @Query(value = "select count(id) as count from User where status=:status and userType=:userType")
     Integer getUserWithUserType(@Param("status") String status,@Param("userType") String userType);
 
+//
+//    @Query(value = "select ug.groupId as groupId from UserGroups ug left join User u on ug.userId = u.id where u.slug = :slug")
+//    List<Integer> getUserGroupsIdBySlug(String slug);
 
-    @Query(value = "select ug.groupId as groupId from UserGroups ug left join User u on ug.userId = u.id where u.slug = :slug")
-    List<Integer> getUserGroupsIdBySlug(String slug);
+    List<Integer> findGroupIdsBySlug(String slug);
+
+
+    @Query("""
+            SELECT p.permission 
+            FROM User u
+            JOIN u.groups ug
+            JOIN ug.permissions p
+            WHERE u.id = :userId
+            """)
+    Set<String> findAllPermissionsByUserId(@Param("userId") Integer userId);
 
 }

@@ -1,7 +1,7 @@
 CREATE TABLE `block_list` (
     `id` int NOT NULL AUTO_INCREMENT,
-    `user_id` int DEFAULT NULL,
-    `chat_user_id` int DEFAULT NULL,
+    `user_id` BIGINT DEFAULT NULL,
+    `chat_user_id` BIGINT DEFAULT NULL,
     `created_at` mediumtext,
     PRIMARY KEY (`id`),
     FOREIGN KEY (user_id) REFERENCES users(user_id),

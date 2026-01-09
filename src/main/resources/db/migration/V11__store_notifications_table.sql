@@ -1,7 +1,7 @@
 
 CREATE TABLE `store_notifications` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int DEFAULT NULL,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `user_id` BIGINT DEFAULT NULL,
   `store_id` int DEFAULT NULL,
   `title` varchar(100) DEFAULT NULL,
   `message_body` text,
