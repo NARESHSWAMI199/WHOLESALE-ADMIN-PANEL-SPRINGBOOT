@@ -1,4 +1,3 @@
--- test.store_report definition
 
 CREATE TABLE `store_report` (
   `id` int NOT NULL AUTO_INCREMENT,

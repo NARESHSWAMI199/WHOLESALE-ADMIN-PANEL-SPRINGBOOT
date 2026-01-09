@@ -1,4 +1,3 @@
--- test.item definition
 
 CREATE TABLE `items` (
   `id` bigint NOT NULL AUTO_INCREMENT,
@@ -26,6 +25,6 @@ CREATE TABLE `items` (
   `in_stock` enum('Y','N') DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `wholesale_id` (`wholesale_id`),
-  CONSTRAINT `item_ibfk_1`
+  CONSTRAINT `item_ibfk_1`,
   FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`)
 );

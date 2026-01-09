@@ -1,4 +1,3 @@
--- test.store_notification definition
 
 CREATE TABLE `store_notifications` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -11,6 +10,6 @@ CREATE TABLE `store_notifications` (
   `created_by` int DEFAULT NULL,
   `seen` enum('Y','N') DEFAULT NULL,
   PRIMARY KEY (`id`),
-  FOREIGN KEY store_id REFERENCES stores(id),
-  FOREIGN KEY user_id REFERENCES users(user_id)
+  FOREIGN KEY (store_id) REFERENCES stores(id),
+  FOREIGN KEY (user_id) REFERENCES users(user_id)
 );

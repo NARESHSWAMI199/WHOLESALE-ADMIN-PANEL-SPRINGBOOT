@@ -15,7 +15,7 @@ import static com.sales.utils.Utils.getCurrentMillis;
 @AllArgsConstructor
 
 @Entity
-@Table(name = "store")
+@Table(name = "stores")
 @SQLRestriction("is_deleted != 'Y'") /* Same as where clause */
 @Builder
 public class Store implements Serializable {

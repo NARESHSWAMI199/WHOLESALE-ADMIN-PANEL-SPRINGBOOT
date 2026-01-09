@@ -13,12 +13,8 @@ import java.io.Serializable;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Embeddable
 public class Contact implements Serializable {
-
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
 
     @Column(name = "user_id")
     Integer userId;

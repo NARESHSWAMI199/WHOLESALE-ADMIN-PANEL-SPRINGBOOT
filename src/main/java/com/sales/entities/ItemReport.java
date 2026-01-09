@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "item_report")
+@Table(name = "item_reports")
 @Getter
 @Setter
 @NoArgsConstructor

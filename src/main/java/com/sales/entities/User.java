@@ -20,7 +20,7 @@ import static com.sales.utils.Utils.getCurrentMillis;
 @AllArgsConstructor
 
 @Entity
-@Table(name = "`user`")
+@Table(name = "`users`")
 @SQLRestriction("is_deleted != 'Y' ")
 @Builder
 public class User implements Serializable {

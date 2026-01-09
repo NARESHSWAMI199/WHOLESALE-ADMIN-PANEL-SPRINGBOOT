@@ -10,7 +10,7 @@ import org.hibernate.annotations.SQLRestriction;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "store_notification")
+@Table(name = "store_notifications")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -25,7 +25,7 @@ public class StoreNotifications implements Serializable {
     @Column(name = "user_id")
     Integer userId;
 
-    @Column(name = "wholesale_id")
+    @Column(name = "store_id")
     Integer wholesaleId;
 
     @Column(name = "title")

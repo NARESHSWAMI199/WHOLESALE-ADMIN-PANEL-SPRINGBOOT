@@ -1,6 +1,9 @@
 package com.sales.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.*;
 
 @Entity
@@ -10,11 +13,8 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
+@Embeddable
 public class WholesalerPermissions {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
 
     @Column(name = "user_id")
     private Integer userId;

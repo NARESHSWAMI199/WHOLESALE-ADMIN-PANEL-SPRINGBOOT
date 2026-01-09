@@ -1,4 +1,3 @@
--- test.item_subcategory definition
 
 CREATE TABLE `item_subcategory` (
   `id` int NOT NULL AUTO_INCREMENT,
