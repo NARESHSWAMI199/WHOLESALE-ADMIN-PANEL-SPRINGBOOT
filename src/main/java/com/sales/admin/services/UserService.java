@@ -525,7 +525,6 @@ public class UserService {
         for(StorePermissions storePermissions : storePermissionsList){
             Map<String,Object> newPermission = new HashMap<>();
             String key= storePermissions.getPermissionFor();
-            newPermission.put("permission",storePermissions.getPermission());
             newPermission.put("displayName",storePermissions.getDisplayName());
             newPermission.put("id",storePermissions.getId());
             if(result.containsKey(key)){

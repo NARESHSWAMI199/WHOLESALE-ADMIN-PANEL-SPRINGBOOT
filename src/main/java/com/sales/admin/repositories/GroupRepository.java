@@ -21,7 +21,6 @@ public interface GroupRepository extends JpaRepository<Group,Long> , JpaSpecific
             select 
                 g.name as name,
                 p.id as id,
-                p.permission as permission,
                 p.displayName as displayName 
             from Group g
             left join g.permissions p

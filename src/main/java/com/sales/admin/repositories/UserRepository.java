@@ -49,6 +49,11 @@ public interface UserRepository  extends JpaRepository<User, Integer> , JpaSpeci
 //    @Query(value = "select ug.groupId as groupId from UserGroups ug left join User u on ug.userId = u.id where u.slug = :slug")
 //    List<Integer> getUserGroupsIdBySlug(String slug);
 
+    @Query("""
+        select ug.id as id
+        from User u join u.groups ug
+        where u.slug = :slug
+    """)
     List<Integer> findGroupIdsBySlug(String slug);
 
 
