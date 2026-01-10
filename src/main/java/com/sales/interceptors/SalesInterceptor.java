@@ -8,6 +8,7 @@ import com.sales.cachemanager.services.UserCacheService;
 import com.sales.dto.ErrorDto;
 import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
+import com.sales.global.USER_TYPES;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;
 import com.sales.wholesaler.services.WholesaleServicePlanService;
@@ -57,7 +58,7 @@ public class SalesInterceptor implements HandlerInterceptor {
             if(user.getUserType().equals("S")  || user.getUserType().equals("SA")){
                 permittedUrls = userRepository.findAllPermissionsByUserId(user.getId());
                 requestUrI = requestUrI.replaceAll("detail","all");
-            }else if(user.getUserType().equals("W")){
+            }else if(user.getUserType().equals(USER_TYPES.WHOLESALER.getType())){
                 permittedUrls = storePermissionsRepository.getAllAssignedPermissionByUserId(user.getId());
             }
 

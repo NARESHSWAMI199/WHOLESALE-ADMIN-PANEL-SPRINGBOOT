@@ -34,8 +34,8 @@ public class StoreHbRepository {
 
 
     public int deleteStore(int userId){
-        String sql = "Update store set is_deleted='Y' where user_id=:userId";
-        Query query = entityManager.createNativeQuery(sql);
+        String sql = "Update Store s set s.isDeleted='Y' where s.user.id =:userId";
+        Query query = entityManager.createQuery(sql);
         query.setParameter("userId",userId);
         return query.executeUpdate();
     }
@@ -92,7 +92,7 @@ public class StoreHbRepository {
 
     public void insertStoreNotifications(StoreNotifications storeNotifications){
         String hql = "INSERT INTO store_notification " +
-                "(wholesale_id,title, message_body, created_at, created_by, is_deleted, seen) " +
+                "(store_id,title, message_body, created_at, created_by, is_deleted, seen) " +
                 "VALUES(:storeId,:title,:messageBody, :createAt, :createdBy, 'N', 'N')";
         Query query = entityManager.createNativeQuery(hql);
         query.setParameter("storeId", storeNotifications.getWholesaleId());
@@ -127,14 +127,14 @@ public class StoreHbRepository {
     }
 
     public int switchCategoryToOther(int categoryId){
-        String sql = "Update store set category=0 , subcategory=0 where category=:categoryId";
+        String sql = "Update stores set category_id=0 , subcategory_id=0 where category_id=:categoryId";
         Query query = entityManager.createNativeQuery(sql);
         query.setParameter("categoryId",categoryId);
         return query.executeUpdate();
     }
 
     public int switchSubCategoryToOther(int subcategoryId){
-        String sql = "Update store set category=0 , subcategory=0 where subcategory=:subcategoryId";
+        String sql = "Update stores set category_id=0 , subcategory_id=0 where subcategory_id=:subcategoryId";
         Query query = entityManager.createNativeQuery(sql);
         query.setParameter("subcategoryId",subcategoryId);
         return query.executeUpdate();

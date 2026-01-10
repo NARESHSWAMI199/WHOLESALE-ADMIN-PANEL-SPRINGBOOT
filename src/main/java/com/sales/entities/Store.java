@@ -29,13 +29,13 @@ public class Store implements Serializable {
     String slug;
     @Column(name = "name")
     String storeName;
-    @Column(name = "avtar")
+    @Column(name = "avatar")
     String avtar;
     @Column(name = "email")
     String email;
     @Column(name = "phone")
     String phone;
-    @Column(name = "discription")
+    @Column(name = "description")
     String description;
     @Column(name = "rating")
     Float rating;
@@ -56,18 +56,18 @@ public class Store implements Serializable {
     User user;
 
     @OneToOne
-    @JoinColumn(name = "address")
+    @JoinColumn(name = "address_id")
     Address address;
 
     @Transient
     Integer totalStoreItems;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "category", referencedColumnName = "id")
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
     StoreCategory storeCategory;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "subcategory", referencedColumnName = "id")
+    @JoinColumn(name = "subcategory_id", referencedColumnName = "id")
     StoreSubCategory storeSubCategory;
 
 

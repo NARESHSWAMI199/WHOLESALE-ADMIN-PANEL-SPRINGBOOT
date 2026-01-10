@@ -205,7 +205,6 @@ public class StoreController {
 
     @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
     @PostMapping("category")
-    @PreAuthorize("hasAnyAuthority('store.category.all','store.category')")
     public ResponseEntity<List<StoreCategory>> getAllStoreCategory(@RequestBody SearchFilters searchFilters) {
         logger.debug("Fetching all store categories with filters: {}", searchFilters);
         List<StoreCategory> storeCategories = storeService.getAllStoreCategory(searchFilters);
@@ -260,7 +259,6 @@ public class StoreController {
 
     @Transactional(rollbackOn = {MyException.class ,RuntimeException.class})
     @PostMapping("subcategory")
-    @PreAuthorize("hasAnyAuthority('store.subcategory.all','store.subcategory')")
     public ResponseEntity<List<StoreSubCategory>> getStoreSubCategory(@RequestBody SearchFilters searchFilters) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Fetching all store subcategories with filters: {}", searchFilters);
         List<StoreSubCategory> storeSubCategories = storeService.getAllStoreSubCategories(searchFilters);

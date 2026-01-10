@@ -58,7 +58,7 @@ public interface WholesaleItemRepository extends JpaRepository<Item, Integer> , 
    @Query(value = """
     SELECT count(id) 
     FROM item s 
-    WHERE wholesale_id = :storeId
+    WHERE store_id = :storeId
       AND is_deleted = 'N'
       AND created_at >= :startOfMonth
       AND created_at < :startOfNextMonth

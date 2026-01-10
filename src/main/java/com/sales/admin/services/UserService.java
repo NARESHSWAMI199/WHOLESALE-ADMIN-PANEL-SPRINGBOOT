@@ -12,6 +12,7 @@ import com.sales.exceptions.MyException;
 import com.sales.exceptions.NotFoundException;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
+import com.sales.global.USER_TYPES;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -466,16 +467,21 @@ public class UserService {
                     Utils.canUpdateAStaffStatus(statusDto.getSlug(),user.getUserType(),loggedUser);
                     user.setStatus(status);
                     // if userType is wholesaler no need to go further
-                    if(!user.getUserType().equals("W")){
+                    if(!user.getUserType().equals(USER_TYPES.WHOLESALER.getType())){
                         user = userRepository.save(user);
                         return user.getId();
                     }
                     /* Getting store and updating the status */
                     Store store = storeRepository.findStoreByUserId(user.getId());
-                    store.setStatus(status);
-                    store = storeRepository.save(store);
-                    if (store.getId() > 0)
-                        user = userRepository.save(user);
+
+                    // If store already deleted
+                    if(store != null) {
+                        store.setStatus(status);
+                        storeRepository.save(store);
+                    }else{
+                        user.setUserType(USER_TYPES.RETAILER.getType());
+                    }
+                    user = userRepository.save(user);
                     return user.getId();
                 default:
                     throw new IllegalArgumentException("Status must be A or D.");

@@ -13,7 +13,7 @@ public interface WholesaleStoreRepository extends JpaRepository<Store, Integer> 
 
     Store findStoreByUserId(int userId);
 
-    @Query(value = "select id from store where user_id=:userId",nativeQuery = true)
+    @Query(value = "select id as id from Store s where s.user.id=:userId")
     Integer getStoreIdByUserId(@Param("userId")Integer userId);
 
     @Query("SELECT a.id FROM Store s JOIN s.address a WHERE s.slug = :slug")

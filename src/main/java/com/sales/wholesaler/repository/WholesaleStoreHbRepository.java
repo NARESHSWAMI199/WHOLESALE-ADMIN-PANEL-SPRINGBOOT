@@ -16,32 +16,6 @@ public class WholesaleStoreHbRepository {
 
     private final EntityManager entityManager;
 
-    public int deleteStore(String slug){
-        String hql = "Update Store set isDeleted='Y' where slug=:slug";
-        Query query = entityManager.createQuery(hql);
-        query.setParameter("slug",slug);
-        return query.executeUpdate();
-    }
-
-
-    public int deleteStore(int userId){
-        String sql = "Update store set is_deleted='Y' where user_id=:userId";
-        Query query = entityManager.createNativeQuery(sql);
-        query.setParameter("userId",userId);
-        return query.executeUpdate();
-    }
-
-
-
-
-    public int updateStatus(String slug, String status){
-        String hql = "Update Store set status=:status where slug=:slug";
-        Query query = entityManager.createQuery(hql);
-        query.setParameter("status",status);
-        query.setParameter("slug",slug);
-        return query.executeUpdate();
-    }
-
     public int updateStore(StoreDto storeDto, AuthUser loggedUser){
         String strQuery = "update Store set " +
                 "storeName=:name , " +

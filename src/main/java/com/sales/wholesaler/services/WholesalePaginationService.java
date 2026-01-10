@@ -7,6 +7,7 @@ import com.sales.entities.Pagination;
 import com.sales.entities.User;
 import com.sales.entities.UserPagination;
 import com.sales.exceptions.NotFoundException;
+import com.sales.global.USER_TYPES;
 import com.sales.specifications.PaginationSpecification;
 import com.sales.utils.Utils;
 import com.sales.wholesaler.repository.WholesalePaginationHbRepository;
@@ -58,7 +59,7 @@ public class WholesalePaginationService {
     @Transactional(rollbackOn = {InternalException.class, RuntimeException.class,Exception.class })
     public void setUserDefaultPaginationForSettings(User user) {
         Specification<Pagination> specification = Specification.allOf(PaginationSpecification.whoCanSee("B")
-                .or(PaginationSpecification.whoCanSee("W"))
+                .or(PaginationSpecification.whoCanSee(USER_TYPES.WHOLESALER.getType()))
         );
         List<Pagination> allPagination = wholesalePaginationRepository.findAll(specification);
         for (Pagination pagination : allPagination) {

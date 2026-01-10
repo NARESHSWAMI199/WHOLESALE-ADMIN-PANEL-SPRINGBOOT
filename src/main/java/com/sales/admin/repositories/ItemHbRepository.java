@@ -105,9 +105,9 @@ public class ItemHbRepository{
         }
 
         String qs = """
-                insert into item (
+                insert into items (
                     name,
-                    wholesale_id,
+                    store_id,
                     label,
                     price,
                     discount,
@@ -204,14 +204,14 @@ public class ItemHbRepository{
     }
 
     public int switchCategoryToOther(int categoryId){
-        String sql = "Update item set category=0 , subcategory=0 where category=:categoryId";
+        String sql = "Update items set category=0 , subcategory=0 where category=:categoryId";
         Query query = entityManager.createNativeQuery(sql);
         query.setParameter("categoryId",categoryId);
         return query.executeUpdate();
     }
 
     public int switchSubCategoryToOther(int subcategoryId){
-        String sql = "Update item set category=0 , subcategory=0 where subcategory=:subcategoryId";
+        String sql = "Update items set category=0 , subcategory=0 where subcategory=:subcategoryId";
         Query query = entityManager.createNativeQuery(sql);
         query.setParameter("subcategoryId",subcategoryId);
         return query.executeUpdate();

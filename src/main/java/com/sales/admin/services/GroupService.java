@@ -11,7 +11,6 @@ import com.sales.dto.SearchFilters;
 import com.sales.dto.UserPermissionsDto;
 import com.sales.entities.Group;
 import com.sales.entities.Permission;
-import com.sales.entities.User;
 import com.sales.exceptions.NotFoundException;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
@@ -90,7 +89,7 @@ public class GroupService {
             if(group.getId() == GlobalConstant.groupId && loggedUser.getId() != GlobalConstant.suId) throw  new NotFoundException("There is nothing to update.");
 
             // Going to update existing group.
-            int isUpdated = permissionHbRepository.updateGroup(groupDto, group.getId());
+            int isUpdated = permissionHbRepository.updateGroup(groupDto, group.getId(),loggedUser.getId() != GlobalConstant.suId);
             if (isUpdated > 0 && group.getId() == 0) {
                 responseObject.put(ConstantResponseKeys.MESSAGE, "The group has been updated successfully. But dear " + loggedUser.getUsername() + " ji We are not able to remove permissions. from " + group.getName() + " New permissions updated.");
                 responseObject.put(ConstantResponseKeys.STATUS, 200);
@@ -170,7 +169,7 @@ public class GroupService {
         String slug = deleteDto.getSlug();
         Group group = groupRepository.findGroupBySlug(slug);
         if (group == null) throw new NotFoundException("No group found to delete");
-        int result = permissionHbRepository.deleteGroupBySlug(slug, group.getId());
+        int result = permissionHbRepository.deleteGroupBySlug(slug, group.getId(),(loggedUser.getId() == GlobalConstant.suId));
         logger.debug("Exiting deleteGroupBySlug with result: {}", result);
         return result;
     }
