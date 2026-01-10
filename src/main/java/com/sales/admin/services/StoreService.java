@@ -175,7 +175,7 @@ public class StoreService {
 
                 // before update store and store's address get address id from store
                 Integer addressId = storeRepository.getAddressIdBySlug(storeDto.getStoreSlug());
-                if(addressId == null) throw new IllegalArgumentException("No store found to update.");  // wrong wholesale slug.
+                if(addressId == null) throw new IllegalArgumentException("Store address not found.");  // wrong wholesale slug.
                 storeDto.setAddressId(addressId);
 
                 int isUpdated = updateStore(storeDto, loggedUser);

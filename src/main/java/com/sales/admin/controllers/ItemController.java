@@ -258,7 +258,6 @@ public class ItemController  {
     String filePath;
 
     @GetMapping("/image/{slug}/{filename}")
-    @PreAuthorize("hasAuthority('item.image')")
     public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename, @PathVariable("slug") String slug ) throws Exception {
         logger.debug("Fetching image file: {} for slug: {}", filename,slug);
         Path filePathObj = Paths.get(filePath);

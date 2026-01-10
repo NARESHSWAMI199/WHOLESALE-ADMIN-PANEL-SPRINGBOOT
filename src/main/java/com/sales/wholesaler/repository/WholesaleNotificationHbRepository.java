@@ -18,7 +18,7 @@ public class WholesaleNotificationHbRepository {
 
 
     public void insertStoreNotifications(StoreNotifications storeNotifications){
-        String hql = "INSERT INTO store_notification " +
+        String hql = "INSERT INTO store_notifications " +
                 "(wholesale_id,title, message_body, created_at, created_by, is_deleted, seen) " +
                 "VALUES(:storeId,:title,:messageBody, :createAt, :createdBy, 'N', 'N')";
         Query query = entityManager.createNativeQuery(hql);

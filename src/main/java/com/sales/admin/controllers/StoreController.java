@@ -192,7 +192,6 @@ public class StoreController {
     String filePath;
 
     @GetMapping("/image/{slug}/{filename}")
-    @PreAuthorize("hasAuthority('store.profile')")
     public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename , @PathVariable String slug) throws Exception {
         logger.debug("Fetching store image: {} for slug: {}",filename, slug);
         Path filePathObj = Paths.get(filePath);

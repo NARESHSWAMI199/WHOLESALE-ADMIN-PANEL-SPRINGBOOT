@@ -294,7 +294,6 @@ public class UserController  {
     @Value("${profile.get}")
     String filePath;
 
-    @PreAuthorize("hasAuthority('user.profile')")
     @GetMapping("/profile/{slug}/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable(required = true) String filename ,@PathVariable String slug) throws Exception {
         logger.debug("Fetching profile image: {} for user with slug: {}", filename, slug);

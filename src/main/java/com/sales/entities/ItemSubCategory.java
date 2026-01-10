@@ -26,7 +26,7 @@ public class ItemSubCategory implements Serializable {
     @Column(name = "category_id")
     Integer categoryId;
 
-    @Column(name = "subcategory_id")
+    @Column(name = "subcategory")
     String subcategory;
 
     @Column(name = "unit")
