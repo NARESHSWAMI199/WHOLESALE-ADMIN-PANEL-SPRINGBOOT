@@ -51,3 +51,5 @@ INSERT IGNORE INTO store_permissions (permission, display_name, default_permissi
 
 -- USER / PROFILE
 ('wholesale.profile.edit', 'Edit Profile', 'Y', 'User');
+('wholesale.password.reset', 'Reset Password', 'Y', 'User');
+

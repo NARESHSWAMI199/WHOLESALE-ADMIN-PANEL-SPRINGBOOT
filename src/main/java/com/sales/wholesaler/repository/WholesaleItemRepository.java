@@ -56,13 +56,13 @@ public interface WholesaleItemRepository extends JpaRepository<Item, Integer> , 
 
    // Improved
    @Query(value = """
-    SELECT count(id) 
-    FROM item s 
-    WHERE store_id = :storeId
-      AND is_deleted = 'N'
-      AND created_at >= :startOfMonth
-      AND created_at < :startOfNextMonth
-   """, nativeQuery = true)
+    SELECT count(id) as count
+    FROM Item
+    WHERE wholesaleId = :storeId
+      AND isDeleted = 'N'
+      AND createdAt >= :startOfMonth
+      AND createdAt < :startOfNextMonth
+   """)
    Integer totalItemsViaMonth(
            @Param("storeId") Integer storeId,
            @Param("startOfMonth") Long startOfMonth,

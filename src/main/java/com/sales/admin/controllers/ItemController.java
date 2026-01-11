@@ -281,7 +281,7 @@ public class ItemController  {
     }
 
     @PostMapping(value = {"category/add","category/update"})
-    @PreAuthorize("hasAnyAuthority('item.category.add','item.category.update','category.edit')")
+    @PreAuthorize("hasAnyAuthority('item.category.add','item.category.update','item.category.edit')")
     public ResponseEntity<Map<String,Object>> saveOrUpdateItemCategory(@RequestBody CategoryDto categoryDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Saving or updating item category: {}", categoryDto);
         Map<String,Object> result = new HashMap<>();

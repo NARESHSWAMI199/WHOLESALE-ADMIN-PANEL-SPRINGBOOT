@@ -22,6 +22,7 @@ import sales.application.sales.testglobal.GlobalConstantTest;
 import sales.application.sales.util.TestUtil;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.*;
@@ -302,7 +303,7 @@ public class UserControllerTest extends TestUtil {
     }
 
 
-    public String addStaff() throws Exception {
+    public String addStaff(Integer groupId) throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION,token);
         String randomEmail = UUID.randomUUID().toString().substring(0,6) + "@mocktest.in";
@@ -313,11 +314,12 @@ public class UserControllerTest extends TestUtil {
                     "username" : "Mock Test Staff",
                     "userType"  : "S",
                     "contact" : "{contact}",
-                    "groupList" : [0,1]            
+                    "groupList" : [{groupId}]            
                 }
                 """
                 .replace("{email}",randomEmail)
                 .replace("{contact}",randomPhone)
+                .replace("{groupId}",groupId+"")
                 ;
 
             MvcResult result = mockMvc.perform(post("/admin/auth/add")
@@ -413,7 +415,8 @@ public class UserControllerTest extends TestUtil {
         String slug =UUID.randomUUID().toString();
         User user = createUser(slug,email, password, GlobalConstantTest.STAFF);
         Group group = createGroup();
-        assignGroupToUser(user.getId(),group.getId());
+        user.setGroups(Set.of(group));
+        userRepository.save(user);
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION,token);
         mockMvc.perform(get("/admin/auth/groups/"+user.getSlug())
@@ -468,8 +471,9 @@ public class UserControllerTest extends TestUtil {
     public void updateStaffViaSuperAdmin() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION,token);
+        Group group = createGroup();
         /** user before update */
-        String userSlug = addStaff();
+        String userSlug = addStaff(group.getId());
 
         String randomEmail = UUID.randomUUID().toString().substring(0,6) + "@mocktest.in";
         String randomPhone = getRandomMobileNumber();
@@ -481,11 +485,12 @@ public class UserControllerTest extends TestUtil {
                     "username" : "Mock Test Staff",
                     "userType"  : "S",
                     "contact" : "{contact}",
-                    "groupList" : [0,1]            
+                    "groupList" : [{groupId}]            
                 }
                 """.replace("{slug}",userSlug)
                 .replace("{email}", randomEmail)
                 .replace("{contact}", randomPhone)
+                .replace("{groupId}",""+group.getId());
                 ;
         mockMvc.perform(post("/admin/auth/update")
                     .headers(headers)

@@ -3,8 +3,6 @@ package com.sales.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.UUID;
-
 @Entity
 @Table(name = "wholesaler_permissions")
 @AllArgsConstructor
@@ -19,7 +17,7 @@ public class WholesalerPermissions {
     Long id;
 
     @Column(name = "user_id")
-    private UUID userId;
+    private Integer userId;
 
     @Column(name = "permission_id")
     private Integer permissionId;

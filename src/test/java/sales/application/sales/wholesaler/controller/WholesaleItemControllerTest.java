@@ -148,7 +148,7 @@ public class WholesaleItemControllerTest extends TestUtil {
                 }
                 """
                 .replace("{slug}",item.getSlug());
-        mockMvc.perform(post("/admin/item/stock")
+        mockMvc.perform(post("/wholesale/item/stock")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
                         .headers(headers)

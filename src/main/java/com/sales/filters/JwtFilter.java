@@ -1,5 +1,7 @@
 package com.sales.filters;
 
+import com.sales.admin.repositories.GroupRepository;
+import com.sales.admin.repositories.PermissionRepository;
 import com.sales.admin.repositories.StorePermissionsRepository;
 import com.sales.admin.repositories.UserRepository;
 import com.sales.cachemanager.services.UserCacheService;
@@ -7,6 +9,7 @@ import com.sales.claims.AuthUser;
 import com.sales.claims.SalesUser;
 import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
+import com.sales.global.USER_TYPES;
 import com.sales.jwtUtils.JwtToken;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -38,6 +41,8 @@ public class JwtFilter extends OncePerRequestFilter {
     private final UserRepository userRepository;
     private final StorePermissionsRepository storePermissionsRepository;
     private final UserCacheService userCacheService;
+    private final PermissionRepository permissionRepository;
+    private final GroupRepository groupRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -73,9 +78,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private List<GrantedAuthority> grantedAuthorities(User user){
         Set<String> permissions = new HashSet<>();
-        if(user.getUserType().equals("S")  || user.getUserType().equals("SA")){
+        if(user.getUserType().equals(USER_TYPES.STAFF.getType())  || user.getUserType().equals(USER_TYPES.SUPER_ADMIN.getType())){
             permissions = userRepository.findAllPermissionsByUserId(user.getId());
-        }else if(user.getUserType().equals("W")){
+        }else if(user.getUserType().equals(USER_TYPES.WHOLESALER.getType())){
             permissions = storePermissionsRepository.getAllAssignedPermissionByUserId(user.getId());
         }
         List<GrantedAuthority> authorities = new ArrayList<>();
