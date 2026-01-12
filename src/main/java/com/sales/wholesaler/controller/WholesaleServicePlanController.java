@@ -66,7 +66,7 @@ public class WholesaleServicePlanController  {
     }
 
     @GetMapping("is-active")
-    @PreAuthorize("hasAuthority('wholesale.plan.active')")
+//    @PreAuthorize("hasAuthority('wholesale.plan.active')")
     public ResponseEntity<Map<String,Object>> isUserPlanActive(HttpServletRequest request){
         logger.debug("Starting isUserPlanActive method");
         AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
@@ -79,7 +79,7 @@ public class WholesaleServicePlanController  {
     }
 
     @GetMapping("activate/{planSlug}")
-    @PreAuthorize("hasAuthority('wholesale.my.current.plan')")
+//    @PreAuthorize("hasAuthority('wholesale.my.current.plan')")
     public ResponseEntity<Map<String,Object>> updateMyCurrentPlan(HttpServletRequest request , @PathVariable String planSlug){
         AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         Map<String,Object> result = new HashMap<>();

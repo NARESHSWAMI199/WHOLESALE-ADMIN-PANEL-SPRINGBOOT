@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+### db
+test.sql
+src/main/resources/db/migration/V64__insert_support_emails_table.sql

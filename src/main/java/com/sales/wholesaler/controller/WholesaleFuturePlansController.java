@@ -15,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +35,7 @@ public class WholesaleFuturePlansController  {
 
 
     @PostMapping("/")
-    @PreAuthorize("hasAuthority('wholesale.furture.plans.all')")
+//    @PreAuthorize("hasAuthority('wholesale.furture.plans.all')")
     public ResponseEntity<Page<WholesalerFuturePlan>> getAllWholesalerFuturePlans(HttpServletRequest request, @RequestBody SearchFilters searchFilters) {
         AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken, wholesaleUserService);
         Page<WholesalerFuturePlan> wholesalerFuturePlans = wholesaleFuturePlansService.getWholesalerFuturePlans(loggedUser,searchFilters);
@@ -45,7 +44,7 @@ public class WholesaleFuturePlansController  {
 
 
     @PostMapping("/activate")
-    @PreAuthorize("hasAuthority('wholesale.furture.plans.activate')")
+//    @PreAuthorize("hasAuthority('wholesale.furture.plans.activate')")
     public ResponseEntity<Map<String,Object>> activateFuturePlan(HttpServletRequest request, @RequestBody Map<String,String> data){
         AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken, wholesaleUserService);
         String slug = data.get("slug");

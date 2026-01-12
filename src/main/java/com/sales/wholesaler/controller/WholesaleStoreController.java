@@ -143,7 +143,7 @@ public class WholesaleStoreController  {
                 """
     )))
     @PostMapping(value = "add",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAnyAuthority('wholesale.store.add','wholesale.store.create')")
+//    @PreAuthorize("hasAnyAuthority('wholesale.store.add','wholesale.store.create')")
     @Transactional
     public ResponseEntity<Map<String,Object>> addNewStore(HttpServletRequest request,@ModelAttribute StoreDto storeDto) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting addNewStore method");

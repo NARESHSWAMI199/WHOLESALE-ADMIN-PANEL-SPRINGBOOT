@@ -50,6 +50,6 @@ INSERT IGNORE INTO store_permissions (permission, display_name, default_permissi
 ('wholesale.store.notifications.seen', 'Mark Notifications As Seen', 'Y', 'Store'),
 
 -- USER / PROFILE
-('wholesale.profile.edit', 'Edit Profile', 'Y', 'User');
+('wholesale.profile.edit', 'Edit Profile', 'Y', 'User'),
 ('wholesale.password.reset', 'Reset Password', 'Y', 'User');
 

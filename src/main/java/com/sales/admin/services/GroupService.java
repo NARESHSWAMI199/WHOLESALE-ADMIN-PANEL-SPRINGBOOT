@@ -89,8 +89,8 @@ public class GroupService {
             if(group.getId() == GlobalConstant.groupId && loggedUser.getId() != GlobalConstant.suId) throw  new NotFoundException("There is nothing to update.");
 
             // Going to update existing group.
-            int isUpdated = permissionHbRepository.updateGroup(groupDto, group.getId(),loggedUser.getId() != GlobalConstant.suId);
-            if (isUpdated > 0 && group.getId() == 0) {
+            int isUpdated = permissionHbRepository.updateGroup(groupDto, group.getId(),loggedUser.getId() == GlobalConstant.suId);
+            if (isUpdated > 0 && group.getId() == GlobalConstant.groupId ) {
                 responseObject.put(ConstantResponseKeys.MESSAGE, "The group has been updated successfully. But dear " + loggedUser.getUsername() + " ji We are not able to remove permissions. from " + group.getName() + " New permissions updated.");
                 responseObject.put(ConstantResponseKeys.STATUS, 200);
             } else if (isUpdated > 0) {
