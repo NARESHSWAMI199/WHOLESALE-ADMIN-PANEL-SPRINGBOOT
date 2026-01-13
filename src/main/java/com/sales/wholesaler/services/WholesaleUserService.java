@@ -196,6 +196,8 @@ public class WholesaleUserService  {
         userDto.setUsername(username);
         int isUpdated = updateUser(userDto, loggedUser); // Update operation
         if (isUpdated > 0) {
+            //Evict wholesaler from redis
+            userCacheService.deleteCacheUser(loggedUser.getSlug());
             responseObj.put(ConstantResponseKeys.MESSAGE, "Successfully updated.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
@@ -245,6 +247,8 @@ public class WholesaleUserService  {
         profileImage.transferTo(new File(dirPath+imageName));
         int isUpdated =  wholesaleUserHbRepository.updateProfileImage(slug,imageName); // Update operation
         if(isUpdated > 0) {
+            //Evict wholesaler from redis
+            userCacheService.deleteCacheUser(loggedUser.getSlug());
             logger.debug("Completed updateProfileImage method");
             return imageName;
         }

@@ -2,6 +2,7 @@ package com.sales.admin.services;
 
 
 import com.sales.admin.repositories.*;
+import com.sales.cachemanager.services.UserCacheService;
 import com.sales.claims.AuthUser;
 import com.sales.dto.*;
 import com.sales.entities.Store;
@@ -49,6 +50,7 @@ public class UserService {
     private final StorePermissionsRepository storePermissionsRepository;
     private final SupportEmailsRepository supportEmailsRepository;
     private final StoreRepository storeRepository;
+    private final UserCacheService userCacheService;
     
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final StoreService storeService;
@@ -296,9 +298,9 @@ public class UserService {
         StoreDto storeDto;
         // condition for create or update superuser
         if((loggedUser.getId() !=GlobalConstant.suId &&
-                userDto.getUserType().equals("SA") &&
+                userDto.getUserType().equals(USER_TYPES.SUPER_ADMIN.getType()) &&
                 !loggedUser.getSlug().equals(userDto.getSlug())
-        )) throw new PermissionDeniedDataAccessException("You don't have permissions to create a admin contact to administrator.",null);
+        )) throw new PermissionDeniedDataAccessException("You don't have permissions to create a admin contact to administrator.",new Exception());
 
         Utils.mobileAndEmailValidation(
                 userDto.getEmail(),
@@ -324,12 +326,14 @@ public class UserService {
              userDto.setUserId(userId);
 
              // if request user is a Wholesaler
-            if (userDto.getUserType().equals("W")){
+            if (userDto.getUserType().equals(USER_TYPES.WHOLESALER.getType())){
                 storeDto =  userDtoToStoreDto(userDto);
                 storeDto.setUserSlug(userDto.getSlug());
                 storeService.createOrUpdateStore(storeDto, loggedUser,path);
             }
             if (isUpdated > 0) {
+                // Evict updated user from redis
+                userCacheService.deleteCacheUser(userDto.getSlug());
                 responseObj.put(ConstantResponseKeys.MESSAGE, "Successfully updated.");
                 responseObj.put(ConstantResponseKeys.STATUS, 200);
             } else {
@@ -347,7 +351,7 @@ public class UserService {
             logger.debug("{} : {}", userDto.getUserType(), userDto.getUserSlug());
 
             // if logged user not same to request user and make sure request user must be Wholesaler
-            if((userDto.getUserId() != loggedUser.getId()) &&  userDto.getUserType().equals("W"))
+            if((userDto.getUserId() != loggedUser.getId()) &&  userDto.getUserType().equals(USER_TYPES.WHOLESALER.getType()))
             {
                 storeDto =  userDtoToStoreDto(userDto);
                 storeDto.setUserSlug(updatedUser.getSlug());
@@ -360,7 +364,9 @@ public class UserService {
                     throw new MyException("Something went wrong during update wholesaler's permissions. please contact to administrator.");
             }
 
-            if(!Utils.isEmpty(userDto.getUserType()) &&  (userDto.getUserType().equals("S") || userDto.getUserType().equals("W"))) {
+            if(!Utils.isEmpty(userDto.getUserType()) &&
+                    (userDto.getUserType().equals(USER_TYPES.STAFF.getType()) ||
+                            userDto.getUserType().equals(USER_TYPES.WHOLESALER.getType()))) {
                 // updating default pagination settings also for both kind of user "W" and "S"
                 paginationService.setUserDefaultPaginationForSettings(updatedUser);
             }
@@ -378,7 +384,7 @@ public class UserService {
         /** going to update user's groups ------------> only for staffs and super admin has group permissions */
         if (
             (userDto.getUserId() != loggedUser.getId()) && // Logged user can't change self groups
-            (userDto.getUserType().equals("SA") || userDto.getUserType().equals("S"))  // Make sure user must be Super Admin or Staff
+            (userDto.getUserType().equals(USER_TYPES.SUPER_ADMIN.getType()) || userDto.getUserType().equals(USER_TYPES.STAFF.getType()))  // Make sure user must be Super Admin or Staff
         ) {
             int isAssigned = permissionHbRepository.assignGroupsToUser(userDto.getUserId(), userDto.getGroupList(),loggedUser);
             if (isAssigned < 1)
@@ -436,7 +442,9 @@ public class UserService {
         if(user == null) throw new NotFoundException("User not found to delete.");
         // if logged user doesn't have permission, then can't delete it this will throw an Exception
         Utils.canUpdateAStaff(slug,user.getUserType(),loggedUser);
-        if(user.getUserType().equals("W")) storeService.deleteStoreByUserId(user.getId());
+        if(user.getUserType().equals(USER_TYPES.WHOLESALER.getType())) storeService.deleteStoreByUserId(user.getId());
+        // Evict deleted user from redis
+        userCacheService.deleteCacheUser(deleteDto.getSlug());
         return userHbRepository.deleteUserBySlug(slug);
     }
 
@@ -460,6 +468,8 @@ public class UserService {
 
             switch (statusDto.getStatus()){
                 case "A" , "D":
+                    // Evict status user from redis
+                    userCacheService.deleteCacheUser(statusDto.getSlug());
                     String status = statusDto.getStatus();
                     /* Getting user and updating status */
                     User user = userRepository.findUserBySlug(statusDto.getSlug());
@@ -505,6 +515,8 @@ public class UserService {
         if(!dir.exists()) dir.mkdirs();
         profileImage.transferTo(new File(dirPath+imageName));
         int isUpdated =  userHbRepository.updateProfileImage(slug,imageName);
+        // Evict profile user from redis
+        userCacheService.deleteCacheUser(slug);
         if(isUpdated > 0) return imageName;
         return null;
     }
@@ -554,11 +566,14 @@ public class UserService {
         Utils.checkRequiredFields(userDto,List.of("slug","userType","storePermissions"));
 
         Map<String,Object> responseObject = new HashMap<>();
-        if (Utils.isEmpty(userDto.getSlug()) || !userDto.getUserType().equals("W")) throw  new MyException("There is nothing to update.");
+        if (Utils.isEmpty(userDto.getSlug()) ||
+                !userDto.getUserType().equals(USER_TYPES.WHOLESALER.getType())) throw  new MyException("There is nothing to update.");
         User user = getUserDetail(userDto.getSlug());
         if (user == null) throw new NotFoundException("User not found.");
         int isUpdated = permissionHbRepository.assignPermissionsToWholesaler(user.getId(), userDto.getStorePermissions());
         if (isUpdated > 0) {
+            // Evict wholesaler from redis
+            userCacheService.deleteCacheUser(userDto.getSlug());
             responseObject.put(ConstantResponseKeys.MESSAGE, "All permissions have been updated successfully.");
             responseObject.put(ConstantResponseKeys.STATUS, 200);
         } else {

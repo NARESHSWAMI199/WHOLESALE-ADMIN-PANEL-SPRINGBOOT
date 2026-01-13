@@ -4,6 +4,7 @@ package com.sales.admin.services;
 import com.sales.admin.repositories.GroupRepository;
 import com.sales.admin.repositories.PermissionHbRepository;
 import com.sales.admin.repositories.PermissionRepository;
+import com.sales.cachemanager.services.UserCacheService;
 import com.sales.claims.AuthUser;
 import com.sales.dto.DeleteDto;
 import com.sales.dto.GroupDto;
@@ -14,6 +15,7 @@ import com.sales.entities.Permission;
 import com.sales.exceptions.NotFoundException;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
+import com.sales.global.USER_TYPES;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +44,7 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final PermissionRepository permissionRepository;
     private final PermissionHbRepository permissionHbRepository;
+    private final UserCacheService userCacheService;
     
     private static final Logger logger = LoggerFactory.getLogger(GroupService.class);
 
@@ -77,7 +80,7 @@ public class GroupService {
         validateRequiredFieldsForGroup(groupDto);
 
         //Only super admin can create or update a group.
-        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("You don't have permission to create or update a group. Please contact a super admin",new Exception());
+        if(!loggedUser.getUserType().equals(USER_TYPES.SUPER_ADMIN.getType())) throw new PermissionDeniedDataAccessException("You don't have permission to create or update a group. Please contact a super admin",new Exception());
 
         if (!Utils.isEmpty(groupDto.getSlug()) || path.contains("update")) {
             logger.debug("We are going to update the group.");
@@ -100,6 +103,8 @@ public class GroupService {
                 responseObject.put(ConstantResponseKeys.MESSAGE, "No record found to update.");
                 responseObject.put(ConstantResponseKeys.STATUS, 404);
             }
+            // Evict user from redis
+            userCacheService.deleteCacheUser(loggedUser.getSlug());
         } else { // Going to insert a new group
             logger.debug("We are going to create the group.");
             Group group = new Group(loggedUser);
