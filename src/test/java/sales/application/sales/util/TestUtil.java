@@ -294,10 +294,11 @@ public class TestUtil {
         groups.add(group);
         user.setGroups(groups);
         user = userRepository.save(user);
+        Set<StorePermissions> storePermission = getAllStorePermissions();
         // assign to group
         if(userType.equals(GlobalConstantTest.WHOLESALER)){
             Store store = createStore();
-            assignWholesalerPermissions(user.getId());
+            assignWholesalerPermissions(storePermission,user.getId());
             store.setUser(user);
             storeRepository.save(store);
             storeId = store.getId();
@@ -564,8 +565,7 @@ public class TestUtil {
     }
 
 
-    public void assignWholesalerPermissions(Integer userId){
-        Set<StorePermissions> permissions = getAllStorePermissions();
+    public void assignWholesalerPermissions(Set<StorePermissions> permissions ,Integer userId){
         Set<WholesalerPermissions> wholesalerPermissions = new HashSet<>();
         permissions.forEach(sp -> {
                 WholesalerPermissions wp = WholesalerPermissions.builder()

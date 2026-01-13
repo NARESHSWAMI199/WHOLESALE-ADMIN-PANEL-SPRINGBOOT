@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public interface GroupRepository extends JpaRepository<Group,Long> , JpaSpecificationExecutor<Group> {
+public interface GroupRepository extends JpaRepository<Group,Integer> , JpaSpecificationExecutor<Group> {
 
     Group findGroupBySlug(String slug);
 

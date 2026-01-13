@@ -19,7 +19,7 @@ public class ItemReport implements Serializable {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    int id;
+    long id;
 
     @Column(name = "item_id")
     Long itemId;
