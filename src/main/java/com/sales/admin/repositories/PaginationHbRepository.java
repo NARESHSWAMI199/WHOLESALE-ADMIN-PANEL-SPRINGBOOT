@@ -2,7 +2,6 @@ package com.sales.admin.repositories;
 
 
 import com.sales.dto.UserPaginationDto;
-import com.sales.entities.Pagination;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -17,16 +16,16 @@ public class PaginationHbRepository {
 
     private final EntityManager entityManager;
 
-    public int updateUserPaginations(Pagination pagination, UserPaginationDto userPaginationDto){
+    public int updateUserPaginations(Integer paginationId, UserPaginationDto userPaginationDto){
         String hql = """
                 update UserPagination 
                 set rowsNumber =:rowsNumber
-                where userId = :userId and pagination = :pagination
+                where userId = :userId and paginationId = :paginationId
                 """;
         Query query = entityManager.createQuery(hql);
         query.setParameter("rowsNumber", userPaginationDto.getRowsNumber());
         query.setParameter("userId", userPaginationDto.getUserId());
-        query.setParameter("pagination", pagination);
+        query.setParameter("paginationId", paginationId);
         return query.executeUpdate();
     }
 

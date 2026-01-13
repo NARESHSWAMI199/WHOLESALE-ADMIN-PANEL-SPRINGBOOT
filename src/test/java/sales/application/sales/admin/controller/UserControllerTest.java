@@ -209,7 +209,7 @@ public class UserControllerTest extends TestUtil {
 
 
 
-    //@Test
+    @Test
     public void addWholesalerTest() throws Exception{
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION,token);
@@ -467,7 +467,7 @@ public class UserControllerTest extends TestUtil {
     }
 
 
-   // @Test
+    @Test
     public void updateStaffViaSuperAdmin() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION,token);

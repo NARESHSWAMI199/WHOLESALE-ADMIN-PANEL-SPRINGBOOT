@@ -1,6 +1,7 @@
 package com.sales.wholesaler.services;
 
 
+import com.sales.admin.repositories.PaginationRepository;
 import com.sales.claims.AuthUser;
 import com.sales.dto.UserPaginationDto;
 import com.sales.entities.Pagination;
@@ -23,7 +24,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +32,7 @@ public class WholesalePaginationService {
     private final WholesaleUserPaginationsRepository wholesaleUserPaginationsRepository;
     private final WholesalePaginationRepository wholesalePaginationRepository;
     private final WholesalePaginationHbRepository wholesalePaginationHbRepository;
+    private final PaginationRepository paginationRepository;
 
     public List<UserPagination> findAllUserPaginations(){
         return wholesaleUserPaginationsRepository.findAll();
@@ -41,7 +42,8 @@ public class WholesalePaginationService {
         List<UserPagination> userPaginations = wholesaleUserPaginationsRepository.getUserPaginationByUserId(loggedUser.getId());
         Map<String,Object> result = new LinkedHashMap<>();
         for(UserPagination userPagination : userPaginations) {
-            String key = userPagination.getPagination().getFieldFor();
+            Pagination pagination = paginationRepository.findById(userPagination.getPaginationId()).orElseThrow(() -> new NotFoundException("Pagination not found."));
+            String key = pagination.getFieldFor();
             // remove all whitespaces and changed with uppercase like:
             // abc d → ABCD
             key = key.replaceAll("\\s+", "").toUpperCase();
@@ -72,7 +74,8 @@ public class WholesalePaginationService {
     @Transactional(rollbackOn = {InternalException.class, RuntimeException.class,Exception.class })
     public UserPagination insertUserPagination(Pagination pagination,AuthUser loggedUser,Integer rowNumbers) {
         UserPagination userPagination = new UserPagination();
-        userPagination.setPagination(pagination);
+        Pagination savedPagination = paginationRepository.save(pagination);
+        userPagination.setPaginationId(savedPagination.getId());
         userPagination.setUserId(loggedUser.getId());
         userPagination.setRowsNumber(rowNumbers);
         return wholesaleUserPaginationsRepository.save(userPagination);
@@ -83,10 +86,8 @@ public class WholesalePaginationService {
     public int updateUserPaginationRowsNumber(UserPaginationDto userPaginationDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         // Check required fields are not null
         Utils.checkRequiredFields(userPaginationDto,List.of("paginationId","userId","rowsNumber"));
-        Optional<Pagination> pagination  = wholesalePaginationRepository.findById(userPaginationDto.getPaginationId());
-        if(pagination.isEmpty()) throw new NotFoundException("No fields are found to update.");
         // check pagination field available or not
-        return wholesalePaginationHbRepository.updateUserPaginations(pagination.get(),userPaginationDto);
+        return wholesalePaginationHbRepository.updateUserPaginations(userPaginationDto.getPaginationId(),userPaginationDto);
     }
 
 }

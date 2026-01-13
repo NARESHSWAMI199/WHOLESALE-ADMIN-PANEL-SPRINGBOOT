@@ -22,7 +22,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +39,8 @@ public class PaginationService {
         List<UserPagination> userPaginations = userPaginationsRepository.getUserPaginationByUserId(loggedUser.getId());
         Map<String,Object> result = new LinkedHashMap<>();
         for(UserPagination userPagination : userPaginations) {
-            String key = userPagination.getPagination().getFieldFor();
+            Pagination pagination = paginationRepository.findById(userPagination.getPaginationId()).orElseThrow(() -> new NotFoundException("Pagination not found."));
+            String key = pagination.getFieldFor();
             // remove all whitespaces and changed with uppercase like:
             // abc d → ABCD
             key = key.replaceAll("\\s+", "").toUpperCase();
@@ -70,7 +70,8 @@ public class PaginationService {
     @Transactional(rollbackOn = {InternalException.class, RuntimeException.class,Exception.class })
     public UserPagination insertUserPagination(Pagination pagination,AuthUser loggedUser,Integer rowNumbers) {
         UserPagination userPagination = new UserPagination();
-        userPagination.setPagination(pagination);
+        Pagination savedPagination = paginationRepository.save(pagination);
+        userPagination.setPaginationId(savedPagination.getId());
         userPagination.setUserId(loggedUser.getId());
         userPagination.setRowsNumber(rowNumbers);
         return userPaginationsRepository.save(userPagination);
@@ -80,10 +81,7 @@ public class PaginationService {
     public int updateUserPaginationRowsNumber(UserPaginationDto userPaginationDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         // Check required fields are not null
         Utils.checkRequiredFields(userPaginationDto,List.of("paginationId","userId"));
-        Optional<Pagination> pagination  = paginationRepository.findById(userPaginationDto.getPaginationId());
-        if(pagination.isEmpty()) throw new NotFoundException("No fields are found to update.");
-        // check pagination field available or not
-        return paginationHbRepository.updateUserPaginations(pagination.get(),userPaginationDto);
+        return paginationHbRepository.updateUserPaginations(userPaginationDto.getPaginationId(),userPaginationDto);
     }
 
 }
