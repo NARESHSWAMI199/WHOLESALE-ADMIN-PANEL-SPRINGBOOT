@@ -78,7 +78,7 @@ public class Utils {
     }
 
     public static boolean isValidPhoneNumber(String mobileNumber){
-        return mobileRegex.matches(mobileNumber);
+        return mobileNumber != null && mobileNumber.matches(mobileRegex);
     }
 
     public static void mobileAndEmailValidation(String email ,String contact,String errorMessage) {

@@ -61,7 +61,8 @@ public class SecureAesUtil {
 
             byte[] decoded = Base64.getDecoder().decode(base64Ciphertext);
 
-            if (decoded.length < GCM_IV_LENGTH + GCM_TAG_LENGTH) {
+            // GCM_TAG_LENGTH is in bits (128), convert to bytes for length check
+            if (decoded.length < GCM_IV_LENGTH + (GCM_TAG_LENGTH / 8)) {
                 throw new IllegalArgumentException("Ciphertext too short");
             }
 
