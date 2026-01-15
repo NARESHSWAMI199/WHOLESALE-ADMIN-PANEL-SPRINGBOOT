@@ -38,7 +38,6 @@ public class WholesaleServicePlanController  {
     private static final Logger logger = LoggerFactory.getLogger(WholesaleServicePlanController.class);
 
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('wholesale.plan.all')")
     public ResponseEntity<List<ServicePlan>> getAllPlans() {
         logger.debug("Starting getAllPlans method");
         ResponseEntity<List<ServicePlan>> response = new ResponseEntity<>(wholesaleServicePlanService.getAllServicePlan(), HttpStatusCode.valueOf(200));

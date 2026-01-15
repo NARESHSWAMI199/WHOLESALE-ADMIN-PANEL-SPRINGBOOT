@@ -30,6 +30,10 @@ INSERT IGNORE INTO `permissions` (`permission`, `display_name`, `permission_for`
 ('item.report.all',                'View All Item Reports',               'Item Report'),
 ('item.review.all',                'View All Item Reviews',               'Item Review'),
 
+-- Remove background
+('remove.bg.image.upload',         'Remove Background Image Upload',       'Item'),
+('remove.bg.image.download',       'Remove Background Image Download',     'Item'),
+
 -- Pagination (usually internal but still can be permission controlled)
 ('pagination.all',                 'Manage Pagination Settings',          'Pagination'),
 

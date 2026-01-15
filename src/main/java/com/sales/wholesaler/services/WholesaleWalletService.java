@@ -8,7 +8,8 @@ import com.sales.entities.StoreNotifications;
 import com.sales.entities.User;
 import com.sales.entities.Wallet;
 import com.sales.exceptions.NotFoundException;
-import com.sales.wholesaler.repository.WholesaleNotificationHbRepository;
+import com.sales.utils.Utils;
+import com.sales.wholesaler.repository.WholesaleNotificationRepository;
 import com.sales.wholesaler.repository.WholesaleServicePlanRepository;
 import com.sales.wholesaler.repository.WholesaleStoreRepository;
 import com.sales.wholesaler.repository.WholesaleWalletRepository;
@@ -25,12 +26,12 @@ public class WholesaleWalletService  {
 
     private static final Logger logger = LoggerFactory.getLogger(WholesaleWalletService.class);
 
-    private final WholesaleNotificationHbRepository wholesaleNotificationHbRepository;
     private final WholesaleWalletRepository wholesaleWalletRepository;
     private final WholesaleStoreRepository wholesaleStoreRepository;
     private final WholesaleServicePlanRepository wholesaleServicePlanRepository;
     private final WalletTransactionService walletTransactionService;
     private final WholesaleServicePlanService wholesaleServicePlanService;
+    private final WholesaleNotificationRepository wholesaleNotificationRepository;
 
     public Wallet getWalletDetail(Integer userId){
         return wholesaleWalletRepository.findByUserId(userId);
@@ -40,12 +41,14 @@ public class WholesaleWalletService  {
     @Transactional
     public void sendNotification(String title, String messageBody, int storeId, AuthUser loggedUser){
         logger.debug("Entering sendNotification with title: {}, messageBody: {}, storeId: {}, loggedUser: {}", title, messageBody, storeId, loggedUser);
-        StoreNotifications storeNotifications = new StoreNotifications();
-        storeNotifications.setTitle(title);
-        storeNotifications.setMessageBody(messageBody);
-        storeNotifications.setWholesaleId(storeId);
-        storeNotifications.setCreatedBy(User.builder().id(loggedUser.getId()).build());
-        wholesaleNotificationHbRepository.insertStoreNotifications(storeNotifications);
+        StoreNotifications storeNotifications = StoreNotifications.builder()
+            .title(title)
+            .messageBody(messageBody)
+            .wholesaleId(storeId)
+            .createdBy(User.builder().id(loggedUser.getId()).build())
+            .createAt(Utils.getCurrentMillis())
+        .build();
+        wholesaleNotificationRepository.save(storeNotifications);
         logger.debug("Exiting sendNotification");
     }
 

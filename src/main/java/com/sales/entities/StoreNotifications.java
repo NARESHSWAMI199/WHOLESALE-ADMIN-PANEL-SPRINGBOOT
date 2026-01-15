@@ -1,10 +1,7 @@
 package com.sales.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.io.Serializable;
@@ -16,6 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @SQLRestriction("is_deleted != 'Y' ")
+@Builder
 public class StoreNotifications implements Serializable {
 
     @Id
