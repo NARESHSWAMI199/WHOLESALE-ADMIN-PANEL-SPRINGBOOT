@@ -28,6 +28,7 @@ public class WholesaleItemHbRepository {
                 "name =:name," +
                 "capacity =:capacity," +
                 "description =:description," +
+                "label =:label,"+
                 "price =:price," +
                 "discount =:discount," +
                 "itemCategory =:itemCategory,"+
@@ -39,6 +40,7 @@ public class WholesaleItemHbRepository {
         query.setParameter("name" , itemDto.getName());
         query.setParameter("capacity" , itemDto.getCapacity());
         query.setParameter("description" , itemDto.getDescription());
+        query.setParameter("label" , itemDto.getLabel());
         query.setParameter("price" , itemDto.getPrice());
         query.setParameter("discount" , itemDto.getDiscount());
         query.setParameter("itemCategory" , itemDto.getItemCategory());

@@ -269,7 +269,7 @@ public class TestUtil {
                 .expiryDate(futureDate.getTime())
                 .isExpired(false)
                 .slug(slug)
-                .servicePlan(servicePlan)
+                .servicePlanId(servicePlan.getId())
                 .build();
         return wholesalePlansRepository.save(wholesalerPlans);
     }
