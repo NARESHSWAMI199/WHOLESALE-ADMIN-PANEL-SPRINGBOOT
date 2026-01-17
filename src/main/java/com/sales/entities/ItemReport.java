@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "item_report")
+@Table(name = "item_reports")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,7 +19,7 @@ public class ItemReport implements Serializable {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    int id;
+    long id;
 
     @Column(name = "item_id")
     Long itemId;

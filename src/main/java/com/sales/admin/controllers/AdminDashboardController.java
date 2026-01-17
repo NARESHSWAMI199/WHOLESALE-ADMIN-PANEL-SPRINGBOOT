@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -24,6 +25,7 @@ public class AdminDashboardController  {
     private static final Logger logger = LoggerFactory.getLogger(AdminDashboardController.class);
 
     @GetMapping("/counts")
+    @PreAuthorize("hasAuthority('dashboard.count')")
     public ResponseEntity<Map<String, Object>> getAllDashboardCount() {
         logger.debug("Fetching all dashboard counts");
         Map<String, Object> responseObj = new HashMap<>();
@@ -37,6 +39,7 @@ public class AdminDashboardController  {
         return new ResponseEntity<>(responseObj, HttpStatus.OK );
     }
 
+    @PreAuthorize("hasAuthority('dashboard.count')")
     @PostMapping("graph/months/")
     public ResponseEntity<Map<String, Object>> getAllGraphData(@RequestBody GraphDto graphDto) {
         logger.debug("Fetching graph data for months with filters: {}", graphDto);

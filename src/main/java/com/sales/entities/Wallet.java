@@ -6,7 +6,7 @@ import lombok.*;
 
 import java.io.Serializable;
 
-@Table(name = "wholesaler_wallet")
+@Table(name = "user_wallet")
 @Entity
 @Getter
 @Setter

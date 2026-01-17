@@ -22,14 +22,10 @@ public class Permission implements Serializable {
     @Column(name = "permission")
     String permission;
 
-
-    @Column(name = "access_url")
-    String accessUrl;
-
-
     @Column(name = "permission_for")
     String permissionFor;
 
-
+    @Column(name = "display_name")
+    String displayName;
 
 }

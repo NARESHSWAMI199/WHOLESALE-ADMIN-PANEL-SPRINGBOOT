@@ -22,16 +22,13 @@ public class StorePermissions implements Serializable {
     @Column(name = "permission")
     String permission;
 
-
-    @Column(name = "access_url")
-    String accessUrl;
-
-
     @Column(name = "permission_for")
     String permissionFor;
 
     @Column(name="default_permission")
     String defaultPermission;
 
+    @Column(name="display_name")
+    String displayName;
 
 }

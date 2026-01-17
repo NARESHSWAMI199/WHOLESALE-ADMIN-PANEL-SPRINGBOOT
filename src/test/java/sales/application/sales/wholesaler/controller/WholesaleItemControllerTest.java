@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @SpringBootTest(classes = SalesApplication.class)
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @ActiveProfiles("test")
 public class WholesaleItemControllerTest extends TestUtil {
@@ -148,7 +148,7 @@ public class WholesaleItemControllerTest extends TestUtil {
                 }
                 """
                 .replace("{slug}",item.getSlug());
-        mockMvc.perform(post("/admin/item/stock")
+        mockMvc.perform(post("/wholesale/item/stock")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
                         .headers(headers)

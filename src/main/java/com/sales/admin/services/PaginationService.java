@@ -4,6 +4,7 @@ package com.sales.admin.services;
 import com.sales.admin.repositories.PaginationHbRepository;
 import com.sales.admin.repositories.PaginationRepository;
 import com.sales.admin.repositories.UserPaginationsRepository;
+import com.sales.claims.AuthUser;
 import com.sales.dto.UserPaginationDto;
 import com.sales.entities.Pagination;
 import com.sales.entities.User;
@@ -21,7 +22,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,11 +35,12 @@ public class PaginationService {
         return userPaginationsRepository.findAll();
     }
 
-    public Map<String,Object> findUserPaginationsByUserId(User loggedUser){
+    public Map<String,Object> findUserPaginationsByUserId(AuthUser loggedUser){
         List<UserPagination> userPaginations = userPaginationsRepository.getUserPaginationByUserId(loggedUser.getId());
         Map<String,Object> result = new LinkedHashMap<>();
         for(UserPagination userPagination : userPaginations) {
-            String key = userPagination.getPagination().getFieldFor();
+            Pagination pagination = paginationRepository.findById(userPagination.getPaginationId()).orElseThrow(() -> new NotFoundException("Pagination not found."));
+            String key = pagination.getFieldFor();
             // remove all whitespaces and changed with uppercase like:
             // abc d → ABCD
             key = key.replaceAll("\\s+", "").toUpperCase();
@@ -60,16 +61,17 @@ public class PaginationService {
         );
         List<Pagination> allPagination = paginationRepository.findAll(specification);
         for (Pagination pagination : allPagination) {
-            UserPagination userPagination = insertUserPagination(pagination, user , 25); // default rows are 25
+            UserPagination userPagination = insertUserPagination(pagination,user, 25); // default rows are 25
             if(userPagination == null) throw new InternalException("We are unable to save your default pagination settings.");
 
         }
     }
 
     @Transactional(rollbackOn = {InternalException.class, RuntimeException.class,Exception.class })
-    public UserPagination insertUserPagination(Pagination pagination,User loggedUser,Integer rowNumbers) {
+    public UserPagination insertUserPagination(Pagination pagination,AuthUser loggedUser,Integer rowNumbers) {
         UserPagination userPagination = new UserPagination();
-        userPagination.setPagination(pagination);
+        Pagination savedPagination = paginationRepository.save(pagination);
+        userPagination.setPaginationId(savedPagination.getId());
         userPagination.setUserId(loggedUser.getId());
         userPagination.setRowsNumber(rowNumbers);
         return userPaginationsRepository.save(userPagination);
@@ -79,10 +81,7 @@ public class PaginationService {
     public int updateUserPaginationRowsNumber(UserPaginationDto userPaginationDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         // Check required fields are not null
         Utils.checkRequiredFields(userPaginationDto,List.of("paginationId","userId"));
-        Optional<Pagination> pagination  = paginationRepository.findById(userPaginationDto.getPaginationId());
-        if(pagination.isEmpty()) throw new NotFoundException("No fields are found to update.");
-        // check pagination field available or not
-        return paginationHbRepository.updateUserPaginations(pagination.get(),userPaginationDto);
+        return paginationHbRepository.updateUserPaginations(userPaginationDto.getPaginationId(),userPaginationDto);
     }
 
 }

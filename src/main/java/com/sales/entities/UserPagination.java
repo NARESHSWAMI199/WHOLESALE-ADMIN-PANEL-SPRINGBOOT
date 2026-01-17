@@ -19,17 +19,16 @@ public class UserPagination implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    private int id;
 
     @Column(name = "user_id")
-    Integer userId;
+    private Integer userId;
 
-    @OneToOne
-    @JoinColumn(name="pagination_id")
-    Pagination pagination;
+    @Column(name="pagination_id")
+    private Integer paginationId;
 
     @Column(name="rows_number")
-    Integer rowsNumber;
+    private Integer rowsNumber;
 
 
 }

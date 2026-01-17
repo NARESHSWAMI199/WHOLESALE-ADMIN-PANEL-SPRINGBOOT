@@ -18,6 +18,9 @@
 		<java.version>17</java.version>
 		<spring-cloud.version>2025.0.0</spring-cloud.version>
 		<sonar.organization>nareshswami199</sonar.organization>
+			<sonar.coverage.jacoco.xmlReportPaths>
+				target/site/jacoco/jacoco.xml
+			</sonar.coverage.jacoco.xmlReportPaths>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -30,9 +33,40 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
+
+		<!-- Very important - add this! -->
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-database-postgresql</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
-			<scope>runtime</scope>
+			<version>8.0.33</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-hibernate6</artifactId>
+			<!-- Version is optional if using Spring Boot's dependency management;
+                 it will pick a compatible version (e.g., 2.17+ in recent Spring Boot 3.x) -->
+			<version>2.20.1</version> <!-- Use the latest stable as of early 2026 -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-mysql</artifactId>   <!-- ← This is the key one for MySQL! -->
+			<version>11.20.0</version>
 		</dependency>
 
 		<dependency>
@@ -45,6 +79,13 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 			<version>3.0.2</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 
 		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 		<dependency>
@@ -117,7 +158,6 @@
 			<artifactId>json</artifactId>
 			<version>20231013</version>
 		</dependency>
-
 
 
 		<dependency>
@@ -290,6 +330,33 @@
 <!--							<skipTests>true</skipTests>-->
 <!--						</configuration>-->
 					</plugin>
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.11</version>
+				<executions>
+
+					<!-- Attach JaCoCo agent -->
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+
+					<!-- Generate XML report -->
+					<execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+
+				</executions>
+			</plugin>
+
 
 		</plugins>
 	</build>

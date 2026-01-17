@@ -9,10 +9,10 @@ import com.phonepe.sdk.pg.payments.v1.models.request.PgPayRequest;
 import com.phonepe.sdk.pg.payments.v1.models.response.PayPageInstrumentResponse;
 import com.phonepe.sdk.pg.payments.v1.models.response.PgPayResponse;
 import com.sales.admin.services.ServicePlanService;
+import com.sales.claims.AuthUser;
 import com.sales.dto.PhonePeDto;
 import com.sales.entities.PhonePeTrans;
 import com.sales.entities.ServicePlan;
-import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
 import com.sales.jwtUtils.JwtToken;
@@ -58,7 +58,7 @@ public class PhonePeGatewayController {
     @ResponseBody
     @GetMapping("pay/{slug}")
     public ResponseEntity<Map<String,Object>> payViaPhonePe(HttpServletRequest request,@PathVariable String slug){
-        User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
+        AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         ServicePlan servicePlan = servicePlanService.findBySlug(slug);
         logger.debug("Initiating payment via PhonePe for user: {}, service plan: {}", loggedUser.getId(), servicePlan.getId());
         Map<String,Object> result = new HashMap<>();

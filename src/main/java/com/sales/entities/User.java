@@ -2,14 +2,19 @@ package com.sales.entities;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sales.claims.AuthUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.sales.utils.Utils.getCurrentMillis;
@@ -20,10 +25,10 @@ import static com.sales.utils.Utils.getCurrentMillis;
 @AllArgsConstructor
 
 @Entity
-@Table(name = "`user`")
+@Table(name = "`users`")
 @SQLRestriction("is_deleted != 'Y' ")
 @Builder
-public class User implements Serializable {
+public class User implements AuthUser,Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -64,6 +69,14 @@ public class User implements Serializable {
     @Column(name = "last_seen")
     Long lastSeen;
 
+    @ManyToMany
+    @JoinTable(
+            name = "user_groups",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id")
+    )
+    private Set<Group> groups = new HashSet<>();
+
 
     @Transient
     private String avatarUrl;
@@ -80,7 +93,10 @@ public class User implements Serializable {
     @Transient
     public String accepted;
 
-    public User (User loggedUser) {
+    @Transient
+    List<GrantedAuthority> authorities;
+
+    public User (AuthUser loggedUser) {
         this.slug = UUID.randomUUID().toString();
         this.createdAt = getCurrentMillis();
         this.createdBy = loggedUser.getId();
@@ -99,4 +115,8 @@ public class User implements Serializable {
         this.isDeleted = "N";
     }
 
+    @Override
+    public boolean isEnabled() {
+        return this.status.equals("A");
+    }
 }

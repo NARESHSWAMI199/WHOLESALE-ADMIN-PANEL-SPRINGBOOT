@@ -9,7 +9,7 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "chat_room")
+@Table(name = "chat_rooms")
 @Getter
 @Setter
 @AllArgsConstructor

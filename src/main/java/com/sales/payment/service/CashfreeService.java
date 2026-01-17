@@ -8,11 +8,11 @@ import com.cashfree.model.CreateOrderRequest;
 import com.cashfree.model.CustomerDetails;
 import com.cashfree.model.OrderEntity;
 import com.cashfree.model.OrderMeta;
+import com.sales.claims.AuthUser;
 import com.sales.dto.CashfreeDto;
 import com.sales.dto.CashfreeFilters;
 import com.sales.entities.CashfreeTrans;
 import com.sales.entities.ServicePlan;
-import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
 import com.sales.payment.controller.CashFreePgController;
 import com.sales.payment.repository.CashfreeHbRepository;
@@ -126,7 +126,7 @@ public class CashfreeService {
     }
 
 
-    public OrderEntity getOrderEntityForCashfreePaymentForPlans(HttpServletRequest httpServletRequest,CashfreeDto cashfreeDto, User loggedUser, ServicePlan servicePlan, String givenRedirectUri, String env) throws ApiException {
+    public OrderEntity getOrderEntityForCashfreePaymentForPlans(HttpServletRequest httpServletRequest, CashfreeDto cashfreeDto, AuthUser loggedUser, ServicePlan servicePlan, String givenRedirectUri, String env) throws ApiException {
         logger.debug("Started getOrderEntityForCashfreePaymentForPlans with params : cashfreeDto : {} and loggedUser : {} and servicePlan : {} and redirectUri : {} and env : {}", cashfreeDto, loggedUser, servicePlan, givenRedirectUri, env);
         long amount = (servicePlan.getPrice() - servicePlan.getDiscount());
         String slug = UUID.randomUUID().toString();
@@ -177,7 +177,7 @@ public class CashfreeService {
 
 
 
-    public OrderEntity getOrderEntityForCashfreePaymentForWallet(HttpServletRequest httpServletRequest, CashfreeDto cashfreeDto, User loggedUser, Double amount, String givenRedirectUri, String env) throws ApiException {
+    public OrderEntity getOrderEntityForCashfreePaymentForWallet(HttpServletRequest httpServletRequest, CashfreeDto cashfreeDto, AuthUser loggedUser, Double amount, String givenRedirectUri, String env) throws ApiException {
         logger.debug("Started getOrderEntityForCashfreePaymentForWallet with params : cashfreeDto : {} and loggedUser : {} and redirectUri : {} and env : {}", cashfreeDto.toString(), loggedUser.toString(), givenRedirectUri, env);
 
         String slug = UUID.randomUUID().toString();

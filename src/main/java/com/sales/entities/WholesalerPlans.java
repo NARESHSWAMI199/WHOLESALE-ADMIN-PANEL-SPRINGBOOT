@@ -21,9 +21,8 @@ public class WholesalerPlans implements Serializable {
     String slug;
     @Column(name = "user_id")
     Integer userId;
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "plan_id", referencedColumnName = "id")
-    ServicePlan servicePlan;
+    @Column(name = "plan_id")
+    Integer servicePlanId;
     @Column(name = "created_at")
     Long createdAt;
     @Column(name = "expiry_date")

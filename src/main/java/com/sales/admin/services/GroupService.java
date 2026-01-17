@@ -1,18 +1,21 @@
 package com.sales.admin.services;
 
 
-import com.sales.admin.repositories.GroupPermissionRepository;
 import com.sales.admin.repositories.GroupRepository;
 import com.sales.admin.repositories.PermissionHbRepository;
+import com.sales.admin.repositories.PermissionRepository;
+import com.sales.cachemanager.services.UserCacheService;
+import com.sales.claims.AuthUser;
 import com.sales.dto.DeleteDto;
 import com.sales.dto.GroupDto;
 import com.sales.dto.SearchFilters;
 import com.sales.dto.UserPermissionsDto;
 import com.sales.entities.Group;
-import com.sales.entities.User;
+import com.sales.entities.Permission;
 import com.sales.exceptions.NotFoundException;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.global.GlobalConstant;
+import com.sales.global.USER_TYPES;
 import com.sales.utils.Utils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -39,12 +42,13 @@ public class GroupService {
 
 
     private final GroupRepository groupRepository;
-    private final GroupPermissionRepository groupPermissionRepository;
+    private final PermissionRepository permissionRepository;
     private final PermissionHbRepository permissionHbRepository;
+    private final UserCacheService userCacheService;
     
     private static final Logger logger = LoggerFactory.getLogger(GroupService.class);
 
-    public Page<Group> getAllGroups(SearchFilters filters, User loggedUser) {
+    public Page<Group> getAllGroups(SearchFilters filters, AuthUser loggedUser) {
         logger.debug("Entering getAllGroups with filters: {}, loggedUser: {}", filters, loggedUser);
         Specification<Group> specification = Specification.allOf(
                 (containsName(filters.getSearchKey()))
@@ -68,7 +72,7 @@ public class GroupService {
     }
 
     @Transactional(rollbackOn = {IllegalArgumentException.class, NotFoundException.class, RuntimeException.class, Exception.class})
-    public Map<String, Object> createOrUpdateGroup(GroupDto groupDto, User loggedUser, String path) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public Map<String, Object> createOrUpdateGroup(GroupDto groupDto, AuthUser loggedUser, String path) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Entering createOrUpdateGroup with groupDto: {}, loggedUser: {}, path: {}", groupDto, loggedUser, path);
         Map<String, Object> responseObject = new HashMap<>();
 
@@ -76,7 +80,7 @@ public class GroupService {
         validateRequiredFieldsForGroup(groupDto);
 
         //Only super admin can create or update a group.
-        if(!loggedUser.getUserType().equals("SA")) throw new PermissionDeniedDataAccessException("You don't have permission to create or update a group. Please contact a super admin",new Exception());
+        if(!loggedUser.getUserType().equals(USER_TYPES.SUPER_ADMIN.getType())) throw new PermissionDeniedDataAccessException("You don't have permission to create or update a group. Please contact a super admin",new Exception());
 
         if (!Utils.isEmpty(groupDto.getSlug()) || path.contains("update")) {
             logger.debug("We are going to update the group.");
@@ -88,8 +92,8 @@ public class GroupService {
             if(group.getId() == GlobalConstant.groupId && loggedUser.getId() != GlobalConstant.suId) throw  new NotFoundException("There is nothing to update.");
 
             // Going to update existing group.
-            int isUpdated = permissionHbRepository.updateGroup(groupDto, group.getId());
-            if (isUpdated > 0 && group.getId() == 0) {
+            int isUpdated = permissionHbRepository.updateGroup(groupDto, group.getId(),loggedUser.getId() == GlobalConstant.suId);
+            if (isUpdated > 0 && group.getId() == GlobalConstant.groupId ) {
                 responseObject.put(ConstantResponseKeys.MESSAGE, "The group has been updated successfully. But dear " + loggedUser.getUsername() + " ji We are not able to remove permissions. from " + group.getName() + " New permissions updated.");
                 responseObject.put(ConstantResponseKeys.STATUS, 200);
             } else if (isUpdated > 0) {
@@ -99,6 +103,8 @@ public class GroupService {
                 responseObject.put(ConstantResponseKeys.MESSAGE, "No record found to update.");
                 responseObject.put(ConstantResponseKeys.STATUS, 404);
             }
+            // Evict user from redis
+            userCacheService.deleteCacheUser(loggedUser.getSlug());
         } else { // Going to insert a new group
             logger.debug("We are going to create the group.");
             Group group = new Group(loggedUser);
@@ -120,7 +126,7 @@ public class GroupService {
         Group group = groupRepository.findGroupBySlug(slug);
         if (group == null) throw new NotFoundException("No record found.");
 
-        List<Map<String, Object>> groupWithPermission = groupPermissionRepository.getGroupPermissionByGroupId(group.getId());
+        List<Map<String, Object>> groupWithPermission = groupRepository.findGroupAndPermissionsByGroupId(group.getId());
 
         Map<String, Object> formattedGroup = new HashMap<>();
         List<Integer> permissionList = new ArrayList<>();
@@ -137,10 +143,10 @@ public class GroupService {
 
     public Map<String, List<Object>> getAllPermissions() {
         logger.debug("Entering getAllPermissions");
-        List<Map<String, Object>> permissionList = groupPermissionRepository.getAllPermissions();
+        List<Permission> permissionList = permissionRepository.findAll();
         Map<String, List<Object>> formattedPermissions = new HashMap<>();
-        for (Map<String, Object> permission : permissionList) {
-            String key = (String) permission.get("permission_for");
+        for (Permission permission : permissionList) {
+            String key = permission.getPermissionFor();
             if (formattedPermissions.containsKey(key)) {
                 List<Object> addedPermissions = formattedPermissions.get(key);
                 addedPermissions.add(permission);
@@ -156,7 +162,7 @@ public class GroupService {
     }
 
     @Transactional(rollbackOn = {IllegalArgumentException.class, PermissionDeniedDataAccessException.class, RuntimeException.class, Exception.class})
-    public int deleteGroupBySlug(DeleteDto deleteDto, User loggedUser) throws Exception {
+    public int deleteGroupBySlug(DeleteDto deleteDto, AuthUser loggedUser) throws Exception {
         logger.debug("Entering deleteGroupBySlug with deleteDto: {}, loggedUser: {}", deleteDto, loggedUser);
         // if there is any required field null then this will throw IllegalArgumentException
         Utils.checkRequiredFields(deleteDto, List.of("slug"));
@@ -168,12 +174,12 @@ public class GroupService {
         String slug = deleteDto.getSlug();
         Group group = groupRepository.findGroupBySlug(slug);
         if (group == null) throw new NotFoundException("No group found to delete");
-        int result = permissionHbRepository.deleteGroupBySlug(slug, group.getId());
+        int result = permissionHbRepository.deleteGroupBySlug(slug, group.getId(),(loggedUser.getId() == GlobalConstant.suId));
         logger.debug("Exiting deleteGroupBySlug with result: {}", result);
         return result;
     }
 
-    public int assignGroupsToUser(UserPermissionsDto userPermissionsDto, User loggedUser) throws Exception {
+    public int assignGroupsToUser(UserPermissionsDto userPermissionsDto, AuthUser loggedUser) throws Exception {
         logger.debug("Entering assignGroupsToUser with userPermissionsDto: {}, loggedUser: {}", userPermissionsDto, loggedUser);
         int userId = userPermissionsDto.getUserId();
         int result = permissionHbRepository.assignGroupsToUser(userId, userPermissionsDto.getGroupList(), loggedUser);

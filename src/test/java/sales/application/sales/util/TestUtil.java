@@ -77,9 +77,6 @@ public class TestUtil {
     protected GroupRepository groupRepository;
 
     @Autowired
-    protected UserGroupRepository userGroupRepository;
-
-    @Autowired
     protected  PermissionRepository permissionRepository;
 
 
@@ -272,7 +269,7 @@ public class TestUtil {
                 .expiryDate(futureDate.getTime())
                 .isExpired(false)
                 .slug(slug)
-                .servicePlan(servicePlan)
+                .servicePlanId(servicePlan.getId())
                 .build();
         return wholesalePlansRepository.save(wholesalerPlans);
     }
@@ -288,10 +285,20 @@ public class TestUtil {
         User user = createUser(slug,email,password,userType);
         WholesalerPlans wholesalerPlans = createWholesalePlan(slug,user,currentTime,futureDate,servicePlan);
         user.setActivePlan(wholesalerPlans.getId());
+        Group group = createGroup();
+        Set<Permission> permissions = getRequiredStaffPermissions();
+        group.setPermissions(permissions);
+        groupRepository.save(group);
         selfSlug = slug;
-        userRepository.save(user);
+        Set<Group> groups = new HashSet<>();
+        groups.add(group);
+        user.setGroups(groups);
+        user = userRepository.save(user);
+        Set<StorePermissions> storePermission = getAllStorePermissions();
+        // assign to group
         if(userType.equals(GlobalConstantTest.WHOLESALER)){
             Store store = createStore();
+            assignWholesalerPermissions(storePermission,user.getId());
             store.setUser(user);
             storeRepository.save(store);
             storeId = store.getId();
@@ -453,22 +460,12 @@ public class TestUtil {
         return groupRepository.save(group);
     }
 
-    public UserGroups assignGroup(Integer userId,Integer groupId){
-        UserGroups userGroups = UserGroups.builder()
-                .groupId(groupId)
-                .userId(userId)
+    public Permission createPermission(String permission, String permissionFor){
+        Permission permissionObj = Permission.builder()
+                .permission(permission)
+                .permissionFor(permissionFor)
                 .build();
-        return userGroupRepository.save(userGroups);
-    }
-
-
-    public Permission createPermission(){
-        Permission permission = Permission.builder()
-                .permission("Test")
-                .permissionFor("Edit")
-                .accessUrl("test.com")
-                .build();
-        return permissionRepository.save(permission);
+        return permissionRepository.save(permissionObj);
     }
 
 
@@ -476,14 +473,13 @@ public class TestUtil {
         StorePermissions permission = StorePermissions.builder()
                 .permission("Test")
                 .permissionFor("Edit")
-                .accessUrl("test.com")
                 .defaultPermission("Y")
                 .build();
         return storePermissionRepository.save(permission);
     }
 
     public WholesalerPermissions createWholesalerPermission(Integer userId){
-        Permission permission = createPermission();
+        Permission permission = createPermission("users.all","Users");
         WholesalerPermissions wholesalerPermissions = WholesalerPermissions.builder()
                 .permissionId(permission.getId())
                 .userId(userId)
@@ -491,5 +487,142 @@ public class TestUtil {
         return wholesalePermissionRepository.save(wholesalerPermissions);
     }
 
+
+    public Set<Permission> getRequiredStaffPermissions(){
+        List<String> permissionsStr = List.of(
+                "dashboard.count",
+                "group.all",
+                "group.delete",
+                "group.detail",
+                "group.permission.all",
+                "group.permission.edit",
+                "item.all",
+                "item.category",
+                "item.category.edit",
+                "item.category.delete",
+                "item.delete",
+                "item.detail",
+                "item.edit",
+                "item.export",
+                "item.image",
+                "item.import",
+                "item.measuring.unit",
+                "item.report.all",
+                "item.review.all",
+                "item.status",
+                "item.stock",
+                "item.subcategory",
+                "item.subcategory.delete",
+                "item.subcategory.edit",
+                "pagination.all",
+                "service-plans.add",
+                "service-plans.all",
+                "service-plans.delete",
+                "service-plans.status.update",
+                "store.all",
+                "store.category.delete",
+                "store.category.detail",
+                "store.category.edit",
+                "store.delete",
+                "store.detail",
+                "store.edit",
+                "store.profile",
+                "store.profile.edit",
+                "store.report.all",
+                "store.status",
+                "store.subcategory.all",
+                "store.subcategory.delete",
+                "store.subcategory.edit",
+                "store.user",
+                "user.all",
+                "user.delete",
+                "user.detail",
+                "user.edit",
+                "user.groups",
+                "user.plan.all",
+                "user.plan.detail",
+                "user.profile",
+                "user.profile.edit",
+                "user.reset.password",
+                "user.status",
+                "wallet.detail",
+                "wallet.pay",
+                "wallet.transactions",
+                "wholesaler.permission",
+                "wholesaler.permission.update",
+                "permissions.add"
+        );
+        Set<Permission> permissionsSet = new HashSet<>();
+        for(String permissionStr : permissionsStr){
+            Permission permission = Permission.builder()
+                    .permission(permissionStr)
+                    .displayName(permissionStr.toUpperCase())
+                    .build();
+            permissionsSet.add(permission);
+        }
+        permissionRepository.saveAll(permissionsSet);
+        return permissionsSet;
+    }
+
+
+    public void assignWholesalerPermissions(Set<StorePermissions> permissions ,Integer userId){
+        Set<WholesalerPermissions> wholesalerPermissions = new HashSet<>();
+        permissions.forEach(sp -> {
+                WholesalerPermissions wp = WholesalerPermissions.builder()
+                            .permissionId(sp.getId())
+                            .userId(userId)
+                            .build();
+                    wholesalerPermissions.add(wp);
+                }
+        );
+        wholesalePermissionRepository.saveAll(wholesalerPermissions);
+    }
+
+    public Set<StorePermissions> getAllStorePermissions(){
+        Set<StorePermissions> storePermissions = new HashSet<>();
+        List<String> storePermissionsStr = List.of(
+"excel.notUpdated.absolute",
+        "remove.bg.image.download",
+        "remove.bg.image.upload",
+        "wallet.dashboard.graph",
+        "wallet.transactiona.all",
+        "wholesale.dashboard.count",
+        "wholesale.furture.plans.activate",
+        "wholesale.furture.plans.all",
+        "wholesale.item.all",
+        "wholesale.item.delete",
+        "wholesale.item.detail",
+        "wholesale.item.edit",
+        "wholesale.item.export",
+        "wholesale.item.import",
+        "wholesale.item.stock.update",
+        "wholesale.item.template.download",
+        "wholesale.my.current.plan",
+        "wholesale.pagination.all",
+        "wholesale.pagination.edit",
+        "wholesale.plan.active",
+        "wholesale.plan.all",
+        "wholesale.plan.detail",
+        "wholesale.profile.edit",
+        "wholesale.promoted.item.add",
+        "wholesale.review.all",
+        "wholesale.store.create",
+        "wholesale.store.edit",
+        "wholesale.store.notifications",
+        "wholesale.store.notifications.seen",
+        "wholesale.wallet.pay",
+        "wholesale.password.reset"
+        );
+        storePermissionsStr.forEach(p -> {
+            StorePermissions sp = StorePermissions.builder()
+                    .permissionFor(p.toUpperCase())
+                    .permission(p)
+                    .defaultPermission("Y")
+                    .build();
+            storePermissions.add(sp);
+        });
+        storePermissionRepository.saveAll(storePermissions);
+        return storePermissions;
+    }
 
 }

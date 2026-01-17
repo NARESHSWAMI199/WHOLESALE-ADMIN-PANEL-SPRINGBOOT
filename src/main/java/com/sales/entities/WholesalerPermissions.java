@@ -14,7 +14,7 @@ public class WholesalerPermissions {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    Long id;
 
     @Column(name = "user_id")
     private Integer userId;

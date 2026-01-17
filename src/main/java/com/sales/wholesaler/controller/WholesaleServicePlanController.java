@@ -1,9 +1,10 @@
 package com.sales.wholesaler.controller;
 
 
+import com.sales.cachemanager.services.UserCacheService;
+import com.sales.claims.AuthUser;
 import com.sales.dto.UserPlanDto;
 import com.sales.entities.ServicePlan;
-import com.sales.entities.User;
 import com.sales.entities.WholesalerPlans;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.jwtUtils.JwtToken;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -32,6 +34,7 @@ public class WholesaleServicePlanController  {
     private final WholesaleServicePlanService wholesaleServicePlanService;
     private final JwtToken jwtToken;
     private final WholesaleUserService wholesaleUserService;
+    private final UserCacheService userCacheService;
     private static final Logger logger = LoggerFactory.getLogger(WholesaleServicePlanController.class);
 
     @GetMapping("/all")
@@ -44,6 +47,7 @@ public class WholesaleServicePlanController  {
 
 
     @GetMapping("detail/{slug}")
+    @PreAuthorize("hasAuthority('wholesale.plan.detail')")
     public ResponseEntity<ServicePlan> getPlanDetailBySlug(@PathVariable String slug) {
         logger.debug("Starting getPlanDetailBySlug method");
         ResponseEntity<ServicePlan> response = new ResponseEntity<>(wholesaleServicePlanService.findBySlug(slug), HttpStatusCode.valueOf(200));
@@ -54,16 +58,17 @@ public class WholesaleServicePlanController  {
     @PostMapping("/my-plans")
     public ResponseEntity<Page<WholesalerPlans>> getMyAllPlans(HttpServletRequest request, @RequestBody UserPlanDto searchFilters) {
         logger.debug("Starting getMyAllPlans method");
-        User loggedUser = Utils.getUserFromRequest(request, jwtToken, wholesaleUserService);
+        AuthUser loggedUser = Utils.getUserFromRequest(request, jwtToken, wholesaleUserService);
         Page<WholesalerPlans> allUserPlans = wholesaleServicePlanService.getAllUserPlans(loggedUser, searchFilters);
         logger.debug("Completed getMyAllPlans method");
         return new ResponseEntity<>(allUserPlans, HttpStatusCode.valueOf(200));
     }
 
     @GetMapping("is-active")
+//    @PreAuthorize("hasAuthority('wholesale.plan.active')")
     public ResponseEntity<Map<String,Object>> isUserPlanActive(HttpServletRequest request){
         logger.debug("Starting isUserPlanActive method");
-        User loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
+        AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         Map<String,Object> result = new HashMap<>();
         boolean planIsActive = wholesaleServicePlanService.isPlanActive(loggedUser.getActivePlan());
         result.put("planIsActive",planIsActive);
@@ -73,10 +78,11 @@ public class WholesaleServicePlanController  {
     }
 
     @GetMapping("activate/{planSlug}")
+//    @PreAuthorize("hasAuthority('wholesale.my.current.plan')")
     public ResponseEntity<Map<String,Object>> updateMyCurrentPlan(HttpServletRequest request , @PathVariable String planSlug){
-        User lopgedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
+        AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken,wholesaleUserService);
         Map<String,Object> result = new HashMap<>();
-        int isUpdated = wholesaleServicePlanService.updatedUserCurrentPlan(planSlug,lopgedUser);
+        int isUpdated = wholesaleServicePlanService.updatedUserCurrentPlan(planSlug,loggedUser);
         if(isUpdated > 0){
             result.put(ConstantResponseKeys.MESSAGE,"Your current plan activated successfully");
             result.put(ConstantResponseKeys.STATUS,200);

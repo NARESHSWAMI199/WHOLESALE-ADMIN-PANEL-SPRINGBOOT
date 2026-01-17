@@ -8,7 +8,7 @@ import org.hibernate.annotations.SQLRestriction;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "item_category")
+@Table(name = "item_categories")
 @Getter
 @Setter
 @NoArgsConstructor

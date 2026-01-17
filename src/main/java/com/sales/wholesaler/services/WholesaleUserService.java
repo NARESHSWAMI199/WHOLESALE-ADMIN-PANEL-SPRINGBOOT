@@ -2,6 +2,7 @@ package com.sales.wholesaler.services;
 
 
 import com.sales.cachemanager.services.UserCacheService;
+import com.sales.claims.AuthUser;
 import com.sales.dto.*;
 import com.sales.entities.ServicePlan;
 import com.sales.entities.SupportEmail;
@@ -53,7 +54,6 @@ public class WholesaleUserService  {
     @Value("${profile.absolute}")
     String profilePath;
 
-    private final WholesaleStoreService wholesaleStoreService;
 
     @Value("${default.password}")
     String password;
@@ -67,7 +67,6 @@ public class WholesaleUserService  {
         String password = param.get("password");
         User user = wholesaleUserRepository.findByEmailAndPassword(email,password);
         logger.debug("Completed findByEmailAndPassword method");
-        userCacheService.saveCacheUser(user);
         return user;
     }
 
@@ -77,7 +76,6 @@ public class WholesaleUserService  {
         Utils.checkRequiredFields(userDto,List.of("slug","password"));
         User user = wholesaleUserRepository.findUserByOtpAndSlug(userDto.getSlug(),userDto.getPassword());
         logger.debug("Completed findUserByOtpAndSlug method");
-        userCacheService.saveCacheUser(user);
         return user;
     }
 
@@ -85,7 +83,6 @@ public class WholesaleUserService  {
         logger.debug("Starting findUserByOtpAndEmail method with userDto: {}", userDto);
         User user = wholesaleUserRepository.findUserByOtpAndEmail(userDto.getEmail(),userDto.getPassword());
         logger.debug("Completed findUserByOtpAndEmail method");
-        userCacheService.saveCacheUser(user);
         return user;
     }
 
@@ -182,7 +179,7 @@ public class WholesaleUserService  {
         return storeDto;
     }
 
-    public Map<String, Object> updateUserProfile(UserDto userDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public Map<String, Object> updateUserProfile(UserDto userDto, AuthUser loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting updateUserProfile method with userDto: {}, loggedUser: {}", userDto, loggedUser);
         // Validating required fields. If there we found any required field is null, this will throw an Exception
         Utils.checkRequiredFields(userDto,List.of("slug","username","email","contact"));
@@ -199,6 +196,8 @@ public class WholesaleUserService  {
         userDto.setUsername(username);
         int isUpdated = updateUser(userDto, loggedUser); // Update operation
         if (isUpdated > 0) {
+            //Evict wholesaler from redis
+            userCacheService.deleteCacheUser(loggedUser.getSlug());
             responseObj.put(ConstantResponseKeys.MESSAGE, "Successfully updated.");
             responseObj.put(ConstantResponseKeys.STATUS, 200);
         } else {
@@ -210,7 +209,7 @@ public class WholesaleUserService  {
     }
 
     @Transactional
-    public int updateUser(UserDto userDto, User loggedUser) {
+    public int updateUser(UserDto userDto, AuthUser loggedUser) {
         logger.debug("Starting updateUser method with userDto: {}, loggedUser: {}", userDto, loggedUser);
         int updateCount = wholesaleUserHbRepository.updateUser(userDto, loggedUser); // Update operation
         logger.debug("Completed updateUser method");
@@ -225,18 +224,19 @@ public class WholesaleUserService  {
     }
 
     @Transactional
-    public User resetPasswordByUserSlug(PasswordDto passwordDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public User resetPasswordByUserSlug(PasswordDto passwordDto, AuthUser loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting resetPasswordByUserSlug method with passwordDto: {}, loggedUser: {}", passwordDto, loggedUser);
         // Validating required fields. If their we found any required field is null, this will throw an Exception
         Utils.checkRequiredFields(passwordDto,List.of("password"));
         if(passwordDto.getPassword().isEmpty()) throw new IllegalArgumentException("password can't by empty or blank");
-        loggedUser.setPassword(passwordDto.getPassword());
-        User updatedUser = wholesaleUserRepository.save(loggedUser); // Update operation
+        User user = userCacheService.getCacheUser(loggedUser.getSlug());
+        user.setPassword(passwordDto.getPassword());
+        User updatedUser = wholesaleUserRepository.save(user); // Update operation
         logger.debug("Completed resetPasswordByUserSlug method");
         return updatedUser;
     }
 
-    public String updateProfileImage(MultipartFile profileImage,User loggedUser) throws IOException {
+    public String updateProfileImage(MultipartFile profileImage,AuthUser loggedUser) throws IOException {
         logger.debug("Starting updateProfileImage method with profileImage: {}, loggedUser: {}", profileImage, loggedUser);
         String slug = loggedUser.getSlug();
         String imageName = UUID.randomUUID().toString().substring(0,5)+"_"+ Objects.requireNonNull(profileImage.getOriginalFilename()).replaceAll(" ","_");
@@ -247,6 +247,8 @@ public class WholesaleUserService  {
         profileImage.transferTo(new File(dirPath+imageName));
         int isUpdated =  wholesaleUserHbRepository.updateProfileImage(slug,imageName); // Update operation
         if(isUpdated > 0) {
+            //Evict wholesaler from redis
+            userCacheService.deleteCacheUser(loggedUser.getSlug());
             logger.debug("Completed updateProfileImage method");
             return imageName;
         }
@@ -288,13 +290,10 @@ public class WholesaleUserService  {
 
         // updating default pagination settings also for both kind of user "W" and "R"
         wholesalePaginationService.setUserDefaultPaginationForSettings(insertedUser);
-
-        // Save user in redis
-        userCacheService.saveCacheUser(insertedUser);
         return insertedUser;
     }
 
-    public int updateLastSeen(User loggedUser) {
+    public int updateLastSeen(AuthUser loggedUser) {
         logger.debug("Starting updateLastSeen method with loggedUser: {}", loggedUser);
         int updateCount = wholesaleUserHbRepository.updatedUserLastSeen(loggedUser.getSlug()); // Update operation
         logger.debug("Completed updateLastSeen method");
@@ -310,7 +309,7 @@ public class WholesaleUserService  {
 
 
     /** Getting all retailers and wholesalers for chat purpose */
-    public Page<User> getAllUsers(UserSearchFilters filters, User loggedUser) {
+    public Page<User> getAllUsers(UserSearchFilters filters, AuthUser loggedUser) {
         logger.debug("Starting getAllUsers method with filters: {}, loggedUser: {}", filters, loggedUser);
         Specification<User> specification = Specification.allOf(
                 (containsName(filters.getSearchKey()).or(containsEmail(filters.getSearchKey())))

@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "store_report")
+@Table(name = "store_reports")
 @Getter
 @Setter
 @AllArgsConstructor

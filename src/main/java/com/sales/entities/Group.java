@@ -1,16 +1,19 @@
 package com.sales.entities;
 
 
+import com.sales.claims.AuthUser;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.sales.utils.Utils.getCurrentMillis;
 
 @Entity
-@Table(name = "groups")
+@Table(name = "`GROUPS`")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -40,8 +43,16 @@ public class Group implements Serializable {
     @Column(name = "updated_by")
     Integer updatedBy;
 
+    @ManyToMany
+    @JoinTable(
+            name = "group_permissions",
+            joinColumns = @JoinColumn(name = "group_id" , referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id")
+    )
+    private Set<Permission> permissions = new HashSet<>();
 
-    public Group (User loggedUser) {
+
+    public Group (AuthUser loggedUser) {
         this.slug = UUID.randomUUID().toString();
         this.createdAt = getCurrentMillis();
         this.createdBy = loggedUser.getId();

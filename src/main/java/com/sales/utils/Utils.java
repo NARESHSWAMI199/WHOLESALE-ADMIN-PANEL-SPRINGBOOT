@@ -1,5 +1,7 @@
 package com.sales.utils;
 
+import com.sales.claims.AuthUser;
+import com.sales.claims.SalesUser;
 import com.sales.entities.User;
 import com.sales.exceptions.MyException;
 import com.sales.exceptions.NotFoundException;
@@ -76,7 +78,7 @@ public class Utils {
     }
 
     public static boolean isValidPhoneNumber(String mobileNumber){
-        return mobileRegex.matches(mobileNumber);
+        return mobileNumber != null && mobileNumber.matches(mobileRegex);
     }
 
     public static void mobileAndEmailValidation(String email ,String contact,String errorMessage) {
@@ -84,7 +86,7 @@ public class Utils {
         if (Utils.isEmpty(email) || !isValidEmail(email)) throw new IllegalArgumentException(errorMessage.replaceAll("_","email address") + " ["+email+"]") ;
     }
 
-    public static void canUpdateAStaff(String slug ,String userType, User loggedUser) throws PermissionDeniedDataAccessException{
+    public static void canUpdateAStaff(String slug ,String userType, AuthUser loggedUser) throws PermissionDeniedDataAccessException{
         if((!loggedUser.getUserType().equals("SA") && // if user is not a super admin
             loggedUser.getId() != GlobalConstant.suId) &&  // if user not owner
             userType.equals("S") && // but user is a staff
@@ -93,7 +95,7 @@ public class Utils {
         }
     }
 
-    public static void canUpdateAStaffStatus(String slug ,String userType, User loggedUser) throws PermissionDeniedDataAccessException{
+    public static void canUpdateAStaffStatus(String slug ,String userType, AuthUser loggedUser) throws PermissionDeniedDataAccessException{
         if((!loggedUser.getUserType().equals("SA") && // if user is not a super admin
                 loggedUser.getId() != GlobalConstant.suId) &&  // if user not owner
                 userType.equals("S") && // but user is a staff
@@ -144,7 +146,7 @@ public class Utils {
     }
 
 
-    public static User getUserFromRequest(HttpServletRequest request, JwtToken jwtToken, WholesaleUserService userService){
+    public static AuthUser getUserFromRequest(HttpServletRequest request, JwtToken jwtToken, WholesaleUserService userService){
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         // Token from swagger because swagger not sends Authorization header in request.
         token = token == null ? request.getHeader("authToken") : token;
@@ -155,12 +157,11 @@ public class Utils {
                 String slug = jwtToken.getSlugFromToken(token);
                 /* get user by slug. */
                 User user = userService.findUserBySlug(slug);
-                if (user.getIsDeleted().equals("Y")) {
-                    throw new NotFoundException("User is not found.");
-                } else if (user.getStatus().equals("D")) {
+                AuthUser loggedUser = new SalesUser(user);
+                if (!loggedUser.isEnabled()) {
                     throw new UserException("User is not active.");
                 }
-                return user;
+                return loggedUser;
             }
             throw new UserException("Invalid authorization.");
         }catch (Exception e){

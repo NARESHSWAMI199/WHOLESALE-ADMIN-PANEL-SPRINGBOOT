@@ -2,13 +2,13 @@ package com.sales.interceptors;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sales.admin.repositories.GroupPermissionRepository;
 import com.sales.admin.repositories.StorePermissionsRepository;
 import com.sales.admin.repositories.UserRepository;
 import com.sales.cachemanager.services.UserCacheService;
 import com.sales.dto.ErrorDto;
 import com.sales.entities.User;
 import com.sales.global.GlobalConstant;
+import com.sales.global.USER_TYPES;
 import com.sales.jwtUtils.JwtToken;
 import com.sales.utils.Utils;
 import com.sales.wholesaler.services.WholesaleServicePlanService;
@@ -36,7 +36,6 @@ public class SalesInterceptor implements HandlerInterceptor {
     private final JwtToken jwtToken;
     private final UserRepository userRepository;
 
-    private final GroupPermissionRepository groupPermissionRepository;
     private final StorePermissionsRepository storePermissionsRepository;
     private final WholesaleServicePlanService wholesaleServicePlanService;
     private final UserCacheService userCacheService;
@@ -57,9 +56,9 @@ public class SalesInterceptor implements HandlerInterceptor {
             String requestUrI = request.getRequestURI();
             Set<String> permittedUrls = null;
             if(user.getUserType().equals("S")  || user.getUserType().equals("SA")){
-                permittedUrls = groupPermissionRepository.getUserAllPermission(user.getId());
+                permittedUrls = userRepository.findAllPermissionsByUserId(user.getId());
                 requestUrI = requestUrI.replaceAll("detail","all");
-            }else if(user.getUserType().equals("W")){
+            }else if(user.getUserType().equals(USER_TYPES.WHOLESALER.getType())){
                 permittedUrls = storePermissionsRepository.getAllAssignedPermissionByUserId(user.getId());
             }
 
@@ -88,7 +87,7 @@ public class SalesInterceptor implements HandlerInterceptor {
 //                sendError(response, "You don't permissions to access "+requestUrI+".Please contact your administrator.", 400);
 //                return false;
 //            }
-            request.setAttribute("user",user);
+//            request.setAttribute("user",user);
             return true;
         }
         sendError(response,"Invalid authorization.",401);

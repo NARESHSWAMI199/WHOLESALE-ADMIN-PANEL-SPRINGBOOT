@@ -1,14 +1,17 @@
 package com.sales.wholesaler.controller;
 
 
+import com.sales.claims.AuthUser;
+import com.sales.claims.SalesUser;
 import com.sales.dto.UserPaginationDto;
-import com.sales.entities.User;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.wholesaler.services.WholesalePaginationService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -21,18 +24,21 @@ import java.util.Map;
 public class WholesalePaginationController  {
 
     private final WholesalePaginationService wholesalePaginationService;
+
     @GetMapping("all")
-    public ResponseEntity<Map<String,Object>> findUserPaginationSetting(HttpServletRequest request){
-        User loggedUser = (User) request.getAttribute("user");
+    @PreAuthorize("hasAuthority('wholesale.pagination.all')")
+    public ResponseEntity<Map<String,Object>> findUserPaginationSetting(Authentication authentication,HttpServletRequest request){
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         Map<String,Object> allUserPaginations = wholesalePaginationService.findUserPaginationsByUserId(loggedUser);
         return new ResponseEntity<>(allUserPaginations, HttpStatus.valueOf(200));
     }
 
 
     @PostMapping("update")
-    public ResponseEntity<Map<String,Object>> updatePaginationRowNumber(HttpServletRequest request, @RequestBody UserPaginationDto userPaginationDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    @PreAuthorize("hasAnyAuthority('wholesale.pagination.edit','wholesale.pagination.update')")
+    public ResponseEntity<Map<String,Object>> updatePaginationRowNumber(Authentication authentication, HttpServletRequest request, @RequestBody UserPaginationDto userPaginationDto) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Map<String,Object> responseObj = new HashMap<>();
-        User loggedUser = (User) request.getAttribute("user");
+        AuthUser loggedUser = (SalesUser) authentication.getPrincipal();
         userPaginationDto.setUserId(loggedUser.getId());
         int updated = wholesalePaginationService.updateUserPaginationRowsNumber(userPaginationDto);
         if(updated > 0) {

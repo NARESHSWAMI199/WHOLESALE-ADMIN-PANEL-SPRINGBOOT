@@ -1,9 +1,9 @@
 package com.sales.wholesaler.services;
 
 
+import com.sales.claims.AuthUser;
 import com.sales.dto.UserPlanDto;
 import com.sales.entities.ServicePlan;
-import com.sales.entities.User;
 import com.sales.entities.WholesalerFuturePlan;
 import com.sales.entities.WholesalerPlans;
 import com.sales.exceptions.NotFoundException;
@@ -106,7 +106,7 @@ public class WholesaleServicePlanService  {
         WholesalerPlans userPlans = WholesalerPlans.builder()
                 .slug(UUID.randomUUID().toString())
                 .userId(userId)
-                .servicePlan(plan)
+                .servicePlanId(plan.getId())
                 .createdAt(currentMillis)
                 .expiryDate(expiryDate)
                 .createdBy(userId)
@@ -134,7 +134,7 @@ public class WholesaleServicePlanService  {
             WholesalerPlans userPlans = WholesalerPlans.builder()
                     .slug(UUID.randomUUID().toString())
                     .userId(userId)
-                    .servicePlan(plan)
+                    .servicePlanId(servicePlanId)
                     .createdAt(currentMillis)
                     .expiryDate(expiryDate)
                     .createdBy(userId)
@@ -148,7 +148,7 @@ public class WholesaleServicePlanService  {
     }
 
 
-    public Page<WholesalerPlans> getAllUserPlans(User loggedUser, UserPlanDto searchFilters) {
+    public Page<WholesalerPlans> getAllUserPlans(AuthUser loggedUser, UserPlanDto searchFilters) {
         logger.debug("Starting getAllUserPlans method with loggedUser: {}, searchFilters: {}", loggedUser, searchFilters);
         Specification<WholesalerPlans> specification = Specification.allOf(
                 hasSlug(searchFilters.getSlug())
@@ -181,7 +181,7 @@ public class WholesaleServicePlanService  {
     }
 
 
-    public int updatedUserCurrentPlan(String plansSlug,User loggedUser) {
+    public int updatedUserCurrentPlan(String plansSlug,AuthUser loggedUser) {
         logger.debug("Starting updatedUserCurrentPlan method.");
         Integer wholesaleUserPlanId = wholesaleUserPlansRepository.getWholesaleUserPlanId(loggedUser.getId(),plansSlug);
         if(wholesaleUserPlanId == null) throw new IllegalArgumentException("Not a valid active plan.");

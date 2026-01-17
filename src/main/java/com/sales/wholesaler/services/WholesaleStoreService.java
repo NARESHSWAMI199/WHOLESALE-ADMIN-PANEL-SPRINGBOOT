@@ -1,6 +1,7 @@
 package com.sales.wholesaler.services;
 
 import com.sales.admin.repositories.AddressRepository;
+import com.sales.claims.AuthUser;
 import com.sales.dto.AddressDto;
 import com.sales.dto.SearchFilters;
 import com.sales.dto.StoreDto;
@@ -51,7 +52,7 @@ public class WholesaleStoreService  {
     String storeImagePath;
 
     @Transactional(rollbackOn = {IllegalArgumentException.class, MyException.class, RuntimeException.class})
-    public Map<String, Object> updateStoreBySlug(StoreDto storeDto, User loggedUser) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public Map<String, Object> updateStoreBySlug(StoreDto storeDto, AuthUser loggedUser) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting updateStoreBySlug method with storeDto: {}, loggedUser: {}", storeDto, loggedUser);
 
         // Validating required fields. If there we found any required field is null, this will throw an Exception
@@ -100,7 +101,7 @@ public class WholesaleStoreService  {
     }
 
     @Transactional(rollbackOn = {IllegalArgumentException.class, MyException.class, RuntimeException.class})
-    public int updateStore(StoreDto storeDto, User loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public int updateStore(StoreDto storeDto, AuthUser loggedUser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting updateStore method with storeDto: {}, loggedUser: {}", storeDto, loggedUser);
         AddressDto address = new AddressDto();
         // if there is any required field null then this will throw IllegalArgumentException
@@ -169,7 +170,7 @@ public class WholesaleStoreService  {
     }
 
     @Transactional(rollbackOn = {MyException.class, IllegalArgumentException.class, RuntimeException.class, Exception.class})
-    public Store createStore(StoreDto storeDto, User loggedUser) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public Store createStore(StoreDto storeDto, AuthUser loggedUser) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         logger.debug("Starting createStore method with storeDto: {}, loggedUser: {}", storeDto, loggedUser);
 
         // Validating required fields. If their we found any required field is null, this will throw an Exception
@@ -194,7 +195,7 @@ public class WholesaleStoreService  {
         Address address = insertAddress(addressDto, loggedUser); // Create operation
 
         Store store = new Store(loggedUser);
-        store.setUser(loggedUser);
+        store.setUser(User.builder().id(loggedUser.getId()).build());
         store.setStoreName(storeDto.getStoreName());
         store.setEmail(storeDto.getStoreEmail());
         store.setAddress(address);
@@ -215,7 +216,7 @@ public class WholesaleStoreService  {
     }
 
     @Transactional
-    public Address insertAddress(AddressDto addressDto, User loggedUser) {
+    public Address insertAddress(AddressDto addressDto, AuthUser loggedUser) {
         logger.debug("Starting insertAddress method with addressDto: {}, loggedUser: {}", addressDto, loggedUser);
         Address address = Address.builder()
             .slug(UUID.randomUUID().toString())
@@ -249,7 +250,7 @@ public class WholesaleStoreService  {
         return addressDto;
     }
 
-    public Page<StoreNotifications> getAllStoreNotification(SearchFilters filters, User loggedUser) {
+    public Page<StoreNotifications> getAllStoreNotification(SearchFilters filters, AuthUser loggedUser) {
         logger.debug("Starting getAllStoreNotification method with filters: {}, loggedUser: {}", filters, loggedUser);
         Integer storeId = wholesaleStoreRepository.getStoreIdByUserId(loggedUser.getId());
         Specification<StoreNotifications> specification = Specification.allOf(isUserId(loggedUser.getId()).or(isWholesaleId(storeId)));

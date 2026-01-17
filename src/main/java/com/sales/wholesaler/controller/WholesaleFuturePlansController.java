@@ -1,8 +1,8 @@
 package com.sales.wholesaler.controller;
 
 
+import com.sales.claims.AuthUser;
 import com.sales.dto.SearchFilters;
-import com.sales.entities.User;
 import com.sales.entities.WholesalerFuturePlan;
 import com.sales.global.ConstantResponseKeys;
 import com.sales.jwtUtils.JwtToken;
@@ -35,16 +35,18 @@ public class WholesaleFuturePlansController  {
 
 
     @PostMapping("/")
+//    @PreAuthorize("hasAuthority('wholesale.furture.plans.all')")
     public ResponseEntity<Page<WholesalerFuturePlan>> getAllWholesalerFuturePlans(HttpServletRequest request, @RequestBody SearchFilters searchFilters) {
-        User loggedUser = Utils.getUserFromRequest(request,jwtToken, wholesaleUserService);
+        AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken, wholesaleUserService);
         Page<WholesalerFuturePlan> wholesalerFuturePlans = wholesaleFuturePlansService.getWholesalerFuturePlans(loggedUser,searchFilters);
         return new ResponseEntity<>(wholesalerFuturePlans, HttpStatusCode.valueOf(200));
     }
 
 
     @PostMapping("/activate")
+//    @PreAuthorize("hasAuthority('wholesale.furture.plans.activate')")
     public ResponseEntity<Map<String,Object>> activateFuturePlan(HttpServletRequest request, @RequestBody Map<String,String> data){
-        User loggedUser = Utils.getUserFromRequest(request,jwtToken, wholesaleUserService);
+        AuthUser loggedUser = Utils.getUserFromRequest(request,jwtToken, wholesaleUserService);
         String slug = data.get("slug");
         Map<String,Object> result = new HashMap<>();
         int activated = wholesaleFuturePlansService.activateWholesalerFuturePlans(loggedUser, slug);
