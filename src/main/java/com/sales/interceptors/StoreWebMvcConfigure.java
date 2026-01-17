@@ -62,7 +62,7 @@
 //        /* Paths which need to be authenticated but don't need to check in Interceptor due to some different conditions */
 //        String [] authorizedPaths = {
 //            "/wholesale/plan/my-plans",
-//            "/wholesale/plan/is-active",
+//            "/wholesale/plan/",
 //            "/pg/pay/**",
 //            "/wholesale/store/add",
 //            "/wholesale/auth/detail",
