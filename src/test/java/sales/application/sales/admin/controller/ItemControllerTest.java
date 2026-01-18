@@ -26,8 +26,7 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -488,7 +487,78 @@ public class ItemControllerTest extends TestUtil {
         );
     }
 
+    @Test
+    public void testGetItemDetail() throws Exception {
+        Store store = createStore();
+        Item item = createItem(store.getId());
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(GlobalConstant.AUTHORIZATION, token);
+        mockMvc.perform(get("/admin/item/detail/{slug}", item.getSlug())
+                .headers(headers)
+        ).andExpectAll(
+                status().isOk(),
+                jsonPath("$.message", is("success")),
+                jsonPath("$.res", notNullValue())
+        );
+    }
 
+    @Test
+    public void testGetItemDetailNotFound() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(GlobalConstant.AUTHORIZATION, token);
+        mockMvc.perform(get("/admin/item/detail/{slug}", "nonexistent")
+                .headers(headers)
+        ).andExpectAll(
+                status().is(404),
+                jsonPath("$.message", is("Item Not Found"))
+        );
+    }
 
+    @Test
+    public void testGetAllMeasuringUnits() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(GlobalConstant.AUTHORIZATION, token);
+        mockMvc.perform(get("/admin/item/units")
+                .headers(headers)
+        ).andExpectAll(
+                status().isOk()
+        );
+    }
+
+    @Test
+    public void testGetCategoryById() throws Exception {
+        ItemCategory itemCategory = createItemCategory();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(GlobalConstant.AUTHORIZATION, token);
+        mockMvc.perform(get("/admin/item/category/{categoryId}", itemCategory.getId())
+                .headers(headers)
+        ).andExpectAll(
+                status().isOk()
+        );
+    }
+
+    @Test
+    public void testDownloadUpdateTemplate() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(GlobalConstant.AUTHORIZATION, token);
+        mockMvc.perform(get("/admin/item/download/update/template")
+                .headers(headers)
+        ).andExpectAll(
+                status().is(404) // file not found
+        );
+    }
+
+    @Test
+    public void testGetFile() throws Exception {
+        // This might need actual file setup, but for now, expect 500 or something
+        mockMvc.perform(get("/admin/item/image/{slug}/{filename}", "testslug", "test.jpg")
+        ).andExpectAll(
+                status().is(404) // file not found
+        );
+    }
+
+    // Add more tests for import/export if possible, but they might be complex
 
 }
+
+
