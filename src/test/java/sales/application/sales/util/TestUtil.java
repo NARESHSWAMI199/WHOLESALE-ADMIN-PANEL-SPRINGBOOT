@@ -513,6 +513,7 @@ public class TestUtil {
                 "item.stock",
                 "item.subcategory",
                 "item.subcategory.delete",
+                "item.subcategory.detail",
                 "item.subcategory.edit",
                 "pagination.all",
                 "service-plans.add",
